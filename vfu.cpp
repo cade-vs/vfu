@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.16 2002/05/24 16:52:59 cade Exp $
+ * $Id: vfu.cpp,v 1.17 2002/06/30 13:35:01 cade Exp $
  *
  */
 
@@ -427,35 +427,36 @@ void vfu_help()
 {
   say1center( HEADER );
   mb.zap();
-  mb.push( "*keypad -- Navigation keys" );
-  mb.push( "ENTER   -- Enter into directory/View file ( `+' and `=' too )");
-  mb.push( "BACKSPC -- Chdir to prent directory ( `-' and ^H too )"         );
-  mb.push( "TAB     -- Edit entry: filename, atrrib's/mode, owner, group");
-  mb.push( "R.Arrow -- Rename current file " );
-  mb.push( "SPACE   -- Select/deselect current list item"   );
+  mb.push( "*keypad -- navigation keys" );
+  mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
+  mb.push( "BACKSPC -- chdir to prent directory ( `-' and ^H too )"         );
+  mb.push( "TAB     -- edit entry: filename, atrrib's/mode, owner, group");
+  mb.push( "R.Arrow -- rename current file " );
+  mb.push( "SPACE   -- select/deselect current list item"   );
   mb.push( "ESC+ESC -- exit menu");
-  mb.push( "1       -- Toggle `mode'  field on/off "    );
-  mb.push( "2       -- Toggle `owner' field on/off "    );
-  mb.push( "3       -- Toggle `group' field on/off "    );
-  mb.push( "4       -- Toggle `time'  field on/off "    );
-  mb.push( "5       -- Toggle `size'  field on/off "    );
-  mb.push( "6       -- Toggle `type'  field on/off "    );
-  mb.push( "7       -- Toggle `time type' field change/modify/access time "    );
-  mb.push( "8       -- Turn on all fields"    );
-  mb.push( "0       -- Toggle long name view ( show only type and file name )"    );
-  mb.push( "~       -- Change current dir to HOME directory"     );
-  mb.push( "A       -- Arrange/Sort file list"                   );
-  mb.push( "B       -- Browse/View selected/current file"         );
-  mb.push( "Alt+B   -- Browse/View current file w/o filters"      );
-  mb.push( "C       -- Copy selected/current file(s)"             );
-  mb.push( "D       -- Change directory"                         );
-  mb.push( "Ctrl+D  -- Directory tree "                          );
-  mb.push( "Alt+D   -- Chdir history " );
-  mb.push( "E       -- Erase/remove selected/current file(s)!"    );
-  mb.push( "F       -- Change file masks (space-delimited)       ");
+  mb.push( "1       -- toggle `mode'  field on/off "    );
+  mb.push( "2       -- toggle `owner' field on/off "    );
+  mb.push( "3       -- toggle `group' field on/off "    );
+  mb.push( "4       -- toggle `time'  field on/off "    );
+  mb.push( "5       -- toggle `size'  field on/off "    );
+  mb.push( "6       -- toggle `type'  field on/off "    );
+  mb.push( "7       -- toggle `time type' field change/modify/access time "    );
+  mb.push( "8       -- turn on all fields"    );
+  mb.push( "0       -- toggle long name view ( show only type and file name )"    );
+  mb.push( "~       -- change current dir to HOME directory"     );
+  mb.push( "A       -- arrange/Sort file list"                   );
+  mb.push( "B       -- browse/View selected/current file"         );
+  mb.push( "Alt+B   -- browse/View current file w/o filters"      );
+  mb.push( "C       -- copy selected/current file(s)"             );
+  mb.push( "D       -- change directory"                         );
+  mb.push( "Ctrl+D  -- directory tree "                          );
+  mb.push( "Alt+D   -- chdir history " );
+  mb.push( "E       -- erase/remove selected/current file(s)!"    );
+  mb.push( "F       -- change file masks (space-delimited)       ");
   mb.push( "Ctrl+F  -- reset file mask to `*'"                    );
-  mb.push( "G       -- Global select/deselect"                    );
-  mb.push( "H       -- This help text"                            );
+  mb.push( "G       -- global select/deselect"                    );
+  mb.push( "H       -- this help text"                            );
+  mb.push( "I       -- edit file"                            );
   mb.push( "Q       -- exit here ( to the current directory)");
   mb.push( "R       -- reload directory/refresh file list"       );
   mb.push( "Ctrl+R  -- recursive reload... "                     );
@@ -472,15 +473,15 @@ void vfu_help()
   mb.push( "Ctrl+X  -- cut  files to clipboard"       );
   mb.push( "Ctrl+V  -- paste (copy) files from clipboard to current directory" );
   mb.push( "T       -- tools menu"                              );
-  mb.push( "U       -- UserMenu (user external commands bound to menu instead of key)  " );
+  mb.push( "U       -- user menu (user external commands bound to menu)  " );
   mb.push( "X       -- exit to old/startup directory ");
   mb.push( "Alt+X   -- exit to old/startup directory ");
   mb.push( "Z       -- calculate directories sizes menu"       );
   mb.push( "Ctrl+Z  -- show size of the current (under the cursor >>) directory");
   mb.push( "Alt+Z   -- show all directories sizes ( or Alt+Z )" );
-  mb.push( "V       -- Edit vfu.conf file");
-  mb.push( "!       -- Shell (also available with '?')"                         );
-  mb.push( "/       -- Command line"                                            );
+  mb.push( "V       -- edit vfu.conf file");
+  mb.push( "!       -- shell (also available with '?')"                         );
+  mb.push( "/       -- command line"                                            );
   mb.push( "vfu uses these (one of) these config files:");
   mb.push( "        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
   mb.push( "        2. $HOME/.vfu/vfu.conf");
@@ -601,12 +602,34 @@ void vfu_init()
   filename_ffr += FILENAME_FFR;
 
   if ( access( filename_conf, R_OK ) != 0 )
+    { /* cannot find local/user conf file, try copy one */
+    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 ) 
+      {
+      VArray va;
+      va.fload( FILENAME_CONF_GLOBAL0 );
+      va.fsave( filename_conf );
+      }
+    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) 
+      {
+      VArray va;
+      va.fload( FILENAME_CONF_GLOBAL1 );
+      va.fsave( filename_conf );
+      }
+    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) 
+      {
+      VArray va;
+      va.fload( FILENAME_CONF_GLOBAL2 );
+      va.fsave( filename_conf );
+      }
+    }
+  
+  if ( access( filename_conf, R_OK ) != 0 )
     { /* cannot find local/user conf file, try globals */
     if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 ) 
       filename_conf = FILENAME_CONF_GLOBAL0;
-    if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) 
       filename_conf = FILENAME_CONF_GLOBAL1;
-    if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) 
       filename_conf = FILENAME_CONF_GLOBAL2;
     /* if we get here then no readable conf file found */   
     }
