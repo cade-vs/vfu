@@ -1,15 +1,15 @@
-### MAKEMAKE STARTS HERE #########################################
-#
-# Created by makemake.pl on Fri Nov  8 01:51:00 2002
-#
-##################################################################
 
-### GLOBAL TARGETS ###############################################
+### MAKEMAKE STARTS HERE #######################################################
+
+
+### Created by makemake.pl on Sun Dec 15 20:24:15 2002 #########################
+
+
+### GLOBAL TARGETS #############################################################
 
 default: all
 
 re: rebuild
-
 
 li: link
 
@@ -21,28 +21,34 @@ rebuild: rebuild-vfu
 
 link: link-vfu 
 
-### GLOBAL DEFS ##################################################
+### GLOBAL (AND USER) DEFS #####################################################
 
-MKDIR      = mkdir -p
-RMDIR      = rm -rf
-RMFILE     = rm -f
 
-### TARGET 0: vfu #########################################
+AR = ar rv
+CC = gcc
+LD = gcc
+MKDIR = mkdir -p
+RANLIB = ranlib
+RMDIR = rm -rf
+RMFILE = rm -f
+SRC = *.c *.cpp *.cc *.cxx
 
-CC_0      = g++
-LD_0      = g++
-AR_0      = ar rv
-RANLIB_0  = ranlib
-CFLAGS_0  = 
-CCFLAGS_0 = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF)
-LDFLAGS_0 = -L../vslib -lvslib -lvscon -lncurses $(LDDEF)
-DEPFLAGS_0 = 
-ARFLAGS_0 = 
-TARGET_0  = vfu
 
-### SOURCES FOR TARGET 0: vfu #################################
+### TARGET 1: vfu ##############################################################
 
-SRC_0= \
+CC_1       = g++
+LD_1       = g++
+AR_1       = ar rv
+RANLIB_1   = ranlib
+CCFLAGS_1  = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF) 
+LDFLAGS_1  = -L../vslib -lvslib -lvscon -lncurses $(LDDEF)
+DEPFLAGS_1 = 
+ARFLAGS_1  = 
+TARGET_1   = vfu
+
+### SOURCES FOR TARGET 1: vfu ##################################################
+
+SRC_1= \
      see.cpp \
      vfu.cpp \
      vfuarc.cpp \
@@ -56,76 +62,78 @@ SRC_0= \
      vfuuti.cpp \
      vfuview.cpp \
 
-#### OBJECTS FOR TARGET 0: vfu ################################
+#### OBJECTS FOR TARGET 1: vfu #################################################
 
-OBJ_0= \
-     .OBJ.0.vfu/see.o \
-     .OBJ.0.vfu/vfu.o \
-     .OBJ.0.vfu/vfuarc.o \
-     .OBJ.0.vfu/vfucopy.o \
-     .OBJ.0.vfu/vfudir.o \
-     .OBJ.0.vfu/vfufiles.o \
-     .OBJ.0.vfu/vfumenu.o \
-     .OBJ.0.vfu/vfuopt.o \
-     .OBJ.0.vfu/vfusys.o \
-     .OBJ.0.vfu/vfutools.o \
-     .OBJ.0.vfu/vfuuti.o \
-     .OBJ.0.vfu/vfuview.o \
+OBJ_1= \
+     .OBJ.vfu/see.o \
+     .OBJ.vfu/vfu.o \
+     .OBJ.vfu/vfuarc.o \
+     .OBJ.vfu/vfucopy.o \
+     .OBJ.vfu/vfudir.o \
+     .OBJ.vfu/vfufiles.o \
+     .OBJ.vfu/vfumenu.o \
+     .OBJ.vfu/vfuopt.o \
+     .OBJ.vfu/vfusys.o \
+     .OBJ.vfu/vfutools.o \
+     .OBJ.vfu/vfuuti.o \
+     .OBJ.vfu/vfuview.o \
 
-### TARGET DEFINITION FOR TARGET 0: vfu #######################
+### TARGET DEFINITION FOR TARGET 1: vfu ########################################
 
-.OBJ.0.vfu: 
-	$(MKDIR) .OBJ.0.vfu
+.OBJ.vfu: 
+	$(MKDIR) .OBJ.vfu
 
-vfu: .OBJ.0.vfu $(OBJ_0)
-	$(LD_0) $(OBJ_0) $(LDFLAGS_0) -o $(TARGET_0)
+vfu: .OBJ.vfu $(OBJ_1)
+	$(LD_1) $(OBJ_1) $(LDFLAGS_1) -o $(TARGET_1)
 
 clean-vfu: 
-	$(RMFILE) $(TARGET_0)
-	$(RMDIR) .OBJ.0.vfu
+	$(RMFILE) $(TARGET_1)
+	$(RMDIR) .OBJ.vfu
 
 rebuild-vfu: clean-vfu vfu
 
-link-vfu: .OBJ.0.vfu $(OBJ_0)
+link-vfu: .OBJ.vfu $(OBJ_1)
 	$(RMFILE) vfu
-	$(LD_0) $(OBJ_0) $(LDFLAGS_0) -o $(TARGET_0)
+	$(LD_1) $(OBJ_1) $(LDFLAGS_1) -o $(TARGET_1)
 
-### TARGET OBJECTS FOR TARGET 0: vfu ##########################
 
-.OBJ.0.vfu/see.o:  see.cpp see.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c see.cpp -o .OBJ.0.vfu/see.o
-.OBJ.0.vfu/vfu.o:  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
+### TARGET OBJECTS FOR TARGET 1: vfu ###########################################
+
+.OBJ.vfu/see.o: see.cpp  see.cpp see.h
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c see.cpp -o .OBJ.vfu/see.o
+.OBJ.vfu/vfu.o: vfu.cpp  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfufiles.h vfucopy.h vfudir.h vfuview.h vfumenu.h vfuarc.h vfutools.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfu.cpp -o .OBJ.0.vfu/vfu.o
-.OBJ.0.vfu/vfuarc.o:  vfuarc.cpp vfuarc.h vfu.h vfusetup.h vfusys.h vfuuti.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfu.cpp -o .OBJ.vfu/vfu.o
+.OBJ.vfu/vfuarc.o: vfuarc.cpp  vfuarc.cpp vfuarc.h vfu.h vfusetup.h vfusys.h vfuuti.h \
  vfuopt.h see.h vfudir.h vfucopy.h vfufiles.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfuarc.cpp -o .OBJ.0.vfu/vfuarc.o
-.OBJ.0.vfu/vfucopy.o:  vfucopy.cpp vfu.h vfusetup.h vfusys.h vfudir.h vfumenu.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfuarc.cpp -o .OBJ.vfu/vfuarc.o
+.OBJ.vfu/vfucopy.o: vfucopy.cpp  vfucopy.cpp vfu.h vfusetup.h vfusys.h vfudir.h vfumenu.h \
  vfuuti.h vfufiles.h vfuview.h vfuopt.h see.h vfucopy.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfucopy.cpp -o .OBJ.0.vfu/vfucopy.o
-.OBJ.0.vfu/vfudir.o:  vfudir.cpp vfudir.h vfu.h vfusetup.h vfusys.h vfuopt.h see.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfucopy.cpp -o .OBJ.vfu/vfucopy.o
+.OBJ.vfu/vfudir.o: vfudir.cpp  vfudir.cpp vfudir.h vfu.h vfusetup.h vfusys.h vfuopt.h see.h \
  vfuuti.h vfufiles.h vfuview.h vfumenu.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfudir.cpp -o .OBJ.0.vfu/vfudir.o
-.OBJ.0.vfu/vfufiles.o:  vfufiles.cpp vfu.h vfusetup.h vfusys.h vfufiles.h vfuopt.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfudir.cpp -o .OBJ.vfu/vfudir.o
+.OBJ.vfu/vfufiles.o: vfufiles.cpp  vfufiles.cpp vfu.h vfusetup.h vfusys.h vfufiles.h vfuopt.h \
  see.h vfuuti.h vfuview.h vfumenu.h vfudir.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfufiles.cpp -o .OBJ.0.vfu/vfufiles.o
-.OBJ.0.vfu/vfumenu.o:  vfumenu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfufiles.cpp -o .OBJ.vfu/vfufiles.o
+.OBJ.vfu/vfumenu.o: vfumenu.cpp  vfumenu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h \
  vfuuti.h vfumenu.h vfuview.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfumenu.cpp -o .OBJ.0.vfu/vfumenu.o
-.OBJ.0.vfu/vfuopt.o:  vfuopt.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfumenu.cpp -o .OBJ.vfu/vfumenu.o
+.OBJ.vfu/vfuopt.o: vfuopt.cpp  vfuopt.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfudir.h vfuview.h vfumenu.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfuopt.cpp -o .OBJ.0.vfu/vfuopt.o
-.OBJ.0.vfu/vfusys.o:  vfusys.cpp vfu.h vfusetup.h vfusys.h vfuuti.h vfumenu.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfusys.cpp -o .OBJ.0.vfu/vfusys.o
-.OBJ.0.vfu/vfutools.o:  vfutools.cpp vfumenu.h vfuuti.h vfu.h vfusetup.h vfusys.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfuopt.cpp -o .OBJ.vfu/vfuopt.o
+.OBJ.vfu/vfusys.o: vfusys.cpp  vfusys.cpp vfu.h vfusetup.h vfusys.h vfuuti.h vfumenu.h
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfusys.cpp -o .OBJ.vfu/vfusys.o
+.OBJ.vfu/vfutools.o: vfutools.cpp  vfutools.cpp vfumenu.h vfuuti.h vfu.h vfusetup.h vfusys.h \
  vfucopy.h vfuview.h vfuopt.h see.h vfufiles.h vfutools.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfutools.cpp -o .OBJ.0.vfu/vfutools.o
-.OBJ.0.vfu/vfuuti.o:  vfuuti.cpp vfu.h vfusetup.h vfusys.h vfuuti.h vfumenu.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfutools.cpp -o .OBJ.vfu/vfutools.o
+.OBJ.vfu/vfuuti.o: vfuuti.cpp  vfuuti.cpp vfu.h vfusetup.h vfusys.h vfuuti.h vfumenu.h \
  vfudir.h vfuopt.h see.h vfuview.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfuuti.cpp -o .OBJ.0.vfu/vfuuti.o
-.OBJ.0.vfu/vfuview.o:  vfuview.cpp vfu.h vfusetup.h vfusys.h vfufiles.h vfuview.h \
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfuuti.cpp -o .OBJ.vfu/vfuuti.o
+.OBJ.vfu/vfuview.o: vfuview.cpp  vfuview.cpp vfu.h vfusetup.h vfusys.h vfufiles.h vfuview.h \
  vfuopt.h see.h vfuuti.h
-	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfuview.cpp -o .OBJ.0.vfu/vfuview.o
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vfuview.cpp -o .OBJ.vfu/vfuview.o
 
 
-### MAKEMAKE ENDS HERE ###########################################
+### MAKEMAKE ENDS HERE #########################################################
+
