@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.41 2004/07/08 01:25:52 cade Exp $
+ * $Id: vfu.cpp,v 1.42 2004/12/14 01:12:12 cade Exp $
  *
  */
 
@@ -1629,6 +1629,8 @@ void vfu_global_select()
       return; 
       };
     mb.undef();
+    mb.push( "A Select to begin" );
+    mb.push( "E Select to end" );
     mb.push( "--searching--" );
     mb.push( "F Find string (no case)" );
     mb.push( "S Scan string (case sense)" );
@@ -1639,8 +1641,10 @@ void vfu_global_select()
 //    mb.push( "M Mode/Attributes" );
     if ( vfu_menu_box( 50, 5, "Extended G.Select" ) == -1 ) return;
     ch = menu_box_info.ec;
-    if (ch == 'S') ch = 'B'; /* 'B' trans */
-    if (ch == 'H') ch = 'E'; /* 'E' trans */
+    if (ch == 'S') ch = 'B'; /* 'B' trans scan */
+    if (ch == 'H') ch = 'E'; /* 'E' trans hex  */
+    if (ch == 'A') ch = '<'; /* '<' trans to begin  */
+    if (ch == 'E') ch = '>'; /* '>' trans to end    */
     }
 
   switch(ch)
@@ -1874,6 +1878,18 @@ void vfu_global_select()
                 do_draw = 1;
                 }
               }; break;
+    case '<' : {
+               if( files_count > 0)
+                 for (int z = 0; z <= FLI; z++)
+                   if (!files_list[z]->is_dir())
+                     files_list[z]->sel = 1;
+               }; break;
+    case '>' : {
+               if( files_count > 0)
+                 for (int z = FLI; z < files_count; z++)
+                   if (!files_list[z]->is_dir())
+                     files_list[z]->sel = 1;
+               }; break;
     }
   update_status();
   do_draw = 1;
