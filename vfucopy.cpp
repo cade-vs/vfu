@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfucopy.cpp,v 1.3 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -767,7 +767,11 @@ void vfu_copy_files( int a_one, int a_mode )
 
   copy_info.description = "FILE OPERATION: ";
   copy_info.description += cm_mode_str[ a_mode ];
-  
+  copy_info.description += ": ";
+  sprintf( t, "%.0f", copy_info.files_size );
+  str_comma( t );
+  copy_info.description += t;
+  copy_info.description += " bytes.";
     
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];

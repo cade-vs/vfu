@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.6 2001/11/10 10:00:46 cade Exp $
+ * $Id: vfu.cpp,v 1.7 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -1245,10 +1245,7 @@ void vfu_browse( const char *fname, int no_filters )
 
   if ( !no_filters && see_filters.count() > 0 )
     {
-    char t[MAX_PATH];
-    strcpy( t, "/tmp/vfu.XXXXXX" );
-    mktemp( t );
-    new_name = t;
+    new_name = vfu_temp();
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
@@ -1256,7 +1253,7 @@ void vfu_browse( const char *fname, int no_filters )
       split.set( see_filters[z] );
       String mask = split[0];
       String str  = split[1];
-      if ( FNMATCH( mask, str_file_name_ext( fname, t ) ) ) continue;
+      if ( FNMATCH( mask, str_file_name_ext( fname, new_name ) ) ) continue;
       /* found */
       str_replace( str, "%f", fname );
       str_replace( str, "%F", fname );
@@ -1322,11 +1319,8 @@ void vfu_action_plus( int key )
         work_mode = WM_ARCHIVE;
         archive_name = fi->name();
         archive_path = ""; /* NOTE: archives' root dir is `' but not `/'! */
-        char t[MAX_PATH];
-        strcpy( t, "/tmp/vfu.XXXXXX" );
-        mktemp( t );
-        filename_atl = t; /* this is help for rx_*'s */
-        setenv( RX_TEMP_LIST, t, 1 );
+        filename_atl = vfu_temp(); /* this is help for rx_*'s */
+        setenv( RX_TEMP_LIST, filename_atl, 1 );
         vfu_read_files();
         say1( "ARCHIVE mode activated. ( some keys/commands are disabled! )" );
         } else

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.h,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuuti.h,v 1.3 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -39,6 +39,8 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id );
 
 void vfu_get_str_history( int key, String &s, int &pos ); /* internal! */
 int vfu_get_str( const char *prompt, String& target, int hist_id, int x = -1, int y = -1 );
+
+const char* vfu_temp();
 
 /*###########################################################################*/
 

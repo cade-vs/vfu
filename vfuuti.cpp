@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
+ * $Id: vfuuti.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -363,10 +363,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
   return vfu_menu_box( x, y, title );
 };
 
-////////////////////////////////////////////////////////////////////////////
-//
-//
-//
+/*---------------------------------------------------------------------------*/
 
 int __vfu_get_str_hist_id; /* used to keep history id passed here... */
 void vfu_get_str_history( int key, String &s, int &pos )
@@ -408,6 +405,19 @@ int vfu_get_str( const char *prompt, String& target, int hist_id, int x, int y )
   if( r )
     vfu_hist_add( hist_id, target );
   return ( r != 0 );  
+};
+
+/*---------------------------------------------------------------------------*/
+
+/* to fool gcc warning that mktemp() is not safe, I don't really care :/ 
+   still there is no mkstemp for directories :)) */
+char vfu_temp_filename[MAX_PATH];
+const char* vfu_temp()
+{
+    strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
+    mkstemp( vfu_temp_filename );
+    unlink( vfu_temp_filename );
+    return vfu_temp_filename;
 };
 
 /*###########################################################################*/

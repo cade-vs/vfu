@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.3 2001/11/10 09:58:10 cade Exp $
+ * $Id: vfuarc.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -77,9 +77,7 @@ void vfu_read_archive_files( int a_recursive )
 
 void vfu_browse_archive_file()
 {
-  char tmpdir[MAX_PATH];
-  strcpy( tmpdir, tmp_path + "vfu.XXXXXX" );
-  mktemp( tmpdir );
+  String tmpdir = vfu_temp();
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
     {
     say1( "error: cannot create temp directory" );
@@ -111,9 +109,7 @@ void vfu_browse_archive_file()
 
 void vfu_user_external_archive_exec( String &shell_line  )
 {
-  char tmpdir[MAX_PATH];
-  strcpy( tmpdir, tmp_path + "vfu.XXXXXX" );
-  mktemp( tmpdir );
+  String tmpdir = vfu_temp();
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
     {
     say1( "error: cannot create temp directory" );
@@ -149,7 +145,6 @@ void vfu_extract_files( int one )
 {
   if ( sel_count == 0 && one == 0 ) one = 1;
   char t[MAX_PATH];
-  char tmpfile[MAX_PATH];
   String target;
 
   if ( one == 0 )
@@ -177,11 +172,10 @@ void vfu_extract_files( int one )
     return;
     }
 
-  strcpy( tmpfile, tmp_path + "vfu.XXXXXX" );
-  mktemp( tmpfile );
+  String tmpfile = vfu_temp();
   if (SaveToFile( tmpfile, &sc ))
     {
-    sprintf( t, "Error writing list file: %s", tmpfile );
+    sprintf( t, "Error writing list file: %s", tmpfile.data() );
     say1( t );
     return;
     }

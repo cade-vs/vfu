@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfudir.h,v 1.3 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -46,6 +46,7 @@ int tree_find( const char *s, PSZCluster *sc );
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );
 void size_cache_set( const char *s, fsize_t size );
+void size_cache_clean( const char *s );
 
 /*###########################################################################*/
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
+ * $Id: vfudir.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
  *
  */
 
@@ -948,6 +948,27 @@ void size_cache_set( const char *s, fsize_t size )
   size_cache.push( str );
 }
 
+void size_cache_clean( const char *s )
+{
+  last_cache_ptr = 0;
+  int sl = str_len( s );
+  int z = 0;
+  while( z < size_cache.count() )
+    {
+    const char* ps = size_cache[z].data() + 9;
+    ASSERT( size_cache[z][8] == ' ' );
+    if ( strncmp( ps, s, sl ) == 0 )
+      {
+      size_cache.del( z );
+      size_cache.del( z );
+      }
+    else
+      {  
+      z += 2;
+      }
+    }
+};
+
 /*###########################################################################*/
 
 /* return index in the dir_tree of directory named `s' or -1 if not found */
@@ -1101,11 +1122,10 @@ fsize_t vfu_dir_size( const char *s )
 {
   char t[MAX_PATH];
   expand_path( s, t );
+  size_cache_clean( t );
   str_fix_path( t );
-  
   fsize_t size = __dir_size_process( t );
   size_cache_set( t, size );
-  
   return size;
 }
 
