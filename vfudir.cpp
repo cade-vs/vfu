@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.9 2002/10/09 08:44:11 cade Exp $
+ * $Id: vfudir.cpp,v 1.10 2002/10/09 22:02:48 cade Exp $
  *
  */
 
@@ -228,7 +228,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
         pos = str_len( target );
       }
     else 
-    if (ch > 31 && ch < 127 ) // && pos < 70) 
+    if (ch >= 32 && ch <= 255 ) // && pos < 70) 
       { 
       if (firsthit) 
         {

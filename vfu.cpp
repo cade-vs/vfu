@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.22 2002/10/02 22:36:28 cade Exp $
+ * $Id: vfu.cpp,v 1.23 2002/10/09 22:02:48 cade Exp $
  *
  */
 
@@ -2810,17 +2810,10 @@ void vfu_read_files_menu()
 
 void vfu_inc_search()
 {
-  BSet set; /* used for searching */
-  set.set_range1( 'a', 'z' );
-  set.set_range1( 'A', 'Z' );
-  set.set_range1( '0', '9' );
-  set.set_str1( "._-~" );
-  set.set_str1( "?*>[]" );
-
   String str;
   say1( "Enter search pattern: ( use TAB to advance )" );
   int key = con_getch();
-  while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
+  while( ( key >= 32 && key <= 255 ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
     {
     if ( key == 8 || key == KEY_BACKSPACE )
       str_trim_right( str, 1 );
