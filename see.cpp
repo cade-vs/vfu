@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.23 2003/02/22 17:52:21 cade Exp $
+ * $Id: see.cpp,v 1.24 2003/03/11 21:25:35 cade Exp $
  *
  */
 
@@ -373,8 +373,11 @@
     int z = 0;
     if ( buff[i-1] == '\n' ) i--;
     while( i > 0 && buff[i-1] != '\n' ) i--;
-    if ( i > 0 ) 
-      memmove( buff, buff + i, res - i ); // make buffer only last line
+    if ( i > 0 )
+      {
+      memmove( buff, buff + i, res - i ); // make buffer contain only last line
+      buff[res - i] = 0;
+      }
     fpos -= res - i;
     if ( fpos <  0 ) fpos = 0;
     if ( fpos == 0 ) line = 1;
@@ -401,8 +404,7 @@
     z = 0;
     while( z < res && buff[z] != '\n' ) z++;
     if (buff[z] == '\n') z++;
-    buff[z] = 0; // need by SeeFindNext()
-  //    strcpy( cline, buff ); // need by SeeFindNext()
+    buff[z] = 0;
     fpos += z;
     if ( line >= 0 ) line++;
     if ( line > last_line ) last_line = line;
@@ -562,10 +564,10 @@
     if ( re.m( buff ) ) 
       {
       long spos = re.sub_sp( 0 );
-      up();
+      if ( ! rev ) up();
       draw();
       spos += fpos;
-      status( "Pattern `%s' found at pos: %d (0x%X), col: %d", opt->last_search, spos, spos );
+      status( "Pattern `%s' found at pos: %d (0x%X)", opt->last_search, spos, spos );
       break;
       }
     if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) ) 
@@ -583,45 +585,6 @@
       break;
       }
     }
-  /*
-  VString sss;
-  if ( !opt->last_search[0] )
-    {
-    status( "No search pattern..." );
-    return 1;
-    }
-  sprintf( sss, "Searching for `%s'...", opt->last_search );
-  status( sss );
-  if ( opt->hex_mode )
-    fpos++;
-  else
-    down(); // start search from the next line -- avoid blocking 
-  fseek( f, fpos+1, SEEK_SET );
-  int new_pos = file_string_search( opt->last_search, f, opt->last_opt );
-  fseek( f, fpos, SEEK_SET );
-  if ( new_pos >= 0 )
-    {
-    fpos = new_pos;
-    if (!opt->hex_mode)
-      {
-      up(); //
-      line += file_grep_lines_read;
-      int mpos = new_pos - fpos; // marker pos
-      if ( mpos > opt->xmax ) col = ( mpos / 8 - 1 )*8;
-      mpos -= col;
-      draw();
-      }
-    else
-      draw();
-    sprintf( sss, "Pattern `%s' found at pos: %d (0x%X)", opt->last_search, new_pos, new_pos );
-    status( sss );
-    }
-  else
-    {
-    sprintf( sss, "Pattern `%s' not found...", opt->last_search );
-    status( sss );
-    }
-  */  
   return 0;
   };
 

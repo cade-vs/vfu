@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.33 2003/02/16 23:33:45 cade Exp $
+ * $Id: vfu.cpp,v 1.34 2003/03/11 21:25:35 cade Exp $
  *
  */
 
@@ -348,7 +348,7 @@ void TF::refresh_view()
       else
         {
         str.fi( _size );
-        str_comma(str);
+        str_comma( str );
         }
       sprintf( stsize, "%14s", (const char*)(str) );
       strcat( stsize, " " ); /* field separator */

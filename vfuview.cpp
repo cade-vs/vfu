@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.13 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfuview.cpp,v 1.14 2003/03/11 21:25:35 cade Exp $
  *
  */
 
@@ -179,11 +179,11 @@ void vfu_redraw() /* redraw file list and header */
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
-  if (opt.f_type || opt.long_name_view) spos += sprintf( spos, "TP " );
-  tag_mark_pos = strlen( t ) - 1;
+  if (opt.f_type || opt.long_name_view) spos += sprintf( spos, "TP" );
+  tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
 
-  spos += sprintf( spos, " #NAME    %s",
+  spos += sprintf( spos, "  #NAME    %s",
                    opt.long_name_view ? "( long name view )" : "" );
 
   str_pad( t, - con_max_x() );
