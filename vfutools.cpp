@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfutools.cpp,v 1.3 2001/11/11 22:47:08 cade Exp $
  *
  */
 
@@ -149,7 +149,7 @@ void vfu_tool_rename()
                  {
                  TF* fi = files_list[z];
                  
-                 if ( fi->is_dir() ) continue;
+                 // if ( fi->is_dir() ) continue; // why not? ;)
                  if ( !fi->sel ) continue;
                  str_file_path( fi->name(), path );
                  new_name = "";
