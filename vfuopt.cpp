@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.6 2002/08/17 11:47:08 cade Exp $
+ * $Id: vfuopt.cpp,v 1.7 2002/09/11 15:37:55 cade Exp $
  *
  */
 
@@ -272,7 +272,7 @@ void vfu_settings_load()
 
   opt.use_colors = 1;
   opt.use_dir_colors = 1;
-  opt.lower_case_ext_config = 0;
+  opt.lower_case_ext_config = 1;
 
   opt.copy_free_space_check = 1;
   opt.copy_calc_totals = 1;
@@ -496,6 +496,8 @@ void vfu_edit_conf_file()
 void vfu_options()
 {
   vfu_toggle_box( 30, 5, "Options/Toggles   (scroll down...)", Toggles );
+  vfu_settings_save();
+  vfu_settings_load();
   file_list_index.type = opt.dynamic_scroll;
   vfu_drop_all_views();
   vfu_redraw(); 

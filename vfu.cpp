@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.20 2002/08/17 12:22:06 cade Exp $
+ * $Id: vfu.cpp,v 1.21 2002/09/11 15:37:55 cade Exp $
  *
  */
 
@@ -2812,9 +2812,9 @@ void vfu_inc_search()
   String str;
   say1( "Enter search pattern: ( use TAB to advance )" );
   int key = con_getch();
-  while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
+  while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 127 || key == 9 )
     {
-    if ( key == 8 || key == KEY_BACKSPACE )
+    if ( key == 8 || key == KEY_BACKSPACE || key == 127 )
       str_trim_right( str, 1 );
     else
     if ( key != 9 )
