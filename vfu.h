@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.4 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfu.h,v 1.5 2002/05/17 08:16:34 cade Exp $
  *
  */
 
@@ -259,9 +259,13 @@
 /*
   Message issues
 */
+void say( int line, int attr, const char* format, ... );
+
 void say1(const char *a_str, int attr = cMESSAGE );
 void say2(const char *a_str, int attr = cMESSAGE );
 void say2errno();
+
+void saycenter( int line, int attr, const char *a_str );
 
 void say1center(const char *a_str, int attr = cMESSAGE );
 void say2center(const char *a_str, int attr = cMESSAGE );
@@ -277,6 +281,7 @@ void vfu_init();
 void vfu_run();
 void vfu_cli();
 void vfu_done();
+void vfu_reset_screen();
 void vfu_signal( int sig );
 void vfu_exit_path( const char *a_path );
 int vfu_exit( const char* a_path );

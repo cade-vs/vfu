@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.4 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfuopt.cpp,v 1.5 2002/05/17 08:16:34 cade Exp $
  *
  */
 
@@ -155,56 +155,44 @@ void vfu_load_dir_colors()
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, char *target )
-{
-  char temp[255];
-  regexp *re = regcomp("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
-  int r = (regexec(re, line) && !strcasecmp(keyword, regsubn(re, 1, temp)));
-  if (r) regsubn(re, 2, target);
-  free(re);
-  return r;
-}
-
-/*---------------------------------------------------------------------------*/
-
-int set_set( const char *line, const char *keyword, VArray *target )
+int set_arr( const char *line, const char *keyword, VArray &target )
 {
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
   if ( ! re.m( line ) ) return 0;
-  if ( re[1] != keyword ) return 0;
-  target->push( re[2] );
+  if ( str_low( re[1] ) != keyword ) return 0;
+  target.push( re[2] );
   return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, String &target )
+int set_str( const char *line, const char *keyword, String &target )
 {
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
   if ( ! re.m( line ) ) return 0;
-  if ( re[1] != keyword ) return 0;
+  if ( str_low( re[1] ) != keyword ) return 0;
   target = re[2];
   return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, int &target )
+int set_int( const char *line, const char *keyword, int &target )
 {
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*([0123456789]+)");
   if ( ! re.m( line ) ) return 0;
-  if ( re[1] != keyword ) return 0;
+  if ( str_low( re[1] ) != keyword ) return 0;
   target = atoi( re[2] );
   return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, VArray &splitter )
+int set_splitter( const char *line, const char *keyword, VArray &splitter )
 {
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
   if ( ! re.m( line ) ) return 0;
-  if ( re[1] != keyword ) return 0;
+  if ( str_low( re[1] ) != keyword ) return 0;
   splitter.split( PATH_DELIMITER, re[2] );
   return 1;
 }
@@ -349,8 +337,6 @@ void vfu_settings_load()
   ASSERT( re_see );
   ASSERT( re_pan );
   
-  #define opti(key,target) if(set_set(line, key, target)) continue
-  
   char line[1024];
   if ( (fsett = fopen( filename_conf, "r")) )
     {
@@ -361,42 +347,42 @@ void vfu_settings_load()
       str_cut( line, "\n\r" );
       if ( strlen( line ) == 0 ) continue;
       
-      opti("browser", shell_browser);
-      opti("pager",   shell_browser);
-      opti("viewer",  shell_browser);
+      if(set_str( line, "browser", shell_browser))continue;
+      if(set_str( line, "pager", shell_browser))continue;
+      if(set_str( line, "viewer", shell_browser))continue;
 
-      opti("archive",  &archive_extensions);
+      if(set_arr( line, "archive",  archive_extensions))continue;
       
-      opti("editor", shell_editor);
+      if(set_str( line, "editor", shell_editor))continue;
       
-      opti("bookmark1", path_bookmarks[1]);
-      opti("bookmark2", path_bookmarks[2]);
-      opti("bookmark3", path_bookmarks[3]);
-      opti("bookmark4", path_bookmarks[4]);
-      opti("bookmark5", path_bookmarks[5]);
-      opti("bookmark6", path_bookmarks[6]);
-      opti("bookmark7", path_bookmarks[7]);
-      opti("bookmark8", path_bookmarks[8]);
-      opti("bookmark9", path_bookmarks[9]);
+      if(set_str( line, "bookmark1", path_bookmarks[1]))continue;
+      if(set_str( line, "bookmark2", path_bookmarks[2]))continue;
+      if(set_str( line, "bookmark3", path_bookmarks[3]))continue;
+      if(set_str( line, "bookmark4", path_bookmarks[4]))continue;
+      if(set_str( line, "bookmark5", path_bookmarks[5]))continue;
+      if(set_str( line, "bookmark6", path_bookmarks[6]))continue;
+      if(set_str( line, "bookmark7", path_bookmarks[7]))continue;
+      if(set_str( line, "bookmark8", path_bookmarks[8]))continue;
+      if(set_str( line, "bookmark9", path_bookmarks[9]))continue;
             
-   /* opti("cBLACK"   , ext_colors[0]); */
-      opti("cGREEN"   , ext_colors[cGREEN]);
-      opti("cRED"     , ext_colors[cRED]);
-      opti("cCYAN"    , ext_colors[cCYAN]);
-      opti("cWHITE"   , ext_colors[cWHITE]);
-      opti("cMAGENTA" , ext_colors[cMAGENTA]);
-      opti("cBLUE"    , ext_colors[cBLUE]);
-      opti("cYELLOW"  , ext_colors[cYELLOW]);
-      opti("chBLACK"  , ext_colors[chBLACK]);
-      opti("chGREEN"  , ext_colors[chGREEN]);
-      opti("chRED"    , ext_colors[chRED]);
-      opti("chCYAN"   , ext_colors[chCYAN]);
-      opti("chWHITE"  , ext_colors[chWHITE]);
-      opti("chMAGENTA", ext_colors[chMAGENTA]);
-      opti("chBLUE"   , ext_colors[chBLUE]);
-      opti("chYELLOW" , ext_colors[chYELLOW]);
+   /* if(set_str( line, "cblack"   , ext_colors[0]); */
+      if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;
+      if(set_str( line, "cred"     , ext_colors[cRED]))continue;
+      if(set_str( line, "ccyan"    , ext_colors[cCYAN]))continue;
+      if(set_str( line, "cwhite"   , ext_colors[cWHITE]))continue;
+      if(set_str( line, "cmagenta" , ext_colors[cMAGENTA]))continue;
+      if(set_str( line, "cblue"    , ext_colors[cBLUE]))continue;
+      if(set_str( line, "cyellow"  , ext_colors[cYELLOW]))continue;
+      if(set_str( line, "chblack"  , ext_colors[chBLACK]))continue;
+      if(set_str( line, "chgreen"  , ext_colors[chGREEN]))continue;
+      if(set_str( line, "chred"    , ext_colors[chRED]))continue;
+      if(set_str( line, "chcyan"   , ext_colors[chCYAN]))continue;
+      if(set_str( line, "chwhite"  , ext_colors[chWHITE]))continue;
+      if(set_str( line, "chmagenta", ext_colors[chMAGENTA]))continue;
+      if(set_str( line, "chblue"   , ext_colors[chBLUE]))continue;
+      if(set_str( line, "chyellow" , ext_colors[chYELLOW]))continue;
     
-      opti("TrimTree",   trim_tree  );
+      if(set_splitter( line, "trimtree",  trim_tree  ))continue;
   
       /* following code is used to clean input data */
       if( regexec( re_ux, line ) )

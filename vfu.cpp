@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.14 2002/04/22 23:21:08 cade Exp $
+ * $Id: vfu.cpp,v 1.15 2002/05/17 08:16:34 cade Exp $
  *
  */
 
@@ -116,20 +116,28 @@
   Message issues
 */
 
-void say1(const char *a_str, int attr )
+char say_buf[1024];
+String say_str;
+void say( int line, int attr, const char* format, ... )
 {
-  String s = a_str;
-  str_dot_reduce( NULL, s, con_max_x()-1 );
-  con_out( 1, con_max_y()-1, s, attr );
+  ASSERT( line == 1 || line == 2 );
+  va_list vlist;
+  va_start( vlist, format );
+  int res = vsprintf( say_buf, format, vlist );
+  va_end( vlist );
+  str_dot_reduce( say_buf, say_str, con_max_x()-1 );
+  con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
   con_ce( attr );
+};
+
+void say1(const char *a_str, int attr )
+{ 
+  say( 1, attr, "%s", a_str ); 
 }
 
 void say2(const char *a_str, int attr )
 {
-  String s = a_str;
-  str_dot_reduce( NULL, s, con_max_x()-1 );
-  con_out( 1, con_max_y(), s, attr );
-  con_ce( attr );
+  say( 2, attr, "%s", a_str ); 
 }
 
 void say2errno()
@@ -139,7 +147,7 @@ void say2errno()
   say2( str );
 }
 
-void say1center(const char *a_str, int attr )
+void saycenter( int line, int attr, const char *a_str )
 {
   String str = " ";
   int sl = str_len( a_str );
@@ -149,20 +157,17 @@ void say1center(const char *a_str, int attr )
     str_mul( str, sl );
     str = str + a_str;
     }
-  say1( str, attr );
+  say( line, attr, "%s", str.data() );  
+};
+
+void say1center(const char *a_str, int attr )
+{
+  saycenter( 1, attr, a_str );
 }
 
 void say2center(const char *a_str, int attr )
 {
-  String str = " ";
-  int sl = str_len( a_str );
-  if ( sl < con_max_x() )
-    {
-    sl = ( con_max_x() - sl ) / 2;
-    str_mul( str, sl );
-    str = str + a_str;
-    }
-  say2( str, attr );
+  saycenter( 2, attr, a_str );
 }
 
 
@@ -639,6 +644,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
+  signal( SIGWINCH, vfu_signal );
   // this is for xterm resize refresh handle
   // signal( SIGWINCH, VFUsignal );
   // still doesn't work?...
@@ -719,8 +725,12 @@ void vfu_run()
   while (4)
     {
     if (do_draw) 
-      { 
-      if (do_draw > 1) do_draw_status = 1;
+      {
+      if ( do_draw > 2 )
+	{
+        vfu_reset_screen();
+	}
+      if ( do_draw > 1 ) do_draw_status = 1;
       vfu_redraw(); 
       do_draw = 0; 
       }
@@ -753,17 +763,7 @@ void vfu_run()
 
       case 's'       : vfu_inc_search(); break;
 
-      case KEY_CTRL_L: 
-                       con_cs(); 
-                       
-                       /* update scroll parameters */
-                       file_list_index.min = 0;
-                       file_list_index.max = files_count - 1;
-                       file_list_index.pagesize = con_max_y() - 7;
-                       
-                       vfu_drop_all_views(); 
-                       do_draw = 2; 
-                       break;
+      case KEY_CTRL_L: do_draw = 3; break;
       
       case 'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
   
@@ -1018,16 +1018,31 @@ void vfu_done()
 
 /*--------------------------------------------------------------------------*/
 
+void vfu_reset_screen()
+{
+  con_done();
+  con_init();
+
+  /* update scroll parameters */
+  file_list_index.min = 0;
+  file_list_index.max = files_count - 1;
+  file_list_index.pagesize = con_max_y() - 7;
+
+  vfu_drop_all_views();
+  vfu_redraw();
+  vfu_redraw_status();
+}
+
 void vfu_signal( int sig )
 {
-/* this seems not to work... why?!
   if ( sig == SIGWINCH )
     {
-    ...here should update screen size information...
-    signal( SIGWINCH, vfu_signal ); // resetup signal handler
+    signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
+    // vfu_reset_screen();
+    do_draw = 3;
     return;
     }
-*/
+    
   vfu_done();
 
   con_beep();
