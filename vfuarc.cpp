@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuarc.cpp,v 1.3 2001/11/10 09:58:10 cade Exp $
  *
  */
 
@@ -78,7 +78,7 @@ void vfu_read_archive_files( int a_recursive )
 void vfu_browse_archive_file()
 {
   char tmpdir[MAX_PATH];
-  strcpy( tmpdir, "/tmp/vfu.XXXXXX" );
+  strcpy( tmpdir, tmp_path + "vfu.XXXXXX" );
   mktemp( tmpdir );
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
     {
@@ -112,7 +112,7 @@ void vfu_browse_archive_file()
 void vfu_user_external_archive_exec( String &shell_line  )
 {
   char tmpdir[MAX_PATH];
-  strcpy( tmpdir, "/tmp/vfu.XXXXXX" );
+  strcpy( tmpdir, tmp_path + "vfu.XXXXXX" );
   mktemp( tmpdir );
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
     {
@@ -177,7 +177,7 @@ void vfu_extract_files( int one )
     return;
     }
 
-  strcpy( tmpfile, "/tmp/vfu.XXXXXX" );
+  strcpy( tmpfile, tmp_path + "vfu.XXXXXX" );
   mktemp( tmpfile );
   if (SaveToFile( tmpfile, &sc ))
     {

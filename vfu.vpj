@@ -12,6 +12,7 @@ workingdir=/home/cade/pro/vfu
 includedirs=%(INCLUDE)
 tagfiles=
 reffile=
+vcsproject=VCS:vfu
 [ASSOCIATION]
 [FILES]
 /home/cade/pro/vfu/see.cpp

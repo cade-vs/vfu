@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.4 2001/11/10 09:48:00 cade Exp $
+ * $Id: vfu.cpp,v 1.5 2001/11/10 09:53:44 cade Exp $
  *
  */
 
