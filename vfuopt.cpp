@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.13 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfuopt.cpp,v 1.14 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -350,15 +350,17 @@ void vfu_settings_load()
       
       if(set_str( line, "editor", shell_editor))continue;
       
-      if(set_str( line, "bookmark1", path_bookmarks[1]))continue;
-      if(set_str( line, "bookmark2", path_bookmarks[2]))continue;
-      if(set_str( line, "bookmark3", path_bookmarks[3]))continue;
-      if(set_str( line, "bookmark4", path_bookmarks[4]))continue;
-      if(set_str( line, "bookmark5", path_bookmarks[5]))continue;
-      if(set_str( line, "bookmark6", path_bookmarks[6]))continue;
-      if(set_str( line, "bookmark7", path_bookmarks[7]))continue;
-      if(set_str( line, "bookmark8", path_bookmarks[8]))continue;
-      if(set_str( line, "bookmark9", path_bookmarks[9]))continue;
+      if(set_arr( line, "bookmark",  path_bookmarks))continue;
+      // follow 10 are deprecated
+      if(set_arr( line, "bookmark1", path_bookmarks))continue;
+      if(set_arr( line, "bookmark2", path_bookmarks))continue;
+      if(set_arr( line, "bookmark3", path_bookmarks))continue;
+      if(set_arr( line, "bookmark4", path_bookmarks))continue;
+      if(set_arr( line, "bookmark5", path_bookmarks))continue;
+      if(set_arr( line, "bookmark6", path_bookmarks))continue;
+      if(set_arr( line, "bookmark7", path_bookmarks))continue;
+      if(set_arr( line, "bookmark8", path_bookmarks))continue;
+      if(set_arr( line, "bookmark9", path_bookmarks))continue;
             
    /* if(set_str( line, "cblack"   , ext_colors[0]); */
       if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.13 2003/02/08 02:48:35 cade Exp $
+ * $Id: vfufiles.cpp,v 1.14 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -51,28 +51,29 @@ void vfu_rescan_files( int a_recursive )
   int old_fli = FLI;
   int old_flp = FLP;
 
+  VString keep = "1";
+
   /* save selection, remember which files are selected */
-  VArray savea;
+  VTrie savea;
+  int savea_count = 0;
   if ( opt.keep_selection && sel_count > 0 )
     {
     for ( z = 0; z < files_count ; z++)
       if ( files_list[z]->sel )
-        savea.push( files_list[z]->name() );
+        {
+        savea[ files_list[z]->name() ] = keep;
+        savea_count++;
+        }
     }
 
   vfu_read_files( a_recursive );
 
   /* restore selection */
-  if ( opt.keep_selection && savea.count() > 0 )
+  if ( opt.keep_selection && savea_count > 0 )
     {
     for ( z = 0; z < files_count ; z++ )
-      for ( int i = 0; i < savea.count(); i++ )
-        if ( strcmp( files_list[z]->name(), savea[i] ) == 0 )
-          {
-          savea[i] = "";
-          files_list[z]->sel = 1;
-          break;
-          }
+      if ( savea.exists( files_list[z]->name() ) )
+        files_list[z]->sel = 1;
     update_status();
     }
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.34 2003/03/11 21:25:35 cade Exp $
+ * $Id: vfu.cpp,v 1.35 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -66,7 +66,7 @@
 
   VArray file_find_results; // filefind results
 
-  VString path_bookmarks[10];
+  VArray path_bookmarks;
 
 /*######################################################################*/
 
@@ -123,7 +123,7 @@ void say( int line, int attr, const char* format, ... )
   ASSERT( line == 1 || line == 2 );
   va_list vlist;
   va_start( vlist, format );
-  vsprintf( say_buf, format, vlist );
+  vsnprintf( say_buf, sizeof(say_buf), format, vlist );
   va_end( vlist );
   say_str = str_dot_reduce( say_buf, con_max_x()-1 );
   con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
@@ -470,9 +470,11 @@ void vfu_help()
   mb.push( "Alt+N   -- file find menu"   );
   mb.push( "O       -- options/toggles menu"       );
   mb.push( "P       -- file clipboard menu"       );
+  /*
   mb.push( "Ctrl+C  -- copy files to clipboard"       );
   mb.push( "Ctrl+X  -- cut  files to clipboard"       );
   mb.push( "Ctrl+V  -- paste (copy) files from clipboard to current directory" );
+  */
   mb.push( "T       -- tools menu"                              );
   mb.push( "U       -- user menu (user external commands bound to menu)  " );
   mb.push( "X       -- exit to old/startup directory ");
@@ -747,7 +749,7 @@ void vfu_run()
   int ox = -1;
   int oy = -1;
 
-  /* int oldFLI = -1; /* quick view */
+  /* int oldFLI = -1; // quick view */
   int ch = 0;
   while (4)
     {
@@ -953,7 +955,6 @@ void vfu_run()
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
       case KEY_ALT_J  : vfu_jump_to_mountpoint( 1 ); break;
   
-      case 'k'        : bookmark_hookup(); break;
       case KEY_ALT_0  : bookmark_goto( 0 ); break;
       case KEY_ALT_1  : bookmark_goto( 1 ); break;
       case KEY_ALT_2  : bookmark_goto( 2 ); break;
@@ -964,15 +965,18 @@ void vfu_run()
       case KEY_ALT_7  : bookmark_goto( 7 ); break;
       case KEY_ALT_8  : bookmark_goto( 8 ); break;
       case KEY_ALT_9  : bookmark_goto( 9 ); break;
+      case '`'        : bookmark_goto(-1 ); break;
   
       case 9          : vfu_edit_entry(); break;
   
       case 't'        : vfu_tools(); break;
   
-      case 'p'        : vfu_clipboard( 0 ); break;
-      case KEY_CTRL_C : vfu_clipboard( 'c' ); break; /* copy  */
-      case KEY_CTRL_X : vfu_clipboard( 'x' ); break; /* cut   */
-      case KEY_CTRL_V : vfu_clipboard( 'v' ); break; /* paste */
+      case 'p'        : clipboard_menu( 0 ); break;
+      /*
+      case KEY_CTRL_C : vfu_clipboard( 'C' ); break; // copy
+      case KEY_CTRL_X : vfu_clipboard( 'X' ); break; // cut
+      case KEY_CTRL_V : vfu_clipboard( 'V' ); break; // paste
+      */
       
       }
     if (  ( KEY_F1 <= ch && ch <= KEY_F10)
@@ -1955,7 +1959,7 @@ void vfu_tools()
   mb.push( "R Real path" );
   mb.push( "D ChDir to Real path" );
   mb.push( "T Make directory" );
-  mb.push( "P Preset dirs menu" );
+  mb.push( "P Path bookmarks" );
   mb.push( "A Rename tools..." );
   mb.push( "C Classify files" );
   if ( vfu_menu_box( 50, 5, "Tools" ) == -1 ) return;
@@ -2010,25 +2014,37 @@ void bookmark_goto( int n )
     {
     int z;
     mb.undef();
-    for(z = 1; z < 10; z++)
+    mb.push( "A Bookmark current directory" );
+    mb.push( "` Change working directory" );
+    mb.push( "---" );
+    for( z = 1; z < 10; z++ )
       {
-      sprintf(t, "%d %-60s", z%10, path_bookmarks[z].data());
+      const char* ps = path_bookmarks.get( z );
+      if( !ps ) break;
+      sprintf(t, "%d %s", z%10, ps );
       mb.push( str_dot_reduce( t, 60 ) );
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");
     if ( n == -1 ) return;
     n++;
     }
-  if ( n < 0 || n > 9 ) return;
-  if ( str_len( path_bookmarks[n] ) > 0 )
-    vfu_chdir( path_bookmarks[n] );
-  else
-    say1( "No bookmark set" );  
+  switch( menu_box_info.ec )
+    {
+    case '`' : vfu_chdir( NULL ); return;
+    case 'A' : bookmark_hookup(); return;
+    }
+  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[n - '0'] ) > 0 ) 
+    {
+    vfu_chdir( path_bookmarks[n - '0'] );
+    return;
+    }
 }
 
 void bookmark_hookup()
 {
-  say1( "FIXME: not implemented yet" );
+  path_bookmarks.push( work_path );
+  if ( path_bookmarks.count() > 10 )
+    path_bookmarks.shift();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -2155,7 +2171,7 @@ void vfu_directories_sizes( int n )
       if ( fi->is_dir() ) /* dirs */
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
-        /* if ( n == 'A' ) continue; /* all */
+        /* if ( n == 'A' ) continue; // all */
         say1( fi->name() );
         fsize_t dir_size = vfu_dir_size( fi->name() );
         if ( dir_size == -1 )
@@ -2751,23 +2767,6 @@ void vfu_file_find( int menu )
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
 };
-
-/*--------------------------------------------------------------------------*/
-
-void vfu_clipboard( int act )
-{
-  if ( act == 0 )
-    {
-    mb.undef();
-    mb.push( "P Clipboard files list" );
-    mb.push( "C Copy files to clipboard" );
-    mb.push( "X Cut  files to clipboard" );
-    mb.push( "V Paste files from clipbrd" );
-    mb.push( "E Clear/flush clipboard" );
-    if ( vfu_menu_box( 50, 5, "File Clipboard" ) ) return;
-    act = menu_box_info.ec;
-    }
-}
 
 /*--------------------------------------------------------------------------*/
 

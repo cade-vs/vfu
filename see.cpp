@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.25 2003/03/11 21:34:44 cade Exp $
+ * $Id: see.cpp,v 1.26 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -370,7 +370,6 @@
     fseek( f, cpos, SEEK_SET );
     int res = fread( buff, 1, i, f );
     ASSERT( res == i );
-    int z = 0;
     if ( buff[i-1] == '\n' ) i--;
     while( i > 0 && buff[i-1] != '\n' ) i--;
     if ( i > 0 )
@@ -540,8 +539,9 @@
   
   int SeeViewer::find_next_hex( int rev )
   {
-  //FIXME: !!!
-  }
+  //FIXME: implement!!!
+  return 0;
+  }                 c
   
   int SeeViewer::find_next_txt( int rev )
   {

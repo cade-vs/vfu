@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.11 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfucopy.cpp,v 1.12 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -17,15 +17,29 @@
 #include "vfusys.h"
 #include "vfucopy.h"
 
+/****************************************************************************
+**
+** globals
+**
+****************************************************************************/
+
 char *CM_DESC[] = { "COPY", "MOVE", "LINK" };
 char *copy_buff = NULL;
 
 int ignore_copy_errors = 0; /* actually it is used for copy/move/erase */
 
-/////////////////////////////////////////////
-//
-// some utilities...
-//
+/* clipboard ***************************************************************/
+
+char *CB_DESC[] = { "COPY", "MOVE", "SYMLINK" };
+
+VTrie Clipboard;
+CopyInfo clipboard_copy_info;
+
+/****************************************************************************
+**
+** utilities
+**
+****************************************************************************/
 
 fsize_t device_free_space( const char *target ) /* user free space, NOT real! */
 {
@@ -35,8 +49,8 @@ fsize_t device_free_space( const char *target ) /* user free space, NOT real! */
 };
 
 /*
-  return 0 if src and dst are actually the same file
-*/
+ *  return 0 if src and dst are actually the same file
+ */
 int file_is_same( const char *src, const char *dst ) 
 {
   #ifdef _TARGET_GO32_
@@ -219,11 +233,17 @@ int vfu_copy_mode( const char* src, const char* dst )
   return 0;  
 };
 
-/*###########################################################################*/
+/***************************************************************************
+**
+** COPY/MOVE/SYMLINK
+**
+****************************************************************************/
 
-/*
-  return 0 for ok
-*/
+/* copy/move ***************************************************************/
+
+
+//  return 0 for ok
+
 int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 {
   errno = 0; /* clear error status */
@@ -372,25 +392,6 @@ int __vfu_file_move( const char* src, const char* dst, CopyInfo* copy_info )
 
 /*---------------------------------------------------------------------------*/
 
-int __vfu_file_symlink( const char* src, const char* dst, CopyInfo* copy_info )
-{
-  errno = 0; /* clear error status */
-  
-  if (!over_if_exist( src, dst, copy_info )) 
-    return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
-  
-  if ( file_exist( dst ) )
-    {
-    if ( file_is_same( src, dst ) == 0 )
-      return CR_SKIP; /* dst is src actually */
-    /* FIXME: what if dst is symlink? */  
-    if ( __vfu_file_erase( dst ) ) return 1;
-    }
-  return (symlink( src, dst ) == -1);
-}
-
-/*###########################################################################*/
-
 int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
 {
   errno = 0; /* clear error status */
@@ -442,14 +443,7 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
     
     while(4)
       {
-      int r = 0;
-      if ( file_is_link( fname_src ) )
-        r = __vfu_link_copy( fname_src, fname_dst, copy_info ); /* symlink */
-      else
-      if ( file_is_dir( fname_src ) )  
-        r = __vfu_dir_copy( fname_src, fname_dst, copy_info ); /* directory */
-      else
-        r = __vfu_file_copy( fname_src, fname_dst, copy_info ); /* regular file */
+      int r = __vfu_copy( fname_src, fname_dst, copy_info );
 
       if ( r == CR_ABORT )
         {
@@ -519,7 +513,7 @@ int __vfu_dir_move( const char* src, const char* dst, CopyInfo* copy_info )
   return 0;
 };
 
-/*###########################################################################*/
+/*---------------------------------------------------------------------------*/
 
 int __vfu_link_copy( const char* src, const char* dst, CopyInfo* copy_info )
 {
@@ -562,11 +556,10 @@ int __vfu_link_move( const char* src, const char* dst, CopyInfo* copy_info )
   return 0;
 };
 
-/*###########################################################################*/
+/* erase *******************************************************************/
 
-/*
-  return 0 for ok, CR_ABORT for cancel, else for error
-*/
+//  return 0 for ok, CR_ABORT for cancel, else for error
+
 int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
 {
   errno = 0; /* clear error status */
@@ -602,14 +595,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
       /* progress report */
       say1( fname );
       
-      int r = 0;
-      if ( file_is_link( fname ) )
-        r = __vfu_link_erase( fname ); /* symlink */
-      else
-      if ( file_is_dir( fname ) )  
-        r = __vfu_dir_erase( fname, bytes_freed ); /* directory */
-      else
-        r = __vfu_file_erase( fname, bytes_freed ); /* regular file */
+      int r = __vfu_erase( fname, bytes_freed );
       
       if ( r == CR_ABORT )
         {
@@ -683,7 +669,7 @@ int __vfu_file_erase( const char* target, fsize_t* bytes_freed  )
 
 /*---------------------------------------------------------------------------*/
 
-int __vfu_link_erase( const char* target )
+int __vfu_link_erase( const char* target, fsize_t* bytes_freed )
 {
   errno = 0; /* clear error status */
   
@@ -694,7 +680,77 @@ int __vfu_link_erase( const char* target )
   #endif
 };
 
-/*###########################################################################*/
+
+/* shells, call __*_*_*() above ********************************************/
+
+int __vfu_copy( const char* src, const char* dst, CopyInfo* copy_info )
+{
+  int r = 0;
+  if ( file_is_link( src ) )
+    r = __vfu_link_copy( src, dst, copy_info ); /* symlink */
+  else
+  if ( file_is_dir( src ) )  
+    r = __vfu_dir_copy( src, dst, copy_info ); /* directory */
+  else
+    r = __vfu_file_copy( src, dst, copy_info ); /* regular file */
+  
+  return r;  
+};
+
+/*---------------------------------------------------------------------------*/
+
+int __vfu_move( const char* src, const char* dst, CopyInfo* copy_info )
+{
+  int r = 0;
+  if ( file_is_link( src ) )
+    r = __vfu_link_move( src, dst, copy_info ); /* symlink */
+  else
+  if ( file_is_dir( src ) )  
+    r = __vfu_dir_move( src, dst, copy_info ); /* directory */
+  else
+    r = __vfu_file_move( src, dst, copy_info ); /* regular file */
+  
+  return r;  
+};
+
+/*---------------------------------------------------------------------------*/
+
+int __vfu_symlink( const char* src, const char* dst, CopyInfo* copy_info )
+{
+  errno = 0; /* clear error status */
+  
+  if (!over_if_exist( src, dst, copy_info )) 
+    return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+  
+  if ( file_exist( dst ) )
+    {
+    if ( file_is_same( src, dst ) == 0 )
+      return CR_SKIP; /* dst is src actually */
+    /* FIXME: what if dst is symlink? */  
+    if ( __vfu_file_erase( dst ) ) return 1;
+    }
+  int r = symlink( src, dst );
+  return ( r != 0 );
+}
+
+/*---------------------------------------------------------------------------*/
+
+int __vfu_erase( const char* target, fsize_t* bytes_freed )
+{
+  int r = 0;
+  
+  if ( file_is_link( target ) )
+    r = __vfu_link_erase( target, bytes_freed ); /* symlink */
+  else
+  if ( file_is_dir( target ) )  
+    r = __vfu_dir_erase( target, bytes_freed ); /* directory */
+  else
+    r = __vfu_file_erase( target, bytes_freed ); /* regular file */
+  
+  return r;  
+};
+
+/* high-level interface functions ******************************************/
 
 void __copy_calc_totals( CopyInfo &copy_info, int a_one )
 {
@@ -804,7 +860,7 @@ void vfu_copy_files( int a_one, int a_mode )
   ASSERT( copy_buff );
   if (copy_buff == NULL)
     {
-    say1( "Copy error: cannot allocate copy buffer :( ..." );
+    say1( "Copy error: cannot allocate copy buffer" );
     return;
     }
   
@@ -827,28 +883,11 @@ void vfu_copy_files( int a_one, int a_mode )
            dst += fi->name_ext();
     
     int r = 0;
-    if ( fi->is_link() )
-      { /* symlink */
-      if ( a_mode == CM_COPY ) r = __vfu_link_copy( src, dst, &copy_info ); else
-      if ( a_mode == CM_MOVE ) r = __vfu_link_move( src, dst, &copy_info ); else
-      if ( a_mode == CM_LINK ) r = __vfu_link_symlink( src, dst, &copy_info ); else
-      ASSERT(!"Bad copy mode");
-      }
-    else
-    if ( fi->is_dir() )   
-      { /* directory */
-      if ( a_mode == CM_COPY ) r = __vfu_dir_copy( src, dst, &copy_info ); else
-      if ( a_mode == CM_MOVE ) r = __vfu_dir_move( src, dst, &copy_info ); else
-      if ( a_mode == CM_LINK ) r = __vfu_dir_symlink( src, dst, &copy_info ); else
-      ASSERT(!"Bad copy mode");
-      }
-    else
-      { /* regular file */
-      if ( a_mode == CM_COPY ) r = __vfu_file_copy( src, dst, &copy_info ); else
-      if ( a_mode == CM_MOVE ) r = __vfu_file_move( src, dst, &copy_info ); else
-      if ( a_mode == CM_LINK ) r = __vfu_file_symlink( src, dst, &copy_info ); else
-      ASSERT(!"Bad copy mode");
-      }  
+    if ( a_mode == CM_COPY ) r = __vfu_copy( src, dst, &copy_info ); else
+    if ( a_mode == CM_MOVE ) r = __vfu_move( src, dst, &copy_info ); else
+    if ( a_mode == CM_LINK ) r = __vfu_symlink( src, dst, &copy_info ); else
+    ASSERT(!"Bad copy mode");
+    
     if ( r == 0 )
       {
       if ( a_mode == CM_MOVE )
@@ -946,20 +985,8 @@ void vfu_erase_files( int a_one )
     
     VString target  = fi->full_name();
            
-    int r = 0;
-    if ( fi->is_link() )
-      { /* symlink */
-      r = __vfu_link_erase( target );
-      }
-    else
-    if ( fi->is_dir() )   
-      { /* directory */
-      r = __vfu_dir_erase( target, bytes_freed_ptr );
-      }
-    else
-      { /* regular file */
-      r = __vfu_file_erase( target, bytes_freed_ptr );
-      }
+    int r = __vfu_erase( target, bytes_freed_ptr );
+      
     if ( r == 0 )
       { delete fi; files_list[z] = NULL; }
     else if ( r != CR_ABORT && !ignore_copy_errors )
@@ -995,6 +1022,152 @@ void vfu_erase_files( int a_one )
   ignore_copy_errors = 0;
 };
 
-/*---------------------------------------------------------------------------*/
+/***************************************************************************
+**
+** CLIPBOARD
+**
+****************************************************************************/
 
+void clipboard_add()
+{
+  if( sel_count == 0 )
+    {
+    say( 1, cINFO, "CLIPBOARD: no files selected, %d files already in clipboard",
+                     clipboard_copy_info.files_count );
+    return;
+    }
+  
+  Clipboard.undef();
+  clipboard_copy_info.reset();
+  
+  VString keep = "1";
+  
+  int z;
+  for ( z = 0; z < files_count; z++ )
+    {
+    TF *fi = files_list[z];
+    if ( !fi->sel ) continue;
+    Clipboard[ fi->full_name() ] = keep;
+    }
+
+  __copy_calc_totals( clipboard_copy_info, 0 );
+  
+  clipboard_copy_info.no_free_check = !opt.copy_free_space_check;
+  clipboard_copy_info.over_mode = OM_ASK; /* 0 */
+  clipboard_copy_info.abort = 0;
+  
+  say( 1, cINFO, "CLIPBOARD: %d files added.", 
+                 clipboard_copy_info.files_count );
+  say2( "" );               
+};
+
+void clipboard_paste( int mode )
+{
+  VArray va = Clipboard.keys();
+
+  ASSERT(    mode == CLIPBOARD_COPY 
+          || mode == CLIPBOARD_MOVE 
+          || mode == CLIPBOARD_SYMLINK );
+
+  ASSERT( !copy_buff );
+  copy_buff = new char[1024*1024];
+  ASSERT( copy_buff );
+  if (copy_buff == NULL)
+    {
+    say1( "Copy error: cannot allocate copy buffer" );
+    return;
+    }
+  
+  va.reset();
+  const char* ps;
+  while( (ps = va.next()) )
+    {
+    VString dst = work_path + str_file_name_ext( ps );
+    
+    int r;
+    if ( mode == CLIPBOARD_SYMLINK )
+      r = __vfu_symlink( ps, dst, &clipboard_copy_info );
+    else if ( mode == CLIPBOARD_MOVE )
+      r = __vfu_move( ps, dst, &clipboard_copy_info );
+    else // if ( mode == CLIPBOARD_COPY )
+      r = __vfu_copy( ps, dst, &clipboard_copy_info );
+    if ( r == 0 ) clipboard_copy_info.ok_count++;
+    if ( r != 0 && r != CR_SKIP && r != CR_ABORT )
+      {
+      say1( dst + r );
+      say2errno();
+      vfu_menu_box( "Copy/Move/Symlink error", "C Continue operation,  Abort (ESC)" );
+      if ( menu_box_info.ec != 'C' ) r = CR_ABORT;
+      }
+    if ( r == CR_ABORT ) break; // cancel operation
+    }
+  
+  ASSERT( copy_buff );
+  delete [] copy_buff;
+  copy_buff = NULL;
+  
+  vfu_rescan_files( 0 );
+  say( 1, cINFO, "CLIPBOARD: %s: %d of %d files processed ok", 
+                 CB_DESC[ mode ],
+                 clipboard_copy_info.ok_count, 
+                 clipboard_copy_info.files_count );
+                 
+  if ( mode == CLIPBOARD_MOVE ) clipboard_clear();
+};
+
+void clipboard_clear()
+{
+  if( clipboard_copy_info.files_count )
+    say( 2, cINFO, "CLIPBOARD: %d files removed", clipboard_copy_info.files_count );
+  else  
+    say( 2, cINFO, "CLIPBOARD: empty" );
+  Clipboard.undef();
+  clipboard_copy_info.reset();
+};
+
+void clipboard_view()
+{
+  mb = Clipboard.keys();
+  if( mb.count() == 0 )
+    {
+    say2( "CLIPBOARD: empty" );
+    return;
+    }
+  vfu_menu_box( 5, 5, "File Clipboard Content" );
+};
+
+void clipboard_menu( int act )
+{
+  if ( act == 0 )
+    {
+    mb.undef();
+    mb.push( "A Add files to the clipboard" );
+    mb.push( "P Copy files here" );
+    mb.push( "O Move files here" );
+    mb.push( "L Symlink files here" );
+    mb.push( "E Clear clipboard" );
+    mb.push( "V View clipboard" );
+    
+    VString fcnt = clipboard_copy_info.files_count;
+    str_comma( fcnt );
+    VString fsize = clipboard_copy_info.files_size;
+    str_comma( fsize );
+    mb.push( "---  " + fcnt + " files, " + fsize + " bytes" );
+    
+    if ( vfu_menu_box( 50, 5, "File Clipboard " + fcnt + " files, " + fsize + " bytes" ) == -1 ) return;
+    act = menu_box_info.ec;
+    }
+  act = toupper( act );
+  switch( act )
+    {
+    case 'C': clipboard_add(); break;
+    case 'P': clipboard_paste( CLIPBOARD_COPY ); break;
+    case 'O': clipboard_paste( CLIPBOARD_MOVE ); break;
+    case 'L': clipboard_paste( CLIPBOARD_SYMLINK ); break;
+    case 'E': clipboard_clear(); break;
+    case 'V': clipboard_view(); break;
+    }
+}
+
+/*---------------------------------------------------------------------------*/
 

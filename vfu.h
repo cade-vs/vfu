@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.10 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfu.h,v 1.11 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -215,7 +215,7 @@
 
   extern VArray file_find_results; // filefind results
 
-  extern VString path_bookmarks[10];
+  extern VArray path_bookmarks;
 
 
 /*######################################################################*/
