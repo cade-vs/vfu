@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.21 2002/09/11 15:37:55 cade Exp $
+ * $Id: vfu.cpp,v 1.22 2002/10/02 22:36:28 cade Exp $
  *
  */
 
@@ -745,6 +745,7 @@ void vfu_run()
   say1center( HEADER );
   say2center( t );
 
+  int oldFLI = -1;
   int ch = 0;
   while (4)
     {
@@ -763,6 +764,15 @@ void vfu_run()
       vfu_redraw_status();
       do_draw_status = 0;
       }
+    /*
+    TODO: quick view?...
+    if ( work_mode == WM_NORMAL && files_count > 0 && oldFLI != FLI )
+      {
+      oldFLI = FLI;
+      const char* fn = files_list[FLI]->full_name();
+      file_save( "/tmp/vfu-quick-view", (void*)fn, strlen( fn ) );
+      }
+    */  
     show_pos( FLI+1, files_count ); /* FIXME: should this be in vfu_redraw()? */  
     
     ch = con_getch();
@@ -825,8 +835,6 @@ void vfu_run()
   
   #ifdef _TARGET_UNIX_
       case KEY_BACKSPACE :
-      case 127 : /* accordingly to the ASCII chart 127 is DEL char and
-                    usually rxvt and other terminals return BS as 127 */
   #endif
       case 8   :
       case '-' : vfu_action_minus(); break;
@@ -2812,9 +2820,9 @@ void vfu_inc_search()
   String str;
   say1( "Enter search pattern: ( use TAB to advance )" );
   int key = con_getch();
-  while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 127 || key == 9 )
+  while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
     {
-    if ( key == 8 || key == KEY_BACKSPACE || key == 127 )
+    if ( key == 8 || key == KEY_BACKSPACE )
       str_trim_right( str, 1 );
     else
     if ( key != 9 )

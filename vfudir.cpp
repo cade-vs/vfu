@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.7 2002/08/17 12:42:01 cade Exp $
+ * $Id: vfudir.cpp,v 1.8 2002/10/02 22:36:28 cade Exp $
  *
  */
 
@@ -114,7 +114,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
       ch = 0;
       }
       
-    if ((ch == 8 || ch == 127 || ch == KEY_BACKSPACE) && pos > 0) 
+    if ((ch == 8 || ch == KEY_BACKSPACE) && pos > 0) 
       { 
       pos--; 
       str_del( target, pos, 1 );
@@ -766,9 +766,9 @@ void tree_view()
         str = "";
         say1( "Enter search pattern: ( use TAB to advance )" );
         key = con_getch();
-        while( set.in( key ) || key == 8 || key == 127 || key == KEY_BACKSPACE || key == 9 )
+        while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
           {
-          if ( key == 8 || key == 127 || key == KEY_BACKSPACE )
+          if ( key == 8 || key == KEY_BACKSPACE )
             str_trim_right( str, 1 );
           else
           if ( key != 9 )
