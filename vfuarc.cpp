@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.7 2002/05/17 08:16:34 cade Exp $
+ * $Id: vfuarc.cpp,v 1.8 2002/11/06 19:57:58 cade Exp $
  *
  */
 
@@ -30,7 +30,7 @@ void vfu_read_archive_files( int a_recursive )
   
   String s;
   s = "rx_auto ";
-  s += ( a_recursive ) ? "V " : "v \"";
+  s += ( a_recursive ) ? "v " : "l \"";
   s += archive_name;
   s += "\" ";
   s += archive_path;
@@ -60,6 +60,20 @@ void vfu_read_archive_files( int a_recursive )
     if ( strncmp( line, "SIZE:", 5 ) == 0 )
       {
       st.st_size = atoi( line+5 );
+      } else
+    if ( strncmp( line, "TIME:", 5 ) == 0 )
+      {
+      struct tm t;
+      memset( &t, 0, sizeof(t) );
+      VRegexp r( "^(....)(..)(..)(..)(..)(..)?" );
+      r.m( line + 5 );
+      t.tm_year = atoi( r[0] ) - 1900;
+      t.tm_mon  = atoi( r[1] );
+      t.tm_mday = atoi( r[2] );
+      t.tm_hour = atoi( r[3] );
+      t.tm_min  = atoi( r[4] );
+      t.tm_sec  = atoi( r[5] );
+      st.st_mtime = st.st_ctime = st.st_atime = mktime( &t );
       } else
     if ( line[0] == 0 )
       {
