@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.12 2003/01/19 17:32:43 cade Exp $
+ * $Id: vfuuti.cpp,v 1.13 2003/01/19 18:17:49 cade Exp $
  *
  */
 
@@ -288,7 +288,7 @@ const char* vfu_hist_get( int hist_id, int index )
     if ( strncmp( hstr, history[z], HISTIDPAD+1 ) == 0 )
       {
       if ( index == -1 || index == i )
-        return history.get(z) + HISTIDPAD+1;
+        return history.get( z ) + HISTIDPAD+1;
       i++;
       }
   return NULL;
@@ -298,8 +298,7 @@ char* vfu_hist_get( int hist_id, int index, char* str )
 {
   str[0] = 0;
   const char* pstr = vfu_hist_get( hist_id, index );
-  if ( pstr )
-    strcpy( str, pstr );
+  if ( pstr ) strcpy( str, pstr );
   return str;
 };
 
