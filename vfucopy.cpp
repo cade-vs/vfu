@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.5 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfucopy.cpp,v 1.6 2002/10/29 04:09:38 cade Exp $
  *
  */
 
@@ -652,7 +652,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
   if ( bytes_freed )
     {
     String t;
-    t.setfi( *bytes_freed );
+    t.fi( *bytes_freed );
     str_comma( t );
     t = "ERASE: " + t + " bytes freed.";
     say2(t);
@@ -883,7 +883,7 @@ void vfu_copy_files( int a_one, int a_mode )
   /* show bytes copied */
   if ( copy_info.current_size > 0 )
     { /* i.e. only if there *are* some bytes copied :) */
-    str.setfi( copy_info.current_size );
+    str.fi( copy_info.current_size );
     str_comma( str );
     str = copy_info.description + " DONE: " + str + " bytes copied.";
     }
@@ -915,7 +915,7 @@ void vfu_erase_files( int a_one )
   fsize_t erase_size = vfu_update_sel_size( a_one );
   if ( erase_size != -1 )
     {
-    str.setfi( erase_size );
+    str.fi( erase_size );
     str_comma( str );
     }
   else
@@ -986,7 +986,7 @@ void vfu_erase_files( int a_one )
   /* show bytes freed if required */
   if ( opt.bytes_freed )
     {
-    str.setfi( bytes_freed );
+    str.fi( bytes_freed );
     str_comma( str );
     str = "ERASE DONE: " + str + " bytes freed.";
     say2( str );

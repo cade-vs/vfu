@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.10 2002/10/09 22:02:48 cade Exp $
+ * $Id: vfudir.cpp,v 1.11 2002/10/29 04:09:38 cade Exp $
  *
  */
 
@@ -712,7 +712,7 @@ void tree_draw_pos( TScrollPos &scroll, int opos )
   str_tr( str,"\\", "/" );
   
   String sz;
-  sz.setfi( size_cache_get( str ) );
+  sz.fi( size_cache_get( str ) );
   str_comma( sz );
   str_pad( sz, 12 );
   str = sz + "  " + str;
@@ -941,7 +941,7 @@ void size_cache_set( const char *s, fsize_t size )
     size_cache.del( z );
     }
   size_cache.push( str );
-  str.setfi( size );
+  str.fi( size );
   size_cache.push( str );
 }
 

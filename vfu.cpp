@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.23 2002/10/09 22:02:48 cade Exp $
+ * $Id: vfu.cpp,v 1.24 2002/10/29 04:09:38 cade Exp $
  *
  */
 
@@ -347,7 +347,7 @@ void TF::refresh_view()
         }
       else
         {
-        str.setfi( _size );
+        str.fi( _size );
         str_comma(str);
         }
       sprintf( stsize, "%14s", (const char*)(str) );
@@ -2124,7 +2124,7 @@ void vfu_directories_sizes( int n )
     fsize_t dir_size = vfu_dir_size( target );
     if ( dir_size == -1 ) return;
     String dir_size_str;
-    dir_size_str.setfi( dir_size );
+    dir_size_str.fi( dir_size );
     str_comma( dir_size_str );
     sprintf( t, "Dir size of: %s", target.data() ); 
     say1( t );
