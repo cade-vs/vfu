@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfuarc.cpp,v 1.5 2001/11/18 15:41:58 cade Exp $
  *
  */
 
@@ -78,7 +78,7 @@ void vfu_read_archive_files( int a_recursive )
 void vfu_browse_archive_file()
 {
   String tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
+  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
     {
     say1( "error: cannot create temp directory" );
     say2( tmpdir );
@@ -103,6 +103,7 @@ void vfu_browse_archive_file()
 
   chdir( work_path );
   __vfu_dir_erase( tmpdir );
+  say1( "" );
 };
 
 /*---------------------------------------------------------------------------*/
@@ -110,7 +111,7 @@ void vfu_browse_archive_file()
 void vfu_user_external_archive_exec( String &shell_line  )
 {
   String tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ))
+  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
     {
     say1( "error: cannot create temp directory" );
     say2( tmpdir );
@@ -137,6 +138,7 @@ void vfu_user_external_archive_exec( String &shell_line  )
 
   chdir( work_path );
   __vfu_dir_erase( tmpdir );
+  say1( "" );
 }
 
 /*---------------------------------------------------------------------------*/
@@ -179,6 +181,7 @@ void vfu_extract_files( int one )
     say1( t );
     return;
     }
+  chmod( tmpfile, S_IRUSR|S_IWUSR );  
 
   String s;
   s = "rx_auto x \"";

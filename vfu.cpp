@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.8 2001/11/18 14:38:48 cade Exp $
+ * $Id: vfu.cpp,v 1.9 2001/11/18 15:41:58 cade Exp $
  *
  */
 
@@ -1242,12 +1242,10 @@ void vfu_browse_selected_files()
 void vfu_browse( const char *fname, int no_filters )
 {
   String new_name = fname;
-  int remove_new_name = 0;
-
+  String tmp_name;
+  
   if ( !no_filters && see_filters.count() > 0 )
     {
-    new_name = vfu_temp();
-    remove_new_name = 1;
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
@@ -1257,20 +1255,21 @@ void vfu_browse( const char *fname, int no_filters )
       String str  = split[1];
       if ( FNMATCH( mask, str_file_name_ext( fname, new_name ) ) ) continue;
       /* found */
+      tmp_name = vfu_temp();
       str_replace( str, "%f", fname );
       str_replace( str, "%F", fname );
       str += " > ";
-      str += new_name;
+      str += tmp_name;
       vfu_shell( str, "" );
+      chmod( tmp_name, S_IRUSR | S_IWUSR );
       break;
       }
-    if ( z >= see_filters.count() )
-      {
-      new_name = fname; /* not found */
-      remove_new_name = 0;
-      }
     }
-
+  new_name = fname; /* hack :( str_file_name_ext() may strip path above... */
+  
+  if ( tmp_name != "" )
+    new_name = tmp_name;
+  
   if ( opt.internal_browser )
     {
     opt.svo.cs = cINFO;
@@ -1295,7 +1294,8 @@ void vfu_browse( const char *fname, int no_filters )
   say1("");
   say2("");
   
-  if ( remove_new_name ) unlink( new_name );
+  if ( tmp_name != "" )
+    unlink( tmp_name );
 }
 
 /*--------------------------------------------------------------------------*/

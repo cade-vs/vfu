@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
+ * $Id: see.cpp,v 1.4 2001/11/18 15:41:58 cade Exp $
  *
  */
 
@@ -1141,24 +1141,22 @@
   int SeeEditor::request_quit()
   {
   if ( mod == 0 ) return 0; /* ok -- not modified */
-  con_beep();
-  status( "File is modified! Press: <S> Save, <Q> Quit, <ESC> Cancel" );
   while(4)
     {
+    con_beep();
+    status( "File is modified! Press: <S> Save, <Q> Quit, <ESC> Cancel" );
+    
     con_chide();
     int k = con_getch();
     con_cshow();
     
-    String s = mod;
-    s += " ";
-    status( s );
-    s += k;
-    status( s );
-    
     if ( k == 'S' || k == 's' )
       {
-      if(save())
+      if(!save())
+        {
+        status( "Cannot save file! Press: <S> Save, <Q> Quit, <ESC> Cancel" );
         continue; /* error saving file */
+        }
       else
         return 0; /* okay */
       }
