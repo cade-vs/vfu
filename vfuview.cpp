@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.3 2001/11/20 19:09:50 cade Exp $
+ * $Id: vfuview.cpp,v 1.4 2001/11/21 00:59:28 cade Exp $
  *
  */
 
@@ -144,7 +144,7 @@ void vfu_redraw() /* redraw file list and header */
   str = "";
   
   if ( opt.sort_order == 'N' ) str = "NAME";
-  if ( opt.sort_order == 'M' ) str = "NAME";
+  if ( opt.sort_order == 'M' ) str = "NAME#";
   if ( opt.sort_order == 'E' ) str = "EXT";
   if ( opt.sort_order == 'A' ) str = "MODE";
   if ( opt.sort_order == 'O' ) str = "OWNER";
@@ -165,22 +165,19 @@ void vfu_redraw() /* redraw file list and header */
   if (opt.sort_order == 'D') opt.sort_order = 'T'; /* hack anyway */
   if (!opt.long_name_view)
     {
-    /* sort order char +/- */
-    #define SOCH(c) ((opt.sort_order == (c))?(opt.sort_direction == 'A'?'+':'-' ):' ')
-    if (opt.f_mode  ) spos += sprintf( spos, "%10s%c", MODE_STRING,  SOCH('A') );
-    if (opt.f_owner ) spos += sprintf( spos, "  %cOWNER ", SOCH('O') );
-    if (opt.f_group ) spos += sprintf( spos, "  %cGROUP ", SOCH('G') );
-    if (opt.f_time  ) spos += sprintf( spos, "%s %cTiME ", FTIMETYPE[opt.f_time_type], SOCH('T') );
-    if (opt.f_size  ) spos += sprintf( spos, "         %cSiZE ", SOCH('S') );
+    if (opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
+    if (opt.f_owner ) spos += sprintf( spos, "   OWNER " );
+    if (opt.f_group ) spos += sprintf( spos, "   GROUP " );
+    if (opt.f_time  ) spos += sprintf( spos, "%s  TiME ", FTIMETYPE[opt.f_time_type] );
+    if (opt.f_size  ) spos += sprintf( spos, "          SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
-  if (opt.f_type || opt.long_name_view) spos += sprintf( spos, "TP%c", SOCH('Y') );
+  if (opt.f_type || opt.long_name_view) spos += sprintf( spos, "TP " );
   tag_mark_pos = strlen( t ) - 1;
   sel_mark_pos = tag_mark_pos + 2;
 
-  spos += sprintf( spos, " #NAME%c   %s",
-                   ((opt.sort_order == 'M') || (opt.sort_order == 'N')) ? (opt.sort_direction == 'A'?'+':'-') : ' ',
+  spos += sprintf( spos, " #NAME    %s",
                    opt.long_name_view ? "( long name view )" : "" );
 
   str_pad( t, - con_max_x() );
