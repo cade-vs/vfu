@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.18 2003/02/08 02:48:35 cade Exp $
+ * $Id: see.cpp,v 1.19 2003/02/08 03:35:10 cade Exp $
  *
  */
 
@@ -84,9 +84,9 @@
     "| W w  -- wrap to screen width                      | -     -- exit           |\n"
     "| +    -- goto line/pos (+line/pos, -line/pos)      | d -- show dec.pos (HEX) |\n"
     "| I    -- edit! (only for HEX mode)                 | o -- show EOL's (TEXT)  |\n"
-    "| F S  -- find string F=no-case, S=case-sense       | r -- show ruler (TEXT)  |\n"
-    "|         ~pattern  is regexp pattern search        | a -- filter backspaces  |\n"
-    "|         $pattern  is hex pattern search           | t -- tab expansion      |\n"
+    "| F S  -- find string (F=no case, S=case sense)     | r -- show ruler (TEXT)  |\n"
+    "| \\ /  -- regexp search (\\=no case, /=case sense)   | a -- filter backspaces  |\n"
+    "| E    -- hex pattern search                        | t -- tab expansion      |\n"
     "| N F3 -- find next                                 | g G -- grid (HEX)       |\n"
     "+-----------------------------------------------------------------------------+";
   };
