@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.39 2004/01/05 02:56:40 cade Exp $
+ * $Id: vfu.cpp,v 1.40 2004/04/04 23:18:48 cade Exp $
  *
  */
 
@@ -2012,6 +2012,7 @@ void bookmark_goto( int n )
     if ( n == -1 ) return;
     n++;
     }
+  // FIXME: neshto ne raboti :/  
   switch( menu_box_info.ec )
     {
     case '`' : vfu_chdir( NULL ); return;

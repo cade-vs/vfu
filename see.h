@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.15 2003/04/28 17:17:01 cade Exp $
+ * $Id: see.h,v 1.16 2004/04/04 23:18:48 cade Exp $
  *
  */
 
@@ -84,8 +84,8 @@ class SeeViewer
 
   FILE* f;
   VString fname;
-  int fpos;
-  int fsize;
+  off_t fpos;
+  off_t fsize;
   int line;
   int last_line;
   int end_reached;
@@ -152,7 +152,7 @@ class SeeViewer
   
   protected:
   
-  int read_text( int &cpos );
+  int read_text( off_t &cpos );
   
 };
 

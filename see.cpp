@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.28 2003/09/06 11:48:00 cade Exp $
+ * $Id: see.cpp,v 1.29 2004/04/04 23:18:48 cade Exp $
  *
  */
 
@@ -218,7 +218,7 @@
       }
     
     
-    fseek( f, fpos, SEEK_SET );
+    fseeko( f, fpos, SEEK_SET );
     int rs = fread( buff, 1, rowsz * rows, f );
     int x;
     int y;
@@ -276,11 +276,12 @@
     
     if ( line == -1 ) last_line = -1;
     
-    int cpos = fpos;
+    off_t cpos = fpos;
     int z = 0;
     int y = 0;
-    fseek( f, cpos, SEEK_SET );
     VString str;
+    
+    if( ftello(f) != cpos ) fseeko( f, cpos, SEEK_SET ); // FIXME: ?
     
     for( y = 0; y < rows; y++ )
       {              
@@ -361,13 +362,13 @@
   void SeeViewer::up_txt()
   {
     CHKPOS;
-    int cpos = fpos;
+    off_t cpos = fpos;
     if ( cpos == 0 ) return;
   
     int i = opt->wrap;
     if ( cpos - i < 0 ) i = cpos;
     cpos -= i;
-    fseek( f, cpos, SEEK_SET );
+    fseeko( f, cpos, SEEK_SET );
     int res = fread( buff, 1, i, f );
     ASSERT( res == i );
     if ( buff[i-1] == '\n' ) i--;
@@ -398,7 +399,7 @@
     CHKPOS;
     int z = 0;
     if ( fpos == fsize ) return;
-    if ( fseek( f, fpos, SEEK_SET ) ) return;
+    if ( fseeko( f, fpos, SEEK_SET ) ) return;
     int res = fread( buff, 1, opt->wrap, f );
     z = 0;
     while( z < res && buff[z] != '\n' ) z++;
@@ -554,7 +555,7 @@
     status( "No search pattern..." );
     return 1;
     }
-  long opos = fpos;
+  off_t opos = fpos;
   VString msg;
   if ( ! rev ) down();
   while(4)
@@ -574,14 +575,14 @@
     if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) ) 
       {
       fpos = opos;
-      fseek( f, opos, SEEK_SET );
+      fseeko( f, opos, SEEK_SET );
       status( "Pattern `%s' not found...", opt->last_search );
       break;
       }
     if ( con_kbhit() && con_getch() == 27 ) 
       {
       fpos = opos;
-      fseek( f, opos, SEEK_SET );
+      fseeko( f, opos, SEEK_SET );
       status( "Search canceled..." );
       break;
       }
@@ -624,7 +625,7 @@
   int in_text = 0; // if text is edited
   int editbs = rows * rowsz;
   unsigned char *editb = new unsigned char[editbs];
-  fseek( f, fpos, SEEK_SET );
+  fseeko( f, fpos, SEEK_SET );
   editbs = fread( editb, 1, editbs, f );
   if ( editbs == 0 )
     {
@@ -651,7 +652,7 @@
       /* will commit changes -- file should be reopened for RW */
       fclose( f );
       f = fopen( fname, "r+b" );
-      fseek( f, fpos, SEEK_SET );
+      fseeko( f, fpos, SEEK_SET );
       int r = fwrite( editb, 1, editbs, f );
       fclose( f );
       if (  r != editbs )
@@ -935,7 +936,7 @@
 
   /* read ahead with tab and backspace expansion */
   /* result goes into `buff', the margin is `wrap' */
-  int SeeViewer::read_text( int &cpos )
+  int SeeViewer::read_text( off_t &cpos )
   {
   buff[0] = 0;
   int z = 0;

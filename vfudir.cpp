@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.23 2003/06/15 08:53:58 cade Exp $
+ * $Id: vfudir.cpp,v 1.24 2004/04/04 23:18:48 cade Exp $
  *
  */
 
@@ -964,9 +964,14 @@ void size_cache_set( const char *s, fsize_t size )
 {
   int z = size_cache_index( s );
   if ( z != -1 )
-    size_cache.del( z );
-  size_cache.push( size_cache_compose_key( s, size ) );
-  size_cache.sort( 0, size_cache_cmp );
+    {
+    size_cache.set( z, size_cache_compose_key( s, size ) );
+    }
+  else
+    {
+    size_cache.push( size_cache_compose_key( s, size ) );
+    size_cache.sort( 0, size_cache_cmp );
+    }
 }
 
 void size_cache_clean( const char *s )
