@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.13 2003/04/28 18:05:59 cade Exp $
+ * $Id: vfucopy.cpp,v 1.14 2003/05/06 10:56:04 cade Exp $
  *
  */
 
@@ -1154,7 +1154,7 @@ void clipboard_menu( int act )
     str_comma( fsize );
     mb.push( "---  " + fcnt + " files, " + fsize + " bytes" );
     
-    if ( vfu_menu_box( 50, 5, "File Clipboard " + fcnt + " files, " + fsize + " bytes" ) == -1 ) return;
+    if ( vfu_menu_box( 5, 5, "File Clipboard " + fcnt + " files, " + fsize + " bytes" ) == -1 ) return;
     act = menu_box_info.ec;
     }
   act = toupper( act );
