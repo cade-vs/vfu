@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.19 2003/02/08 03:35:10 cade Exp $
+ * $Id: see.cpp,v 1.20 2003/02/08 17:30:53 cade Exp $
  *
  */
 
@@ -318,6 +318,14 @@
         }
       str_pad( buff, -cols );
       con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
+      
+      //FIXME:
+      int sp = mem_string_search( opt->last_search, buff, opt->last_opt ) + 1;
+      if ( sp )
+        {
+        con_out( sp, opt->ymin+y, opt->last_search, CONCOLOR( cBLACK, cWHITE ) );
+        }
+      
       if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
       if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
       if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
@@ -567,7 +575,10 @@
       mpos -= col;
       draw();
       if (mpos > 0)
-        con_out( mpos, 1, ">", chMAGENTA );
+        {
+        //con_out( mpos, 1, ">", chMAGENTA );
+        con_out( mpos+1, 1, opt->last_search, CONCOLOR( cBLACK, cWHITE ) );
+        }
       }
     else
       draw();

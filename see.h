@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.10 2003/02/08 02:48:35 cade Exp $
+ * $Id: see.h,v 1.11 2003/02/08 17:30:53 cade Exp $
  *
  */
 
@@ -202,6 +202,7 @@ class SeeEditor
   VString help_str;
 
   VString fname;
+  VRegexp re;
   
   int col;
   int colpage;
