@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.32 2003/02/08 02:48:35 cade Exp $
+ * $Id: vfu.cpp,v 1.33 2003/02/16 23:33:45 cade Exp $
  *
  */
 
@@ -501,6 +501,8 @@ void vfu_help()
 void vfu_init()
 {
   char t[MAX_PATH];
+
+  if( expand_path( "." ) == "" ) chdir( "/" );
   
   work_mode = WM_NORMAL;
   getcwd( t, MAX_PATH-1 );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.20 2003/02/08 17:30:53 cade Exp $
+ * $Id: see.cpp,v 1.21 2003/02/16 23:33:45 cade Exp $
  *
  */
 
@@ -165,7 +165,7 @@
 /*--------------------------------------------------------------------*/
   
   
-  //FIXME: 2 not needed
+  //FIXME: 2 versions not needed
   void SeeViewer::filter( char *s, int size )  
   {
     int z;
@@ -271,6 +271,7 @@
     int y = 0;
     fseek( f, cpos, SEEK_SET );
     VString sss;
+    
     while( y < rows )
       {              
       if ( cpos >= fsize )
@@ -320,10 +321,9 @@
       con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
       
       //FIXME:
-      int sp = mem_string_search( opt->last_search, buff, opt->last_opt ) + 1;
-      if ( sp )
+      if ( re.m( buff ) )
         {
-        con_out( sp, opt->ymin+y, opt->last_search, CONCOLOR( cBLACK, cWHITE ) );
+        con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
         }
       
       if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
@@ -548,6 +548,38 @@
   
   int SeeViewer::find_next()  
   {
+  if ( ! re.ok() )
+    {
+    re.comp( opt->last_search, opt->last_opt );
+    }
+  if ( ! re.ok() )
+    {
+    status( "No search pattern..." );
+    return 1;
+    }
+  long opos = ftell(f);
+  VString msg;
+  down();
+  while(4)
+    {
+    down();
+    if ( re.m( buff ) ) 
+      {
+      up();
+      sprintf( msg, "Pattern `%s' found at pos: %d (0x%X)", opt->last_search, fpos, fpos );
+      status( msg );
+      break;
+      }
+    if ( fpos == fsize ) 
+      {
+      fseek( f, opos, SEEK_SET );
+      sprintf( msg, "Pattern `%s' not found...", opt->last_search );
+      status( msg );
+      break;
+      }
+    }
+  draw();
+  /*
   VString sss;
   if ( !opt->last_search[0] )
     {
@@ -559,7 +591,7 @@
   if ( opt->hex_mode )
     fpos++;
   else
-    down(); /* start search from the next line -- avoid blocking */
+    down(); // start search from the next line -- avoid blocking 
   fseek( f, fpos+1, SEEK_SET );
   int new_pos = file_string_search( opt->last_search, f, opt->last_opt );
   fseek( f, fpos, SEEK_SET );
@@ -568,17 +600,12 @@
     fpos = new_pos;
     if (!opt->hex_mode)
       {
-      up(); /* back to the start of the line */
+      up(); //
       line += file_grep_lines_read;
       int mpos = new_pos - fpos; // marker pos
       if ( mpos > opt->xmax ) col = ( mpos / 8 - 1 )*8;
       mpos -= col;
       draw();
-      if (mpos > 0)
-        {
-        //con_out( mpos, 1, ">", chMAGENTA );
-        con_out( mpos+1, 1, opt->last_search, CONCOLOR( cBLACK, cWHITE ) );
-        }
       }
     else
       draw();
@@ -590,6 +617,7 @@
     sprintf( sss, "Pattern `%s' not found...", opt->last_search );
     status( sss );
     }
+  */  
   return 0;
   };
 
@@ -610,6 +638,7 @@
   str_sleft( sss, MAX_SEARCH_LEN );
   strcpy( opt->last_search, sss );
   strcpy( opt->last_opt, opts );
+  re.comp( opt->last_search, opt->last_opt );
   return find_next();
   };
   
@@ -872,10 +901,10 @@
       case 'f'        :
       case 'F'        : find( "i" ); break;
       case 's'        :
-      case 'S'        : find( "" ); break;
+      case 'S'        : find( "f" ); break;
       case 'e'        :
-      case 'E'        : find( "h" ); break;
-      case '/'        : find( "r" ); break;
+      case 'E'        : find( "fh" ); break;
+      case '/'        : find( "r" ); break; //FIXME: remove 'r', use 'f'
       case '\\'       : find( "ri" ); break;
       case KEY_F(3)   :
       case 'n'        :

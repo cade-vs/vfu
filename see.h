@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.11 2003/02/08 17:30:53 cade Exp $
+ * $Id: see.h,v 1.12 2003/02/16 23:33:45 cade Exp $
  *
  */
 
@@ -77,6 +77,8 @@ class SeeViewer
   SeeViewerOptions* opt;
   int escape_keys[MAX_ESCAPE_KEYS];
   VString help_str;
+
+  VRegexp re;
 
   FILE* f;
   VString fname;
