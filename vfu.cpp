@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
  * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.29 2003/01/19 17:32:43 cade Exp $
+ * $Id: vfu.cpp,v 1.30 2003/01/26 21:48:42 cade Exp $
  *
  */
 
@@ -846,6 +846,9 @@ void vfu_run()
       case KEY_LEFT  : if (opt.lynx_navigation) vfu_action_minus(); break;
       case KEY_RIGHT : if (opt.lynx_navigation)
                          vfu_action_plus( '+' );
+                       else
+                         if ( work_mode == WM_NORMAL )
+                           vfu_rename_file_in_place();
                        break;
   
       case 'd' : vfu_chdir( NULL ); break;
@@ -917,12 +920,6 @@ void vfu_run()
       case 'n' : vfu_file_find( 0 ); break;
       case KEY_ALT_N  : vfu_file_find( 1 ); break;
   
-      case KEY_RIGHT : if (opt.lynx_navigation)
-                         vfu_action_plus( '+' );
-                       else
-                         vfu_rename_file_in_place();
-                       break;
-      
       case '~' : vfu_chdir( home_path ); break;
   
       case '/' : vfu_command(); break;
