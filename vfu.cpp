@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.18 2002/08/17 11:47:08 cade Exp $
+ * $Id: vfu.cpp,v 1.19 2002/08/17 12:19:00 cade Exp $
  *
  */
 
@@ -248,6 +248,8 @@ void TF::set_name( const char* a_new_name )
     _name_ext = _name;
   else
     _name_ext = _name + last_slash + 1;
+
+printf("NEX: %s\n", _name_ext );
     
   int last_dot = str_rfind( _name, '.' );
   if ( last_dot == -1 || last_dot == 0 ) /* no dot or dot-file (hidden) */
@@ -1736,7 +1738,7 @@ void vfu_global_select()
                   for (z = 0; z < files_count; z++)
                     {
                     if (files_list[z]->is_dir() && ch == '+') continue;
-                    if (FNMATCH(m,files_list[z]->name()) == 0)
+                    if (FNMATCH(m,files_list[z]->name_ext()) == 0)
                       files_list[z]->sel = selaction;
                     }
                   }
