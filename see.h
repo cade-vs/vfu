@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.4 2002/04/14 10:16:28 cade Exp $
+ * $Id: see.h,v 1.5 2002/11/27 21:17:18 cade Exp $
  *
  */
 
@@ -14,7 +14,7 @@
 
 #include <vslib.h>
 
-#define SEE_VERSION "3.00"
+#define SEE_VERSION "4.00"
 
 #define MAX_SEARCH_LEN  128
 #define MAX_PIPE_LEN  128

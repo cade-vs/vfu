@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusetup.h,v 1.4 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfusetup.h,v 1.5 2002/11/27 21:17:18 cade Exp $
  *
  */
 
@@ -20,7 +20,7 @@
  *
  */
 
-#define VFU_VERSION "3.04"
+#define VFU_VERSION "4.00"
 
 #define HEADER "VF/U v" VFU_VERSION " by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2002"
 
