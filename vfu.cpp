@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.35 2003/04/28 17:17:01 cade Exp $
+ * $Id: vfu.cpp,v 1.36 2003/06/15 09:11:46 cade Exp $
  *
  */
 
@@ -425,7 +425,8 @@ void TF::update_stat( const struct stat* a_new_stat = NULL,
 
 void vfu_help()
 {
-  say1center( HEADER );
+  say1center( HEADER  );
+  say2center( CONTACT );
   mb.undef();
   mb.push( "*keypad -- navigation keys" );
   mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
@@ -494,7 +495,6 @@ void vfu_help()
   mb.push( "" );
   vfu_menu_box( 1, 4, "VFU Help ( PageUp/PageDown to scroll )" );
   mb.undef();
-  say1("");
   do_draw = 1;
 };
 
@@ -742,12 +742,11 @@ int vfu_exit( const char* a_path )
 void vfu_run()
 {
   char t[128];
-  sprintf( t, "Build date: %s, target: %s", __DATE__, _TARGET_DESCRIPTION_ );
   say1center( HEADER );
-  say2center( t );
+  say2center( CONTACT );
 
-  int ox = -1;
-  int oy = -1;
+  int ox = con_max_x();
+  int oy = con_max_y();
 
   /* int oldFLI = -1; // quick view */
   int ch = 0;
@@ -2882,7 +2881,6 @@ int main( int argc, char* argv[] )
   // mtrace(); /* memory allocation debug */
   #endif
   
-  printf( HEADER );
 
   con_init();
   con_cs();
@@ -2901,7 +2899,6 @@ int main( int argc, char* argv[] )
   /*
   printf("%s\n<cade@biscom.net> [http://soul.datamax.bg/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
   */
-  
   return 0;
 }
 

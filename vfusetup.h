@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusetup.h,v 1.7 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfusetup.h,v 1.8 2003/06/15 09:11:46 cade Exp $
  *
  */
 
@@ -20,9 +20,10 @@
  *
  */
 
-#define VFU_VERSION "4.00"
+#define VFU_VERSION "4.03"
 
-#define HEADER "VF/U v" VFU_VERSION " by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2002"
+#define HEADER "VF/U v" VFU_VERSION " (" __DATE__ ") by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2003"
+#define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://soul.datamax.bg/~cade]"
 
 #ifdef _TARGET_GO32_
   #define FILENAME_OPT     "vfu.opt"
@@ -54,7 +55,7 @@
 
 #define RX_TEMP_LIST "RX_TEMP_LIST"
 
-#define MAX_FILES   64000
+#define MAX_FILES  128000
 
 /* colors */
 
