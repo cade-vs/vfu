@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.11 2003/01/01 15:40:39 cade Exp $
+ * $Id: see.cpp,v 1.12 2003/01/04 18:59:11 cade Exp $
  *
  */
 
@@ -245,7 +245,7 @@
       }
 
     z = read_text( cpos );
-    while ( z > 0 && buff[z-1] == '\r' || buff[z-1] == '\n' ) z--;
+    while ( z > 0 && ( buff[z-1] == '\r' || buff[z-1] == '\n' ) ) z--;
     buff[z] = 0;
     filter( buff, z );
     
