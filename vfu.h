@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.5 2002/05/17 08:16:34 cade Exp $
+ * $Id: vfu.h,v 1.6 2002/08/17 11:47:08 cade Exp $
  *
  */
 
@@ -18,6 +18,7 @@
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/wait.h>
+  #include <sys/param.h>
 
   #include <stdio.h>
   #include <stdlib.h>
@@ -34,8 +35,8 @@
 
   #include <vslib.h>
 
-  #ifdef _TARGET_NETBSD_
-    #include <sys/param.h>
+  #if defined(_TARGET_NETBSD_) || (defined(BSD) && BSD >= 199306)
+    //FIXME: is the one above correct? should _TARGET_BSD_ be used?
     #include <sys/mount.h>
   #else
     #include <sys/vfs.h>
@@ -65,6 +66,8 @@
 #endif
 
 #define FNMATCH(p,s) fnmatch((p),(s),FNMATCH_FLAGS)
+#define FNMATCH_NC(p,s) fnmatch((p),(s),FNM_CASEFOLD)
+#define FNMATCH_OC(p,s,n) fnmatch((p),(s),(n)?FNM_CASEFOLD:FNMATCH_FLAGS)
 
 #ifdef _TARGET_GO32_
   #define pathcmp strcasecmp
@@ -98,6 +101,7 @@
   #define HID_SEQ_SUFFIX 160
   #define HID_SEQ_DIGPOS 170
   #define HID_SEQ_START  180
+  #define HID_OMODE      190 // octal mode
 
   #define VFU_CHECK_LIST_POS(n) \
           { ASSERT( files_list[n] != NULL ); \

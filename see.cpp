@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.6 2002/04/14 10:16:28 cade Exp $
+ * $Id: see.cpp,v 1.7 2002/08/17 11:47:08 cade Exp $
  *
  */
 
@@ -76,7 +76,7 @@
   "| Ctrl+E  | -'- (no line info) | go to last byte    | l -- BG DOS xlate (slow)|\n"
   "| PgUp/Dn | one page back/forw | one page back/forw | L -- BG WIN xlate (slow)|\n"
   "| --------+--------------------+--------------------+------------------------ |\n"
-  "| TAB  -- swhitch between Text and Hex mode         | ESC   -- exit           |\n"
+  "| TAB  -- switch between Text and Hex mode          | ESC   -- exit           |\n"
   "| 1..0 -- switch to slot 1 .. slot 10               | Alt+X -- exit           |\n"
   "| W w  -- wrap to screen width                      | -     -- exit           |\n"
   "| +    -- goto line/pos (+line/pos, -line/pos)      | d -- show dec.pos (HEX) |\n"

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.17 2002/06/30 13:35:01 cade Exp $
+ * $Id: vfu.cpp,v 1.18 2002/08/17 11:47:08 cade Exp $
  *
  */
 
@@ -433,6 +433,7 @@ void vfu_help()
   mb.push( "TAB     -- edit entry: filename, atrrib's/mode, owner, group");
   mb.push( "R.Arrow -- rename current file " );
   mb.push( "SPACE   -- select/deselect current list item"   );
+  mb.push( "ESC     -- exit menu");
   mb.push( "ESC+ESC -- exit menu");
   mb.push( "1       -- toggle `mode'  field on/off "    );
   mb.push( "2       -- toggle `owner' field on/off "    );
@@ -782,7 +783,8 @@ void vfu_run()
       case '6'       :
       case '7'       :
       case '8'       :
-      case '0'       : vfu_toggle_view_fields( ch ); break;
+      case '0'       :
+      case '.'       : vfu_toggle_view_fields( ch ); break;
 
       case 's'       : vfu_inc_search(); break;
 
@@ -799,7 +801,10 @@ void vfu_run()
       case KEY_DOWN  : vfu_nav_down(); break;
       case KEY_PPAGE : vfu_nav_ppage(); break;
       case KEY_NPAGE : vfu_nav_npage(); break;
+      
+      case KEY_CTRL_A    :
       case KEY_HOME  : vfu_nav_home(); break;
+      case KEY_CTRL_E    :
       case KEY_END   : vfu_nav_end(); break;
   
       case 'h' : vfu_help(); break;
@@ -820,6 +825,8 @@ void vfu_run()
   
   #ifdef _TARGET_UNIX_
       case KEY_BACKSPACE :
+      case 127 : /* accordingly to the ASCII chart 127 is DEL char and
+                    usually rxvt and other terminals return BS as 127 */
   #endif
       case 8   :
       case '-' : vfu_action_minus(); break;
@@ -1045,7 +1052,8 @@ void vfu_reset_screen()
 {
   con_done();
   con_init();
-
+  con_chide();
+    
   /* update scroll parameters */
   file_list_index.min = 0;
   file_list_index.max = files_count - 1;
@@ -1101,6 +1109,7 @@ void vfu_toggle_view_fields( int ch )
                opt.f_size  =
                opt.f_type  = 1; break;
     case '0' : opt.long_name_view = !opt.long_name_view; break;
+    case '.' : opt.show_hidden_files = !opt.show_hidden_files; break;
     default  : return; /* cannot be reached really */
     }
   vfu_drop_all_views();
@@ -1342,7 +1351,8 @@ void vfu_action_plus( int key )
       { /* file */
       int z;
       for ( z = 0; z < archive_extensions.count(); z++ )
-        if ( FNMATCH( archive_extensions[z], fi->name_ext() ) == 0 )
+        if ( FNMATCH_OC( archive_extensions[z], fi->name_ext(),
+	                 opt.lower_case_ext_config ) == 0 )
           {
           z = -1; /* FIXME: this shouldn't be -1 for TRUE really :) */
           break;
@@ -1865,8 +1875,16 @@ int vfu_user_external_find( int key, const char* ext, const char* type, String *
     split.split( ",", user_externals[z] );
     if ( key_by_name( split[1] ) != key ) continue; /* if key not the same -- skip */
     if ( split[2] != "*" ) /* if we should match and extension */
+      {
+      if ( opt.lower_case_ext_config )
+	{
+	str_low( split[2] );
+	str_low( ext_str );
+	str_low( type_str );
+	}
       if ( str_find( split[2], ext_str ) == -1 &&
            str_find( split[2], type_str ) == -1 ) continue; /* not found -- next one */
+      }
     if ( shell_line ) /* if not NULL -- store shell line into it */
       (*shell_line) = split[3];
     return z;
@@ -2157,6 +2175,7 @@ void vfu_edit_entry( )
   
   mb.zap();
   mb.push( "M Mode" );
+  mb.push( "A Octal Mode" );
   mb.push( "O Owner/Group" );
   mb.push( "N Name (TAB)" );
   mb.push( "T Time/Touch Mod+Acc Times" );
@@ -2192,18 +2211,35 @@ void vfu_edit_entry( )
       vfu_rename_file_in_place();
       break;
       } else
-    if ( menu_box_info.ec == 'M' ) /* attributes/mode */
+    if ( menu_box_info.ec == 'M' ||
+         menu_box_info.ec == 'A' ) /* attributes/mode */
       {
         mode_str_t new_mode;
+        int ok = 1;
         int err = 0;
-        if (one)
+        if ( menu_box_info.ec == 'M' )
           {
-          strcpy( new_mode, files_list[FLI]->mode_str() );
-          file_get_mode_str( files_list[FLI]->name(), new_mode);
-          }
+          if (one)
+            {
+            strcpy( new_mode, files_list[FLI]->mode_str() );
+            file_get_mode_str( files_list[FLI]->name(), new_mode);
+            }
+          else
+            strcpy(new_mode, MODE_MASK);
+          ok = vfu_edit_attr(new_mode, !one );  
+          }  
         else
-          strcpy(new_mode, MODE_MASK);
-        if( vfu_edit_attr(new_mode, !one ) )
+          {
+          say1( "Enter octal mode (i.e. 755, 644, 1777, etc.)" );
+          String str;
+          int z = vfu_get_str( "", str, HID_OMODE );
+          str_cut_spc( str );
+          mode_t m;
+          sscanf( str, "%o", &m );
+          file_get_mode_str( m, new_mode );
+          ok = (z && str_len(str) > 0);
+          }
+        if( ok )
           {
           for ( z = 0; z < files_count; z++ )
             if ( (one && FLI == z) || (!one && files_list[z]->sel) )

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusys.cpp,v 1.4 2002/08/17 11:47:08 cade Exp $
+ * $Id: vfusys.cpp,v 1.5 2002/08/17 11:48:09 cade Exp $
  *
  */
       
@@ -156,7 +156,6 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
   { ' ', "Exec/Srch Other", &mode_i[ 9], AONOFF },
   { ' ', "Set user  id",    &mode_i[10], AONOFF },
   { ' ', "Set group id",    &mode_i[11], AONOFF },
-  { ' ', "Sticky  Bit",     &mode_i[12], AONOFF },
   { ' ', "Sticky  Bit",     &mode_i[12], AONOFF },
   {  -1, "---",             NULL,        NULL },
   };

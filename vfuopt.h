@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.h,v 1.3 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfuopt.h,v 1.4 2002/08/17 11:47:08 cade Exp $
  *
  */
 
@@ -47,7 +47,7 @@
 
     int use_colors;
     int use_dir_colors; /* /etc/DIR_COLORS */
-    int lower_case_ext_colors;
+    int lower_case_ext_config;
 
     int copy_free_space_check;
     int copy_calc_totals;

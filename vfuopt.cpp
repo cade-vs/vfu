@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.5 2002/05/17 08:16:34 cade Exp $
+ * $Id: vfuopt.cpp,v 1.6 2002/08/17 11:47:08 cade Exp $
  *
  */
 
@@ -42,7 +42,7 @@ ToggleEntry Toggles[] =
   { ' ', "TagMark type   ", &(opt.tag_mark_type), TAGMARKS },
   { ' ', "Use colors     ", &(opt.use_colors), NOYES },
   { ' ', "Use /etc/DIR_COLORS", &(opt.use_dir_colors), NOYES },
-  { ' ', "Lowercase extensions for colors", &(opt.lower_case_ext_colors), NOYES },
+  { ' ', "Lowercase extensions for configs", &(opt.lower_case_ext_config), NOYES },
   { '.', "Show hidden files", &(opt.show_hidden_files), NOYES },
   {  0 , "--navigation--", NULL, NULL },
   { 'i', "Use internal viewer", &(opt.internal_browser), NOYES },
@@ -148,7 +148,11 @@ void vfu_load_dir_colors()
 
   for ( int z = 0; z < 16; z++ )
     if( str_len( ext_colors[z] ) > 0 )
+      {
       ext_colors[z] += ".";
+      if ( opt.lower_case_ext_config )
+        str_low( ext_colors[z] );
+      }
     
   #endif /* _TARGET_UNIX_ */
 };
@@ -268,7 +272,7 @@ void vfu_settings_load()
 
   opt.use_colors = 1;
   opt.use_dir_colors = 1;
-  opt.lower_case_ext_colors = 0;
+  opt.lower_case_ext_config = 0;
 
   opt.copy_free_space_check = 1;
   opt.copy_calc_totals = 1;
