@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.4 2002/01/01 15:54:28 cade Exp $
+ * $Id: vfufiles.cpp,v 1.5 2002/01/01 16:37:21 cade Exp $
  *
  */
 
@@ -204,7 +204,9 @@ void vfu_read_local_files( int a_recursive )
 {
   ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
   
-  if ( opt.auto_mount && files_count == 1 && FNMATCH( files_list[0]->name(), "automount" ) == 0 )
+  if ( opt.auto_mount && files_count == 1 && 
+       ( FNMATCH( files_list[0]->name(), "automount" ) == 0 ||
+         FNMATCH( files_list[0]->name(), ".automount" ) == 0 ) )
    {
    String tmp_file_name;
    tmp_file_name += tmp_path;
