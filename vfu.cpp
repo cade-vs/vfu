@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.42 2004/12/14 01:12:12 cade Exp $
+ * $Id: vfu.cpp,v 1.43 2004/12/29 02:44:11 cade Exp $
  *
  */
 
@@ -2835,6 +2835,7 @@ void vfu_inc_search()
   VString str;
   say1( "Enter search pattern: ( use TAB to advance )" );
   int key = con_getch();
+  VRegexp size_re("^size:(\\d+)$");
   while( ( key >= 32 && key <= 255 ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
     {
     if ( key == 8 || key == KEY_BACKSPACE )
@@ -2859,12 +2860,19 @@ void vfu_inc_search()
     int found = 0;
     int loops = 0;
     VString s_mask = str;
-    vfu_expand_mask( s_mask );
+    int s_size = 0;
+    if( size_re.m( str ) )
+      s_size = atoi( size_re[1] );
+    else
+      vfu_expand_mask( s_mask );
     while(1)
       {
       if ( z > file_list_index.max() ) z = file_list_index.min();
       if ( z < file_list_index.min() ) z = file_list_index.max();
-      found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
+      if( s_size )
+        found = files_list[z]->size() == s_size;
+      else
+        found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
       if ( found ) break;
       z += direction;
       if ( loops++ > files_count ) break;
