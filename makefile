@@ -1,6 +1,6 @@
 ### MAKEMAKE STARTS HERE #########################################
 #
-# Created by makemake.pl on Sat Aug 17 15:26:18 2002
+# Created by makemake.pl on Fri Nov  8 01:51:00 2002
 #
 ##################################################################
 
@@ -36,6 +36,7 @@ RANLIB_0  = ranlib
 CFLAGS_0  = 
 CCFLAGS_0 = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF)
 LDFLAGS_0 = -L../vslib -lvslib -lvscon -lncurses $(LDDEF)
+DEPFLAGS_0 = 
 ARFLAGS_0 = 
 TARGET_0  = vfu
 
