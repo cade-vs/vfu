@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.25 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfu.cpp,v 1.26 2002/12/12 23:45:00 cade Exp $
  *
  */
 
@@ -207,8 +207,8 @@ TF::TF( const char* a_name, const struct stat* a_stat, int a_is_link )
 
 TF::~TF()
 {
-  if ( _name ) delete _name;
-  if ( _view ) delete _view;
+  if ( _name ) delete [] _name;
+  if ( _view ) delete [] _view;
   reset();
 };
 
@@ -273,7 +273,7 @@ void TF::set_size( fsize_t a_new_size )
 void TF::drop_view()
 {
   if ( !_view ) return;
-  delete _view;
+  delete [] _view;
   _view = NULL;
 }
 
@@ -281,8 +281,7 @@ void TF::drop_view()
 
 const char* TF::view()
 {
-  if ( !_view )
-    refresh_view();
+  if ( !_view ) refresh_view();
   ASSERT(_view);
   return (const char*)_view;
 }
@@ -385,7 +384,7 @@ void TF::refresh_view()
   else
     str_pad( view, - x );  
 
-  if ( _view ) delete _view;
+  if ( _view ) delete [] _view;
   _view = new char[ con_max_x() + 1 ]; /* +1 for the zero :) */
 
   strcpy( _view, view );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.8 2002/11/27 21:42:05 cade Exp $
+ * $Id: see.cpp,v 1.9 2002/12/12 23:45:00 cade Exp $
  *
  */
 
@@ -181,8 +181,8 @@
     }
   int z = 0;
   int i = 0;
-  char lin[128];
-  char str[64];
+  char lin[4096];
+  char str[32];
   int buffsize = rows * 16; // all size :)
   fseek( f, fpos, SEEK_SET );
   buffsize = fread( buff, 1, buffsize, f );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.7 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfucopy.cpp,v 1.8 2002/12/12 23:45:00 cade Exp $
  *
  */
 
@@ -876,7 +876,7 @@ void vfu_copy_files( int a_one, int a_mode )
   do_draw = 2;     
      
   ASSERT( copy_buff );
-  delete copy_buff;
+  delete [] copy_buff;
   copy_buff = NULL;
   
   say1( "" );
