@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.13 2002/04/14 10:16:28 cade Exp $
+ * $Id: vfu.cpp,v 1.14 2002/04/22 23:21:08 cade Exp $
  *
  */
 
@@ -1679,7 +1679,7 @@ void vfu_global_select()
                 {
                 VArray sm;
                 sm.split( " +", m );
-                while( m = sm.pop() != "" )
+                while( (m = sm.pop()) != "" )
                   {
                   if (opt.mask_auto_expand)
                     vfu_expand_mask( m );
