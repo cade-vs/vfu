@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.21 2003/04/02 20:14:09 cade Exp $
+ * $Id: vfudir.cpp,v 1.22 2003/06/13 22:32:35 cade Exp $
  *
  */
 
@@ -462,7 +462,7 @@ void vfu_chdir_history()
 
 void tree_load()
 {
-  if (dir_tree.fload( filename_tree ))
+  if( dir_tree.fload( filename_tree ) )
     say1( "DirTree load error." );
   else
     {
@@ -475,7 +475,7 @@ void tree_load()
 
 void tree_save()
 {
-  if (dir_tree.fsave( filename_tree ))
+  if( dir_tree.fsave( filename_tree ) )
     say1( "DirTree save error." );
   else
     {
