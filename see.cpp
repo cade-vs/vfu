@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.22 2003/02/16 23:45:29 cade Exp $
+ * $Id: see.cpp,v 1.23 2003/02/22 17:52:21 cade Exp $
  *
  */
 
@@ -81,9 +81,9 @@
     "| --------+--------------------+--------------------+------------------------ |\n"
     "| TAB  -- switch between Text and Hex mode          | ESC   -- exit           |\n"
     "| 1..0 -- switch to slot 1 .. slot 10               | Alt+X -- exit           |\n"
-    "| W w  -- wrap to screen width                      | -     -- exit           |\n"
+    "| W w  -- text wrap (TEXT) or wide screen (HEX)     | -     -- exit           |\n"
     "| +    -- goto line/pos (+line/pos, -line/pos)      | d -- show dec.pos (HEX) |\n"
-    "| I    -- edit! (only for HEX mode)                 | o -- show EOL's (TEXT)  |\n"
+    "| I    -- binary edit (HEX)                         | o -- show EOL's (TEXT)  |\n"
     "| F S  -- find string (F=no case, S=case sense)     | r -- show ruler (TEXT)  |\n"
     "| \\ /  -- regexp search (\\=no case, /=case sense)   | a -- filter backspaces  |\n"
     "| E    -- hex pattern search                        | t -- tab expansion      |\n"
@@ -149,17 +149,23 @@
 
 /*--------------------------------------------------------------------*/
   
-  void SeeViewer::status( const char* s, int color )  
+  void SeeViewer::status( const char* format, ... )  
   {
-    VString sss;
-    sss = "| ";
-    sss += s;
-    if (str_len(sss) >= cols)
-      str_sleft( sss, (cols-2) );
+    char buf[1024];
+    va_list vlist;
+    va_start( vlist, format );
+    vsnprintf( buf, 1024, format, vlist );
+    va_end( vlist );
+    
+    VString str;
+    str = "| ";
+    str += buf;
+    if (str_len(str) >= cols)
+      str_sleft( str, (cols-2) );
     else
-      str_pad( sss, -(cols-2) );
-    sss += "|";
-    con_out( opt->xmin, opt->ymax, sss, color != -1 ? color : opt->cs );
+      str_pad( str, -(cols-2) );
+    str += "|";
+    con_out( opt->xmin, opt->ymax, str, opt->cs );
   };
 
 /*--------------------------------------------------------------------*/
@@ -252,12 +258,14 @@
       
       VString line = offset + "| " + hexdump + "|" + ascii;
       
+      if ( hexdump[0] == '~' ) line = "~";
+      
       str_pad( line, -cols );
       con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
       }
     
-    sprintf( t, "SeeViewer v" SEE_VERSION " | %3.0f%% | Pos. %4d of %4d | Alt+H Help", (100.0*fpos)/(fsize?fsize:1), fpos, fsize );
-    status( t );
+    status( "%3.0f%% | Pos. %4d of %4d | Alt+H Help | %s", 
+            (100.0*fpos)/(fsize?fsize:1), fpos, fsize, fname.data() );
   };
 
 /*--------------------------------------------------------------------*/
@@ -265,25 +273,23 @@
   void SeeViewer::draw_txt()  
   {
     CHKPOS;
+    
     if ( line == -1 ) last_line = -1;
+    
     int cpos = fpos;
     int z = 0;
     int y = 0;
     fseek( f, cpos, SEEK_SET );
-    VString sss;
+    VString str;
     
-    while( y < rows )
+    for( y = 0; y < rows; y++ )
       {              
       if ( cpos >= fsize )
         {
-        sss = "~";
-        str_pad( sss, -cols );
-        while( y < rows )
-          {
-          con_out( 1, y+1,sss, opt->cn);
-          y++;
-          }
-        break;
+        str = "~";
+        str_pad( str, -cols );
+        con_out( 1, y+1, str, (opt->grid && y%2==0) ? opt->ch : opt->cn );
+        continue;
         }
   
       z = read_text( cpos );
@@ -294,7 +300,8 @@
       int show_lmark = 0;
       int show_rmark = 0;
       int show_eol   = -1;
-      if (col)
+      
+      if ( col > 0 )
         {
         if (col >= z)
           {
@@ -320,19 +327,16 @@
       str_pad( buff, -cols );
       con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
       
-      //FIXME:
-      if ( re.m( buff ) )
-        {
+      if ( re.ok() && re.m( buff ) )
         con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
-        }
       
       if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
       if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
       if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
-      y++;
       }
-    sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Line %4d of %4d%c|%4d+ | Alt+H Help", (100.0*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
-    status( buff );
+    status( "%3.0f%% | Pos. %4d | Line %4d of %4d%c|%4d+ | Alt+H Help | %s", 
+            (100.0*fpos)/(fsize?fsize:1), fpos, line, last_line, 
+            end_reached?' ':'?', col+1, fname.data() );
   };
 
 /*--------------------------------------------------------------------*/
@@ -351,6 +355,7 @@
     CHKPOS;
     fpos -= opt->hex_cols * 8;
     if ( fpos < 0 ) fpos = 0;
+    line = -1; // hex moving invalidates text line position
   }
       
   void SeeViewer::up_txt()
@@ -366,17 +371,11 @@
     int res = fread( buff, 1, i, f );
     ASSERT( res == i );
     int z = 0;
-    if ( buff[i-1] == '\n' )
-      {
-      i--;
-      z++;
-      }
-    while( i > 0 && buff[i-1] != '\n' )
-      {
-      i--;
-      z++;
-      }
-    fpos -= z;
+    if ( buff[i-1] == '\n' ) i--;
+    while( i > 0 && buff[i-1] != '\n' ) i--;
+    if ( i > 0 ) 
+      memmove( buff, buff + i, res - i ); // make buffer only last line
+    fpos -= res - i;
     if ( fpos <  0 ) fpos = 0;
     if ( fpos == 0 ) line = 1;
     if ( line >  1 ) line--;
@@ -389,6 +388,7 @@
     CHKPOS;
     fpos += opt->hex_cols * 8;
     if ( fpos > fsize ) fpos = fsize;
+    line = -1; // hex moving invalidates text line position
   }
   
   void SeeViewer::down_txt()  
@@ -438,11 +438,7 @@
       if ( con_kbhit() && con_getch() == 27 ) return;
       down();
       if (line % 768 == 0)
-        {
-        char tmp[128];
-        sprintf(tmp, " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
-        status(tmp);
-        }
+        status( " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
       }
     end2();
   };
@@ -457,7 +453,7 @@
     else
       line = last_line;
     fpos = fsize;
-    for ( z = 0; z < rows / 2; z++ ) up();
+    for ( z = 0; z < 2 * rows / 3; z++ ) up();
   };
   
 /*--------------------------------------------------------------------*/
@@ -524,10 +520,7 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         down();
         if ( line % 768 == 0)
-          {
-          sprintf( sss, " Going down.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
-          status( sss);
-          }
+          status( " Going down.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
         }
     else
       while( new_line != line && fpos >  0 )
@@ -535,10 +528,7 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         up();
         if ( line % 768 == 0)
-          {
-          sprintf( sss, " Going up.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/fsize );
-          status( sss);
-          }
+          status( " Going up.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/fsize );
         }
     draw();
     }
@@ -546,11 +536,11 @@
 
 /*--------------------------------------------------------------------*/
   
-  int SeeViewer::find_next_hex()
+  int SeeViewer::find_next_hex( int rev )
   {
   }
   
-  int SeeViewer::find_next_txt()
+  int SeeViewer::find_next_txt( int rev )
   {
   if ( ! re.ok() )
     {
@@ -561,34 +551,38 @@
     status( "No search pattern..." );
     return 1;
     }
-  long opos = ftell(f);
+  long opos = fpos;
   VString msg;
   down();
   while(4)
     {
-    down();
+    rev ? up() : down();
     if ( line % 768 == 0)
-      {
-      sprintf( msg, "Searching.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
-      status( msg );
-      }
+      status( "Searching.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
     if ( re.m( buff ) ) 
       {
+      long spos = re.sub_sp( 0 );
       up();
-      sprintf( msg, "Pattern `%s' found at pos: %d (0x%X)", opt->last_search, fpos, fpos );
-      status( msg );
+      draw();
+      spos += fpos;
+      status( "Pattern `%s' found at pos: %d (0x%X), col: %d", opt->last_search, spos, spos );
       break;
       }
-    if ( fpos == fsize ) 
+    if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) ) 
       {
+      fpos = opos;
       fseek( f, opos, SEEK_SET );
-      sprintf( msg, "Pattern `%s' not found...", opt->last_search );
-      status( msg );
+      status( "Pattern `%s' not found...", opt->last_search );
       break;
       }
-    if ( con_kbhit() && con_getch() == 27 ) break;
+    if ( con_kbhit() && con_getch() == 27 ) 
+      {
+      fpos = opos;
+      fseek( f, opos, SEEK_SET );
+      status( "Search canceled..." );
+      break;
+      }
     }
-  draw();
   /*
   VString sss;
   if ( !opt->last_search[0] )
@@ -636,8 +630,7 @@
   int SeeViewer::find( const char* opts )  
   {
   VString sss;
-  sprintf( sss, "Find %s: ", opts );
-  status( sss );
+  status( "Find %s: ", opts );
   int ii = str_len(sss)+2;
   sss = opt->last_search;
   if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, &sss ))
@@ -678,8 +671,7 @@
   int epos = 0;
   int bytepos = 0; /* first or second byte part? :) */
 
-  /* 79 is warning (bright white on red) hard coded color*/
-  status( "WARNING: HEX EDITING MODE! ENTER = SAVE, ESC = CANCEL, TAB = TOGGLE EDIT MODE !", 79 );
+  status( "WARNING: HEX EDITING MODE! ENTER = SAVE, ESC = CANCEL, TAB = TOGGLE EDIT MODE !" );
   con_cshow();
   int key = 0;
   while(4)
@@ -918,14 +910,16 @@
       case '\\'       : find( "ri" ); break;
       case KEY_F(3)   :
       case 'n'        :
-      case 'N'        : find_next(); break;
+      case 'N'        : find_next( 0 ); break;
+      case 'm'        :
+      case 'M'        : find_next( 1 ); break;
       case '+'        : go_to(); break;
       case 'd'        :
       case 'D'        : if (opt->hex_mode) 
                           { 
                           opt->dec_pos = !opt->dec_pos; 
                           draw(); 
-                          } 
+                          }
                         break;
       case 'o'        :
       case 'O'        : if (!opt->hex_mode) 
@@ -1130,18 +1124,24 @@
 
 /*--------------------------------------------------------------------*/
 
-  void SeeEditor::status( const char* s, int color )
+  void SeeEditor::status( const char* format, ... )
   {
-  VString sss;
-  sss = "| ";
-  sss += s;
-  if (str_len(sss) >= cols)
-    str_sleft( sss, (cols-2) );
-  else
-    str_pad( sss, -(cols-2) );
-  sss += "|";
-  con_out( opt->xmin, opt->ymax, sss, color != -1 ? color : opt->cs );
-  set_cursor();
+    char buf[1024];
+    va_list vlist;
+    va_start( vlist, format );
+    vsnprintf( buf, 1024, format, vlist );
+    va_end( vlist );
+    
+    VString str;
+    str = "| ";
+    str += buf;
+    if (str_len(str) >= cols)
+      str_sleft( str, (cols-2) );
+    else
+      str_pad( str, -(cols-2) );
+    str += "|";
+    con_out( opt->xmin, opt->ymax, str, opt->cs );
+    set_cursor();
   };
 
 /*--------------------------------------------------------------------*/
@@ -1227,16 +1227,15 @@
   if ( freezed ) return;
   
   int z;
-  VString str;
   con_chide();
   if ( from > -1 ) /* from == -1 to update status line only */
     for( z = from; z < rows; z++ )
       draw_line( sv.page() + z );
   con_cshow();
-  sprintf( str, "SeeEditor v" SEE_VERSION " | %s | %3.0f%% | Line:%5d of%5d |%4d+ %s | Alt+H Help", 
-                 mod?"MOD!":"----", 
-                 (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1, opt->insert?"INS":"ovr" );
-  status( str );
+  status( "%s | %3.0f%% | Line:%5d of%5d |%4d+ %s | Alt+H Help | %s", 
+          mod?"MOD!":"----", 
+          (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1, 
+          opt->insert?"INS":"ovr", fname.data() );
   set_cursor();
   };
 
@@ -1247,9 +1246,7 @@
   remove_trails();
   if (va.fsave( fname ))
     {
-    VString s = "Cannot save file! ";
-    s += fname;
-    status( s );
+    status( "Cannot save file: %s! ", fname.data() );
     return 0;
     }
   else
@@ -1636,8 +1633,7 @@
   int SeeEditor::find( int no_case )
   {
   VString sss;
-  sprintf( sss, "Find %s: ", no_case?"(no case)":"(case sense)");
-  status( sss );
+  status( "Find %s: ", no_case?"(no case)":"(case sense)" );
   int ii = str_len(sss)+2;
   sss = opt->last_search;
   if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, &sss ))

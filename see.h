@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.13 2003/02/16 23:45:29 cade Exp $
+ * $Id: see.h,v 1.14 2003/02/22 17:52:21 cade Exp $
  *
  */
 
@@ -20,6 +20,8 @@
 #define MAX_PIPE_LEN  128
 #define MAX_ESCAPE_KEYS  64
 
+#define BUFF_SIZE (16*1024)
+
 struct SeeViewerOptions
 {
   SeeViewerOptions() { reset(); }
@@ -31,7 +33,7 @@ struct SeeViewerOptions
     ch = CONCOLOR( cWHITE, cBLUE  ); 
     cs = CONCOLOR( cBLACK, cWHITE ); 
     status = 1;
-    bsize = 4096;
+    bsize = BUFF_SIZE;
     tabsize = 8;
     wrap = bsize;
     handle_bs = 1;
@@ -112,7 +114,7 @@ class SeeViewer
   int open( const char* a_fname );
   void close();
 
-  void status( const char* s, int color = -1 );
+  void status( const char* format, ... );
   
   void filter( char *s, int size );
   void filter( VString &s, int size );
@@ -137,9 +139,10 @@ class SeeViewer
   
   void go_to();
   
-  int find_next_txt();
-  int find_next_hex();
-  int find_next() { opt->hex_mode ? find_next_hex() : find_next_txt(); }
+  int find_next_txt( int rev  = 0 );
+  int find_next_hex( int rev  = 0 );
+  int find_next( int rev  = 0 ) 
+      { opt->hex_mode ? find_next_hex(rev) : find_next_txt(rev); }
   int find( const char* opts );
   
   void hex_edit();
@@ -163,9 +166,9 @@ struct SeeEditorOptions
     {
     auto_size = 1;
     xmin = xmax = ymin = ymax = -1; /* auto */
-    cn = CONCOLOR( cWHITE, cBLACK );
-    ch = CONCOLOR( cWHITE, cBLUE  ); 
-    cs = CONCOLOR( cBLACK, cWHITE ); 
+    cn = CONCOLOR( cWHITE,  cBLACK );
+    ch = CONCOLOR( cWHITE,  cBLUE  ); 
+    cs = CONCOLOR( cBLACK,  cWHITE ); 
     status = 1;
     tabsize = 8;
     max_line = 4096;
@@ -234,7 +237,7 @@ class SeeEditor
   int open( const char* a_fname );
   void close();
 
-  void status( const char* s, int color = -1 );
+  void status( const char* format, ... );
   
   int expand_tabs( VString &str, VString &map );
   
