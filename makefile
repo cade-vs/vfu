@@ -1,6 +1,6 @@
 ### MAKEMAKE STARTS HERE #########################################
 #
-# Created by makemake.pl on Sun Dec 31 13:12:04 2000
+# Created by makemake.pl on Sat Aug 17 15:26:18 2002
 #
 ##################################################################
 
@@ -8,8 +8,10 @@
 
 default: all
 
-
 re: rebuild
+
+
+li: link
 
 all: vfu 
 
@@ -19,19 +21,23 @@ rebuild: rebuild-vfu
 
 link: link-vfu 
 
-### TARGET: vfu #########################################
+### GLOBAL DEFS ##################################################
+
+MKDIR      = mkdir -p
+RMDIR      = rm -rf
+RMFILE     = rm -f
+
+### TARGET 0: vfu #########################################
 
 CC_0      = g++
 LD_0      = g++
-AR_0      = ar rvs
+AR_0      = ar rv
+RANLIB_0  = ranlib
 CFLAGS_0  = 
 CCFLAGS_0 = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF)
 LDFLAGS_0 = -L../vslib -lvslib -lvscon -lncurses $(LDDEF)
 ARFLAGS_0 = 
 TARGET_0  = vfu
-
-# IN.SRC_0 = *.cpp
-# IN.HDR_0 = *.h
 
 ### SOURCES FOR TARGET 0: vfu #################################
 
@@ -68,19 +74,19 @@ OBJ_0= \
 ### TARGET DEFINITION FOR TARGET 0: vfu #######################
 
 .OBJ.0.vfu: 
-	mkdir -p .OBJ.0.vfu
+	$(MKDIR) .OBJ.0.vfu
 
 vfu: .OBJ.0.vfu $(OBJ_0)
 	$(LD_0) $(OBJ_0) $(LDFLAGS_0) -o $(TARGET_0)
 
 clean-vfu: 
-	rm -f $(TARGET_0)
-	rm -rf .OBJ.0.vfu
+	$(RMFILE) $(TARGET_0)
+	$(RMDIR) .OBJ.0.vfu
 
 rebuild-vfu: clean-vfu vfu
 
 link-vfu: .OBJ.0.vfu $(OBJ_0)
-	rm -f vfu
+	$(RMFILE) vfu
 	$(LD_0) $(OBJ_0) $(LDFLAGS_0) -o $(TARGET_0)
 
 ### TARGET OBJECTS FOR TARGET 0: vfu ##########################
@@ -121,4 +127,4 @@ link-vfu: .OBJ.0.vfu $(OBJ_0)
 	$(CC_0) $(CFLAGS_0) $(CCFLAGS_0) -c vfuview.cpp -o .OBJ.0.vfu/vfuview.o
 
 
-### END ##########################################################
+### MAKEMAKE ENDS HERE ###########################################
