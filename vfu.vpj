@@ -1,0 +1,53 @@
+[COMPILER]
+MACRO=\n
+FILTEREXPANSION=1 1 0 1 1
+compile=concur|capture|:Compile:&Compile,make %n.o
+make=concur|capture|clear|saveall|:Build:&Build,make
+rebuild=concur|capture|:Rebuild:&Rebuild,
+debug=:Debug:&Debug,xxgdb [exename-here]
+execute=concur|capture|clear|saveall|:Execute:E&xecute,make && rxvt -ls -e vfu
+user1=hide|:User 1:User 1,
+user2=hide|:User 2:User 2,
+workingdir=/home/cade/pro/vfu
+includedirs=%(INCLUDE)
+tagfiles=
+reffile=
+[ASSOCIATION]
+[FILES]
+/home/cade/pro/vfu/see.cpp
+/home/cade/pro/vfu/vfu.cpp
+/home/cade/pro/vfu/vfu.h
+/home/cade/pro/vfu/vfuarc.cpp
+/home/cade/pro/vfu/vfuarc.h
+/home/cade/pro/vfu/vfucopy.cpp
+/home/cade/pro/vfu/vfucopy.h
+/home/cade/pro/vfu/vfudir.cpp
+/home/cade/pro/vfu/vfudir.h
+/home/cade/pro/vfu/vfufiles.cpp
+/home/cade/pro/vfu/vfufiles.h
+/home/cade/pro/vfu/vfumenu.cpp
+/home/cade/pro/vfu/vfumenu.h
+/home/cade/pro/vfu/vfuopt.cpp
+/home/cade/pro/vfu/vfuopt.h
+/home/cade/pro/vfu/vfusetup.h
+/home/cade/pro/vfu/vfusys.cpp
+/home/cade/pro/vfu/vfusys.h
+/home/cade/pro/vfu/vfutools.cpp
+/home/cade/pro/vfu/vfutools.h
+/home/cade/pro/vfu/vfuuti.cpp
+/home/cade/pro/vfu/vfuuti.h
+/home/cade/pro/vfu/vfuview.cpp
+/home/cade/pro/vfu/vfuview.h
+[STATE]
+SCREEN: 800 600 -4 -4 800 549 0 0 N 0 0 0 0 651 493
+CWD: /home/cade/pro/progress
+FILEHIST: 9
+/home/cade/pro/pod2site/html.style
+/home/cade/pro/progress/Progress.pm
+/home/cade/pro/progress/test.pl
+/home/cade/.vslick/user.vlx
+/home/cade/pro/dmmd/dmmd-relay.pl
+/home/cade/pro/dmmd/DM/htdocs/dm_record.pl
+/home/cade/pro/datamax-20010804/dmmd/DM/htdocs/dm_record.pl
+/home/cade/pro/dmmd/dmmd-report.pl
+/home/cade/public_html/index.html
