@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.18 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfudir.cpp,v 1.19 2003/01/30 00:03:51 cade Exp $
  *
  */
 
@@ -655,6 +655,19 @@ void tree_draw_item( int page, int index, int hilite )
     s1 += "--";
     }
 
+  VString str = dir_tree[page+index];
+  str_tr( str,"\\", "/" );
+  
+  VString sz;
+  sz.fi( size_cache_get( str ) );
+  if ( sz == "-1" )
+    sz = "n/a";
+  else
+    str_comma( sz );
+  str_pad( sz, 14 );
+  
+  s1 = sz + " " + s1;
+
   int m = con_max_x() - 1; /* doesn't speed the code... :) */
   if ( str_len( s1 ) > m )
     {
@@ -687,7 +700,7 @@ void tree_draw_page( ScrollPos &scroll )
 {
   VString str = " ";
   str_mul( str, con_max_x() );
-  str = "DiRECTORY" + str;
+  str = "          SiZE DiRECTORY" + str;
   str_sleft( str, con_max_x()-16 ); 
   con_out(1,3, str, cHEADER );
   int z = 0;
@@ -720,16 +733,13 @@ void tree_draw_pos( ScrollPos &scroll, int opos )
   VString sz;
   sz.fi( size_cache_get( str ) );
   str_comma( sz );
-  str_pad( sz, 12 );
-  str = sz + "  " + str;
+  str_pad( sz, 14 );
+  str = sz + " " + str;
 
   str = str_dot_reduce( str, con_max_x()-1 );
   
-  con_out( 1, con_max_y()-3, str, cINFO ); 
-  con_ce( cINFO );
-  con_out( 1, con_max_y()-2, 
-          "----- R Rebuild --- L Load --- W Write/Save --- S Inc. search --- Z Size -----" , cINFO2 );
-  con_ce( cINFO2 );
+  say1( str, cINFO );
+  say2( "         Help: R Rebuild, S Incremental search, Z Recalc directory size", cINFO );
   show_pos( scroll.pos()+1, scroll.max()+1 );
 }
 
@@ -758,13 +768,14 @@ void tree_view()
   
   ScrollPos scroll;
   scroll.set_min_max( 0, dir_tree.count()-1 );
-  scroll.set_pagesize( PS );
+  scroll.set_pagesize( PS+2 );
   scroll.go( new_pos );
   
   int key = 0;
   int opos = -1;
   int opage = -1;
-  while( key != 27 && key != 13 && key != '-' )
+  while( key != 27 && key != 13 && key != '-' && 
+         toupper( key ) != 'Q' && toupper( key ) != 'X' && key != KEY_ALT_X )
     {
     if ( key >= 'A' && key <= 'Z' ) key = tolower( key );
     if ( key == 's' )
@@ -871,104 +882,100 @@ void tree_view()
 };
 
 /*###########################################################################*/
-int last_cache_ptr = 0;
+
+#define SIZE_CACHE_OFFSET 12
+
+int size_cache_cmp( const char* s1, const char* s2 )
+{
+  return strcmp( s1 + SIZE_CACHE_OFFSET, s2 + SIZE_CACHE_OFFSET );
+}
+
+VString size_cache_compose_key( const char *s, fsize_t size )
+{
+  const char *ps;
+  char ss[MAX_PATH];
+  if ( opt.fast_size_cache )
+    {
+    ps = s;
+    }
+  else
+    {  
+    expand_path( s, ss );
+    ps = ss;
+    }
+  
+  char s_adler[16];
+  char s_size[32];
+  
+  sprintf( s_size, "%012.0f", size ); //WARNING: THIS IS SIZE_CACHE_OFFSET
+  sprintf( s_adler, "%08X", (unsigned int)str_adler32( ps ) );
+  
+  VString str;
+  str = str + s_size + "|" + s_adler + "|" + ps;
+  
+  return str;
+}
 
 int size_cache_index( const char *s )
 {
   if ( size_cache.count() == 0 ) return -1;
-  int z = last_cache_ptr;
-  if ( z >= size_cache.count() ) z = 0; // just to be safe
-  int loops = size_cache.count() / 2 + 1;
-  while(42)
+  VString str = size_cache_compose_key( s, 0 );
+  int l = 0;
+  int h = size_cache.count() - 1;
+  int m = h;
+  while(4)
     {
-    if ( strcmp( size_cache.get( z ), s ) == 0 ) 
-      {
-      last_cache_ptr = z;
-      return z;
-      }
-    z += 2;
-    if ( z >= size_cache.count() ) z = 0;
-    if ( loops-- <= 0 ) break;
+    int r =  size_cache_cmp( size_cache[m], str );
+    if ( l == m && r != 0 )
+      return -1;
+    if ( r > 0 )
+      h = m; else
+    if ( r < 0 )
+      l = m; 
+    else
+      return m;
+    m = ( l + h ) / 2;
     }
-  return -1;  
-};
+}
 
 fsize_t size_cache_get( const char *s )
 {
-  const char *ps;
-  char ss[MAX_PATH];
-  if ( opt.fast_size_cache )
+  int z = size_cache_index( s );
+  if ( z != -1 )
     {
-    ps = s;
+    VString str = size_cache[z];
+    str_sleft( str, SIZE_CACHE_OFFSET );
+    return atof( str );
     }
   else
-    {  
-    expand_path( s, ss );
-    ps = ss;
-    }
-  
-  char t[16];
-  sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
-  VString str = t;
-  str += " ";
-  str += ps;
-  int z = size_cache_index( str );
-  if ( z == -1 )
-    return -1;
-  else
-    return atof( size_cache.get( z+1 ) );  
+    return -1;  
 }
 
 void size_cache_set( const char *s, fsize_t size )
 {
-  const char *ps;
-  char ss[MAX_PATH];
-  if ( opt.fast_size_cache )
-    {
-    ps = s;
-    }
-  else
-    {  
-    expand_path( s, ss );
-    ps = ss;
-    }
-  
-  char t[16];
-  sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
-  VString str = t;
-  str += " ";
-  str += ps;
-  int z = size_cache_index( str );
+  int z = size_cache_index( s );
   if ( z != -1 )
-    {
     size_cache.del( z );
-    size_cache.del( z );
-    }
-  size_cache.push( str );
-  str.fi( size );
-  size_cache.push( str );
+  size_cache.push( size_cache_compose_key( s, size ) );
+  size_cache.sort( 0, size_cache_cmp );
 }
 
 void size_cache_clean( const char *s )
 {
-  last_cache_ptr = 0;
-  int sl = str_len( s );
+  VString str = size_cache_compose_key( s, 0 );
+  str_trim_left( str, SIZE_CACHE_OFFSET );
+  int sl = str_len( str );
   int z = 0;
   while( z < size_cache.count() )
     {
-    const char* ps = size_cache[z].data() + 9;
-    ASSERT( size_cache[z][8] == ' ' );
-    if ( strncmp( ps, s, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0))
-      {
+    const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET;
+    ASSERT( size_cache[z][SIZE_CACHE_OFFSET] == '|' );
+    if ( strncmp( ps, str, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0))
       size_cache.del( z );
-      size_cache.del( z );
-      }
     else
-      {  
-      z += 2;
-      }
+      z++;
     }
-};
+}
 
 /*###########################################################################*/
 

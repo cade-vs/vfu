@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.8 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfudir.h,v 1.9 2003/01/30 00:03:51 cade Exp $
  *
  */
 
@@ -43,6 +43,7 @@ const char* tree_find( const char *s ); /* return full path by dirname */
 /* return count of found dirnames and stores them to sc */
 int tree_find( const char *s, VArray *va ); 
 
+VString size_cache_compose_key( const char *s, fsize_t size );
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );
 void size_cache_set( const char *s, fsize_t size );
