@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.5 2001/11/10 09:53:44 cade Exp $
+ * $Id: vfu.cpp,v 1.6 2001/11/10 10:00:46 cade Exp $
  *
  */
 
@@ -1089,7 +1089,7 @@ void vfu_shell( const char* a_command, const char* a_options )
   String shell_line = a_command;
   String o = a_options;
   
-  String status = "*** exec ok ***";
+  String status = "";
   
   int res = vfu_update_shell_line( shell_line, o );
   if (res) return;
