@@ -1,11 +1,11 @@
 /*
  *
  * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
- * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.7 2002/08/17 11:47:08 cade Exp $
+ * $Id: vfuview.cpp,v 1.8 2002/11/27 21:42:06 cade Exp $
  *
  */
 

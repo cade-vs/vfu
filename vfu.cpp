@@ -1,11 +1,11 @@
 /*
  *
  * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
- * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.24 2002/10/29 04:09:38 cade Exp $
+ * $Id: vfu.cpp,v 1.25 2002/11/27 21:42:05 cade Exp $
  *
  */
 
@@ -2886,7 +2886,7 @@ int main( int argc, char* argv[] )
   con_done();
   
   /*
-  printf("%s\n<cade@biscom.net> [http://www.biscom.net/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
+  printf("%s\n<cade@biscom.net> [http://soul.datamax.bg/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
   */
   
   return 0;
