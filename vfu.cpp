@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.36 2003/06/15 09:11:46 cade Exp $
+ * $Id: vfu.cpp,v 1.37 2003/09/06 11:48:00 cade Exp $
  *
  */
 
@@ -745,25 +745,13 @@ void vfu_run()
   say1center( HEADER );
   say2center( CONTACT );
 
-  int ox = con_max_x();
-  int oy = con_max_y();
-
   /* int oldFLI = -1; // quick view */
   int ch = 0;
   while (4)
     {
-    if ( ox != con_max_x() || oy != con_max_y() )
-      {
-      ox = con_max_x();
-      oy = con_max_y();
-      do_draw = 3;
-      }
     if (do_draw) 
       {
-      if ( do_draw > 2 )
-	    {
-        vfu_reset_screen();
-	    }
+      if ( do_draw > 2 ) vfu_reset_screen();
       if ( do_draw > 1 ) do_draw_status = 1;
       vfu_redraw(); 
       do_draw = 0; 
@@ -785,6 +773,7 @@ void vfu_run()
     show_pos( FLI+1, files_count ); /* FIXME: should this be in vfu_redraw()? */  
     
     ch = con_getch();
+    if( ch == 0 ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
     say1( "" ); 
     if ( user_id_str == "root" )

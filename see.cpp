@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.27 2003/04/28 18:04:06 cade Exp $
+ * $Id: see.cpp,v 1.28 2003/09/06 11:48:00 cade Exp $
  *
  */
 
@@ -763,6 +763,7 @@
       do_draw = 0;
       }
     ch = con_getch();
+    if( ch == 0 ) ch = KEY_CTRL_L;
     if (  ch == 27        || ch == '-'           || ch == 'q' ||
           ch == KEY_ALT_X || ch == KEY_BACKSPACE ) return ch;
     int z = 0;
@@ -1642,6 +1643,7 @@
 
     pend = 0;
     key = con_getch();
+    if( key == 0 ) key = KEY_CTRL_L;
     if (key == KEY_CTRL_C)
       {
       mod = 0; /* it is `quit' i.e. no save so this should be ok */
