@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.38 2003/11/22 03:26:48 cade Exp $
+ * $Id: vfu.cpp,v 1.39 2004/01/05 02:56:40 cade Exp $
  *
  */
 
@@ -785,9 +785,11 @@ void vfu_run()
       case '6'       :
       case '7'       :
       case '8'       :
-      case '0'       :
-      case '.'       : vfu_toggle_view_fields( ch ); break;
-
+      case '0'       : vfu_toggle_view_fields( ch ); break;
+      
+      case '.'       : vfu_toggle_view_fields( ch ); 
+                       vfu_rescan_files( 0 ); break;
+      
       case 's'       : vfu_inc_search(); break;
 
       case KEY_CTRL_L: do_draw = 3; break;

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.14 2003/04/28 17:17:01 cade Exp $
+ * $Id: vfufiles.cpp,v 1.15 2004/01/05 02:56:40 cade Exp $
  *
  */
 
@@ -23,15 +23,15 @@ const char* file_type_str( mode_t mode, int is_link )
 {
   strcpy(__file_stat_type_buf, "--");
   if (S_ISDIR(mode) && is_link)
-                      strcpy(__file_stat_type_buf, "<>"); else
-  if (S_ISBLK(mode) ) strcpy(__file_stat_type_buf, "=="); else
-  if (S_ISCHR(mode) ) strcpy(__file_stat_type_buf, "++"); else
-  if (S_ISFIFO(mode)) strcpy(__file_stat_type_buf, "()"); else
-  if (S_ISSOCK(mode)) strcpy(__file_stat_type_buf, "##"); else
-  if (is_link       ) strcpy(__file_stat_type_buf, "->"); else
-  if (S_ISDIR (mode)) strcpy(__file_stat_type_buf, "[]"); else
+                      strcpy(__file_stat_type_buf, "<>"); else // box, but not exact 
+  if (S_ISBLK(mode) ) strcpy(__file_stat_type_buf, "=="); else // block, stacked
+  if (S_ISCHR(mode) ) strcpy(__file_stat_type_buf, "++"); else // like dots, separates
+  if (S_ISFIFO(mode)) strcpy(__file_stat_type_buf, "()"); else // () pipe mimic
+  if (S_ISSOCK(mode)) strcpy(__file_stat_type_buf, "@@"); else // internet
+  if (is_link       ) strcpy(__file_stat_type_buf, "->"); else // points, link
+  if (S_ISDIR (mode)) strcpy(__file_stat_type_buf, "[]"); else // box
   if ((mode & S_IXOTH)||(mode & S_IXGRP)||(mode & S_IXUSR))
-                      strcpy(__file_stat_type_buf, "**"); else
+                      strcpy(__file_stat_type_buf, "**"); else // * marks executables
   ;
   return __file_stat_type_buf;
 }
