@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Sat Jan  4 20:54:39 2003 #########################
+### Created by makemake.pl on Sun Jan 19 20:18:39 2003 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -40,7 +40,7 @@ CC_1       = g++
 LD_1       = g++
 AR_1       = ar rv
 RANLIB_1   = ranlib
-CCFLAGS_1  = -I../vslib -I/usr/include/ncurses $(CCDEF) 
+CCFLAGS_1  = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF) 
 LDFLAGS_1  = -L../vslib -L../vslib/pcre -lvslib -lvscon -lpcre -lncurses $(LDDEF)
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
@@ -83,7 +83,7 @@ OBJ_1= \
 .OBJ.vfu: 
 	$(MKDIR) .OBJ.vfu
 
-vfu: .OBJ.vfu $(OBJ_1)
+vfu:  .OBJ.vfu $(OBJ_1)
 	$(LD_1) $(OBJ_1) $(LDFLAGS_1) -o $(TARGET_1)
 
 clean-vfu: 
