@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.9 2002/12/12 23:45:00 cade Exp $
+ * $Id: see.cpp,v 1.10 2002/12/12 23:59:37 cade Exp $
  *
  */
 
@@ -33,6 +33,8 @@
   "אבגדהוזחטיךכלםמןנסעףפץצקרשתü‏ÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÜÞ‗",
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
   };
+
+  #define MAXCOLS 1024
   
 /*--------------------------------------------------------------------*/
   
@@ -174,14 +176,14 @@
   void SeeViewer::draw_hex()  
   {
   CHKPOS;
-  if ( cols < 79 )
+  if ( cols < 79 || cols >= MAXCOLS )
     {
-    status( "HEX mode only supported on 80+ columns!" );
+    status( "HEX mode only supported on 80-1024 columns!" );
     return;
     }
   int z = 0;
   int i = 0;
-  char lin[4096];
+  char lin[MAXCOLS];
   char str[32];
   int buffsize = rows * 16; // all size :)
   fseek( f, fpos, SEEK_SET );
