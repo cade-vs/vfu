@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.2 2001/10/28 13:56:39 cade Exp $
+ * $Id: see.h,v 1.3 2001/10/28 14:02:33 cade Exp $
  *
  */
 
@@ -78,10 +78,10 @@ class SeeViewer
 
   FILE* f;
   String fname;
-  long fpos;
-  long fsize;
-  long line;
-  long last_line;
+  int fpos;
+  int fsize;
+  int line;
+  int last_line;
   int end_reached;
   int col;
   int rows;
@@ -135,7 +135,7 @@ class SeeViewer
   
   protected:
   
-  int read_text( long &cpos );
+  int read_text( int &cpos );
   
 };
 

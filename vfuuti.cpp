@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuuti.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
  *
  */
 
@@ -242,11 +242,11 @@ char* time_str_compact( const time_t tim, char* buf )
 char* size_str_compact( const fsize_t siz, char* buf )
 {
   if ( siz < 1024 )
-    sprintf( buf, "%.0lfb", siz );
+    sprintf( buf, "%.0fb", siz );
   else if ( siz < 1024*1024 )
-    sprintf( buf, "%.0lfk", siz/1024 );
+    sprintf( buf, "%.0fk", siz/1024 );
   else
-    sprintf( buf, "%.0lfm", siz/(1024*1024) );
+    sprintf( buf, "%.0fm", siz/(1024*1024) );
   return buf;
 }
 

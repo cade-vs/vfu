@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfudir.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
  *
  */
 
@@ -907,7 +907,7 @@ fsize_t size_cache_get( const char *s )
     }
   
   char t[16];
-  sprintf( t, "%08X", str_adler32( ps ) );
+  sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
   String str = t;
   str += " ";
   str += ps;
@@ -933,7 +933,7 @@ void size_cache_set( const char *s, fsize_t size )
     }
   
   char t[16];
-  sprintf( t, "%08X", str_adler32( ps ) );
+  sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
   String str = t;
   str += " ";
   str += ps;

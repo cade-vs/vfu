@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.2 2001/10/28 13:56:39 cade Exp $
+ * $Id: see.cpp,v 1.3 2001/10/28 14:02:33 cade Exp $
  *
  */
 
@@ -223,7 +223,7 @@
   {
   CHKPOS;
   if ( line == -1 ) last_line = -1;
-  long cpos = fpos;
+  int cpos = fpos;
   int z = 0;
   int y = 0;
   fseek( f, cpos, SEEK_SET );
@@ -280,7 +280,7 @@
     if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
     y++;
     }
-  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3d%% | Line:%8d of%8d%c|%4d+ | H or Alt+H for help ", (100*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1, fpos, fsize );
+  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3d%% | Line:%8d of%8d%c|%4d+ | H or Alt+H for help ", (100*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
   status( buff );
   };
 
@@ -304,14 +304,14 @@
     if (fpos < 0) fpos = 0;
     return;
     }
-  long cpos = fpos;
+  int cpos = fpos;
   if ( cpos == 0 ) return;
 
-  long i = opt->wrap;
+  int i = opt->wrap;
   if ( cpos - i < 0 ) i = cpos;
   cpos -= i;
   fseek( f, cpos, SEEK_SET );
-  long res = fread( buff, 1, i, f );
+  int res = fread( buff, 1, i, f );
   ASSERT( res == i );
   int z = 0;
   if ( buff[i-1] == '\n' )
@@ -381,7 +381,7 @@
     if (line % 768 == 0)
       {
       char tmp[128];
-      sprintf(tmp, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, long((100.0*fpos)/(fsize?fsize:1)) );
+      sprintf(tmp, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/(fsize?fsize:1)) );
       status(tmp);
       }
     }
@@ -415,7 +415,7 @@
       draw();
       return;
       }
-    long new_pos = fpos;
+    int new_pos = fpos;
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
@@ -442,7 +442,7 @@
       draw();
       return;
       }
-    long new_line = line;
+    int new_line = line;
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
@@ -466,7 +466,7 @@
         down();
         if ( line % 768 == 0)
           {
-          sprintf( sss, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, long((100.0*fpos)/(fsize?fsize:1)) );
+          sprintf( sss, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/(fsize?fsize:1)) );
           status( sss);
           }
         }
@@ -477,7 +477,7 @@
         up();
         if ( line % 768 == 0)
           {
-          sprintf( sss, " Going up.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, long((100.0*fpos)/fsize) );
+          sprintf( sss, " Going up.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/fsize) );
           status( sss);
           }
         }
@@ -501,7 +501,7 @@
     fpos++;
   else
     down(); /* start search from the next line -- avoid blocking */
-  long new_pos = file_find_string( opt->last_search, f, opt->no_case, fpos );
+  int new_pos = file_find_string( opt->last_search, f, opt->no_case, fpos );
   if ( new_pos >= 0 )
     {
     fpos = new_pos;
@@ -848,7 +848,7 @@
 
   /* read ahead with tab and backspace expansion */
   /* result goes into `buff', the margin is `wrap' */
-  int SeeViewer::read_text( long &cpos )
+  int SeeViewer::read_text( int &cpos )
   {
   buff[0] = 0;
   int z = 0;
