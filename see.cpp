@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.16 2003/01/27 07:47:03 cade Exp $
+ * $Id: see.cpp,v 1.17 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -118,7 +118,7 @@
 
 /*--------------------------------------------------------------------*/
   
-  int SeeViewer::open( const char* a_fname )  
+  int SeeViewer::open( const char* a_fname )
   {
   if (!buff) return 1;
   if (f) fclose( f );
@@ -215,7 +215,7 @@
     str_pad( lin, -cols );
     con_out( 1, z+1, lin, (opt->grid && (fpos/16+z)%2==0) ? opt->ch : opt->cn );
     }
-  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3d%% | Pos.:%8d of%8d | H or Alt+H for help ", (100*fpos)/(fsize?fsize:1), fpos, fsize );
+  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Pos. %4d of %4d | H,Alt+H Help ", (100.0*fpos)/(fsize?fsize:1), fpos, fsize );
   status( buff );
   };
 
@@ -282,7 +282,7 @@
     if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
     y++;
     }
-  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3d%% | Line:%8d of%8d%c|%4d+ | H or Alt+H for help ", (100*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
+  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Line %4d of %4d%c|%4d+ | H,Alt+H Help ", (100.0*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
   status( buff );
   };
 
@@ -383,7 +383,7 @@
     if (line % 768 == 0)
       {
       char tmp[128];
-      sprintf(tmp, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/(fsize?fsize:1)) );
+      sprintf(tmp, " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
       status(tmp);
       }
     }
@@ -468,7 +468,7 @@
         down();
         if ( line % 768 == 0)
           {
-          sprintf( sss, " Going down.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/(fsize?fsize:1)) );
+          sprintf( sss, " Going down.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
           status( sss);
           }
         }
@@ -479,7 +479,7 @@
         up();
         if ( line % 768 == 0)
           {
-          sprintf( sss, " Going up.... line: %6d -- %3d%% (press ESCAPE to cancel) ", line, int((100.0*fpos)/fsize) );
+          sprintf( sss, " Going up.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/fsize );
           status( sss);
           }
         }
@@ -833,10 +833,16 @@
       case 'r'        :
       case 'R'        : if (!opt->hex_mode)
                           {
-                          VString sss;
-                          z = 8;
-                          while (z--) sss += "---------|";
-                          con_out( 1, 1, sss, opt->ch );
+                          int z = 0;
+                          VString ruler;
+                          while ( str_len(ruler) < opt->xmax ) 
+                            {
+                            ruler += "|0-------";
+                            z++;
+                            ruler += z % 10;
+                            }
+                          str_sleft( ruler, opt->xmax );
+                          con_out( 1, 1, ruler, opt->ch );
                           }
                         break;
       case 'i'        :
@@ -887,8 +893,8 @@
 /**********************************************************************/
 /**********************************************************************/
 
-  #define SEEDCOL  (col    - colpage + 1) /* screen column  */
-  #define SEEDROW  (sv.pos - sv.page + 1) /* screen row     */
+  #define SEEDCOL  (col      - colpage + 1) /* screen column  */
+  #define SEEDROW  (sv.pos() - sv.page() + 1) /* screen row     */
 
   SeeEditor::SeeEditor( SeeEditorOptions *a_opt )
   {
@@ -911,10 +917,9 @@
   rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
   cols = opt->xmax - opt->xmin + 1;
 
-  sv.min = 0;
-  sv.max = va.count() - 1;
-  sv.pagesize = rows;
-  sv.gotopos( 0 );
+  sv.set_min_max( 0, va.count() - 1 );
+  sv.set_pagesize( rows );
+  sv.go( 0 );
   
   help_str = 
   "+-----------------------------------------------------------------------------+\n"
@@ -980,8 +985,8 @@
     mod = 1;
     va.push( "" ); /* hack if new file */
     }
-  sv.max = va.count() - 1;
-  sv.gotopos( 0 );
+  sv.set_min_max( 0, va.count() - 1 );
+  sv.go( 0 );
   col = colpage = 0;
   mod = 0;
   return 0;
@@ -997,7 +1002,7 @@
   fname = "";
   col = 0;
   colpage = 0;
-  sv.gotopos( 0 );
+  sv.go( 0 );
   va.undef();
   mod = 0;
   con_chide();
@@ -1051,7 +1056,7 @@
   int SeeEditor::real_col( int row )
   {
   int c = col;
-  if (row == -1) row = sv.pos;
+  if (row == -1) row = sv.pos();
   VString str = va[row];
   VString map;
   if ( expand_tabs( str, map ) )
@@ -1075,12 +1080,12 @@
   {
   if ( freezed ) return;
   
-  ASSERT( sv.max == va.count() - 1 );
-  if ( n > sv.max )
+  ASSERT( sv.max() == va.count() - 1 );
+  if ( n > sv.max() )
     {
     VString sss = "~";
     str_pad( sss, - cols );
-    con_out( 1, ( n - sv.page ) + 1, sss, opt->cn );
+    con_out( 1, ( n - sv.page() ) + 1, sss, opt->cn );
     }
   else
     {
@@ -1090,7 +1095,7 @@
     str_trim_left( str, colpage );
     str_sleft( str, cols );
     str_pad( str, - cols );
-    con_out( 1, ( n - sv.page ) + 1, str, opt->cn );
+    con_out( 1, ( n - sv.page() ) + 1, str, opt->cn );
     }
   set_cursor();
   };
@@ -1106,11 +1111,11 @@
   con_chide();
   if ( from > -1 ) /* from == -1 to update status line only */
     for( z = from; z < rows; z++ )
-      draw_line( sv.page + z );
+      draw_line( sv.page() + z );
   con_cshow();
-  sprintf( str, "SeeEditor v" SEE_VERSION " | %s | %3d%% | Line:%5d of%5d |%4d+ %s | F1 or Alt+H help", 
+  sprintf( str, "SeeEditor v" SEE_VERSION " | %s | %3.0f%% | Line:%5d of%5d |%4d+ %s | F1,Alt+H Help", 
                  mod?"MOD!":"----", 
-                 (100*sv.pos)/(sv.max?sv.max:1), sv.pos+1, sv.max+1, col+1, opt->insert?"INS":"ovr" );
+                 (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1, opt->insert?"INS":"ovr" );
   status( str );
   set_cursor();
   };
@@ -1176,7 +1181,7 @@
   void SeeEditor::left()
   {
   if (col <= 0) return;
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
   VString map;
   if ( expand_tabs( str, map ) )
     {
@@ -1194,7 +1199,7 @@
 
   void SeeEditor::right()
   {
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
   VString map;
   if ( expand_tabs( str, map ) )
     {
@@ -1219,8 +1224,8 @@
 
   void SeeEditor::end()
   {
-  remove_trails( sv.pos );
-  VString str = va[sv.pos];
+  remove_trails( sv.pos() );
+  VString str = va[sv.pos()];
   VString map;
   expand_tabs( str, map );
   col = str_len( str );
@@ -1243,26 +1248,25 @@
 
   void SeeEditor::kdel()
   {
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
   int c = real_col();
   if (c >= str_len( str ))
     {
-    if ( sv.pos == sv.max ) return;
+    if ( sv.pos() == sv.max() ) return;
     mod = 1;
-    VString nstr = va[sv.pos+1]; /* next string (below) */
+    VString nstr = va[sv.pos()+1]; /* next string (below) */
     if ( c > str_len( str ) ) str_pad( str, -c, ' ' ); /* the line is short -- pad with spaces */
     str += nstr;
-    va.set( sv.pos, str );
-    va.del( sv.pos+1 );
-    sv.max = va.count() - 1;
+    va[ sv.pos() ] = str;
+    va.del( sv.pos()+1 );
+    sv.set_min_max( 0, va.count() - 1 );
     draw(); /* FIXME: from ROW to the end of the page */
     }
   else
     {
     mod = 1;
-    str_del( str, c, 1 );
-    va.set( sv.pos, str );
-    draw_line( sv.pos );
+    str_del( va[ sv.pos() ], c, 1 );
+    draw_line( sv.pos() );
     };
   };
 
@@ -1270,7 +1274,7 @@
 
   void SeeEditor::kbs()
   {
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
   int c = real_col();
   if ( c > str_len( str ) )
     {
@@ -1279,7 +1283,7 @@
     } else
   if (c == 0)
     {
-    if (sv.pos == 0) return;
+    if (sv.pos() == 0) return;
     up();
     end();
     kdel();
@@ -1298,18 +1302,18 @@
   mod = 1;
   if ( va.count() == 0 ) va.push( "" );
   int c = real_col();
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
   VString nstr = str;
   str_sleft( str, c );
   str_trim_left( nstr, c );
-  va.set( sv.pos, str );
-  va.ins( sv.pos+1, nstr );
-  sv.max = va.count()-1;
+  va.set( sv.pos(), str );
+  va.ins( sv.pos()+1, nstr );
+  sv.set_min_max( 0, va.count()-1 );
   sv.down();
   col = 0; /* !!! here should go the auto indenting... */
-  if ( opt->auto_indent && sv.pos > 1)
+  if ( opt->auto_indent && sv.pos() > 1)
     {
-    str = va[sv.pos-1];
+    str = va[sv.pos()-1];
     int z = 0;
     int nc = 0;
     while( z < str_len(str) && (str[z] == ' ' || str[z] == '\t') )
@@ -1317,10 +1321,10 @@
       if ( str[z] == '\t' ) nc += opt->tabsize; else nc++;
       z++;
       }
-    str = va[sv.pos];
+    str = va[sv.pos()];
     col = nc;
     while( nc-- ) str_ins_ch( str, 0, ' ' );
-    va.set( sv.pos, str );
+    va.set( sv.pos(), str );
     };
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
     {
@@ -1344,7 +1348,7 @@
     };
   mod = 1;
   if ( va.count() == 0 ) va.push( "" );
-  VString str = va[sv.pos];
+  VString str = va[sv.pos()];
 
   int c = real_col();
 
@@ -1352,7 +1356,7 @@
     str_del( str, c, 1 );
   if ( str_len(str) < c ) str_pad( str, -c, ' ' );
   str_ins_ch( str, c, ch );
-  va.set( sv.pos, str );
+  va.set( sv.pos(), str );
   right();
   
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
@@ -1374,18 +1378,18 @@
   /* FIXME: this should insert file in current position! */
   va.fload( fname );
   remove_trails();
-  sv.max = va.count() - 1;
+  sv.set_min_max( 0, va.count() - 1 );
   };
   
 /*--------------------------------------------------------------------*/
 
   void SeeEditor::remove_line( int n )
   {
-  if ( n == -1 ) n = sv.pos;
-  ASSERT( sv.max == va.count() - 1 );
-  if ( n < 0 || n > sv.max ) return;
+  if ( n == -1 ) n = sv.pos();
+  ASSERT( sv.max() == va.count() - 1 );
+  if ( n < 0 || n > sv.max() ) return;
   mod = 1;
-  if ( n == sv.max )
+  if ( n == sv.max() )
     {
     if ( str_len( va[n] ) == 0 ) return;
     va.set( n, "" );
@@ -1393,9 +1397,8 @@
   else
     {  
     va.del( n );
-    sv.max = va.count() - 1;
-    if ( sv.pos > sv.max )
-      sv.gotopos( sv.max );
+    sv.set_min_max( 0, va.count() - 1 );
+    sv.go( sv.pos() );
     }  
   draw();  
   };
@@ -1417,8 +1420,8 @@
   {
   if ( n != -1 )
     {
-    ASSERT( sv.max == va.count() - 1 );
-    if ( n < 0 || n > sv.max ) return;
+    ASSERT( sv.max() == va.count() - 1 );
+    if ( n < 0 || n > sv.max() ) return;
     VString str = va[n];
     str_cut_right( str, " \t\n\r" );
     va.set( n, str );
@@ -1475,7 +1478,7 @@
   
   int z;
   int pos = -1;
-  for ( z = sv.pos + 1; z <= sv.max; z++ )
+  for ( z = sv.pos() + 1; z <= sv.max(); z++ )
     {
     VString str = va[z];
     if ( opt->no_case )
@@ -1491,7 +1494,7 @@
     }
   if ( pos != -1 )  
     {
-    sv.gotopos( z );
+    sv.go( z );
     col = pos;
     if (SEEDCOL > cols)
       {
@@ -1547,15 +1550,13 @@
   draw();
   set_cursor();
 
-  sv.type = 1;
-
   int key;
   int pend = 0; /* used for double key-strokes as ^K^x command */
   while(4)
     {
     int ox  = SEEDCOL;
     int oy  = SEEDROW;
-    int orp = sv.page;
+    int orp = sv.page();
     int ocp = colpage;
     int oi  = opt->insert;
 
@@ -1582,7 +1583,7 @@
       con_out( SEEDCOL, SEEDROW, "^K", opt->cs );
       set_cursor();
       key = con_getch();
-      draw_line( sv.pos );
+      draw_line( sv.pos() );
       }
 
     switch( key )
@@ -1652,7 +1653,7 @@
                               }
                            rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
                            cols = opt->xmax - opt->xmin + 1;
-                           sv.pagesize = rows;
+                           sv.set_pagesize( rows );
                            con_cs(); 
                            draw(); 
                            break;
@@ -1678,7 +1679,7 @@
 
       };
 
-      if ( do_draw || orp != sv.page || ocp != colpage || oi != opt->insert )
+      if ( do_draw || orp != sv.page() || ocp != colpage || oi != opt->insert )
         {
         draw();
         set_cursor();

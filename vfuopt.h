@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.h,v 1.7 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfuopt.h,v 1.8 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -67,7 +67,6 @@
     int menu_borders;
 
     int lynx_navigation; /* should <- == - and -> == + */
-    int dynamic_scroll;
 
     int auto_mount;
     int keep_selection; /* on rescan files */

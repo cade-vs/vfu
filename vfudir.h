@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.7 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfudir.h,v 1.8 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -32,8 +32,8 @@ void tree_rebuild();
 void tree_fix();
 
 void tree_draw_item( int page, int index, int hilite = 0 );
-void tree_draw_page( TScrollPos &scroll );
-void tree_draw_pos( TScrollPos &scroll, int opos );
+void tree_draw_page( ScrollPos &scroll );
+void tree_draw_pos( ScrollPos &scroll, int opos );
 
 /*###########################################################################*/
 

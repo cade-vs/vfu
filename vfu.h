@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.9 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfu.h,v 1.10 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -192,11 +192,11 @@
   extern fsize_t    fs_block_size;
   /* index in the files list */
   /* NOTE: following defines are kept for historical reasons :) */
-  extern  TScrollPos file_list_index; 
-  #define FLI       (file_list_index.pos)
-  #define FLP       (file_list_index.page)
-  #define PS        (file_list_index.pagesize)
-  #define FGO(n)    (file_list_index.gotopos(n))
+  extern  ScrollPos file_list_index; 
+  #define FLI       (file_list_index.pos())
+  #define FLP       (file_list_index.page())
+  #define PS        (file_list_index.pagesize())
+  #define FGO(n)    (file_list_index.go(n))
 
   /* some world wide variables */
   extern VString startup_path;

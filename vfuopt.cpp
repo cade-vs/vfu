@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.12 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfuopt.cpp,v 1.13 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -47,7 +47,6 @@ ToggleEntry Toggles[] =
   {  0 , "--navigation--", NULL, NULL },
   { 'i', "Use internal viewer", &(opt.internal_browser), NOYES },
   { 'I', "Use internal editor", &(opt.internal_editor), NOYES },
-  { 'y', "Dynamic scroll ", &(opt.dynamic_scroll), NOYES },
   { ' ', "Use menu borders", &(opt.menu_borders), NOYES },
   {  0 , "--trees/dirs-- " , NULL, NULL },
   { ' ', "Compact DirTree", &(opt.tree_compact), NOYES },
@@ -100,9 +99,6 @@ void vfu_load_dir_colors()
 {
   #ifdef _TARGET_UNIX_
 
-  int z;
-  // for ( z = 0; z < 16; z++ ) ext_colors[z] = "";
-  
   VArray va;
   va.fload( "/etc/DIR_COLORS" );
   if (va.count() == 0) return;
@@ -292,7 +288,6 @@ void vfu_settings_load()
   opt.menu_borders = 0;
 
   opt.lynx_navigation = 0;
-  opt.dynamic_scroll = 1;
 
   opt.auto_mount = 1;
   opt.keep_selection = 1;
@@ -477,7 +472,6 @@ void vfu_options()
   vfu_toggle_box( 30, 5, "Options/Toggles   (scroll down...)", Toggles );
   vfu_settings_save();
   vfu_settings_load();
-  file_list_index.type = opt.dynamic_scroll;
   vfu_drop_all_views();
   vfu_redraw(); 
   vfu_redraw_status();

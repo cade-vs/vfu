@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.8 2003/01/26 21:48:42 cade Exp $
+ * $Id: see.h,v 1.9 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -22,8 +22,7 @@
 
 struct SeeViewerOptions
 {
-  SeeViewerOptions()
-    { reset(); }
+  SeeViewerOptions() { reset(); }
   void reset()  
     {
     auto_size = 1;
@@ -195,7 +194,7 @@ class SeeEditor
   
   int col;
   int colpage;
-  TScrollPos sv; /* vertical scroller */
+  ScrollPos sv; /* vertical scroller */
   VArray va; /* string/text cluster */
   int mod; /* modify flag */
   

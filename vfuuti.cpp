@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.14 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfuuti.cpp,v 1.15 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -352,7 +352,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
   if ( cnt < 1 ) return -1;
   for ( z = 0; z < cnt; z++ )
     {
-    ASSERT( z < strlen( hist_menu_hotkeys ) );
+    ASSERT( z < str_len( hist_menu_hotkeys ) );
     str = "";
     str_add_ch( str, hist_menu_hotkeys[z] );
     str = str + " " + vfu_hist_get( hist_id, z );

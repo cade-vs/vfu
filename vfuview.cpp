@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.12 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfuview.cpp,v 1.13 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -196,7 +196,8 @@ void vfu_redraw() /* redraw file list and header */
 
   for ( z = 0; z < PS; z++ )
     {
-    if (FLP+z >= files_count )
+    ASSERT( FLP + z >= 0 );
+    if ( FLP + z >= files_count )
       {
       con_out( 1, z+4, "~", cPLAIN );
       con_ce( cPLAIN );
@@ -403,8 +404,10 @@ void vfu_nav_select()
 
 void vfu_nav_update_pos()
 {
+ ASSERT( files_count >= 0 );
  if ( FLI < 0 ) FGO( 0 );
- if ( FLI > files_count - 1) FGO( files_count - 1 );
+ if ( files_count == 0 ) FGO( 0 );
+ if ( files_count > 0 && FLI > files_count - 1 ) FGO( files_count - 1 );
 }
 
 /* eof vfuview.cpp */

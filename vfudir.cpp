@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.17 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfudir.cpp,v 1.18 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -683,7 +683,7 @@ void tree_draw_item( int page, int index, int hilite )
 
 /*-----------------------------------------------------------------------*/
 
-void tree_draw_page( TScrollPos &scroll )
+void tree_draw_page( ScrollPos &scroll )
 {
   VString str = " ";
   str_mul( str, con_max_x() );
@@ -691,11 +691,11 @@ void tree_draw_page( TScrollPos &scroll )
   str_sleft( str, con_max_x()-16 ); 
   con_out(1,3, str, cHEADER );
   int z = 0;
-  for(z = 0; z < scroll.pagesize; z++)
+  for(z = 0; z < scroll.pagesize(); z++)
     {
-    if (scroll.page + z <= scroll.max)
+    if (scroll.page() + z <= scroll.max())
       {
-      tree_draw_item( scroll.page, z );
+      tree_draw_item( scroll.page(), z );
       }
     else
       {
@@ -708,13 +708,13 @@ void tree_draw_page( TScrollPos &scroll )
 
 /*-----------------------------------------------------------------------*/
 
-void tree_draw_pos( TScrollPos &scroll, int opos )
+void tree_draw_pos( ScrollPos &scroll, int opos )
 {
-  int z = scroll.pos - scroll.page;
-  if ( opos != -1 ) tree_draw_item( scroll.page, opos );
-  tree_draw_item( scroll.page, z, 1 );
+  int z = scroll.pos() - scroll.page();
+  if ( opos != -1 ) tree_draw_item( scroll.page(), opos );
+  tree_draw_item( scroll.page(), z, 1 );
   VString str;
-  str = dir_tree[scroll.pos];
+  str = dir_tree[scroll.pos()];
   str_tr( str,"\\", "/" );
   
   VString sz;
@@ -730,7 +730,7 @@ void tree_draw_pos( TScrollPos &scroll, int opos )
   con_out( 1, con_max_y()-2, 
           "----- R Rebuild --- L Load --- W Write/Save --- S Inc. search --- Z Size -----" , cINFO2 );
   con_ce( cINFO2 );
-  show_pos( scroll.pos+1, scroll.max+1 );
+  show_pos( scroll.pos()+1, scroll.max()+1 );
 }
 
 /*-----------------------------------------------------------------------*/
@@ -756,10 +756,10 @@ void tree_view()
   set.set_str1( "._-~" );
   set.set_str1( "?*>[]" );
   
-  TScrollPos scroll;
-  scroll.create( 0, dir_tree.count()-1, 0, 0, PS, 1 );
-  scroll.gotopos( new_pos );
-  scroll.type = opt.dynamic_scroll;
+  ScrollPos scroll;
+  scroll.set_min_max( 0, dir_tree.count()-1 );
+  scroll.set_pagesize( PS );
+  scroll.go( new_pos );
   
   int key = 0;
   int opos = -1;
@@ -786,11 +786,11 @@ void tree_view()
           int z;
           if ( key == 9 )
             {
-            z = scroll.pos + 1;
-            if (z > scroll.max ) z = scroll.min;
+            z = scroll.pos() + 1;
+            if (z > scroll.max() ) z = scroll.min();
             }
           else
-            z = scroll.pos;
+            z = scroll.pos();
           int direction = 1;
           int found = 0;
           int loops = 0;
@@ -798,8 +798,8 @@ void tree_view()
           vfu_expand_mask( s_mask );
           while(1)
             {
-            if ( z > scroll.max ) z = scroll.min;
-            if ( z < scroll.min ) z = scroll.max;
+            if ( z > scroll.max() ) z = scroll.min();
+            if ( z < scroll.min() ) z = scroll.max();
             
             VString str1 = dir_tree[z];
             str_trim_right( str1, 1 );
@@ -815,7 +815,7 @@ void tree_view()
             }
           if (found)
             {
-            scroll.gotopos(z);
+            scroll.go(z);
             tree_draw_page( scroll );
             tree_draw_pos( scroll, opos );
             }
@@ -829,25 +829,23 @@ void tree_view()
       {
       case KEY_UP     : scroll.up(); break;
       case KEY_DOWN   : scroll.down(); break;
-      case KEY_PPAGE  : scroll.pageup(); break;
-      case KEY_NPAGE  : scroll.pagedown(); break;
+      case KEY_PPAGE  : scroll.ppage(); break;
+      case KEY_NPAGE  : scroll.npage(); break;
       case KEY_HOME   : scroll.home(); break;
       case KEY_END    : scroll.end(); break;
       case 'r'        : tree_rebuild();
-                        scroll.pos = 0;
-                        scroll.page = 0;
-                        scroll.max = dir_tree.count()-1;
+                        scroll.set_min_max( 0, dir_tree.count()-1 );
+                        scroll.home();
                         say1( "Rebuild done." );
                         break;
       case 'w'        : tree_save(); break;
       case 'l'        : tree_load(); 
-                        scroll.pos = 0;
-                        scroll.page = 0;
-                        scroll.max = dir_tree.count()-1;
+                        scroll.set_min_max( 0, dir_tree.count()-1 );
+                        scroll.home();
                         break;
       case 'z'        : 
       case KEY_CTRL_Z :
-                        str = dir_tree[scroll.pos];
+                        str = dir_tree[scroll.pos()];
                         str_tr( str, "\\", "/" );
                         size_cache_set( str, vfu_dir_size( str ) );
                         tree_draw_page( scroll );
@@ -855,17 +853,17 @@ void tree_view()
                         say1( "Done." );
                         break;
       }
-    if (opage != scroll.page) 
+    if (opage != scroll.page()) 
       tree_draw_page( scroll );
-    if (opos != scroll.pos - scroll.page || opage != scroll.page) 
+    if (opos != scroll.pos() - scroll.page() || opage != scroll.page()) 
       tree_draw_pos( scroll, opos );
-    opos = scroll.pos - scroll.page;
-    opage = scroll.page;
+    opos = scroll.pos() - scroll.page();
+    opage = scroll.page();
     key = con_getch();
     }
   if ( key == 13 )
     {
-    str = dir_tree[scroll.pos];
+    str = dir_tree[scroll.pos()];
     str_tr( str, "\\", "/" );
     vfu_chdir( str );
     }

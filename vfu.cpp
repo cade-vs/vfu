@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.30 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfu.cpp,v 1.31 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -46,7 +46,7 @@
   fsize_t   fs_total;
   fsize_t   fs_block_size;
   /* index in the files list */
-  TScrollPos file_list_index; 
+  ScrollPos file_list_index; 
 
   /* some world wide variables */
   VString startup_path;
@@ -123,7 +123,7 @@ void say( int line, int attr, const char* format, ... )
   ASSERT( line == 1 || line == 2 );
   va_list vlist;
   va_start( vlist, format );
-  int res = vsprintf( say_buf, format, vlist );
+  vsprintf( say_buf, format, vlist );
   va_end( vlist );
   say_str = str_dot_reduce( say_buf, con_max_x()-1 );
   con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
@@ -523,7 +523,6 @@ void vfu_init()
   fs_block_size = 0;
   
   file_list_index.wrap = 0;
-  file_list_index.type = opt.dynamic_scroll;
   /* file_list_index.* are setup by vfu_read_files() */
 
 #ifdef _TARGET_GO32_
@@ -647,7 +646,6 @@ void vfu_init()
      end will load vfu.conf which will overwrite all if need to */
   vfu_settings_load();
  
-  file_list_index.type = ( opt.dynamic_scroll != 0 );
   file_list_index.wrap = 0; /* just to be safe :) */
 
   files_mask = "*";
@@ -745,16 +743,25 @@ void vfu_run()
   say1center( HEADER );
   say2center( t );
 
-  int oldFLI = -1;
+  int ox = -1;
+  int oy = -1;
+
+  /* int oldFLI = -1; /* quick view */
   int ch = 0;
   while (4)
     {
+    if ( ox != con_max_x() || oy != con_max_y() )
+      {
+      ox = con_max_x();
+      oy = con_max_y();
+      do_draw = 3;
+      }
     if (do_draw) 
       {
       if ( do_draw > 2 )
-	{
+	    {
         vfu_reset_screen();
-	}
+	    }
       if ( do_draw > 1 ) do_draw_status = 1;
       vfu_redraw(); 
       do_draw = 0; 
@@ -1060,9 +1067,9 @@ void vfu_reset_screen()
   con_chide();
     
   /* update scroll parameters */
-  file_list_index.min = 0;
-  file_list_index.max = files_count - 1;
-  file_list_index.pagesize = con_max_y() - 7;
+  file_list_index.set_min_max( 0, files_count - 1 );
+  file_list_index.set_pagesize( con_max_y() - 7 );
+  FGO( file_list_index.pos() );
 
   vfu_drop_all_views();
   vfu_redraw();
@@ -1079,7 +1086,6 @@ void vfu_signal( int sig )
     return;
     }
   */
-    
   vfu_done();
 
   con_beep();
@@ -2023,7 +2029,7 @@ void vfu_rename_file_in_place()
 {
   TF *fi = files_list[FLI];
   
-  int y = (file_list_index.pos - file_list_index.page) + 4;
+  int y = (file_list_index.pos() - file_list_index.page()) + 4;
   int x = tag_mark_pos + 3;
   
   VString str = fi->name();
@@ -2555,7 +2561,6 @@ void vfu_file_find_results()
   bi.cn = cSTATUS;
   bi.ch = 31;
   bi.ti = cINFO;
-  bi.st = opt.dynamic_scroll;
   bi.ac = 'p';
 
   say1center("------- ESC Exit ----- ENTER Chdir to target ----- P Panelize all results -----", cINFO );
@@ -2821,7 +2826,7 @@ void vfu_inc_search()
     if ( key == 9 )
       {
       z = FLI+1;
-      if ( z > file_list_index.max ) z = file_list_index.min;
+      if ( z > file_list_index.max() ) z = file_list_index.min();
       }
     else
       z = FLI;
@@ -2833,8 +2838,8 @@ void vfu_inc_search()
     vfu_expand_mask( s_mask );
     while(1)
       {
-      if ( z > file_list_index.max ) z = file_list_index.min;
-      if ( z < file_list_index.min ) z = file_list_index.max;
+      if ( z > file_list_index.max() ) z = file_list_index.min();
+      if ( z < file_list_index.min() ) z = file_list_index.max();
       found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
       if ( found ) break;
       z += direction;

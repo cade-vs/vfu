@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusys.cpp,v 1.7 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfusys.cpp,v 1.8 2003/01/29 22:59:16 cade Exp $
  *
  */
       
@@ -113,7 +113,6 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
 int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
 {
   int mode_i[16];
-  int null_mode = 0;
   if (allow_masking == 0)
     { /* "-rwxrwxrwx" */
     for ( int z = 0; z < 16; z++ ) mode_i[z] = 1;
@@ -141,7 +140,6 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
 
   char* AONOFF1[] = { "YES", " - ", " ? ", NULL };
   char* AONOFF2[] = { "YES", " - ", NULL };
-  char* ANULL[] = { "   ", NULL };
   #define AONOFF  ( allow_masking ? AONOFF1 : AONOFF2 )
   ToggleEntry mode_toggles[] =
   {

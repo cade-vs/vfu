@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.11 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfufiles.cpp,v 1.12 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -76,8 +76,8 @@ void vfu_rescan_files( int a_recursive )
     update_status();
     }
 
-  FLI = old_fli;
-  FLP = old_flp;
+  file_list_index.set_pos( old_fli );
+  file_list_index.set_page( old_flp );
   vfu_nav_update_pos();
 };
 
@@ -123,10 +123,8 @@ void vfu_read_files( int a_recursive )
     }
 
   /* update scroll parameters */
-  file_list_index.min = 0;
-  file_list_index.max = files_count - 1;
-  file_list_index.page = 0;
-  file_list_index.pagesize = con_max_y() - 7;
+  file_list_index.set_min_max( 0, files_count - 1 );
+  file_list_index.set_pagesize( con_max_y() - 7 );
 
   update_status();
   vfu_nav_update_pos();
@@ -342,8 +340,8 @@ void vfu_pack_files_list()
   while ( files_count < MAX_FILES && files_list[files_count] ) files_count++;
 
   /* update scroll parameters */
-  file_list_index.max = files_count - 1;
-  file_list_index.pagesize = con_max_y() - 7;
+  file_list_index.set_min_max( 0, files_count - 1 );
+  file_list_index.set_pagesize(  con_max_y() - 7 );
 
   update_status();
   vfu_nav_update_pos();
