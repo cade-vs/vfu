@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.26 2003/04/28 17:17:01 cade Exp $
+ * $Id: see.cpp,v 1.27 2003/04/28 18:04:06 cade Exp $
  *
  */
 
@@ -541,7 +541,7 @@
   {
   //FIXME: implement!!!
   return 0;
-  }                 c
+  }
   
   int SeeViewer::find_next_txt( int rev )
   {

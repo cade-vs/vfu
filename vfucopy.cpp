@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.12 2003/04/28 17:17:01 cade Exp $
+ * $Id: vfucopy.cpp,v 1.13 2003/04/28 18:05:59 cade Exp $
  *
  */
 
@@ -1160,7 +1160,7 @@ void clipboard_menu( int act )
   act = toupper( act );
   switch( act )
     {
-    case 'C': clipboard_add(); break;
+    case 'A': clipboard_add(); break;
     case 'P': clipboard_paste( CLIPBOARD_COPY ); break;
     case 'O': clipboard_paste( CLIPBOARD_MOVE ); break;
     case 'L': clipboard_paste( CLIPBOARD_SYMLINK ); break;
