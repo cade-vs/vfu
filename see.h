@@ -5,6 +5,8 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
+ * $Id: see.h,v 1.2 2001/10/28 13:56:39 cade Exp $
+ *
  */
 
 #ifndef _SEE_H_

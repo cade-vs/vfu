@@ -5,6 +5,8 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
+ * $Id: vfusetup.h,v 1.2 2001/10/28 13:56:40 cade Exp $
+ *
  */
 
 #ifndef _SETUP_H_
