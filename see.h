@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.9 2003/01/29 22:59:16 cade Exp $
+ * $Id: see.h,v 1.10 2003/02/08 02:48:35 cade Exp $
  *
  */
 
@@ -41,7 +41,8 @@ struct SeeViewerOptions
     grid = 0;
     show_eol = 0;
     last_search[0] = 0;
-    no_case = 1;
+    last_opt[0] = 0;
+    hex_cols = 2;
     }
     
   int auto_size;  
@@ -64,9 +65,11 @@ struct SeeViewerOptions
   int dec_pos; /* show decimal positions in hex mode */
   int grid; /* show hilite grid */
   int show_eol; /* show end of lines with $ */
+  
+  int hex_cols; /* 8-bytes columns to show in hex mode */
 
   char last_search[MAX_SEARCH_LEN+1];
-  int no_case;
+  char last_opt[32];
 };
 
 class SeeViewer
@@ -110,22 +113,30 @@ class SeeViewer
   void status( const char* s, int color = -1 );
   
   void filter( char *s, int size );
+  void filter( VString &s, int size );
   
   void draw_hex();
   void draw_txt();
   void draw();
   
-  void up();
-  void down();
+  void up_txt();
+  void up_hex();
+  void down_txt();
+  void down_hex();
+  
+  void up()   { opt->hex_mode ? up_hex() : up_txt(); }
+  void down() { opt->hex_mode ? down_hex() : down_txt(); }
   
   void home();
-  void end();
+  void end_hex();
+  void end_txt();
+  void end() { opt->hex_mode ? end_hex() : end_txt(); }
   void end2();
   
   void go_to();
   
   int find_next();
-  int find( int no_case );
+  int find( const char* opts );
   
   void hex_edit();
   void help();
@@ -148,7 +159,7 @@ struct SeeEditorOptions
     {
     auto_size = 1;
     xmin = xmax = ymin = ymax = -1; /* auto */
-    cn = CONCOLOR( cWHITE, cBLACK ); 
+    cn = CONCOLOR( cWHITE, cBLACK );
     ch = CONCOLOR( cWHITE, cBLUE  ); 
     cs = CONCOLOR( cBLACK, cWHITE ); 
     status = 1;

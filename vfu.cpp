@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.31 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfu.cpp,v 1.32 2003/02/08 02:48:35 cade Exp $
  *
  */
 
@@ -583,8 +583,7 @@ void vfu_init()
    accept /tmp/ as it is default now
   */
   
-  get_rc_directory( "vfu", t );
-  rc_path = t;
+  rc_path = get_rc_directory( "vfu" );
   
   /* setup config files locations */
   filename_opt = rc_path;
@@ -1790,20 +1789,35 @@ void vfu_global_select()
                 fsize_t size = 0;
                 say1("");
                 say2("");
-                if (ch == 'F' ) str_ins_ch( pat, 0, '\\'); else
-                if (ch == 'B' ) str_ins_ch( pat, 0, '\\'); else
-                if (ch == 'E' ) str_ins_ch( pat, 0, '$'); else
-                if (ch == '/' ) str_ins_ch( pat, 0, '~'); else
-                if (ch == '\\') str_ins_ch( pat, 0, '~'); else
-                   ;
-                int nocase = ( ( ch == '\\' ) || ( ch == 'F' ) );
+                
                 size = 0;
                 for ( int z = 0; z < files_count; z++ )
                   {
                   size += files_list[z]->size();
                   if ( files_list[z]->is_dir() ) continue;
-                  files_list[z]->sel = 
-                      (file_find_string( pat,files_list[z]->name(),nocase) >= 0);
+                  
+                  int pos = -1;
+                  switch( ch )
+                    {
+                    case 'F': 
+                       pos = file_string_search( pat, files_list[z]->name(), "i" );
+                       break;
+                    case 'B': 
+                       pos = file_string_search( pat, files_list[z]->name(), "" );
+                       break;
+                    case 'E': 
+                       pos = file_string_search( pat, files_list[z]->name(), "h" );
+                       break;
+                    case '/': 
+                       pos = file_string_search( pat, files_list[z]->name(), "r" );
+                       break;
+                    case '\\': 
+                       pos = file_string_search( pat, files_list[z]->name(), "ri" );
+                       break;
+                    }
+                  
+                  files_list[z]->sel = ( pos > -1 );
+                  
                   char s[128];
                   sprintf( s, "Scanning %4.1f%% (%12.0f bytes in %s ) ", 
                               (100.0 * size) / (files_size+1.0), 
@@ -2604,9 +2618,9 @@ void vfu_file_find_results()
 /*--------------------------------------------------------------------------*/
 
 VArray      __ff_masks;
-VString      __ff_path;
-VString      __ff_pattern;
-int         __ff_nocase;
+VString     __ff_path;
+VString     __ff_pattern;
+VString     __ff_opt;
 
 int __ff_process( const char* origin,    /* origin path */
                   const char* fname,     /* full file name */
@@ -2640,7 +2654,7 @@ int __ff_process( const char* origin,    /* origin path */
       break;
       }
   if ( add && __ff_pattern != "" )
-    add = ( file_find_string( __ff_pattern, fname, __ff_nocase ) > -1 );
+    add = ( file_string_search( __ff_pattern, fname, __ff_opt ) > -1 );
   if (!add) return 0;
 
   char time_str[32];
@@ -2692,13 +2706,13 @@ void vfu_file_find( int menu )
     {
     __ff_pattern = vfu_hist_get( HID_FFGREP, 0 );
     if (!vfu_get_str( "Enter search pattern: ", __ff_pattern, HID_FFGREP )) return;
-    if (ch == 'F' ) str_ins_ch( __ff_pattern, 0, '\\'); else
-    if (ch == 'S' ) str_ins_ch( __ff_pattern, 0, '\\'); else
-    if (ch == 'B' ) str_ins_ch( __ff_pattern, 0, '\\'); else
-    if (ch == 'E' ) str_ins_ch( __ff_pattern, 0, '$'); else
-    if (ch == '\\') str_ins_ch( __ff_pattern, 0, '~'); else
-    if (ch == '/' ) str_ins_ch( __ff_pattern, 0, '~'); else;
-    __ff_nocase = ( str_find( "F\\", ch ) != -1 );
+    if (ch == 'F' ) __ff_opt = "i "; else
+    if (ch == 'S' ) __ff_opt = "  "; else
+    if (ch == 'B' ) __ff_opt = "  "; else
+    if (ch == 'E' ) __ff_opt = "h "; else
+    if (ch == '/' ) __ff_opt = "r "; else
+    if (ch == '\\') __ff_opt = "ri"; else
+    ;
     }
 
   str = vfu_hist_get( HID_FFMASK, 0 );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.17 2003/01/29 22:59:16 cade Exp $
+ * $Id: see.cpp,v 1.18 2003/02/08 02:48:35 cade Exp $
  *
  */
 
@@ -40,63 +40,64 @@
   
   SeeViewer::SeeViewer( SeeViewerOptions *a_opt )
   {
-  opt = a_opt;
-  memset( &escape_keys, 0, sizeof(escape_keys));
-  f = NULL;
-  line = last_line = 1;
-  col = 0;
-  end_reached = 0;
-  fpos = fsize = 0;
-  fname = "";
-  freezed = 0;
-  do_draw = 0;
-  
-  if ( opt->auto_size )
-    {
-    opt->xmin = 1;
-    opt->ymin = 1;
-    opt->xmax = con_max_x();
-    opt->ymax = con_max_y();
-    }
-  rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
-  cols = opt->xmax - opt->xmin + 1;
-  
-  buff = (char*)malloc( opt->bsize + 32 ); /* +32 for tab expansion */
-  
-  help_str = 
-  "+-----------------------------------------------------------------------------+\n"
-  "| SeeViewer v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
-  "|                                                                             |\n"
-  "| Key       TextMode             HexMode            Compatibility             |\n"
-  "| --------+--------------------+--------------------+------------------------ |\n"
-  "| UpArrow | one line back      | 16 bytes back      | P     = Home            |\n"
-  "| DnArrow | one line forward   | 16 bytes forward   | B     = PgUp            |\n"
-  "| LtArrow | col -8 ( `.' `>' ) |  1 byte  back      | SPC   = PgDn            |\n"
-  "| RtArrow | col +8 ( `,' `<' ) |  1 byte  forward   | ENTER = DnArrow         |\n"
-  "| Home    | go to line 1       | go to byte 0       |                         |\n"
-  "| End     | go to last line    | go to last byte    |                         |\n"
-  "| Ctrl+E  | -'- (no line info) | go to last byte    | l -- BG DOS xlate (slow)|\n"
-  "| PgUp/Dn | one page back/forw | one page back/forw | L -- BG WIN xlate (slow)|\n"
-  "| --------+--------------------+--------------------+------------------------ |\n"
-  "| TAB  -- switch between Text and Hex mode          | ESC   -- exit           |\n"
-  "| 1..0 -- switch to slot 1 .. slot 10               | Alt+X -- exit           |\n"
-  "| W w  -- wrap to screen width                      | -     -- exit           |\n"
-  "| +    -- goto line/pos (+line/pos, -line/pos)      | d -- show dec.pos (HEX) |\n"
-  "| I    -- edit! (only for HEX mode)                 | o -- show EOL's (TEXT)  |\n"
-  "| F S  -- find string F=no-case, S=case-sense       | r -- show ruler (TEXT)  |\n"
-  "|         ~pattern  is regexp pattern search        | a -- filter backspaces  |\n"
-  "|         $pattern  is hex pattern search           | t -- tab expansion      |\n"
-  "| N F3 -- find next                                 | g G -- grid (HEX)       |\n"
-  "+-----------------------------------------------------------------------------+";
+    opt = a_opt;
+    memset( &escape_keys, 0, sizeof(escape_keys));
+    f = NULL;
+    line = last_line = 1;
+    col = 0;
+    end_reached = 0;
+    fpos = fsize = 0;
+    fname = "";
+    freezed = 0;
+    do_draw = 0;
+    
+    if ( opt->auto_size )
+      {
+      opt->xmin = 1;
+      opt->ymin = 1;
+      opt->xmax = con_max_x();
+      opt->ymax = con_max_y();
+      }
+    rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
+    cols = opt->xmax - opt->xmin + 1;
+    
+    //FIXME: fix bsize! +32?
+    buff = new char[opt->bsize + 32]; /* +32 for tab expansion */
+    
+    help_str = 
+    "+-----------------------------------------------------------------------------+\n"
+    "| SeeViewer v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
+    "|                                                                             |\n"
+    "| Key       TextMode             HexMode            Compatibility             |\n"
+    "| --------+--------------------+--------------------+------------------------ |\n"
+    "| UpArrow | one line back      | 16 bytes back      | P     = Home            |\n"
+    "| DnArrow | one line forward   | 16 bytes forward   | B     = PgUp            |\n"
+    "| LtArrow | col -8 ( `.' `>' ) |  1 byte  back      | SPC   = PgDn            |\n"
+    "| RtArrow | col +8 ( `,' `<' ) |  1 byte  forward   | ENTER = DnArrow         |\n"
+    "| Home    | go to line 1       | go to byte 0       |                         |\n"
+    "| End     | go to last line    | go to last byte    |                         |\n"
+    "| Ctrl+E  | -'- (no line info) | go to last byte    | l -- BG DOS xlate (slow)|\n"
+    "| PgUp/Dn | one page back/forw | one page back/forw | L -- BG WIN xlate (slow)|\n"
+    "| --------+--------------------+--------------------+------------------------ |\n"
+    "| TAB  -- switch between Text and Hex mode          | ESC   -- exit           |\n"
+    "| 1..0 -- switch to slot 1 .. slot 10               | Alt+X -- exit           |\n"
+    "| W w  -- wrap to screen width                      | -     -- exit           |\n"
+    "| +    -- goto line/pos (+line/pos, -line/pos)      | d -- show dec.pos (HEX) |\n"
+    "| I    -- edit! (only for HEX mode)                 | o -- show EOL's (TEXT)  |\n"
+    "| F S  -- find string F=no-case, S=case-sense       | r -- show ruler (TEXT)  |\n"
+    "|         ~pattern  is regexp pattern search        | a -- filter backspaces  |\n"
+    "|         $pattern  is hex pattern search           | t -- tab expansion      |\n"
+    "| N F3 -- find next                                 | g G -- grid (HEX)       |\n"
+    "+-----------------------------------------------------------------------------+";
   };
   
 /*--------------------------------------------------------------------*/
   
   SeeViewer::~SeeViewer()  
   {
-  close();
-  if ( buff ) free( buff );
-  buff = NULL;
+    close();
+    if ( buff ) delete buff;
+    buff = NULL;
   };
   
 /*--------------------------------------------------------------------*/
@@ -104,303 +105,351 @@
   /* add escape key which will cause run() exit */
   void SeeViewer::escape_on( int key )  
   {
-  int z = 0;
-  while( z < MAX_ESCAPE_KEYS-1 )
-    {
-    if (!escape_keys[z])
+    int z = 0;
+    while( z < MAX_ESCAPE_KEYS-1 )
       {
-      escape_keys[z] = key;
-      return;
+      if (!escape_keys[z])
+        {
+        escape_keys[z] = key;
+        return;
+        }
+      z++;
       }
-    z++;
-    }
   };
 
 /*--------------------------------------------------------------------*/
   
   int SeeViewer::open( const char* a_fname )
   {
-  if (!buff) return 1;
-  if (f) fclose( f );
-  xlat = 0;
-  f = NULL;
-  line = 0;
-  col = 0;
-  last_line = 0;
-  end_reached = 0;
-  fpos = fsize = 0;
-  fname = a_fname;
-  freezed = 0;
-  do_draw = 0;
-  f = fopen( fname, "r" );
-  if (!f) return 2;
-  fsize = file_size( f );
-  return 0;
+    if (!buff) return 1;
+    if (f) fclose( f );
+    xlat = 0;
+    f = NULL;
+    line = 0;
+    col = 0;
+    last_line = 0;
+    end_reached = 0;
+    fpos = fsize = 0;
+    fname = a_fname;
+    freezed = 0;
+    do_draw = 0;
+    f = fopen( fname, "r" );
+    if (!f) return 2;
+    fsize = file_size( f );
+    return 0;
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::close()  
   {
-  if (f) fclose( f );
-  f = NULL;
+    if ( f ) fclose( f );
+    f = NULL;
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::status( const char* s, int color )  
   {
-  VString sss;
-  sss = "| ";
-  sss += s;
-  if (str_len(sss) >= cols)
-    str_sleft( sss, (cols-2) );
-  else
-    str_pad( sss, -(cols-2) );
-  sss += "|";
-  con_out( opt->xmin, opt->ymax, sss, color != -1 ? color : opt->cs );
+    VString sss;
+    sss = "| ";
+    sss += s;
+    if (str_len(sss) >= cols)
+      str_sleft( sss, (cols-2) );
+    else
+      str_pad( sss, -(cols-2) );
+    sss += "|";
+    con_out( opt->xmin, opt->ymax, sss, color != -1 ? color : opt->cs );
   };
 
 /*--------------------------------------------------------------------*/
   
+  
+  //FIXME: 2 not needed
   void SeeViewer::filter( char *s, int size )  
   {
-  int z;
-  for ( z = 0; z < size; z++ ) if ( (unsigned char)s[z] < 32 ) s[z] = '.';
-  if (xlat == 1) str_tr( s,  bg_xlat_table[0],  bg_xlat_table[1] ); else
-  if (xlat == 2) str_tr( s, bgw_xlat_table[0], bgw_xlat_table[1] );
+    int z;
+    for ( z = 0; z < size; z++ ) if ( (unsigned char)s[z] < 32 ) s[z] = '.';
+    if (xlat == 1) str_tr( s,  bg_xlat_table[0],  bg_xlat_table[1] ); else
+    if (xlat == 2) str_tr( s, bgw_xlat_table[0], bgw_xlat_table[1] );
+  };
+
+  void SeeViewer::filter( VString &s, int size )  
+  {
+    int z;
+    for ( z = 0; z < size; z++ ) if ( (unsigned char)s[z] < 32 ) s[z] = '.';
+    if (xlat == 1) str_tr( s,  bg_xlat_table[0],  bg_xlat_table[1] ); else
+    if (xlat == 2) str_tr( s, bgw_xlat_table[0], bgw_xlat_table[1] );
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::draw_hex()  
   {
-  CHKPOS;
-  if ( cols < 79 || cols >= MAXCOLS )
-    {
-    status( "HEX mode only supported on 80-1024 columns!" );
-    return;
-    }
-  int z = 0;
-  int i = 0;
-  char lin[MAXCOLS];
-  char str[32];
-  int buffsize = rows * 16; // all size :)
-  fseek( f, fpos, SEEK_SET );
-  buffsize = fread( buff, 1, buffsize, f );
-  for( z = 0; z < rows; z++ )
-    {
-    sprintf( lin, opt->dec_pos ? "%8d : ":"%08X : ", fpos + z * 16 );
-    for ( i = 0; i < 16; i++ )
+    CHKPOS;
+
+    int rowsz; // row size
+    int needw; // needed screen width
+    
+    con_max_x();
+    while(4)
       {
-      if ( z*16+i < buffsize )
-        {
-        sprintf( lin+11+i*3+(i>7)*2, (i==7)?"%02X - ":"%02X ", (unsigned char)buff[z*16+i]);
-        str[i] = buff[z*16+i];
-        }
+      rowsz = opt->hex_cols * 8; // row size
+      needw = 10 + 2 + // offset
+              rowsz * 3 + rowsz / 8 + 2 + // hexdump
+              rowsz; // ascii
+      if ( opt->hex_cols == 1 ) break;
+      if ( needw > con_max_x() ) 
+        opt->hex_cols = 1;
       else
-        {
-        sprintf( lin+11+i*3+(i>7)*2, (i==7)?"     ":"   " );
-        str[i] = ' ';
-        }
+        break;  
       }
-    str[16] = 0;
-    filter( str, 16 );
-    if ((z-1)*16+i < buffsize)
-      strcat( lin, ": " );
-    else
-      strcat( lin, "  " );
-    if (lin[11] == ' ') lin[11] = '~'; // hack
-    strcat( lin, str );
-    str_pad( lin, -cols );
-    con_out( 1, z+1, lin, (opt->grid && (fpos/16+z)%2==0) ? opt->ch : opt->cn );
-    }
-  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Pos. %4d of %4d | H,Alt+H Help ", (100.0*fpos)/(fsize?fsize:1), fpos, fsize );
-  status( buff );
+
+    if ( needw > con_max_x() )
+      {
+      status( "HEX mode not available for this screen width" );
+      return;
+      }
+    
+    
+    fseek( f, fpos, SEEK_SET );
+    int rs = fread( buff, 1, rowsz * rows, f );
+    int x;
+    int y;
+    
+    
+    VString offset;
+    VString hexdump;
+    VString ascii;
+    char t[256];
+    for( y = 0; y < rows; y++ )
+      {
+      sprintf( t, opt->dec_pos ? "%10d":"%010X", fpos + rowsz * y );
+      offset = t;
+      ascii = "";
+      hexdump = "";
+      for( x = 0; x < rowsz; x++ )
+        {
+        if ( y * rowsz + x >= rs )
+          {
+          break;
+          }
+        else
+          {
+          int c = (unsigned char)buff[y * rowsz + x];
+          sprintf( t, "%02X ", c );
+          hexdump += t;
+          str_add_ch( ascii, c < 32 ? '.' : c );
+          if ( (x + 1) % 8 == 0 && x > 0 && x < rowsz - 1 ) 
+            hexdump += "- ";
+          }
+        }
+      if ( hexdump == "" ) hexdump = "~";
+      filter( ascii, str_len(ascii) );
+
+      str_pad( hexdump, -( rowsz * 3 + (opt->hex_cols - 1) * 2 ) );
+      str_pad( ascii, -rowsz );
+      
+      VString line = offset + "| " + hexdump + "|" + ascii;
+      
+      str_pad( line, -cols );
+      con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
+      }
+    
+    sprintf( t, "SeeViewer v" SEE_VERSION " | %3.0f%% | Pos. %4d of %4d | Alt+H Help", (100.0*fpos)/(fsize?fsize:1), fpos, fsize );
+    status( t );
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::draw_txt()  
   {
-  CHKPOS;
-  if ( line == -1 ) last_line = -1;
-  int cpos = fpos;
-  int z = 0;
-  int y = 0;
-  fseek( f, cpos, SEEK_SET );
-  VString sss;
-  while( y < rows )
-    {              
-    if ( cpos >= fsize )
-      {
-      sss = "~";
-      str_pad( sss, -cols );
-      while( y < rows )
+    CHKPOS;
+    if ( line == -1 ) last_line = -1;
+    int cpos = fpos;
+    int z = 0;
+    int y = 0;
+    fseek( f, cpos, SEEK_SET );
+    VString sss;
+    while( y < rows )
+      {              
+      if ( cpos >= fsize )
         {
-        con_out( 1, y+1,sss, opt->cn);
-        y++;
+        sss = "~";
+        str_pad( sss, -cols );
+        while( y < rows )
+          {
+          con_out( 1, y+1,sss, opt->cn);
+          y++;
+          }
+        break;
         }
-      break;
-      }
-
-    z = read_text( cpos );
-    while ( z > 0 && ( buff[z-1] == '\r' || buff[z-1] == '\n' ) ) z--;
-    buff[z] = 0;
-    filter( buff, z );
-    
-    int show_lmark = 0;
-    int show_rmark = 0;
-    int show_eol   = -1;
-    if (col)
-      {
-      if (col >= z)
+  
+      z = read_text( cpos );
+      while ( z > 0 && ( buff[z-1] == '\r' || buff[z-1] == '\n' ) ) z--;
+      buff[z] = 0;
+      filter( buff, z );
+      
+      int show_lmark = 0;
+      int show_rmark = 0;
+      int show_eol   = -1;
+      if (col)
         {
-        buff[0] = 0;
-        show_lmark = 1;
-        z = 0;
+        if (col >= z)
+          {
+          buff[0] = 0;
+          show_lmark = 1;
+          z = 0;
+          }
+        else
+          {
+          str_trim_left( buff, col );
+          z -= col;
+          }
+        }
+      if ( z > cols )
+        {
+        buff[cols] = 0;
+        show_rmark = 1;
         }
       else
         {
-        str_trim_left( buff, col );
-        z -= col;
+        if ( opt->show_eol && !show_lmark ) show_eol = z+1;
         }
+      str_pad( buff, -cols );
+      con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
+      if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
+      if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
+      if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
+      y++;
       }
-    if ( z > cols )
-      {
-      buff[cols] = 0;
-      show_rmark = 1;
-      }
-    else
-      {
-      if ( opt->show_eol && !show_lmark ) show_eol = z+1;
-      }
-    str_pad( buff, -cols );
-    con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
-    if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
-    if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
-    if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
-    y++;
-    }
-  sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Line %4d of %4d%c|%4d+ | H,Alt+H Help ", (100.0*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
-  status( buff );
+    sprintf( buff, "SeeViewer v" SEE_VERSION " | %3.0f%% | Line %4d of %4d%c|%4d+ | Alt+H Help", (100.0*fpos)/(fsize?fsize:1), line, last_line, end_reached?' ':'?', col+1 );
+    status( buff );
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::draw() 
   { 
-  (opt->hex_mode) ? draw_hex() : draw_txt(); 
-  if ( xlat == 1 ) con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
-  if ( xlat == 2 ) con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
+    (opt->hex_mode) ? draw_hex() : draw_txt(); 
+    if ( xlat == 1 ) con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
+    if ( xlat == 2 ) con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
   }
 
 /*--------------------------------------------------------------------*/
   
-  void SeeViewer::up()  
+  void SeeViewer::up_hex()
   {
-  CHKPOS;
-  if (opt->hex_mode)
-    {
-    fpos -= 16;
-    if (fpos < 0) fpos = 0;
-    return;
-    }
-  int cpos = fpos;
-  if ( cpos == 0 ) return;
-
-  int i = opt->wrap;
-  if ( cpos - i < 0 ) i = cpos;
-  cpos -= i;
-  fseek( f, cpos, SEEK_SET );
-  int res = fread( buff, 1, i, f );
-  ASSERT( res == i );
-  int z = 0;
-  if ( buff[i-1] == '\n' )
-    {
-    i--;
-    z++;
-    }
-  while( i > 0 && buff[i-1] != '\n' )
-    {
-    i--;
-    z++;
-    }
-  fpos -= z;
-  if ( fpos <  0 ) fpos = 0;
-  if ( fpos == 0 ) line = 1;
-  if ( line >  1 ) line--;
+    CHKPOS;
+    fpos -= opt->hex_cols * 8;
+    if ( fpos < 0 ) fpos = 0;
+  }
+      
+  void SeeViewer::up_txt()
+  {
+    CHKPOS;
+    int cpos = fpos;
+    if ( cpos == 0 ) return;
+  
+    int i = opt->wrap;
+    if ( cpos - i < 0 ) i = cpos;
+    cpos -= i;
+    fseek( f, cpos, SEEK_SET );
+    int res = fread( buff, 1, i, f );
+    ASSERT( res == i );
+    int z = 0;
+    if ( buff[i-1] == '\n' )
+      {
+      i--;
+      z++;
+      }
+    while( i > 0 && buff[i-1] != '\n' )
+      {
+      i--;
+      z++;
+      }
+    fpos -= z;
+    if ( fpos <  0 ) fpos = 0;
+    if ( fpos == 0 ) line = 1;
+    if ( line >  1 ) line--;
   };
 
 /*--------------------------------------------------------------------*/
   
-  void SeeViewer::down()  
+  void SeeViewer::down_hex()  
   {
-  CHKPOS;
-  if (opt->hex_mode)
-    {
-    fpos += 16;
+    CHKPOS;
+    fpos += opt->hex_cols * 8;
     if ( fpos > fsize ) fpos = fsize;
-    return;
-    }
-  int z = 0;
-  if ( fpos == fsize ) return;
-  if ( fseek( f, fpos, SEEK_SET ) ) return;
-  int res = fread( buff, 1, opt->wrap, f );
-  z = 0;
-  while( z < res && buff[z] != '\n' ) z++;
-  if (buff[z] == '\n') z++;
-  buff[z] = 0; // need by SeeFindNext()
-//    strcpy( cline, buff ); // need by SeeFindNext()
-  fpos += z;
-  if ( line >= 0 ) line++;
-  if ( line > last_line ) last_line = line;
-  if ( fpos >  fsize ) fpos = fsize;
-  if ( fpos == fsize && last_line != -1 ) end_reached = 1;
+  }
+  
+  void SeeViewer::down_txt()  
+  {
+    CHKPOS;
+    int z = 0;
+    if ( fpos == fsize ) return;
+    if ( fseek( f, fpos, SEEK_SET ) ) return;
+    int res = fread( buff, 1, opt->wrap, f );
+    z = 0;
+    while( z < res && buff[z] != '\n' ) z++;
+    if (buff[z] == '\n') z++;
+    buff[z] = 0; // need by SeeFindNext()
+  //    strcpy( cline, buff ); // need by SeeFindNext()
+    fpos += z;
+    if ( line >= 0 ) line++;
+    if ( line > last_line ) last_line = line;
+    if ( fpos >  fsize ) fpos = fsize;
+    if ( fpos == fsize && last_line != -1 ) end_reached = 1;
   };
 
 /*--------------------------------------------------------------------*/
   
   void SeeViewer::home()  
   {
-  fpos = 0;
-  line = 1;
+    fpos = 0;
+    line = 1;
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::end()  
+
+  void SeeViewer::end_hex()
   {
-  if (end_reached)
-    {
+    fpos = fsize;
     end2();
-    return;
-    }
-  while ( fpos < fsize )
-    {
-    if ( con_kbhit() && con_getch() == 27 ) return;
-    down();
-    if (line % 768 == 0)
+  }
+  
+  void SeeViewer::end_txt()
+  {
+    if (end_reached)
       {
-      char tmp[128];
-      sprintf(tmp, " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
-      status(tmp);
+      end2();
+      return;
       }
-    }
-  end2();
+    while ( fpos < fsize )
+      {
+      if ( con_kbhit() && con_getch() == 27 ) return;
+      down();
+      if (line % 768 == 0)
+        {
+        char tmp[128];
+        sprintf(tmp, " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
+        status(tmp);
+        }
+      }
+    end2();
   };
 
 /*--------------------------------------------------------------------*/
 
   void SeeViewer::end2()  
   {
-  int z = 0;
-  if (!end_reached)
-    line = -1;
-  else
-    line = last_line;
-  fpos = fsize;
-  for ( z = 0; z < rows / 2; z++ ) up();
+    int z = 0;
+    if (!end_reached)
+      line = -1;
+    else
+      line = last_line;
+    fpos = fsize;
+    for ( z = 0; z < rows / 2; z++ ) up();
   };
   
 /*--------------------------------------------------------------------*/
@@ -503,7 +552,9 @@
     fpos++;
   else
     down(); /* start search from the next line -- avoid blocking */
-  int new_pos = file_find_string( opt->last_search, f, opt->no_case, fpos+1 );
+  fseek( f, fpos+1, SEEK_SET );
+  int new_pos = file_string_search( opt->last_search, f, opt->last_opt );
+  fseek( f, fpos, SEEK_SET );
   if ( new_pos >= 0 )
     {
     fpos = new_pos;
@@ -533,10 +584,10 @@
 
 /*--------------------------------------------------------------------*/
   
-  int SeeViewer::find( int no_case )  
+  int SeeViewer::find( const char* opts )  
   {
   VString sss;
-  sprintf( sss, "Find %s: ", no_case?"(no case)":"(with case)");
+  sprintf( sss, "Find %s: ", opts );
   status( sss );
   int ii = str_len(sss)+2;
   sss = opt->last_search;
@@ -547,7 +598,7 @@
     }
   str_sleft( sss, MAX_SEARCH_LEN );
   strcpy( opt->last_search, sss );
-  opt->no_case = no_case;
+  strcpy( opt->last_opt, opts );
   return find_next();
   };
   
@@ -561,14 +612,16 @@
     return;
     }
 
+  int rowsz = opt->hex_cols * 8; // row size
+
   int in_text = 0; // if text is edited
-  int editbs = rows * 16;
-  unsigned char *editb = (unsigned char*)malloc( editbs );
+  int editbs = rows * rowsz;
+  unsigned char *editb = new unsigned char[editbs];
   fseek( f, fpos, SEEK_SET );
   editbs = fread( editb, 1, editbs, f );
   if ( editbs == 0 )
     {
-    free( editb );
+    delete editb;
     status( "Nothing to edit or read error..." );
     return;
     };
@@ -582,9 +635,9 @@
   while(4)
     {
     if (in_text)
-      con_xy( 64 + epos % 16, 1 + epos / 16 );
+      con_xy( 13 + rowsz * 3 + (opt->hex_cols - 1) * 2 + 1 + epos % rowsz, 1 + epos / rowsz );
     else
-      con_xy( 12 + (epos%16)*3 + 2*(epos%16 > 7) + bytepos, 1 + epos / 16 );
+      con_xy( 13 + (epos % rowsz) * 3 + 2 * ( epos % rowsz / 8 ) + bytepos, 1 + epos / rowsz );
     if ( key == 0  ) key = con_getch();
     if ( key == 27 ) break;
     if ( key == 13 )
@@ -625,13 +678,18 @@
                            if (!in_text) bytepos = 1;
                            }
                        break;
-      case KEY_DOWN  : if ( epos + 16 <  editbs ) epos += 16; break;
-      case KEY_UP    : if ( epos - 16 >= 0      ) epos -= 16; break;
+      case KEY_DOWN  : if ( epos + rowsz <  editbs ) epos += rowsz; break;
+      case KEY_UP    : if ( epos - rowsz >= 0      ) epos -= rowsz; break;
       
-      case KEY_HOME  : epos = epos - epos % 16; bytepos = 0; break;
-      case KEY_END   : epos = epos + (16 - epos%16 - 1);
+      case KEY_PPAGE : epos = epos % rowsz; break;
+      case KEY_NPAGE : epos = editbs - editbs % rowsz + epos % rowsz; 
                        if (epos >= editbs) epos = editbs - 1;
-                       bytepos = 0;  break;
+                       break;
+      
+      case KEY_HOME  : epos = epos - epos % rowsz; bytepos = 0; break;
+      case KEY_END   : epos = epos + (rowsz - epos%rowsz - 1);
+                       if (epos >= editbs) epos = editbs - 1;
+                       break;
       }
     if ( !in_text && key > 0 && key < 255 && strchr( HEXCHARS, toupper(key) ) )
       {
@@ -649,7 +707,7 @@
         }
       tmp[0] = editb[epos];
       filter( tmp, 1 );
-      con_xy( 64 + epos % 16, 1 + epos / 16);
+      con_xy( 13 + rowsz * 3 + (opt->hex_cols - 1) * 2 + 1 + epos % rowsz, 1 + epos / rowsz);
       con_puts( tmp, chRED );
       key = KEY_RIGHT;
       }
@@ -659,7 +717,7 @@
       char tmp[3];
       tmp[0] = key; tmp[1] = 0;
       con_puts( tmp, chRED );
-      con_xy( 12 + (epos % 16)*3 + 2*(epos % 16 > 7), 1 + epos / 16 );
+      con_xy( 13 + (epos % rowsz) * 3 + 2 * ( epos % rowsz / 8 ), 1 + epos / rowsz );
       sprintf( tmp, "%02X", key );
       tmp[2] = 0;
       con_puts( tmp, chRED );
@@ -670,7 +728,7 @@
       key = 0;
     }
   con_chide();
-  free(editb);
+  delete editb;
   draw();
   };
 
@@ -784,18 +842,30 @@
       case 'g'        : 
       case 'G'        : opt->grid = !opt->grid; draw(); break;
       case 'W'        :
-      case 'w'        : opt->wrap = (opt->wrap < opt->bsize)? opt->bsize : cols;
-                        draw();
-                        status( (opt->wrap == cols)? " Wrap ON" : " Wrap OFF" );
+      case 'w'        : if ( opt->hex_mode )
+                          {
+                          opt->hex_cols++;
+                          draw();
+                          }
+                        else
+                          {
+                          opt->wrap = (opt->wrap < opt->bsize)? opt->bsize : cols;
+                          draw();
+                          status( (opt->wrap == cols)? " Wrap ON" : " Wrap OFF" );
+                          }
                         break;
       
       case 'l'        : xlat = (xlat == 1) ? 0 : 1; draw(); break;
       case 'L'        : xlat = (xlat == 2) ? 0 : 2; draw(); break;
       
       case 'f'        :
-      case 'F'        : find( 1 ); break;
+      case 'F'        : find( "i" ); break;
       case 's'        :
-      case 'S'        : find( 0 ); break;
+      case 'S'        : find( "" ); break;
+      case 'e'        :
+      case 'E'        : find( "h" ); break;
+      case '/'        : find( "r" ); break;
+      case '\\'       : find( "ri" ); break;
       case KEY_F(3)   :
       case 'n'        :
       case 'N'        : find_next(); break;
@@ -1113,7 +1183,7 @@
     for( z = from; z < rows; z++ )
       draw_line( sv.page() + z );
   con_cshow();
-  sprintf( str, "SeeEditor v" SEE_VERSION " | %s | %3.0f%% | Line:%5d of%5d |%4d+ %s | F1,Alt+H Help", 
+  sprintf( str, "SeeEditor v" SEE_VERSION " | %s | %3.0f%% | Line:%5d of%5d |%4d+ %s | Alt+H Help", 
                  mod?"MOD!":"----", 
                  (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1, opt->insert?"INS":"ovr" );
   status( str );

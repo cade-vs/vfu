@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.19 2003/01/30 00:03:51 cade Exp $
+ * $Id: vfudir.cpp,v 1.20 2003/02/08 02:48:35 cade Exp $
  *
  */
 
@@ -109,7 +109,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
     if (ch == '\\') ch = '/'; /* dos hack :)) */
     if ( ch == '/' && str_find( target, '/' ) == -1 && target[0] == '~' )
       {
-      tilde_expand( target );
+      target = tilde_expand( target );
+      str_fix_path( target );
       pos = str_len( target );
       ch = 0;
       }
@@ -231,6 +232,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
     if (ch == KEY_CTRL_X)
       {
         char t[MAX_PATH];
+        if ( target[0] == '~' )
+          target = tilde_expand( target );
         expand_path( target, t );
         str_fix_path( t );
         target = t;
@@ -287,7 +290,10 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
   //------------------------------------------------------------------
   str_cut_spc( target );
   if ( res == 1 && target[0] == '~' )
-    tilde_expand( target );
+    {
+    target = tilde_expand( target );
+    str_fix_path( target );
+    }
 /*  
   if ( target.len() > 0 )
     { 

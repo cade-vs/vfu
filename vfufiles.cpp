@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.12 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfufiles.cpp,v 1.13 2003/02/08 02:48:35 cade Exp $
  *
  */
 
@@ -76,8 +76,8 @@ void vfu_rescan_files( int a_recursive )
     update_status();
     }
 
-  file_list_index.set_pos( old_fli );
   file_list_index.set_page( old_flp );
+  file_list_index.set_pos( old_fli );
   vfu_nav_update_pos();
 };
 
