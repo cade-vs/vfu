@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.3 2002/04/14 10:10:54 cade Exp $
+ * $Id: vfuopt.cpp,v 1.4 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -103,15 +103,14 @@ void vfu_load_dir_colors()
   int z;
   // for ( z = 0; z < 16; z++ ) ext_colors[z] = "";
   
-  PSZCluster sc;
-  sc.create( 16, 16 );
-  LoadFromFile( "/etc/DIR_COLORS", &sc, 1024 );
-  if (sc.count() == 0) return;
+  VArray va;
+  va.fload( "/etc/DIR_COLORS" );
+  if (va.count() == 0) return;
 
-  while( sc.count() )
+  while( va.count() )
     {
-    String str = sc[0];
-    sc.free( 0 );
+    String str = va[0];
+    va.del( 0 );
     int comment = str_find( str, '#' );
     if ( comment != -1 ) str_sleft( str, comment );
     str_cut( str, " \t" );
@@ -168,67 +167,46 @@ int set_set( const char *line, const char *keyword, char *target )
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, PSZCluster *target )
+int set_set( const char *line, const char *keyword, VArray *target )
 {
-  char temp[255];
-  regexp *re = regcomp("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
-  int r = (regexec(re, line) && !strcasecmp(keyword, regsubn(re, 1, temp)));
-  if (r)
-    {
-    regsubn(re, 2, temp);
-    target->add( temp );
-    }
-  free(re);
-  return r;
+  VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
+  if ( ! re.m( line ) ) return 0;
+  if ( re[1] != keyword ) return 0;
+  target->push( re[2] );
+  return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
 int set_set( const char *line, const char *keyword, String &target )
 {
-  char temp[255];
-  regexp *re = regcomp("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
-  int r = (regexec(re, line) && !strcasecmp(keyword, regsubn(re, 1, temp)));
-  if (r)
-    {
-    regsubn(re, 2, temp);
-    target = temp;
-    }
-  free(re);
-  return r;
+  VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
+  if ( ! re.m( line ) ) return 0;
+  if ( re[1] != keyword ) return 0;
+  target = re[2];
+  return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
 int set_set( const char *line, const char *keyword, int &target )
 {
-  char temp[255];
-  regexp *re = regcomp("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*([0123456789]+)");
-  int r = (regexec(re, line) && !strcasecmp(keyword, regsubn(re, 1, temp)));
-  if (r)
-    {
-    regsubn(re, 2, temp);
-    target = atoi(temp);
-    }
-  free(re);
-  return r;
+  VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*([0123456789]+)");
+  if ( ! re.m( line ) ) return 0;
+  if ( re[1] != keyword ) return 0;
+  target = atoi( re[2] );
+  return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-int set_set( const char *line, const char *keyword, StrSplitter &splitter )
+int set_set( const char *line, const char *keyword, VArray &splitter )
 {
-  char temp[1024];
-  regexp *re = regcomp("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
-  int r = (regexec(re, line) && !strcasecmp(keyword, regsubn(re, 1, temp)));
-  if (r)
-    {
-    regsubn(re, 2, temp);
-    splitter.set_delimiter( PATH_DELIMITER );
-    splitter.set( temp );
-    }
-  free(re);
-  return r;
+  VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
+  if ( ! re.m( line ) ) return 0;
+  if ( re[1] != keyword ) return 0;
+  splitter.split( PATH_DELIMITER, re[2] );
+  return 1;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -243,12 +221,10 @@ int key_by_name( const char* key_name )
   /*
   if (strcmp (key_name, "MENU"  ) == 0) ux.key = - menucount;
   */
-  regexp *reFKEYS = regcomp( "[\\@\\^\\#]?[fF][01234567890]+" );
-  if (!reFKEYS) return 0;
+  VRegexp reFKEYS( "[\\@\\^\\#]?[fF][01234567890]+" );
   
-  if (regexec( reFKEYS, key_name ))
+  if ( reFKEYS.m( key_name ) )
     {
-    free(reFKEYS); /* so I can return below */
     if ( toupper(key_name[0]) == 'F' )
       return KEY_F1 + atoi( key_name + 1 ) - 1; else
     if ( toupper(key_name[0]) == '@' )
@@ -258,8 +234,6 @@ int key_by_name( const char* key_name )
     if ( toupper(key_name[0]) == '#' )
       return KEY_SH_F1 + atoi( key_name + 2 ) - 1;
     }
-  else  
-    free(reFKEYS);  
   return 0;    
 };
 
@@ -270,11 +244,11 @@ void vfu_settings_load()
   String str;
   char t[1024];
   
-  user_externals.freeall();
-  history.freeall();
-  see_filters.freeall();
-  panelizers.freeall();
-  archive_extensions.freeall();
+  user_externals.zap();
+  history.zap();
+  see_filters.zap();
+  panelizers.zap();
+  archive_extensions.zap();
   
   /***** LOAD DEFAULTS *******/
 
@@ -344,7 +318,7 @@ void vfu_settings_load()
   else
     say1( "warning: bad vfu.options file, loading defaults..." );
   
-  LoadFromFile( filename_history, &history, MAX_PATH );
+  history.fload( filename_history );
   
   if (getenv("EDITOR"))
     {
@@ -439,7 +413,7 @@ void vfu_settings_load()
         str = str + t + ",";
         regsubn( re_ux, 4, t ); /* get shell line */
         str += t;
-        user_externals.add( str );
+        user_externals.push( str );
         continue;
         } else
       if ( regexec( re_see, line ) )
@@ -449,7 +423,7 @@ void vfu_settings_load()
         str = str + t + ",";
         regsubn( re_see, 2, t ); /* get shell line */
         str += t;
-        see_filters.add( str );
+        see_filters.push( str );
         continue;
         } else
       if ( regexec( re_pan, line ) )
@@ -459,7 +433,7 @@ void vfu_settings_load()
         str = str + t + ",";
         regsubn( re_pan, 2, t ); /* get shell line */
         str += t;
-        panelizers.add( str );
+        panelizers.push( str );
         continue;
         }
       }
@@ -488,7 +462,7 @@ void vfu_settings_save()
 {
   file_save_crc32( filename_opt, &opt, sizeof(opt));
 //  file_save_crc32( filename_size_cache, &size_cache, sizeof(size_cache));
-  SaveToFile( filename_history, &history );
+  history.fsave( filename_history );
   size_cache.fsave( filename_size_cache );
 }
 

@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.5 2002/04/14 10:10:54 cade Exp $
+ * $Id: vfuuti.cpp,v 1.6 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -341,7 +341,7 @@ void vfu_hist_remove( int hist_id, int index )
     {
     if ( hist_id != -1 && strncmp( hstr, history[z], HISTIDPAD+1 ) != 0 ) { z++; continue; }
     if ( index != -1 && index != i ) { z++; i++; continue; }
-    history.free( z );
+    history.del( z );
     if ( index != -1 ) break;
     };
 };
@@ -351,7 +351,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
   String str;
   
-  mb.freeall();
+  mb.zap();
   int z;
   int cnt = vfu_hist_count( hist_id );
   if ( cnt < 1 ) return -1;
@@ -361,7 +361,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
     str = "";
     str_add_ch( str, hist_menu_hotkeys[z] );
     str = str + " " + vfu_hist_get( hist_id, z );
-    mb.add( str );
+    mb.push( str );
     }
   return vfu_menu_box( x, y, title );
 };

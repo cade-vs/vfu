@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.3 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfudir.h,v 1.4 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -41,7 +41,7 @@ int  tree_index( const char *s );
 const char* tree_find( const char *s ); /* return full path by dirname */
 
 /* return count of found dirnames and stores them to sc */
-int tree_find( const char *s, PSZCluster *sc ); 
+int tree_find( const char *s, VArray *va ); 
 
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );

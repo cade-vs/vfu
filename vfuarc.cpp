@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.5 2001/11/18 15:41:58 cade Exp $
+ * $Id: vfuarc.cpp,v 1.6 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -159,12 +159,12 @@ void vfu_extract_files( int one )
 
   strcpy( opt.last_copy_path[ CM_COPY ], target );
 
-  PSZCluster sc; sc.create( 16, 16 );
+  VArray va;
 
   int z;
   for( z = 0; z < files_count; z++ )
     if ((files_list[z]->sel && one == 0) || (z == FLI && one != 0))
-      sc.add( files_list[z]->full_name() );
+      va.push( files_list[z]->full_name() );
 
   if (chdir(target))
     {
@@ -175,7 +175,7 @@ void vfu_extract_files( int one )
     }
 
   String tmpfile = vfu_temp();
-  if (SaveToFile( tmpfile, &sc ))
+  if (va.fsave( tmpfile ))
     {
     sprintf( t, "Error writing list file: %s", tmpfile.data() );
     say1( t );

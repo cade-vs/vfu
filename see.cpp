@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.5 2002/04/14 10:10:54 cade Exp $
+ * $Id: see.cpp,v 1.6 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -896,8 +896,6 @@
   col = 0;
   colpage = 0;
   
-  sc.create( 64, 64 );
-  
   mod = 0;
   freezed = 0;
   
@@ -912,7 +910,7 @@
   cols = opt->xmax - opt->xmin + 1;
 
   sv.min = 0;
-  sv.max = sc.count() - 1;
+  sv.max = va.count() - 1;
   sv.pagesize = rows;
   sv.gotopos( 0 );
   
@@ -947,7 +945,6 @@
   
   SeeEditor::~SeeEditor()
   {
-  sc.done();
   };
 
 /*--------------------------------------------------------------------*/
@@ -971,7 +968,7 @@
   
   int SeeEditor::open( const char* a_fname )
   {
-  if ( sc.count() || str_len( fname ) )
+  if ( va.count() || str_len( fname ) )
     close();
   fname = a_fname;
   remove_all();
@@ -979,9 +976,9 @@
   if (access( fname, F_OK ))
     {
     mod = 1;
-    sc.add( "" ); /* hack if new file */
+    va.push( "" ); /* hack if new file */
     }
-  sv.max = sc.count() - 1;
+  sv.max = va.count() - 1;
   sv.gotopos( 0 );
   col = colpage = 0;
   mod = 0;
@@ -999,7 +996,7 @@
   col = 0;
   colpage = 0;
   sv.gotopos( 0 );
-  sc.freeall();
+  va.zap();
   mod = 0;
   con_chide();
   };
@@ -1053,7 +1050,7 @@
   {
   int c = col;
   if (row == -1) row = sv.pos;
-  String str = sc[row];
+  String str = va[row];
   String map;
   if ( expand_tabs( str, map ) )
     {
@@ -1076,7 +1073,7 @@
   {
   if ( freezed ) return;
   
-  ASSERT( sv.max == sc.count() - 1 );
+  ASSERT( sv.max == va.count() - 1 );
   if ( n > sv.max )
     {
     String sss = "~";
@@ -1086,7 +1083,7 @@
   else
     {
     String map;
-    String str = sc[n];
+    String str = va[n];
     expand_tabs( str, map );
     str_trim_left( str, colpage );
     str_sleft( str, cols );
@@ -1121,7 +1118,7 @@
   int SeeEditor::save()
   {
   remove_trails();
-  if (SaveToFile( fname, &sc ))
+  if (va.fsave( fname ))
     {
     String s = "Cannot save file! ";
     s += fname;
@@ -1177,7 +1174,7 @@
   void SeeEditor::left()
   {
   if (col <= 0) return;
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   String map;
   if ( expand_tabs( str, map ) )
     {
@@ -1195,7 +1192,7 @@
 
   void SeeEditor::right()
   {
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   String map;
   if ( expand_tabs( str, map ) )
     {
@@ -1221,7 +1218,7 @@
   void SeeEditor::end()
   {
   remove_trails( sv.pos );
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   String map;
   expand_tabs( str, map );
   col = str_len( str );
@@ -1244,25 +1241,25 @@
 
   void SeeEditor::kdel()
   {
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   int c = real_col();
   if (c >= str_len( str ))
     {
     if ( sv.pos == sv.max ) return;
     mod = 1;
-    String nstr = sc[sv.pos+1]; /* next string (below) */
+    String nstr = va[sv.pos+1]; /* next string (below) */
     if ( c > str_len( str ) ) str_pad( str, -c, ' ' ); /* the line is short -- pad with spaces */
     str += nstr;
-    sc.put( sv.pos, str );
-    sc.free( sv.pos+1 );
-    sv.max = sc.count() - 1;
+    va.set( sv.pos, str );
+    va.del( sv.pos+1 );
+    sv.max = va.count() - 1;
     draw(); /* FIXME: from ROW to the end of the page */
     }
   else
     {
     mod = 1;
     str_del( str, c, 1 );
-    sc.put( sv.pos, str );
+    va.set( sv.pos, str );
     draw_line( sv.pos );
     };
   };
@@ -1271,7 +1268,7 @@
 
   void SeeEditor::kbs()
   {
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   int c = real_col();
   if ( c > str_len( str ) )
     {
@@ -1297,20 +1294,20 @@
   void SeeEditor::kenter()
   {
   mod = 1;
-  if ( sc.count() == 0 ) sc.add( "" );
+  if ( va.count() == 0 ) va.push( "" );
   int c = real_col();
-  String str = sc[sv.pos];
+  String str = va[sv.pos];
   String nstr = str;
   str_sleft( str, c );
   str_trim_left( nstr, c );
-  sc.put( sv.pos, str );
-  sc.ins( sv.pos+1, nstr );
-  sv.max = sc.count()-1;
+  va.set( sv.pos, str );
+  va.ins( sv.pos+1, nstr );
+  sv.max = va.count()-1;
   sv.down();
   col = 0; /* !!! here should go the auto indenting... */
   if ( opt->auto_indent && sv.pos > 1)
     {
-    str = sc[sv.pos-1];
+    str = va[sv.pos-1];
     int z = 0;
     int nc = 0;
     while( z < str_len(str) && (str[z] == ' ' || str[z] == '\t') )
@@ -1318,10 +1315,10 @@
       if ( str[z] == '\t' ) nc += opt->tabsize; else nc++;
       z++;
       }
-    str = sc[sv.pos];
+    str = va[sv.pos];
     col = nc;
     while( nc-- ) str_ins_ch( str, 0, ' ' );
-    sc.put( sv.pos, str );
+    va.set( sv.pos, str );
     };
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
     {
@@ -1344,8 +1341,8 @@
     return;
     };
   mod = 1;
-  if ( sc.count() == 0 ) sc.add( "" );
-  String str = sc[sv.pos];
+  if ( va.count() == 0 ) va.push( "" );
+  String str = va[sv.pos];
 
   int c = real_col();
 
@@ -1353,7 +1350,7 @@
     str_del( str, c, 1 );
   if ( str_len(str) < c ) str_pad( str, -c, ' ' );
   str_ins_ch( str, c, ch );
-  sc.put( sv.pos, str );
+  va.set( sv.pos, str );
   right();
   
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
@@ -1370,12 +1367,12 @@
   
   void SeeEditor::insert_file( const char* fn )
   {
-  mod = sc.count();
+  mod = va.count();
   
   /* FIXME: this should insert file in current position! */
-  LoadFromFile( fname, &sc, opt->max_line );
+  va.fload( fname );
   remove_trails();
-  sv.max = sc.count() - 1;
+  sv.max = va.count() - 1;
   };
   
 /*--------------------------------------------------------------------*/
@@ -1383,18 +1380,18 @@
   void SeeEditor::remove_line( int n )
   {
   if ( n == -1 ) n = sv.pos;
-  ASSERT( sv.max == sc.count() - 1 );
+  ASSERT( sv.max == va.count() - 1 );
   if ( n < 0 || n > sv.max ) return;
   mod = 1;
   if ( n == sv.max )
     {
-    if ( str_len( sc[n] ) == 0 ) return;
-    sc.put( n, "" );
+    if ( str_len( va[n] ) == 0 ) return;
+    va.set( n, "" );
     }
   else
     {  
-    sc.free( n );
-    sv.max = sc.count() - 1;
+    va.del( n );
+    sv.max = va.count() - 1;
     if ( sv.pos > sv.max )
       sv.gotopos( sv.max );
     }  
@@ -1405,7 +1402,7 @@
 
   void SeeEditor::remove_all()
   {
-  while( sc.count() )
+  while( va.count() )
     {
     remove_line( 0 );
     mod = 1;
@@ -1418,18 +1415,18 @@
   {
   if ( n != -1 )
     {
-    ASSERT( sv.max == sc.count() - 1 );
+    ASSERT( sv.max == va.count() - 1 );
     if ( n < 0 || n > sv.max ) return;
-    String str = sc[n];
+    String str = va[n];
     str_cut_right( str, " \t\n\r" );
-    sc.put( n, str );
+    va.set( n, str );
     }
   else  
-  for ( int z = 0; z < sc.count(); z++ )
+  for ( int z = 0; z < va.count(); z++ )
     {
-    String str = sc[z];
+    String str = va[z];
     str_cut_right( str, " \t\n\r" );
-    sc.put( z, str );
+    va.set( z, str );
     }
   };
   
@@ -1478,7 +1475,7 @@
   int pos = -1;
   for ( z = sv.pos + 1; z <= sv.max; z++ )
     {
-    String str = sc[z];
+    String str = va[z];
     if ( opt->no_case )
       str_up( str );
     if ( opt->last_search[0] == '~' )  

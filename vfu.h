@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.3 2001/11/20 19:09:50 cade Exp $
+ * $Id: vfu.h,v 1.4 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -171,10 +171,10 @@
   /* archive context */
   extern String archive_name;
   extern String archive_path;
-  extern PSZCluster archive_extensions;
+  extern VArray archive_extensions;
 
   extern String external_panelizer;
-  extern PSZCluster list_panelizer;
+  extern VArray list_panelizer;
   
   extern TF*        files_list[MAX_FILES];
   /* file list statistics */
@@ -202,28 +202,28 @@
   
   /* files masks */
   extern String         files_mask;
-  extern StrSplitter    files_mask_array;
+  extern VArray         files_mask_array;
 
 /*############################################ GLOBAL STRUCTS  #########*/
 
-  extern PSZCluster dir_tree;
+  extern VArray dir_tree;
   extern int        dir_tree_changed;
 
-  extern PSZCluster file_find_results; // filefind results
+  extern VArray file_find_results; // filefind results
 
   extern String path_bookmarks[10];
 
 
 /*######################################################################*/
 
-  extern PSZCluster user_externals;
-  extern PSZCluster history;
-  extern PSZCluster see_filters;
-  extern PSZCluster panelizers;
+  extern VArray user_externals;
+  extern VArray history;
+  extern VArray see_filters;
+  extern VArray panelizers;
 
-  extern PSZCluster mb; /* menu boxes */
+  extern VArray mb; /* menu boxes */
   
-  extern StrSplitter trim_tree;
+  extern VArray trim_tree;
 
   extern VArray view_profiles;
   extern String view_profile;

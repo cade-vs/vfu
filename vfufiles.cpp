@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.5 2002/01/01 16:37:21 cade Exp $
+ * $Id: vfufiles.cpp,v 1.6 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -299,7 +299,7 @@ void vfu_read_pszlist_files()
     stat( pc, &st );
     vfu_add_file( pc, &st, file_is_link( pc )  );
     }
-  list_panelizer.freeall(); /* reset -- there's no reload on this */
+  list_panelizer.zap(); /* reset -- there's no reload on this */
 }
 
 /*---------------------------------------------------------------------------*/
@@ -499,24 +499,24 @@ void vfu_arrange_files()
 {
   int _ord;
   int _rev;
-  mb.freeall();
-  mb.add( "N Name" );
-  mb.add( "M Name### (RTFM)" );
-  mb.add( "E Extension" );
-  mb.add( "S Size" );
-  mb.add( "T Modify Time" );
-  mb.add( "H Change Time" );
-  mb.add( "C Access Time" );
-  mb.add( "A Attr/mode" );
-  mb.add( "O Owner" );
-  mb.add( "G Group" );
-  mb.add( "Y Type (TP)" );
-  mb.add( "U Unsorted" );
-  mb.add( "---" );
-  mb.add( "R Randomize" );
-  mb.add( "V Move Entry" );
-  mb.add( "---" );
-  mb.add( "D Modify Time (compat)" );
+  mb.zap();
+  mb.push( "N Name" );
+  mb.push( "M Name### (RTFM)" );
+  mb.push( "E Extension" );
+  mb.push( "S Size" );
+  mb.push( "T Modify Time" );
+  mb.push( "H Change Time" );
+  mb.push( "C Access Time" );
+  mb.push( "A Attr/mode" );
+  mb.push( "O Owner" );
+  mb.push( "G Group" );
+  mb.push( "Y Type (TP)" );
+  mb.push( "U Unsorted" );
+  mb.push( "---" );
+  mb.push( "R Randomize" );
+  mb.push( "V Move Entry" );
+  mb.push( "---" );
+  mb.push( "D Modify Time (compat)" );
   if ( vfu_menu_box( 50, 5, "Arrange" ) == -1 ) return;
   _ord = menu_box_info.ec;
   if ( _ord == 'D' ) _ord = 'T';
@@ -544,9 +544,9 @@ void vfu_arrange_files()
     return;
     }
   
-  mb.freeall();
-  mb.add( "A Ascending");
-  mb.add( "D Descending" );
+  mb.zap();
+  mb.push( "A Ascending");
+  mb.push( "D Descending" );
   if ( vfu_menu_box( 50, 5, "Order" ) == -1 ) return;
   _rev = menu_box_info.ec;
 

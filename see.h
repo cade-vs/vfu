@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.3 2001/10/28 14:02:33 cade Exp $
+ * $Id: see.h,v 1.4 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -196,7 +196,7 @@ class SeeEditor
   int col;
   int colpage;
   TScrollPos sv; /* vertical scroller */
-  PSZCluster sc; /* string/text cluster */
+  VArray va; /* string/text cluster */
   int mod; /* modify flag */
   
   int rows;

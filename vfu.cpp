@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.12 2002/04/14 10:10:54 cade Exp $
+ * $Id: vfu.cpp,v 1.13 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -30,10 +30,10 @@
   /* archive context */
   String archive_name;
   String archive_path;
-  PSZCluster archive_extensions;
+  VArray archive_extensions;
 
   String external_panelizer;
-  PSZCluster list_panelizer;
+  VArray list_panelizer;
   
   TF*       files_list[MAX_FILES];
   /* file list statistics */
@@ -55,29 +55,29 @@
   String rc_path;
 
   /* files masks */
-  String        files_mask;
-  StrSplitter   files_mask_array( " " );
+  String   files_mask;
+  VArray   files_mask_array;
 
 /*############################################ GLOBAL STRUCTS  #########*/
 
-  PSZCluster dir_tree;
-  int        dir_tree_changed;
-  String     dir_tree_file;
+  VArray   dir_tree;
+  int      dir_tree_changed;
+  String   dir_tree_file;
 
-  PSZCluster file_find_results; // filefind results
+  VArray file_find_results; // filefind results
 
   String path_bookmarks[10];
 
 /*######################################################################*/
 
-  PSZCluster user_externals;
-  PSZCluster history;
-  PSZCluster see_filters;
-  PSZCluster panelizers;
+  VArray user_externals;
+  VArray history;
+  VArray see_filters;
+  VArray panelizers;
 
-  PSZCluster mb; /* menu boxes */
+  VArray mb; /* menu boxes */
   
-  StrSplitter trim_tree( PATH_DELIMITER );
+  VArray trim_tree;
 
   VArray view_profiles;
   String view_profile;
@@ -421,70 +421,70 @@ void TF::update_stat( const struct stat* a_new_stat = NULL,
 void vfu_help()
 {
   say1center( HEADER );
-  mb.freeall();
-  mb.add( "*keypad -- Navigation keys" );
-  mb.add( "ENTER   -- Enter into directory/View file ( `+' and `=' too )");
-  mb.add( "BACKSPC -- Chdir to prent directory ( `-' and ^H too )"         );
-  mb.add( "TAB     -- Edit entry: filename, atrrib's/mode, owner, group");
-  mb.add( "R.Arrow -- Rename current file " );
-  mb.add( "SPACE   -- Select/deselect current list item"   );
-  mb.add( "ESC+ESC -- exit menu");
-  mb.add( "1       -- Toggle `mode'  field on/off "    );
-  mb.add( "2       -- Toggle `owner' field on/off "    );
-  mb.add( "3       -- Toggle `group' field on/off "    );
-  mb.add( "4       -- Toggle `time'  field on/off "    );
-  mb.add( "5       -- Toggle `size'  field on/off "    );
-  mb.add( "6       -- Toggle `type'  field on/off "    );
-  mb.add( "7       -- Toggle `time type' field change/modify/access time "    );
-  mb.add( "8       -- Turn on all fields"    );
-  mb.add( "0       -- Toggle long name view ( show only type and file name )"    );
-  mb.add( "~       -- Change current dir to HOME directory"     );
-  mb.add( "A       -- Arrange/Sort file list"                   );
-  mb.add( "B       -- Browse/View selected/current file"         );
-  mb.add( "Alt+B   -- Browse/View current file w/o filters"      );
-  mb.add( "C       -- Copy selected/current file(s)"             );
-  mb.add( "D       -- Change directory"                         );
-  mb.add( "Ctrl+D  -- Directory tree "                          );
-  mb.add( "Alt+D   -- Chdir history " );
-  mb.add( "E       -- Erase/remove selected/current file(s)!"    );
-  mb.add( "F       -- Change file masks (space-delimited)       ");
-  mb.add( "Ctrl+F  -- reset file mask to `*'"                    );
-  mb.add( "G       -- Global select/deselect"                    );
-  mb.add( "H       -- This help text"                            );
-  mb.add( "Q       -- exit here ( to the current directory)");
-  mb.add( "R       -- reload directory/refresh file list"       );
-  mb.add( "Ctrl+R  -- recursive reload... "                     );
-  mb.add( "Alt+R   -- reload/tree menu" );
-  mb.add( "J       -- jump to mountpoint"                       );
-  mb.add( "L       -- symlink selected/currnet file(s) into new directory" );
-  mb.add( "Ctrl+L  -- refresh/redraw entire screen" );
-  mb.add( "M       -- move selected/current file(s)"             );
-  mb.add( "N       -- file find"                                );
-  mb.add( "Alt+N   -- file find menu"   );
-  mb.add( "O       -- options/toggles menu"       );
-  mb.add( "P       -- file clipboard menu"       );
-  mb.add( "Ctrl+C  -- copy files to clipboard"       );
-  mb.add( "Ctrl+X  -- cut  files to clipboard"       );
-  mb.add( "Ctrl+V  -- paste (copy) files from clipboard to current directory" );
-  mb.add( "T       -- tools menu"                              );
-  mb.add( "U       -- UserMenu (user external commands bound to menu instead of key)  " );
-  mb.add( "X       -- exit to old/startup directory ");
-  mb.add( "Alt+X   -- exit to old/startup directory ");
-  mb.add( "Z       -- calculate directories sizes menu"       );
-  mb.add( "Ctrl+Z  -- show size of the current (under the cursor >>) directory");
-  mb.add( "Alt+Z   -- show all directories sizes ( or Alt+Z )" );
-  mb.add( "V       -- Edit vfu.conf file");
-  mb.add( "!       -- Shell (also available with '?')"                         );
-  mb.add( "/       -- Command line"                                            );
-  mb.add( "vfu uses these (one of) these config files:");
-  mb.add( "        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
-  mb.add( "        2. $HOME/.vfu/vfu.conf");
-  mb.add( "        3. " FILENAME_CONF_GLOBAL0 );
-  mb.add( "        4. " FILENAME_CONF_GLOBAL1 );
-  mb.add( "        5. " FILENAME_CONF_GLOBAL2 );
-  mb.add( "" );
+  mb.zap();
+  mb.push( "*keypad -- Navigation keys" );
+  mb.push( "ENTER   -- Enter into directory/View file ( `+' and `=' too )");
+  mb.push( "BACKSPC -- Chdir to prent directory ( `-' and ^H too )"         );
+  mb.push( "TAB     -- Edit entry: filename, atrrib's/mode, owner, group");
+  mb.push( "R.Arrow -- Rename current file " );
+  mb.push( "SPACE   -- Select/deselect current list item"   );
+  mb.push( "ESC+ESC -- exit menu");
+  mb.push( "1       -- Toggle `mode'  field on/off "    );
+  mb.push( "2       -- Toggle `owner' field on/off "    );
+  mb.push( "3       -- Toggle `group' field on/off "    );
+  mb.push( "4       -- Toggle `time'  field on/off "    );
+  mb.push( "5       -- Toggle `size'  field on/off "    );
+  mb.push( "6       -- Toggle `type'  field on/off "    );
+  mb.push( "7       -- Toggle `time type' field change/modify/access time "    );
+  mb.push( "8       -- Turn on all fields"    );
+  mb.push( "0       -- Toggle long name view ( show only type and file name )"    );
+  mb.push( "~       -- Change current dir to HOME directory"     );
+  mb.push( "A       -- Arrange/Sort file list"                   );
+  mb.push( "B       -- Browse/View selected/current file"         );
+  mb.push( "Alt+B   -- Browse/View current file w/o filters"      );
+  mb.push( "C       -- Copy selected/current file(s)"             );
+  mb.push( "D       -- Change directory"                         );
+  mb.push( "Ctrl+D  -- Directory tree "                          );
+  mb.push( "Alt+D   -- Chdir history " );
+  mb.push( "E       -- Erase/remove selected/current file(s)!"    );
+  mb.push( "F       -- Change file masks (space-delimited)       ");
+  mb.push( "Ctrl+F  -- reset file mask to `*'"                    );
+  mb.push( "G       -- Global select/deselect"                    );
+  mb.push( "H       -- This help text"                            );
+  mb.push( "Q       -- exit here ( to the current directory)");
+  mb.push( "R       -- reload directory/refresh file list"       );
+  mb.push( "Ctrl+R  -- recursive reload... "                     );
+  mb.push( "Alt+R   -- reload/tree menu" );
+  mb.push( "J       -- jump to mountpoint"                       );
+  mb.push( "L       -- symlink selected/currnet file(s) into new directory" );
+  mb.push( "Ctrl+L  -- refresh/redraw entire screen" );
+  mb.push( "M       -- move selected/current file(s)"             );
+  mb.push( "N       -- file find"                                );
+  mb.push( "Alt+N   -- file find menu"   );
+  mb.push( "O       -- options/toggles menu"       );
+  mb.push( "P       -- file clipboard menu"       );
+  mb.push( "Ctrl+C  -- copy files to clipboard"       );
+  mb.push( "Ctrl+X  -- cut  files to clipboard"       );
+  mb.push( "Ctrl+V  -- paste (copy) files from clipboard to current directory" );
+  mb.push( "T       -- tools menu"                              );
+  mb.push( "U       -- UserMenu (user external commands bound to menu instead of key)  " );
+  mb.push( "X       -- exit to old/startup directory ");
+  mb.push( "Alt+X   -- exit to old/startup directory ");
+  mb.push( "Z       -- calculate directories sizes menu"       );
+  mb.push( "Ctrl+Z  -- show size of the current (under the cursor >>) directory");
+  mb.push( "Alt+Z   -- show all directories sizes ( or Alt+Z )" );
+  mb.push( "V       -- Edit vfu.conf file");
+  mb.push( "!       -- Shell (also available with '?')"                         );
+  mb.push( "/       -- Command line"                                            );
+  mb.push( "vfu uses these (one of) these config files:");
+  mb.push( "        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
+  mb.push( "        2. $HOME/.vfu/vfu.conf");
+  mb.push( "        3. " FILENAME_CONF_GLOBAL0 );
+  mb.push( "        4. " FILENAME_CONF_GLOBAL1 );
+  mb.push( "        5. " FILENAME_CONF_GLOBAL2 );
+  mb.push( "" );
   vfu_menu_box( 1, 4, "VFU Help ( PageUp/PageDown to scroll )" );
-  mb.freeall();
+  mb.zap();
   say1("");
   do_draw = 1;
 };
@@ -614,17 +614,6 @@ void vfu_init()
   #endif
   if (getenv("VFU_SHELL")) shell_prog = getenv("VFU_SHELL");
 
-  /* now init some dynamic structs that should be */
-  dir_tree.create(16,16);
-  file_find_results.create( 32, 32 );
-  user_externals.create(16,16);
-  history.create(16,16);
-  see_filters.create(16,16);
-  panelizers.create(16,16);
-  mb.create( 32, 16 ); /* menu box items init */
-  list_panelizer.create( 32, 32 );
-  archive_extensions.create( 32, 32 );
-
   /* this will load defaults first then load vfu.opt and at the
      end will load vfu.conf which will overwrite all if need to */
   vfu_settings_load();
@@ -633,7 +622,7 @@ void vfu_init()
   file_list_index.wrap = 0; /* just to be safe :) */
 
   files_mask = "*";
-  files_mask_array.set( files_mask );
+  files_mask_array.split( " ", files_mask );
 
   view_profiles.push( "123456" );
   view_profile = "123456";
@@ -698,9 +687,9 @@ void vfu_exit_path( const char *a_path )
 int vfu_exit( const char* a_path )
 {
   int z;
-  mb.freeall();
-  mb.add( "X Exit (to startup path)" );
-  mb.add( "Q Quit (to work path)   " );
+  mb.zap();
+  mb.push( "X Exit (to startup path)" );
+  mb.push( "Q Quit (to work path)   " );
 
   if ( a_path == NULL )
     {
@@ -1022,16 +1011,6 @@ void vfu_done()
 
   vfu_settings_save();
 
-  dir_tree.done();
-  file_find_results.done();
-  user_externals.done();
-  history.done();
-  see_filters.done();
-  panelizers.done();
-  mb.done();
-  list_panelizer.done();
-  archive_extensions.done();
-
   if ( access( filename_atl, F_OK ) == 0 )
     unlink( filename_atl );
   
@@ -1257,8 +1236,8 @@ void vfu_browse( const char *fname, int no_filters )
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
-      StrSplitter split( "," );
-      split.set( see_filters[z] );
+      VArray split;
+      split.split( ",", see_filters[z] );
       String mask = split[0];
       String str  = split[1];
       if ( FNMATCH( mask, str_file_name_ext( fname, new_name ) ) ) continue;
@@ -1569,21 +1548,21 @@ void vfu_global_select()
 {
   char ch;
 
-  mb.freeall();
-  mb.add( "S All" );
-  mb.add( "A All (+Dirs)" );
-  mb.add( "R Reverse" );
-  mb.add( "C Clear" );
-  mb.add( "P Pack" );
-  mb.add( "H Hide" );
-  mb.add( "D Different" );
-  mb.add( ". Hide dirs" );
-  mb.add( ", Hide dotfiles" );
-  mb.add( "= Mask add (+dirs)" );
-  mb.add( "+ Mask add (-dirs)" );
-  mb.add( "- Mask sub        " );
-  mb.add( "L Same..." );
-  mb.add( "X EXtended select..." );
+  mb.zap();
+  mb.push( "S All" );
+  mb.push( "A All (+Dirs)" );
+  mb.push( "R Reverse" );
+  mb.push( "C Clear" );
+  mb.push( "P Pack" );
+  mb.push( "H Hide" );
+  mb.push( "D Different" );
+  mb.push( ". Hide dirs" );
+  mb.push( ", Hide dotfiles" );
+  mb.push( "= Mask add (+dirs)" );
+  mb.push( "+ Mask add (-dirs)" );
+  mb.push( "- Mask sub        " );
+  mb.push( "L Same..." );
+  mb.push( "X EXtended select..." );
   if ( vfu_menu_box( 50, 5, "Global Select" ) == -1 ) return;
   ch = menu_box_info.ec;
   if (ch == 'X')
@@ -1593,15 +1572,15 @@ void vfu_global_select()
       say1( "GlobalSelect/Extended not available in this mode." ); 
       return; 
       };
-    mb.freeall();
-    mb.add( "--searching--" );
-    mb.add( "F Find string (no case)" );
-    mb.add( "S Scan string (case sense)" );
-    mb.add( "H Hex  string" );
-    mb.add( "/ Regular expression" );
-    mb.add( "\\ Reg.exp (no case)" );
-//    mb.add( "--other--" );
-//    mb.add( "M Mode/Attributes" );
+    mb.zap();
+    mb.push( "--searching--" );
+    mb.push( "F Find string (no case)" );
+    mb.push( "S Scan string (case sense)" );
+    mb.push( "H Hex  string" );
+    mb.push( "/ Regular expression" );
+    mb.push( "\\ Reg.exp (no case)" );
+//    mb.push( "--other--" );
+//    mb.push( "M Mode/Attributes" );
     if ( vfu_menu_box( 50, 5, "Extended G.Select" ) == -1 ) return;
     ch = menu_box_info.ec;
     if (ch == 'S') ch = 'B'; /* 'B' trans */
@@ -1698,10 +1677,9 @@ void vfu_global_select()
                 say1("Deselect by mask:");
               if ( vfu_get_str( "", m, HID_GS_MASK ))
                 {
-                StrSplitter sm( " " );
-                str_squeeze( m, " " );
-                sm.set( m );
-                while( sm.pop( m ) != "" )
+                VArray sm;
+                sm.split( " +", m );
+                while( m = sm.pop() != "" )
                   {
                   if (opt.mask_auto_expand)
                     vfu_expand_mask( m );
@@ -1782,20 +1760,20 @@ void vfu_global_select()
 
     case 'L':
               {
-              mb.freeall();
-              mb.add( "N Name" );
-              mb.add( "E Extension" );
-              mb.add( "S Size" );
-              mb.add( "T Time" );
-              mb.add( "I Time (1 min.round)" );
-              mb.add( "D Date" );
-              mb.add( "M Date+Time" );
-              mb.add( "A Attr/Mode" );
+              mb.zap();
+              mb.push( "N Name" );
+              mb.push( "E Extension" );
+              mb.push( "S Size" );
+              mb.push( "T Time" );
+              mb.push( "I Time (1 min.round)" );
+              mb.push( "D Date" );
+              mb.push( "M Date+Time" );
+              mb.push( "A Attr/Mode" );
               #ifndef _TARGET_GO32_
-              mb.add( "O Owner" );
-              mb.add( "G Group" );
+              mb.push( "O Owner" );
+              mb.push( "G Group" );
               #endif
-              mb.add( "Y Type (TP)" );
+              mb.push( "Y Type (TP)" );
 
               vfu_menu_box( 50, 5, "Select Same..." );
               ch = menu_box_info.ec;
@@ -1834,7 +1812,7 @@ void vfu_global_select()
 
 int vfu_user_external_find( int key, const char* ext, const char* type, String *shell_line )
 {
-  StrSplitter split(",");
+  VArray split;
   String str;
   String ext_str = ext;
   String type_str = type;
@@ -1845,9 +1823,9 @@ int vfu_user_external_find( int key, const char* ext, const char* type, String *
   int z;
   for ( z = 0; z < user_externals.count(); z++ )
     {
-    split.set( user_externals[z] );
+    split.split( ",", user_externals[z] );
     if ( key_by_name( split[1] ) != key ) continue; /* if key not the same -- skip */
-    if ( strcmp( split[2], "*" ) != 0 ) /* if we should match and extension */
+    if ( split[2] != "*" ) /* if we should match and extension */
       if ( str_find( split[2], ext_str ) == -1 &&
            str_find( split[2], type_str ) == -1 ) continue; /* not found -- next one */
     if ( shell_line ) /* if not NULL -- store shell line into it */
@@ -1858,7 +1836,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, String *
 };
 
 /*--------------------------------------------------------------------------*/
-
+	    
 void vfu_user_external_exec( int key )
 {
   if ( files_count == 0 )
@@ -1890,13 +1868,13 @@ void vfu_user_external_exec( int key )
 
 void vfu_tools()
 {
-  mb.freeall();
-  mb.add( "R Real path" );
-  mb.add( "D ChDir to Real path" );
-  mb.add( "T Make directory" );
-  mb.add( "P Preset dirs menu" );
-  mb.add( "A Rename tools..." );
-  mb.add( "C Classify files" );
+  mb.zap();
+  mb.push( "R Real path" );
+  mb.push( "D ChDir to Real path" );
+  mb.push( "T Make directory" );
+  mb.push( "P Preset dirs menu" );
+  mb.push( "A Rename tools..." );
+  mb.push( "C Classify files" );
   if ( vfu_menu_box( 50, 5, "Tools" ) == -1 ) return;
   switch( menu_box_info.ec )
     {
@@ -1919,9 +1897,8 @@ void vfu_tools()
                  {
                  int err = 0;
                  int z;
-                 StrSplitter ms( " " );
-                 str_squeeze( str, " " );
-                 ms.set( str );
+                 VArray ms;
+                 ms.split( " +", str );
                  for ( z = 0; z < ms.count(); z++ )
                    if( make_path(ms[z]) )
                      {
@@ -1949,13 +1926,13 @@ void bookmark_goto( int n )
   if ( n == -1 )
     {
     int z;
-    mb.freeall();
+    mb.zap();
     for(z = 1; z < 10; z++)
       {
       sprintf(t, "%d %-60s", z%10, path_bookmarks[z].data());
       if ( str_len(t) > 60 )
         str_dot_reduce( NULL, t, 60 );
-      mb.add(t);
+      mb.push(t);
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");
     if ( n == -1 ) return;
@@ -2038,21 +2015,13 @@ void vfu_change_file_mask( const char* a_new_mask )
     if ( str_len( tmp ) < 1 ) tmp = "*";
     
     files_mask = tmp;
-    str_squeeze( files_mask, " " );
-    files_mask_array.set( files_mask );
+    files_mask_array.split( " +", files_mask );
     
     if ( opt.mask_auto_expand )
       {
       int z;
-      files_mask = "";
-      tmp = "";
       for ( z = 0; z < files_mask_array.count(); z++ )
-        {
-        tmp = files_mask_array[z];
-        vfu_expand_mask( tmp );
-        files_mask += tmp + " ";
-        }
-      files_mask_array.set( files_mask );  
+        vfu_expand_mask( files_mask_array[z] );
       }
     vfu_read_files();
     }
@@ -2070,12 +2039,12 @@ void vfu_directories_sizes( int n )
   n = toupper( n );
   if ( n == 0 )
     {
-    mb.freeall();
-    mb.add( "E Specify directory" );
-    mb.add( "Z Directory under cursor" );
-    mb.add( ". Current directory `.'" );
-    mb.add( "S Selected directories" );
-    mb.add( "A All dir's in the list" );
+    mb.zap();
+    mb.push( "E Specify directory" );
+    mb.push( "Z Directory under cursor" );
+    mb.push( ". Current directory `.'" );
+    mb.push( "S Selected directories" );
+    mb.push( "A All dir's in the list" );
     if ( vfu_menu_box( 5, PS - 4, "Directory size of:" ) == -1 ) return;
     n = menu_box_info.ec;
     }
@@ -2147,20 +2116,20 @@ void vfu_edit_entry( )
   int z;
   String str;
   
-  mb.freeall();
-  mb.add( "M Mode" );
-  mb.add( "O Owner/Group" );
-  mb.add( "N Name (TAB)" );
-  mb.add( "T Time/Touch Mod+Acc Times" );
-  mb.add( "I Modify Time" );
-  mb.add( "E Access Time" );
-  mb.add( "L Edit SymLink Reference" );
+  mb.zap();
+  mb.push( "M Mode" );
+  mb.push( "O Owner/Group" );
+  mb.push( "N Name (TAB)" );
+  mb.push( "T Time/Touch Mod+Acc Times" );
+  mb.push( "I Modify Time" );
+  mb.push( "E Access Time" );
+  mb.push( "L Edit SymLink Reference" );
   if ( sel_count )
     { /* available only when selection exist */
-    mb.add( "--");
-    mb.add( "+ Target: Toggle" );
-    mb.add( "C Target: Current File" );
-    mb.add( "S Target: Selection" );
+    mb.push( "--");
+    mb.push( "+ Target: Toggle" );
+    mb.push( "C Target: Current File" );
+    mb.push( "S Target: Selection" );
     }
 
   while(1)
@@ -2380,32 +2349,31 @@ void vfu_jump_to_mountpoint( int all )
   String str;
   char t[2048];
   int z;
-  PSZCluster sc;
-  sc.create( 8, 8 );
+  VArray va;
 #ifdef _TARGET_UNIX_
-  if (LoadFromFile( "/etc/mtab", &sc, 1024 )) return;
+  if ( va.fload( "/etc/mtab" ) ) return;
 #endif
 #ifdef _TARGET_GO32_
   str = home_path;
   str += "_vfu.mtb";
-  if (LoadFromFile( str, &sc, 1024 )) return;
+  if ( va.fload( str ) return;
   if (all)
     {
-    sc.ins( 0, "-  b:/" );
-    sc.ins( 0, "-  a:/" );
+    va.ins( 0, "-  b:/" );
+    va.ins( 0, "-  a:/" );
     }
 #endif
-  if (sc.count() < 1) return;
+  if (va.count() < 1) return;
 
-  mb.freeall();
-  for(z = 0; z < sc.count(); z++)
+  mb.zap();
+  for(z = 0; z < va.count(); z++)
     {
-    str = sc[z];
+    str = va[z];
     str_cut( str, " \t");
     str_word( str, " \t", t ); /* get device name */
     str_cut( str, " \t");
     str_word( str, " \t", t ); /* get mount point */
-    sc.put( z, t ); /* replace line with mount point only */
+    va.set( z, t ); /* replace line with mount point only */
 
     struct statfs stafs;
     statfs( t, &stafs );
@@ -2422,14 +2390,14 @@ void vfu_jump_to_mountpoint( int all )
              t
              );
 
-    mb.add(str);
+    mb.push(str);
     }
   menu_box_info.ac = KEY_CTRL_U;
   z = vfu_menu_box( 20, 5, "Jump to mount-point (free/total) Ctrl+U=umount" );
   if ( z == -1 )   return;
   if (menu_box_info.ac == -2)
     {
-    str = sc.get(z);
+    str = va[z];
     str_fix_path( str );
     if ( pathcmp( str, work_path ) == 0 )
       {
@@ -2445,24 +2413,23 @@ void vfu_jump_to_mountpoint( int all )
       say1( "umount failed" );
     }
   else
-    vfu_chdir( sc.get(z) );
+    vfu_chdir( va[z] );
 }
 
 /*--------------------------------------------------------------------------*/
 
 void vfu_user_menu()
 {
-  StrSplitter split(",");
-  PSZCluster lines;
-  lines.create( 16, 16 );
+  VArray split;
+  VArray lines;
   String des;
   int z;
   
-  mb.freeall();
+  mb.zap();
 
   for ( z = 0; z < user_externals.count(); z++ )
     {
-    split.set( user_externals[z] );
+    split.split( ",", user_externals[z] );
     if ( strcasecmp( split[1], "menu" ) ) continue; /* not menu item -- skip */
     /* FIXME: should we care about ext's or user will override this? */
     /* split[2]; // extensions */
@@ -2475,8 +2442,8 @@ void vfu_user_menu()
       str_set_ch( des, 0, toupper(str_get_ch(des, 0)) );
       }
 
-    lines.add( split[3] );
-    mb.add( des );
+    lines.push( split[3] );
+    mb.push( des );
     }
 
   if ( mb.count() == 0 )
@@ -2495,8 +2462,6 @@ void vfu_user_menu()
     String str = lines[z];
     vfu_user_external_archive_exec( str );
     }
-
-  lines.done();
 };
 
 /*--------------------------------------------------------------------------*/
@@ -2519,7 +2484,7 @@ void vfu_file_find_results()
 
   say1center("------- ESC Exit ----- ENTER Chdir to target ----- P Panelize all results -----", cINFO );
   say2("");
-  int z = con_full_psz_box( 1, 1, "VFU File find results", &file_find_results, &bi );
+  int z = con_full_box( 1, 1, "VFU File find results", &file_find_results, &bi );
 
   if ( bi.ec == 13 )
     {
@@ -2541,23 +2506,23 @@ void vfu_file_find_results()
     }
   else if ( tolower(bi.ec) == 'p' )
     {
-    list_panelizer.freeall();
+    list_panelizer.zap();
     for ( z = 0; z < file_find_results.count(); z++ )
       {
       String str = file_find_results[z];
       str_trim_left( str, str_find( str, " | " ) + 3 );
-      list_panelizer.add( str );
+      list_panelizer.push( str );
       }
     vfu_read_files( 0 );
     }
 
-  SaveToFile( filename_ffr, &file_find_results );
+  file_find_results.fsave( filename_ffr );
   con_cs();
 };
 
 /*--------------------------------------------------------------------------*/
 
-StrSplitter __ff_masks( " " );
+VArray      __ff_masks;
 String      __ff_path;
 String      __ff_pattern;
 int         __ff_nocase;
@@ -2607,7 +2572,7 @@ int __ff_process( const char* origin,    /* origin path */
   str_pad( size_str, 5 );
   str = "";
   str = str + time_str + " " + size_str + " | " + fname;
-  file_find_results.add( str );
+  file_find_results.push( str );
   str_dot_reduce( NULL, str, con_max_x()-1 );
   con_puts( "\r" );
   con_puts( str, cSTATUS );
@@ -2630,13 +2595,13 @@ void vfu_file_find( int menu )
   if ( ch == 'L' )
     {
     if ( file_find_results.count() == 0 )
-      LoadFromFile( filename_ffr, &file_find_results, MAX_PATH+64 );
+      file_find_results.fload( filename_ffr );
     vfu_file_find_results();
     return;
     }
   if ( ch == 'D' )
     {
-    file_find_results.freeall();
+    file_find_results.zap();
     vfu_file_find_results(); /* FIXME: this will show `no results' warning */
     return;
     }
@@ -2658,8 +2623,7 @@ void vfu_file_find( int menu )
   str = vfu_hist_get( HID_FFMASK, 0 );
   if ( str == "" ) str = "*";
   if (!vfu_get_str( "Enter find masks (space separated): ", str, HID_FFMASK )) return;
-  str_squeeze( str, " " );
-  __ff_masks.set( str );
+  __ff_masks.split( " +", str );
 
   str = work_path;
   if (!vfu_get_dir_name( "Enter start path: ", str )) return;
@@ -2668,17 +2632,10 @@ void vfu_file_find( int menu )
   /*--------------------------------------*/
 
   if ( opt.mask_auto_expand )
-    { /* well, I have to (finally) fix that mask-expand API :(( */
-    str = "";
+    {
     int z;
     for ( z = 0; z < __ff_masks.count(); z++ )
-      {
-      String tmp = __ff_masks[z];
-      vfu_expand_mask( tmp );
-      str += tmp;
-      str += " ";
-      }
-    __ff_masks.set( str );
+      vfu_expand_mask( __ff_masks[z] );
     }
   con_cs();
   con_ta( cINFO );
@@ -2693,7 +2650,7 @@ void vfu_file_find( int menu )
     con_out( 1, 4, str );
     }
   
-  file_find_results.freeall();
+  file_find_results.zap();
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
 };
@@ -2704,12 +2661,12 @@ void vfu_clipboard( int act )
 {
   if ( act == 0 )
     {
-    mb.freeall();
-    mb.add( "P Clipboard files list" );
-    mb.add( "C Copy files to clipboard" );
-    mb.add( "X Cut  files to clipboard" );
-    mb.add( "V Paste files from clipbrd" );
-    mb.add( "E Clear/flush clipboard" );
+    mb.zap();
+    mb.push( "P Clipboard files list" );
+    mb.push( "C Copy files to clipboard" );
+    mb.push( "X Cut  files to clipboard" );
+    mb.push( "V Paste files from clipbrd" );
+    mb.push( "E Clear/flush clipboard" );
     if ( vfu_menu_box( 50, 5, "File Clipboard" ) ) return;
     act = menu_box_info.ec;
     }
@@ -2720,20 +2677,19 @@ void vfu_clipboard( int act )
 void vfu_read_files_menu()
 {
   char t[1024];
-  PSZCluster list;
-  list.create( 16, 16 );
+  VArray list;
 
   int z;
   String str;
-  mb.freeall();
+  mb.zap();
   /* I don't format src like this but it gives clear idea what is all about */
-  mb.add( "T Rescan DirTree" );           list.add("");
-  mb.add( "F Rescan Files" );             list.add("");
-  mb.add( "R Rescan Files Recursive" );   list.add("");
-  mb.add( "L Refresh all views/screen (Ctrl+L)" ); list.add("");
+  mb.push( "T Rescan DirTree" );           list.push("");
+  mb.push( "F Rescan Files" );             list.push("");
+  mb.push( "R Rescan Files Recursive" );   list.push("");
+  mb.push( "L Refresh all views/screen (Ctrl+L)" ); list.push("");
   if ( panelizers.count() > 0 )
     {
-    mb.add( "--panelizers---" );         list.add("");
+    mb.push( "--panelizers---" );         list.push("");
     for ( z = 0; z < panelizers.count(); z++ )
       {
       str = panelizers[z];
@@ -2741,14 +2697,13 @@ void vfu_read_files_menu()
       /* fix menu hotkeys */
       str_ins( t, 1, " " );
       str_set_ch( t, 0, toupper(str_get_ch(t, 0)) );
-      mb.add(t);
-      list.add(str);
+      mb.push(t);
+      list.push(str);
       };
     }
   z = vfu_menu_box( 25, 5, "Read/Rescan Files" );
   if ( z == -1 )
     {
-    list.done();
     return;
     }
   if ( str_len( list[z] ) )
@@ -2766,7 +2721,6 @@ void vfu_read_files_menu()
     case 'R' : vfu_read_files( 1 ); break;
     case 'L' : con_cs(); vfu_drop_all_views(); do_draw = 2; break;
     }
-  list.done();
 };
 
 /*--------------------------------------------------------------------------*/

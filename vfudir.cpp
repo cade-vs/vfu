@@ -1,11 +1,11 @@
 /*                              
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfudir.cpp,v 1.5 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -22,12 +22,12 @@ VArray size_cache;
 /*###########################################################################*/
 
   void __glob_gdn( const char* a_path, const char* a_fnpattern, 
-                   PSZCluster &a_sc ) // glob getdirname
+                   VArray &a_va ) // glob getdirname
   {
     String pat = a_fnpattern;
     pat += "*";
     
-    a_sc.freeall();
+    a_va.zap();
     DIR *dir;
     dirent *de; 
     if ( !a_path || a_path[0] == 0 ) 
@@ -47,7 +47,7 @@ VArray size_cache;
           if ( file_is_dir(str) ) 
             {
             str += "/";
-            a_sc.add(str);
+            a_va.push(str);
             }
           } 
         } 
@@ -67,8 +67,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
   leaveok(stdscr, FALSE);
   #endif
   */
-  PSZCluster dir_list;
-  dir_list.create( 32, 32 );
+  VArray dir_list;
    
   say1(prompt); 
   say2(""); 
@@ -134,7 +133,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
     if ( ch == 9 && str_len( target ) > 0)
       { 
       int z; 
-      dir_list.freeall();
+      dir_list.zap();
       String dmain; /* main/base path */
       String dtail; /* item that should be expanded/glob */
       
@@ -179,7 +178,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
           
           vfu_beep();
           ch = con_getch();
-          if ( ch != 9 ) { dir_list.freeall(); continue; }
+          if ( ch != 9 ) { dir_list.zap(); continue; }
           dir_list.sort();
           con_chide();
           z = vfu_menu_box( 10, 5, "Complete...", &dir_list );
@@ -193,7 +192,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
         
         pos = str_len( target );
         
-        dir_list.freeall();
+        dir_list.zap();
         if (ch != 0) continue;
         }
       else
@@ -334,8 +333,6 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
     
   str_cut_spc( target );
   
-  dir_list.done();
-  
   ASSERT( res == 0 || res == 1 );
   return res;
 } 
@@ -375,7 +372,7 @@ void vfu_chdir( const char *a_new_dir )
       {
       int z = 0;
       if ( dir_tree.count() == 0 ) tree_load();
-      mb.freeall();
+      mb.zap();
       z = tree_find( target, &mb );
       if (z > 1)
         {
@@ -448,7 +445,7 @@ void vfu_chdir_history()
 
 void tree_load()
 {
-  if (LoadFromFile( filename_tree, &dir_tree, MAX_PATH + 64 ))
+  if (dir_tree.fload( filename_tree ))
     say1( "DirTree load error." );
   else
     {
@@ -461,7 +458,7 @@ void tree_load()
 
 void tree_save()
 {
-  if (SaveToFile( filename_tree, &dir_tree ))
+  if (dir_tree.fsave( filename_tree ))
     say1( "DirTree save error." );
   else
     {
@@ -476,7 +473,7 @@ void tree_drop()
 {
   if ( dir_tree_changed )
     tree_save();
-  dir_tree.freeall();
+  dir_tree.zap();
   dir_tree_changed = 0;
 }
 
@@ -510,7 +507,7 @@ void tree_fix()
       n--;
       }
     if ( p )
-      dir_tree.put( z, s1 );
+      dir_tree.set( z, s1 );
     }
 }
 
@@ -601,7 +598,7 @@ _djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
                 _STAT_WRITEBIT;
 // _djstat_flags = 0;
 #endif
-  dir_tree.freeall();
+  dir_tree.zap();
   size_cache.zap();
   say1( "Rebuilding tree..." );
   
@@ -995,7 +992,7 @@ int tree_index( const char *s )
     if ( z >= dir_tree.count() ) z = 0;
     if ( z == __tree_index_last_cache ) break;
     
-    char *s2 = dir_tree[z];
+    const char *s2 = dir_tree[z];
     sl2 = strlen( s2 );
 
     if ( sl1 == sl2 )
@@ -1036,9 +1033,9 @@ const char* tree_find( const char *s ) // return full path by dirname
 }
 
 /*-----------------------------------------------------------------------*/
-/* return count of found dirnames and stores them to sc */
+/* return count of found dirnames and stores them to va */
 
-int tree_find( const char *s, PSZCluster *sc ) 
+int tree_find( const char *s, VArray *va ) 
 {
   String str;
   int z = 0;
@@ -1052,10 +1049,10 @@ int tree_find( const char *s, PSZCluster *sc )
       {
       str = dir_tree[z];
       str_tr( str, "\\", "/" );
-      sc->add( str );
+      va->push( str );
       }
     }
-  return sc->count();
+  return va->count();
 }
 
 /*###########################################################################*/

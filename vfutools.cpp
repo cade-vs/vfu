@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.4 2002/04/14 10:10:54 cade Exp $
+ * $Id: vfutools.cpp,v 1.5 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -49,22 +49,22 @@ void vfu_tool_classify()
     return;
     }
 
-  mb.freeall();
-  mb.add("N Name");
-  mb.add("E Ext");
-  mb.add("1 First 1 letter");
-  mb.add("2 First 2 letters");
-  mb.add("3 First 3 letters");
-  mb.add("4 First 4 letters");
-  mb.add("5 First 5 letters");
-  mb.add("6 First 6 letters");
-  mb.add("7 First 7 letters");
-  mb.add("8 First 8 letters");
-  mb.add("9 First 9 letter");
+  mb.zap();
+  mb.push("N Name");
+  mb.push("E Ext");
+  mb.push("1 First 1 letter");
+  mb.push("2 First 2 letters");
+  mb.push("3 First 3 letters");
+  mb.push("4 First 4 letters");
+  mb.push("5 First 5 letters");
+  mb.push("6 First 6 letters");
+  mb.push("7 First 7 letters");
+  mb.push("8 First 8 letters");
+  mb.push("9 First 9 letter");
   if ( vfu_menu_box( 50, 5, "Classify files by") == -1 ) return;
   char ch = menu_box_info.ec;
 
-  mb.freeall();
+  mb.zap();
   int z;
   int i;
   for ( z = 0; z < files_count; z++ )
@@ -76,7 +76,7 @@ void vfu_tool_classify()
     int found = 0;
     for ( i = 0; i < mb.count(); i++ )
       if ( pathncmp( tmp, mb[i], tl ) == 0 ) { found = 1; break; }
-    if (!found) mb.add(tmp);
+    if (!found) mb.push(tmp);
     }
   for ( i = 0; i < mb.count(); i++ )
     {
@@ -84,7 +84,7 @@ void vfu_tool_classify()
     if ( res && !dir_exist( mb[i] ) )
       {
       char t[MAX_PATH];
-      sprintf( t, "Cannot create directory: %s (press a key)", mb[i] );
+      sprintf( t, "Cannot create directory: %s (press a key)", mb.get(i) );
       say1( t );
       say2errno();
       con_getch();
@@ -122,16 +122,16 @@ void vfu_tool_rename()
   if ( sel_count < 1 )
     { say1( "No files to rename... (You have to select required files)" ); return; };
 
-  mb.freeall();
-  mb.add( "1 README.TXT => readme.txt" );
-  mb.add( "2 README.TXT => readme.TXT" );
-  mb.add( "3 README.TXT => README.txt" );
-  mb.add( "4 readme.txt => README.TXT" );
-  mb.add( "5 readme.txt => README.txt" );
-  mb.add( "6 readme.txt => readme.TXT" );
-  mb.add( "_ Replace spaces with _" );
-  mb.add( "Y Simplify name (RTFM)" );
-  mb.add( "S Sequential rename" );
+  mb.zap();
+  mb.push( "1 README.TXT => readme.txt" );
+  mb.push( "2 README.TXT => readme.TXT" );
+  mb.push( "3 README.TXT => README.txt" );
+  mb.push( "4 readme.txt => README.TXT" );
+  mb.push( "5 readme.txt => README.txt" );
+  mb.push( "6 readme.txt => readme.TXT" );
+  mb.push( "_ Replace spaces with _" );
+  mb.push( "Y Simplify name (RTFM)" );
+  mb.push( "S Sequential rename" );
   if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {

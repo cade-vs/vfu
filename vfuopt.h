@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.h,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuopt.h,v 1.3 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -89,7 +89,7 @@
   int set_set( const char *line, const char *keyword, char *target );
   int set_set( const char *line, const char *keyword, String &target );
   int set_set( const char *line, const char *keyword, int &target );
-  int set_set( const char *line, const char *keyword, StrSplitter &splitter );
+  int set_set( const char *line, const char *keyword, VArray &splitter );
   
   void vfu_settings_load();
   void vfu_settings_save();

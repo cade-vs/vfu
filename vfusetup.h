@@ -1,11 +1,11 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2000
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2002
  * http://www.biscom.net/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusetup.h,v 1.3 2001/11/18 15:41:58 cade Exp $
+ * $Id: vfusetup.h,v 1.4 2002/04/14 10:16:28 cade Exp $
  *
  */
 
@@ -22,7 +22,7 @@
 
 #define VFU_VERSION "3.04"
 
-#define HEADER "VF/U v" VFU_VERSION " by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2000"
+#define HEADER "VF/U v" VFU_VERSION " by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2002"
 
 #ifdef _TARGET_GO32_
   #define FILENAME_OPT     "vfu.opt"
