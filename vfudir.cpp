@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.20 2003/02/08 02:48:35 cade Exp $
+ * $Id: vfudir.cpp,v 1.21 2003/04/02 20:14:09 cade Exp $
  *
  */
 
@@ -166,17 +166,20 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
           {
           int mc = 0; /* match count        */
           int mi = 0; /* match letter index */
-          int li; /* counter */
-          do
+          while(4)
             {
-            mi++;
             mc = 0;
+            int li; /* counter */
             for ( li = 0; li < dir_list.count(); li++ )
+              {
               if ( str_get_ch( dir_list[ 0], mi ) == 
                    str_get_ch( dir_list[li], mi ) )
                 mc++;
+              }
+            if ( mc != dir_list.count() )
+              break;
+            mi++;
             }
-          while( mc == dir_list.count() );
           target.setn( dmain + dir_list[0], str_len( dmain ) + mi );
           pos = str_len( target );
           say2( target, cINPUT );
