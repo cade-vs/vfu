@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.15 2003/01/19 17:32:43 cade Exp $
+ * $Id: vfudir.cpp,v 1.16 2003/01/19 19:13:01 cade Exp $
  *
  */
 
@@ -44,7 +44,7 @@ VArray size_cache;
           { 
           VString str; // = a_path;
           str += de->d_name;
-          if ( file_is_dir(str) ) 
+          if ( file_is_dir( a_path + str ) ) 
             {
             str += "/";
             a_va.push(str);
@@ -137,9 +137,13 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       VString dmain; /* main/base path */
       VString dtail; /* item that should be expanded/glob */
       
+      dmain = str_file_path( target );
+      dtail = str_file_name_ext( target );
+      
+      /*
       int lastslash = str_rfind(target, '/');
       if ( lastslash == -1 ) 
-        { /* not found */
+        {
         dmain = "";
         dtail = target;
         }
@@ -150,7 +154,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         str_sleft( dmain, lastslash+1 );
         str_trim_left( dtail, lastslash+1 );
         }
-  
+      */
+      
       __glob_gdn( dmain, dtail, dir_list );
   
       z = dir_list.count()-1;
@@ -171,7 +176,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
                 mc++;
             }
           while( mc == dir_list.count() );
-          target.setn( dir_list[0], mi );
+          target.setn( dmain + dir_list[0], str_len( dmain ) + mi );
           pos = str_len( target );
           say2( target, cINPUT );
           con_xy( pos+1, con_max_y() );
