@@ -40,11 +40,8 @@ vcsproject=VCS:vfu
 /home/cade/pro/vfu/vfuview.cpp
 /home/cade/pro/vfu/vfuview.h
 [STATE]
-SCREEN: 800 600 -4 -4 800 549 0 0 N 0 0 0 0 651 493
+SCREEN: 800 600 -4 -4 800 549 0 0 N 0 0 0 0 651 494
 CWD: /home/cade/pro/vfu
-BUFFER: BN="/home/cade/.vslick/vrestore.slk"
-BI: MA=1 254 1  TABS=1 9  WWS=3 IWT=0 ST=0 IN=0 BW=0 US=0 RO=0 SE=0 SN=0 BIN=0 MN=Fundamental	HM=0 MF=1
-VIEW: LN=.0 CL=1 LE=0 CX=0 CY=1 WI=5 BI=15 HT=0 HN=0 HF=0 HC=4
 FILEHIST: 9
 /home/cade/pro/vfu/vfuopt.cpp
 /home/cade/pro/vfu/vfuopt.h

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.3 2001/11/20 19:09:50 cade Exp $
+ * $Id: vfufiles.cpp,v 1.4 2002/01/01 15:54:28 cade Exp $
  *
  */
 
@@ -165,9 +165,17 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   files_list[files_count] = fi;
   files_count++;
 
-  /* get dir sizes */
-  if ( work_mode == WM_NORMAL && fi->is_dir() )
+  /* get dir sizes for directories, not symlinks */
+  if ( work_mode == WM_NORMAL && fi->is_dir() && !fi->is_link() )
     fi->set_size( size_cache_get( fi->full_name( 1 ) ) );
+  /* get dir sizes for directories, symlinks */
+  if ( work_mode == WM_NORMAL && fi->is_dir() && fi->is_link() )
+    {
+    char t[MAX_PATH];
+    expand_path( fi->full_name( 1 ), t );
+    str_fix_path( t );
+    fi->set_size( size_cache_get( t ) );
+    }
 
   /* show progress ... */
   if ( files_count % 123 == 0 )
@@ -505,8 +513,11 @@ void vfu_arrange_files()
   mb.add( "---" );
   mb.add( "R Randomize" );
   mb.add( "V Move Entry" );
+  mb.add( "---" );
+  mb.add( "D Modify Time (compat)" );
   if ( vfu_menu_box( 50, 5, "Arrange" ) == -1 ) return;
   _ord = menu_box_info.ec;
+  if ( _ord == 'D' ) _ord = 'T';
 
   if (_ord == 'V' )
     {

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.10 2001/11/20 19:09:50 cade Exp $
+ * $Id: vfu.cpp,v 1.11 2002/01/01 15:54:28 cade Exp $
  *
  */
 
@@ -1930,7 +1930,8 @@ void vfu_tools()
                  if ( err == 0 ) say1( "MKDIR: ok." );
                  break;
                  }
-               }  
+               }
+               break;
     case 'P' : bookmark_goto( -1 ); break;
     case 'A' : vfu_tool_rename(); break;
     case 'C' : vfu_tool_classify(); break;
@@ -1955,6 +1956,7 @@ void bookmark_goto( int n )
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");
     if ( n == -1 ) return;
+    n++;
     }
   if ( n < 0 || n > 9 ) return;
   if ( str_len( path_bookmarks[n] ) > 0 )
@@ -2100,7 +2102,7 @@ void vfu_directories_sizes( int n )
       if ( fi->is_dir() ) /* dirs */
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
-        if ( n == 'A' &&  fi->is_link() ) continue; /* all but not for symlinks */
+        /* if ( n == 'A' ) continue; /* all */
         say1( fi->name() );
         fsize_t dir_size = vfu_dir_size( fi->name() );
         if ( dir_size == -1 )
@@ -2347,6 +2349,8 @@ void vfu_edit_entry( )
       String str = t;
       if ( vfu_get_str( "", str, 0 ) )
         {
+        fi->drop_view();
+        do_draw = 1;
         say2( "" );
         if ( unlink( fi->name() ) || symlink( str, fi->name() ) )
           {
