@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.14 2003/03/11 21:25:35 cade Exp $
+ * $Id: vfuview.cpp,v 1.15 2003/11/22 03:26:48 cade Exp $
  *
  */
 
@@ -68,6 +68,25 @@ int get_item_color( TF *fi )
 
   /* type string not found too return std color */
   return cNORMAL;
+}
+
+/*-----------------------------------------------------------------------*/
+
+VString fsize_fmt( fsize_t fs ) /* return commified number */
+{
+  VString str;
+  if( fs > 99999999999 )
+    {
+    str.fi( int( fs / ( 1024*1024 ) ) );
+    str_comma( str );
+    str += " MiB";
+    }
+  else
+    {
+    str.fi( fs );
+    str_comma( str );
+    }
+  return str;  
 }
 
 /*-----------------------------------------------------------------------*/
@@ -224,49 +243,46 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   VString tmp;
  
   /* first line here */
-  s1  = "Select :";
+  s1  = "Select:";
   tmp = sel_count;
-  str_comma(tmp);
-  str_pad(tmp,13);
-  s1 += tmp;
- 
-  s1 += "  Free :";
-  sprintf( 64, tmp,"%0.3f MB", fs_free/1024.0/1024.0 );
-  str_comma(tmp);
-  str_pad(tmp,13);
-  s1 += tmp;
-  if (fs_total == 0)
-    tmp = "  n/a%";
-  else
-    sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
-  s1 += "  " + tmp + "  FSize:";
- 
-  tmp = files_size;
   str_comma(tmp);
   str_pad(tmp,14);
   s1 += tmp;
-  if (fs_total == 0)
+ 
+  s1 += "  Free: ";
+  tmp = fsize_fmt( fs_free );
+  str_pad(tmp,14);
+  s1 += tmp;
+  if (fs_total == 0 || fs_free > fs_total)
     tmp = "  n/a%";
   else
+    sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
+ 
+  s1 += "  " + tmp + "  FSize:";
+  tmp = fsize_fmt( files_size );
+  str_pad(tmp,14);
+  s1 += tmp;
+  if (fs_total == 0 || files_size > fs_total)
+    tmp = " n/a%";
+  else
     sprintf(tmp,"%4.1f%%", (double)100 * ((double)files_size / (double)fs_total));
-  s1 += " " + tmp + "  ";
+  s1 += " " + tmp;
 
   /* second line here */
-  s2  = "SelSize:";
+  s2  = "S.Size:";
  
-  tmp = sel_size;
-  str_comma(tmp);
-  str_pad(tmp,13);
+  tmp = fsize_fmt( sel_size );
+  str_pad(tmp,14);
   s2 += tmp;
   s2 += "  Total:";
-  sprintf( 64, tmp,"%0.3f MB", fs_total/1024.0/1024.0 );
-  str_comma(tmp);
-  str_pad(tmp,13);
+  tmp = fsize_fmt( fs_total );
+  str_pad(tmp,14);
   s2 += tmp;
  
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
-  sprintf( tmp,"  U: %s.%s@%s ", user_id_str.data(), group_id_str.data(), 
-                                 host_name_str.data() ); s2 += tmp;
+  sprintf( tmp,"  %s.%s@%s ", user_id_str.data(), group_id_str.data(), 
+                              host_name_str.data() ); 
+  s2 += tmp;
 
   str_pad( s1, - con_max_x() );
   str_pad( s2, - con_max_x() );

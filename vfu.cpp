@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.37 2003/09/06 11:48:00 cade Exp $
+ * $Id: vfu.cpp,v 1.38 2003/11/22 03:26:48 cade Exp $
  *
  */
 
@@ -342,14 +342,9 @@ void TF::refresh_view()
       {
       VString str;
       if ( _is_dir && _size == -1 )
-        {
         str = "[DIR]";
-        }
       else
-        {
-        str.fi( _size );
-        str_comma( str );
-        }
+        str = fsize_fmt( _size );
       sprintf( stsize, "%14s", (const char*)(str) );
       strcat( stsize, " " ); /* field separator */
       }
@@ -741,7 +736,6 @@ int vfu_exit( const char* a_path )
 
 void vfu_run()
 {
-  char t[128];
   say1center( HEADER );
   say2center( CONTACT );
 

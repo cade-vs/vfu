@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.14 2003/04/28 17:17:01 cade Exp $
+ * $Id: vfuopt.cpp,v 1.15 2003/11/22 03:26:48 cade Exp $
  *
  */
 
@@ -471,11 +471,15 @@ void vfu_edit_conf_file()
 
 void vfu_options()
 {
+  say1("press SPACE to toggle, ENTER or ESC to exit");
+  say2("");
   vfu_toggle_box( 30, 5, "Options/Toggles   (scroll down...)", Toggles );
   vfu_settings_save();
   vfu_settings_load();
   vfu_drop_all_views();
   vfu_redraw(); 
   vfu_redraw_status();
+  say1("");
+  say2("");
 };
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.h,v 1.5 2003/01/26 21:48:43 cade Exp $
+ * $Id: vfuview.h,v 1.6 2003/11/22 03:26:48 cade Exp $
  *
  */
 
@@ -18,6 +18,7 @@ extern int tag_mark_pos;
 extern int sel_mark_pos;
 
 int get_item_color( TF* fi );
+VString fsize_fmt( fsize_t fs ); /* return commified number */
 
 void show_pos( int curr, int all );
 
