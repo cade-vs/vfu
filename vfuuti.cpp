@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.7 2002/04/16 05:16:09 cade Exp $
+ * $Id: vfuuti.cpp,v 1.8 2002/04/16 05:25:15 cade Exp $
  *
  */
 
@@ -379,7 +379,7 @@ void vfu_get_str_history( int key, String &s, int &pos )
 
   con_cshow();
   if ( z == -1 ) return;
-  s = mb[z] + 2;
+  s = mb.get(z) + 2;
   str_cut_spc( s );
   pos = str_len( s );
 }
