@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.14 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfudir.cpp,v 1.15 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -24,7 +24,7 @@ VArray size_cache;
   void __glob_gdn( const char* a_path, const char* a_fnpattern, 
                    VArray &a_va ) // glob getdirname
   {
-    String pat = a_fnpattern;
+    VString pat = a_fnpattern;
     pat += "*";
     
     a_va.undef();
@@ -42,7 +42,7 @@ VArray size_cache;
              strcmp( de->d_name, ".." ) == 0 ) continue;
         if ( a_fnpattern[0] == 0 || FNMATCH( pat, de->d_name)==0 )
           { 
-          String str; // = a_path;
+          VString str; // = a_path;
           str += de->d_name;
           if ( file_is_dir(str) ) 
             {
@@ -59,7 +59,7 @@ VArray size_cache;
   FIXME: must call sayX() at the end to clear...
 */
 
-int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
+int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
 { 
   int res = -1;
   /*
@@ -88,7 +88,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
   while(1) 
     {
     int mx = con_max_x() - 1;
-    String target_out = target;
+    VString target_out = target;
     if ( (pos < page) || (pos+1 > page + mx) || (page > 0 && pos == page) ) 
       page = pos - mx / 2;
     if ( page < 0 ) page = 0;
@@ -134,8 +134,8 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
       { 
       int z; 
       dir_list.undef();
-      String dmain; /* main/base path */
-      String dtail; /* item that should be expanded/glob */
+      VString dmain; /* main/base path */
+      VString dtail; /* item that should be expanded/glob */
       
       int lastslash = str_rfind(target, '/');
       if ( lastslash == -1 ) 
@@ -346,7 +346,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
 void vfu_chdir( const char *a_new_dir )
 {
   char t[MAX_PATH];
-  String target;
+  VString target;
   if ( a_new_dir && a_new_dir[0] )
     {
     target = a_new_dir;
@@ -390,7 +390,7 @@ void vfu_chdir( const char *a_new_dir )
       if (z == 1)
         target = mb.get(0);
       }
-  String str = target; 
+  VString str = target; 
   str_cut_spc( str );
   #ifdef _TARGET_GO32_
     if ( str[0] == '/' )
@@ -487,8 +487,8 @@ void tree_fix()
   int z;
   for( z = dir_tree.count() - 1; z >= 0; z-- )
     {
-    String s1 = dir_tree[z];
-    String s2;
+    VString s1 = dir_tree[z];
+    VString s2;
     if (z < dir_tree.count() - 1)
       s2 = dir_tree[z+1];
     else
@@ -555,7 +555,7 @@ fsize_t __tree_rebuild_process( const char* path )
       int trim = 0;
       for ( z = 0; z < trim_tree.count(); z++ )
         {
-        String trim_temp = trim_tree[z];
+        VString trim_temp = trim_tree[z];
         str_fix_path( trim_temp );
         if ( pathcmp(trim_temp, new_name) == 0 ) 
           { /* trim_tree item found */
@@ -619,9 +619,9 @@ _djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
 void tree_draw_item( int page, int index, int hilite )
 {
   if ( page + index >= dir_tree.count() ) return;
-  String s1 = dir_tree[page+index];
+  VString s1 = dir_tree[page+index];
   str_trim_right(s1,1);
-  String s2 = s1;
+  VString s2 = s1;
   int j = str_rfind( s1,'/');
   str_trim_right(s1,str_len(s2)-j-1);
   str_trim_left(s2,j+1);
@@ -680,7 +680,7 @@ void tree_draw_item( int page, int index, int hilite )
 
 void tree_draw_page( TScrollPos &scroll )
 {
-  String str = " ";
+  VString str = " ";
   str_mul( str, con_max_x() );
   str = "DiRECTORY" + str;
   str_sleft( str, con_max_x()-16 ); 
@@ -708,11 +708,11 @@ void tree_draw_pos( TScrollPos &scroll, int opos )
   int z = scroll.pos - scroll.page;
   if ( opos != -1 ) tree_draw_item( scroll.page, opos );
   tree_draw_item( scroll.page, z, 1 );
-  String str;
+  VString str;
   str = dir_tree[scroll.pos];
   str_tr( str,"\\", "/" );
   
-  String sz;
+  VString sz;
   sz.fi( size_cache_get( str ) );
   str_comma( sz );
   str_pad( sz, 12 );
@@ -732,7 +732,7 @@ void tree_draw_pos( TScrollPos &scroll, int opos )
 
 void tree_view()
 {
-  String str;
+  VString str;
   if (dir_tree.count() == 0)
     {
     tree_load();
@@ -789,14 +789,14 @@ void tree_view()
           int direction = 1;
           int found = 0;
           int loops = 0;
-          String s_mask = str;
+          VString s_mask = str;
           vfu_expand_mask( s_mask );
           while(1)
             {
             if ( z > scroll.max ) z = scroll.min;
             if ( z < scroll.min ) z = scroll.max;
             
-            String str1 = dir_tree[z];
+            VString str1 = dir_tree[z];
             str_trim_right( str1, 1 );
             int j = str_rfind(str1,'/');
             if (j < 0) 
@@ -906,7 +906,7 @@ fsize_t size_cache_get( const char *s )
   
   char t[16];
   sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
-  String str = t;
+  VString str = t;
   str += " ";
   str += ps;
   int z = size_cache_index( str );
@@ -932,7 +932,7 @@ void size_cache_set( const char *s, fsize_t size )
   
   char t[16];
   sprintf( t, "%08X", (unsigned int)str_adler32( ps ) );
-  String str = t;
+  VString str = t;
   str += " ";
   str += ps;
   int z = size_cache_index( str );
@@ -1017,7 +1017,7 @@ int tree_index( const char *s )
 
 const char* tree_find( const char *s ) // return full path by dirname
 {
-  String str;
+  VString str;
   int z = 0;
   int sl = strlen( s );
   for ( z = 0; z < dir_tree.count(); z++ )
@@ -1038,7 +1038,7 @@ const char* tree_find( const char *s ) // return full path by dirname
 
 int tree_find( const char *s, VArray *va ) 
 {
-  String str;
+  VString str;
   int z = 0;
   int sl = strlen( s );
   for ( z = 0; z < dir_tree.count(); z++ )

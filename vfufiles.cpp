@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.9 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfufiles.cpp,v 1.10 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -145,7 +145,7 @@ void vfu_read_files( int a_recursive )
 int vfu_add_file( const char* fname, const struct stat *st, int is_link )
 {
   if ( files_count == MAX_FILES ) return 1;
-  String ne = str_file_name_ext( fname );
+  VString ne = str_file_name_ext( fname );
 
   if ( ne == "."  || ne == ".." ) return 0;
   
@@ -196,7 +196,7 @@ int __vfu_ftw_add( const char* origin, const char* fname,
   if ( vfu_break_op() ) return 1;
   if ( flag == FTWALK_DX ) return 0; /* exit directory */
 
-  String str = fname;
+  VString str = fname;
   str_trim_left( str, str_len( origin ) );
   
   return vfu_add_file( str, st, file_is_link( fname ) );
@@ -210,12 +210,12 @@ void vfu_read_local_files( int a_recursive )
        ( FNMATCH( files_list[0]->name(), "automount" ) == 0 ||
          FNMATCH( files_list[0]->name(), ".automount" ) == 0 ) )
    {
-   String tmp_file_name;
+   VString tmp_file_name;
    tmp_file_name += tmp_path;
    tmp_file_name += "vfu_automount_error.";
    tmp_file_name += user_id_str;
    
-   String str = work_path;
+   VString str = work_path;
    chdir( "/" );
    str = "mount " + str + " 2> " + tmp_file_name;
    say1( "AutoMount point detected, executing:" );
@@ -359,8 +359,8 @@ int namenumcmp( const char* s1, const char* s2 )
   VRegexp re2( "^(.*)([0123456789]+)(\\.(.*))?$" );
   if ( re1.m(s1) && re2.m(s2) )
     {
-    String ss1;
-    String ss2;
+    VString ss1;
+    VString ss2;
     sprintf( ss1, "%020d", atoi(re1[2]) );
     sprintf( ss2, "%020d", atoi(re1[2]) );
     ss1 = re1[1] + ss1 + re1[3];
@@ -480,7 +480,7 @@ void __vfu_sort(int l, int r)
 void vfu_sort_files()
 {
   if (!files_count) return;
-  String str = files_list[FLI]->name();
+  VString str = files_list[FLI]->name();
   __vfu_sort( 0, files_count - 1 );
   do_draw = 1;
   if ( str != "" )

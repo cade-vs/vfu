@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.h,v 1.5 2002/11/27 21:42:06 cade Exp $
+ * $Id: vfuopt.h,v 1.6 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -87,7 +87,7 @@
   time_t vfu_opt_time( time_t ctime, time_t mtime, time_t atime );
   
   int set_set( const char *line, const char *keyword, char *target );
-  int set_set( const char *line, const char *keyword, String &target );
+  int set_set( const char *line, const char *keyword, VString &target );
   int set_set( const char *line, const char *keyword, int &target );
   int set_set( const char *line, const char *keyword, VArray &splitter );
   

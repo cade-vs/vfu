@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfumenu.cpp,v 1.5 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfumenu.cpp,v 1.6 2003/01/19 17:32:43 cade Exp $
  *
  */
       
@@ -41,7 +41,7 @@ int vfu_menu_box( const char* title, const char* menustr, int row )
 {
   char t[256];
   mb.undef();
-  String str = menustr;
+  VString str = menustr;
   while( str_len(str) )
     {
     str_word(str,",", t);

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.9 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfucopy.cpp,v 1.10 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -155,7 +155,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
   if ( copy_info->over_mode == OM_ALWAYS_IF_MTIME &&
        stat_src.st_mtime > stat_dst.st_mtime ) return 1; /* newer mtime, do it! */
 
-  String str;
+  VString str;
   char sttime[32];
 
   char s_t = (stat_src.st_mtime == stat_dst.st_mtime)?'*':' '; // same time
@@ -245,7 +245,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
     }
 
   /* progress report */
-  String str = dst;
+  VString str = dst;
   str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
@@ -395,8 +395,8 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
 {
   errno = 0; /* clear error status */
   
-  String fname_src; /* used for directory entries */
-  String fname_dst; /* used for directory entries */
+  VString fname_src; /* used for directory entries */
+  VString fname_dst; /* used for directory entries */
 
   if ( vfu_break_op() ) 
     return CR_ABORT; /* canceled */
@@ -571,8 +571,8 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
 {
   errno = 0; /* clear error status */
   
-  String fname; /* used for directory entries */
-  String s;
+  VString fname; /* used for directory entries */
+  VString s;
   
   if ( vfu_break_op() ) 
     return CR_ABORT; /* canceled */
@@ -649,7 +649,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
   /* show bytes freed if required */
   if ( bytes_freed )
     {
-    String t;
+    VString t;
     t.fi( *bytes_freed );
     str_comma( t );
     t = "ERASE: " + t + " bytes freed.";
@@ -737,9 +737,9 @@ void vfu_copy_files( int a_one, int a_mode )
   if ( opt.copy_calc_totals == 2 ) /* PRELIMINARY copy calc totals */
     __copy_calc_totals( copy_info, a_one );
 
-  String target = opt.last_copy_path[ a_mode ];
+  VString target = opt.last_copy_path[ a_mode ];
   const char* cm_mode_str[] = { "COPY", "MOVE", "LINK" };
-  String str = cm_mode_str[ a_mode ];
+  VString str = cm_mode_str[ a_mode ];
   if ( a_one )
     str = str + " `" + files_list[FLI]->name_ext() + "' to:";
   else
@@ -822,8 +822,8 @@ void vfu_copy_files( int a_one, int a_mode )
       src -- is full current item path
       dst -- is target + name-ext only!
     */
-    String src  = fi->full_name();
-    String dst  = target;
+    VString src  = fi->full_name();
+    VString dst  = target;
            dst += fi->name_ext();
     
     int r = 0;
@@ -909,7 +909,7 @@ void vfu_erase_files( int a_one )
   fsize_t bytes_freed = 0;
   fsize_t *bytes_freed_ptr = opt.bytes_freed ? &bytes_freed : NULL;
 
-  String str;
+  VString str;
   fsize_t erase_size = vfu_update_sel_size( a_one );
   if ( erase_size != -1 )
     {
@@ -944,7 +944,7 @@ void vfu_erase_files( int a_one )
     if ( a_one && z != FLI ) continue; 
     if ( !a_one && !fi->sel ) continue;
     
-    String target  = fi->full_name();
+    VString target  = fi->full_name();
            
     int r = 0;
     if ( fi->is_link() )

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.6 2002/11/27 21:42:05 cade Exp $
+ * $Id: see.h,v 1.7 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -74,10 +74,10 @@ class SeeViewer
 {
   SeeViewerOptions* opt;
   int escape_keys[MAX_ESCAPE_KEYS];
-  String help_str;
+  VString help_str;
 
   FILE* f;
-  String fname;
+  VString fname;
   int fpos;
   int fsize;
   int line;
@@ -189,9 +189,9 @@ class SeeEditor
 {
   SeeEditorOptions* opt;
   int escape_keys[MAX_ESCAPE_KEYS];
-  String help_str;
+  VString help_str;
 
-  String fname;
+  VString fname;
   
   int col;
   int colpage;
@@ -221,7 +221,7 @@ class SeeEditor
 
   void status( const char* s, int color = -1 );
   
-  int expand_tabs( String &str, String &map );
+  int expand_tabs( VString &str, VString &map );
   
   int real_col( int row = -1 );
   

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.10 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfuarc.cpp,v 1.11 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -28,7 +28,7 @@ void vfu_read_archive_files( int a_recursive )
   if ( a_recursive )
     archive_path = ""; /* cannot have path when recursing archive */
   
-  String s;
+  VString s;
   s = "rx_auto ";
   s += ( a_recursive ) ? "v \"" : "l \"";
   s += archive_name;
@@ -91,7 +91,7 @@ void vfu_read_archive_files( int a_recursive )
 
 void vfu_browse_archive_file()
 {
-  String tmpdir = vfu_temp();
+  VString tmpdir = vfu_temp();
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
     {
     say1( "error: cannot create temp directory" );
@@ -100,9 +100,9 @@ void vfu_browse_archive_file()
     }
   chdir( tmpdir );
 
-  String fn = files_list[FLI]->full_name();
+  VString fn = files_list[FLI]->full_name();
 
-  String s;
+  VString s;
   s = "rx_auto x \"";
   s += work_path;
   s += archive_name;
@@ -122,9 +122,9 @@ void vfu_browse_archive_file()
 
 /*---------------------------------------------------------------------------*/
 
-void vfu_user_external_archive_exec( String &shell_line  )
+void vfu_user_external_archive_exec( VString &shell_line  )
 {
-  String tmpdir = vfu_temp();
+  VString tmpdir = vfu_temp();
   if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
     {
     say1( "error: cannot create temp directory" );
@@ -133,9 +133,9 @@ void vfu_user_external_archive_exec( String &shell_line  )
     }
   chdir( tmpdir );
 
-  String fn = files_list[FLI]->full_name();
+  VString fn = files_list[FLI]->full_name();
 
-  String s;
+  VString s;
   s = "rx_auto x \"";
   s += work_path;
   s += archive_name;
@@ -161,7 +161,7 @@ void vfu_extract_files( int one )
 {
   if ( sel_count == 0 && one == 0 ) one = 1;
   char t[MAX_PATH];
-  String target;
+  VString target;
 
   if ( one == 0 )
     sprintf( t, "EXTRACT SELECTION to: " );
@@ -188,7 +188,7 @@ void vfu_extract_files( int one )
     return;
     }
 
-  String tmpfile = vfu_temp();
+  VString tmpfile = vfu_temp();
   if (va.fsave( tmpfile ))
     {
     sprintf( t, "Error writing list file: %s", tmpfile.data() );
@@ -197,7 +197,7 @@ void vfu_extract_files( int one )
     }
   chmod( tmpfile, S_IRUSR|S_IWUSR );  
 
-  String s;
+  VString s;
   s = "rx_auto x \"";
   s += work_path;
   s += archive_name;

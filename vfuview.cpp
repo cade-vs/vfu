@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.10 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfuview.cpp,v 1.11 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -21,7 +21,7 @@ int tag_mark_pos;
 
 int get_item_color( TF *fi )
 {
-  String str;
+  VString str;
 
   ASSERT( fi );
  
@@ -99,7 +99,7 @@ void vfu_draw( int n )
   TF* fi = files_list[n];
  
   int c = fi->color(); /* color to be used */
-  String view = fi->view();
+  VString view = fi->view();
   if ( fi->sel )
     {
     str_set_ch( view, sel_mark_pos, '#' );
@@ -123,7 +123,7 @@ extern char *FTIMETYPE[]; /* in vfuopt.cpp */
 void vfu_redraw() /* redraw file list and header */
 {
   char t[MAX_PATH];
-  String str;
+  VString str;
 
   str  = "Mask: ";
   str += files_mask;
@@ -218,9 +218,9 @@ void vfu_redraw() /* redraw file list and header */
 
 void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
 {
-  String s1;
-  String s2;
-  String tmp;
+  VString s1;
+  VString s2;
+  VString tmp;
  
   /* first line here */
   s1  = "Select :";

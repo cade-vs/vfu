@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.13 2003/01/06 00:37:55 cade Exp $
+ * $Id: see.cpp,v 1.14 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -150,7 +150,7 @@
   
   void SeeViewer::status( const char* s, int color )  
   {
-  String sss;
+  VString sss;
   sss = "| ";
   sss += s;
   if (str_len(sss) >= cols)
@@ -229,7 +229,7 @@
   int z = 0;
   int y = 0;
   fseek( f, cpos, SEEK_SET );
-  String sss;
+  VString sss;
   while( y < rows )
     {              
     if ( cpos >= fsize )
@@ -407,7 +407,7 @@
   
   void SeeViewer::go_to()  
   {
-  String sss;
+  VString sss;
   if(opt->hex_mode)
     {
     sprintf( sss, "x%X", fpos );
@@ -491,7 +491,7 @@
   
   int SeeViewer::find_next()  
   {
-  String sss;
+  VString sss;
   if ( !opt->last_search[0] )
     {
     status( "No search pattern..." );
@@ -535,7 +535,7 @@
   
   int SeeViewer::find( int no_case )  
   {
-  String sss;
+  VString sss;
   sprintf( sss, "Find %s: ", no_case?"(no case)":"(with case)");
   status( sss );
   int ii = str_len(sss)+2;
@@ -833,7 +833,7 @@
       case 'r'        :
       case 'R'        : if (!opt->hex_mode)
                           {
-                          String sss;
+                          VString sss;
                           z = 8;
                           while (z--) sss += "---------|";
                           con_out( 1, 1, sss, opt->ch );
@@ -1007,7 +1007,7 @@
 
   void SeeEditor::status( const char* s, int color )
   {
-  String sss;
+  VString sss;
   sss = "| ";
   sss += s;
   if (str_len(sss) >= cols)
@@ -1021,7 +1021,7 @@
 
 /*--------------------------------------------------------------------*/
 
-  int SeeEditor::expand_tabs( String &str, String &map )
+  int SeeEditor::expand_tabs( VString &str, VString &map )
   {
   int res = 0;
   int i = 0;
@@ -1052,8 +1052,8 @@
   {
   int c = col;
   if (row == -1) row = sv.pos;
-  String str = va[row];
-  String map;
+  VString str = va[row];
+  VString map;
   if ( expand_tabs( str, map ) )
     {
     str_sleft( map, col );
@@ -1078,14 +1078,14 @@
   ASSERT( sv.max == va.count() - 1 );
   if ( n > sv.max )
     {
-    String sss = "~";
+    VString sss = "~";
     str_pad( sss, - cols );
     con_out( 1, ( n - sv.page ) + 1, sss, opt->cn );
     }
   else
     {
-    String map;
-    String str = va[n];
+    VString map;
+    VString str = va[n];
     expand_tabs( str, map );
     str_trim_left( str, colpage );
     str_sleft( str, cols );
@@ -1102,7 +1102,7 @@
   if ( freezed ) return;
   
   int z;
-  String str;
+  VString str;
   con_chide();
   if ( from > -1 ) /* from == -1 to update status line only */
     for( z = from; z < rows; z++ )
@@ -1122,7 +1122,7 @@
   remove_trails();
   if (va.fsave( fname ))
     {
-    String s = "Cannot save file! ";
+    VString s = "Cannot save file! ";
     s += fname;
     status( s );
     return 0;
@@ -1176,8 +1176,8 @@
   void SeeEditor::left()
   {
   if (col <= 0) return;
-  String str = va[sv.pos];
-  String map;
+  VString str = va[sv.pos];
+  VString map;
   if ( expand_tabs( str, map ) )
     {
     col--;
@@ -1194,8 +1194,8 @@
 
   void SeeEditor::right()
   {
-  String str = va[sv.pos];
-  String map;
+  VString str = va[sv.pos];
+  VString map;
   if ( expand_tabs( str, map ) )
     {
     col++;
@@ -1220,8 +1220,8 @@
   void SeeEditor::end()
   {
   remove_trails( sv.pos );
-  String str = va[sv.pos];
-  String map;
+  VString str = va[sv.pos];
+  VString map;
   expand_tabs( str, map );
   col = str_len( str );
   
@@ -1243,13 +1243,13 @@
 
   void SeeEditor::kdel()
   {
-  String str = va[sv.pos];
+  VString str = va[sv.pos];
   int c = real_col();
   if (c >= str_len( str ))
     {
     if ( sv.pos == sv.max ) return;
     mod = 1;
-    String nstr = va[sv.pos+1]; /* next string (below) */
+    VString nstr = va[sv.pos+1]; /* next string (below) */
     if ( c > str_len( str ) ) str_pad( str, -c, ' ' ); /* the line is short -- pad with spaces */
     str += nstr;
     va.set( sv.pos, str );
@@ -1270,7 +1270,7 @@
 
   void SeeEditor::kbs()
   {
-  String str = va[sv.pos];
+  VString str = va[sv.pos];
   int c = real_col();
   if ( c > str_len( str ) )
     {
@@ -1298,8 +1298,8 @@
   mod = 1;
   if ( va.count() == 0 ) va.push( "" );
   int c = real_col();
-  String str = va[sv.pos];
-  String nstr = str;
+  VString str = va[sv.pos];
+  VString nstr = str;
   str_sleft( str, c );
   str_trim_left( nstr, c );
   va.set( sv.pos, str );
@@ -1344,7 +1344,7 @@
     };
   mod = 1;
   if ( va.count() == 0 ) va.push( "" );
-  String str = va[sv.pos];
+  VString str = va[sv.pos];
 
   int c = real_col();
 
@@ -1419,14 +1419,14 @@
     {
     ASSERT( sv.max == va.count() - 1 );
     if ( n < 0 || n > sv.max ) return;
-    String str = va[n];
+    VString str = va[n];
     str_cut_right( str, " \t\n\r" );
     va.set( n, str );
     }
   else  
   for ( int z = 0; z < va.count(); z++ )
     {
-    String str = va[z];
+    VString str = va[z];
     str_cut_right( str, " \t\n\r" );
     va.set( z, str );
     }
@@ -1436,7 +1436,7 @@
 
   void SeeEditor::insert_pipe_cmd()
   {
-  String sss = "Command to pipe in: ";
+  VString sss = "Command to pipe in: ";
   int ii = str_len( sss )+2;
   status( sss );
   sss = opt->last_pipe_cmd;
@@ -1477,7 +1477,7 @@
   int pos = -1;
   for ( z = sv.pos + 1; z <= sv.max; z++ )
     {
-    String str = va[z];
+    VString str = va[z];
     if ( opt->no_case )
       str_up( str );
     if ( opt->last_search[0] == '~' )  
@@ -1512,7 +1512,7 @@
 
   int SeeEditor::find( int no_case )
   {
-  String sss;
+  VString sss;
   sprintf( sss, "Find %s: ", no_case?"(no case)":"(case sense)");
   status( sss );
   int ii = str_len(sss)+2;

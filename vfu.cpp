@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.28 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfu.cpp,v 1.29 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -26,13 +26,13 @@
 
   /* work context */
   int    work_mode;
-  String work_path;
+  VString work_path;
   /* archive context */
-  String archive_name;
-  String archive_path;
+  VString archive_name;
+  VString archive_path;
   VArray archive_extensions;
 
-  String external_panelizer;
+  VString external_panelizer;
   VArray list_panelizer;
   
   TF*       files_list[MAX_FILES];
@@ -49,24 +49,24 @@
   TScrollPos file_list_index; 
 
   /* some world wide variables */
-  String startup_path;
-  String home_path;
-  String tmp_path;
-  String rc_path;
+  VString startup_path;
+  VString home_path;
+  VString tmp_path;
+  VString rc_path;
 
   /* files masks */
-  String   files_mask;
+  VString   files_mask;
   VArray   files_mask_array;
 
 /*############################################ GLOBAL STRUCTS  #########*/
 
   VArray   dir_tree;
   int      dir_tree_changed;
-  String   dir_tree_file;
+  VString   dir_tree_file;
 
   VArray file_find_results; // filefind results
 
-  String path_bookmarks[10];
+  VString path_bookmarks[10];
 
 /*######################################################################*/
 
@@ -80,28 +80,28 @@
   VArray trim_tree;
 
   VArray view_profiles;
-  String view_profile;
+  VString view_profile;
 
 /*############################################ CONFIG SETTINGS #########*/
 
-  String ext_colors[16];
+  VString ext_colors[16];
 
-  String shell_browser;
-  String shell_editor;
-  String shell_options;
-  String shell_prog;
+  VString shell_browser;
+  VString shell_editor;
+  VString shell_options;
+  VString shell_prog;
   
-  String user_id_str;
-  String group_id_str;
-  String host_name_str;
+  VString user_id_str;
+  VString group_id_str;
+  VString host_name_str;
 
-  String filename_opt;
-  String filename_conf;
-  String filename_history;
-  String filename_tree;
-  String filename_size_cache;
-  String filename_ffr; /* file find results */
-  String filename_atl;
+  VString filename_opt;
+  VString filename_conf;
+  VString filename_history;
+  VString filename_tree;
+  VString filename_size_cache;
+  VString filename_ffr; /* file find results */
+  VString filename_atl;
 
   char TF::_full_name[MAX_PATH]; 
   
@@ -117,7 +117,7 @@
 */
 
 char say_buf[1024];
-String say_str;
+VString say_str;
 void say( int line, int attr, const char* format, ... )
 {
   ASSERT( line == 1 || line == 2 );
@@ -142,14 +142,14 @@ void say2(const char *a_str, int attr )
 
 void say2errno()
 {
-  String str = "error: ";
+  VString str = "error: ";
   str += strerror(errno);
   say2( str );
 }
 
 void saycenter( int line, int attr, const char *a_str )
 {
-  String str = " ";
+  VString str = " ";
   int sl = str_len( a_str );
   if ( sl < con_max_x() )
     {
@@ -340,7 +340,7 @@ void TF::refresh_view()
 
     if (opt.f_size)
       {
-      String str;
+      VString str;
       if ( _is_dir && _size == -1 )
         {
         str = "[DIR]";
@@ -361,7 +361,7 @@ void TF::refresh_view()
     /* there is no field separator here! */
     }
 
-  String name_view = _name;
+  VString name_view = _name;
   
   #ifdef _TARGET_UNIX_
   /* links are supported only under UNIX */
@@ -376,7 +376,7 @@ void TF::refresh_view()
   #endif
 
   /* the three space separator below is for the tag and selection marks `>>#' */
-  String view;
+  VString view;
   view = view + stmode + stowner + stgroup + sttime + stsize + sttype + "   " + name_view;
 
   int x = con_max_x();
@@ -651,7 +651,7 @@ void vfu_init()
   file_list_index.wrap = 0; /* just to be safe :) */
 
   files_mask = "*";
-  files_mask_array.split( " ", files_mask );
+  files_mask_array = str_split( " ", files_mask );
 
   view_profiles.push( "123456" );
   view_profile = "123456";
@@ -693,7 +693,7 @@ void vfu_exit_path( const char *a_path )
   return; // this is meaningless under DOS
   #else
 
-  String str;
+  VString str;
   if ( getenv( "VFU_EXIT" ) )
     str = getenv( "VFU_EXIT" );
   else
@@ -1009,7 +1009,7 @@ void vfu_help_cli()
 
 void vfu_cli( int argc, char* argv[] )
 {
-  String temp;
+  VString temp;
   GETOPT("hrd:ti")
     {
     switch(optc)
@@ -1127,10 +1127,10 @@ void vfu_toggle_view_fields( int ch )
 
 void vfu_shell( const char* a_command, const char* a_options )
 {
-  String shell_line = a_command;
-  String o = a_options;
+  VString shell_line = a_command;
+  VString o = a_options;
   
-  String status = "";
+  VString status = "";
   
   int res = vfu_update_shell_line( shell_line, o );
   if (res) return;
@@ -1239,7 +1239,7 @@ void vfu_edit( const char *fname )
     }
   else
     {
-    String str = shell_editor;
+    VString str = shell_editor;
     if ( fname )
       {
       str_replace( str, "%f", fname );
@@ -1282,8 +1282,8 @@ void vfu_browse_selected_files()
 
 void vfu_browse( const char *fname, int no_filters )
 {
-  String new_name = fname;
-  String tmp_name;
+  VString new_name = fname;
+  VString tmp_name;
   
   if ( !no_filters && see_filters.count() > 0 )
     {
@@ -1293,9 +1293,9 @@ void vfu_browse( const char *fname, int no_filters )
     for ( z = 0; z < see_filters.count(); z++ )
       {
       VArray split;
-      split.split( ",", see_filters[z] );
-      String mask = split[0];
-      String str  = split[1];
+      split = str_split( ",", see_filters[z] );
+      VString mask = split[0];
+      VString str  = split[1];
       if ( FNMATCH( mask, str_file_name_ext( fname ) ) ) continue;
       /* found */
       tmp_name = vfu_temp();
@@ -1324,7 +1324,7 @@ void vfu_browse( const char *fname, int no_filters )
     }
   else
     {
-    String str = shell_browser;
+    VString str = shell_browser;
     if ( fname )
       {
       str_replace( str, "%f", fname );
@@ -1384,7 +1384,7 @@ void vfu_action_plus( int key )
     { /* work_mode == WM_ARCHIVE */ 
     if ( fi->is_dir() )
       { /* directory */
-      String p = fi->name();
+      VString p = fi->name();
       str_fix_path( p );
       archive_path += p;
       vfu_read_files();
@@ -1403,7 +1403,7 @@ void vfu_action_plus( int key )
 
 void vfu_action_minus()
 {
-  String o = work_path; /* save old path i.e. current */
+  VString o = work_path; /* save old path i.e. current */
   
   if ( work_mode == WM_NORMAL )
     {
@@ -1449,7 +1449,7 @@ void vfu_action_minus()
   int z = 0;
   for ( z = 0; z < files_count; z++ )
     {
-    String n;
+    VString n;
     if ( work_mode == WM_ARCHIVE )
       n = archive_path;
     else
@@ -1539,7 +1539,7 @@ int vfu_time_cmp( time_t t1, time_t t2, int type = TIMECMP_DT )
 void vfu_global_select_same( int same_mode )
 {
 
-String same_str;
+VString same_str;
 long same_int = 0;
 fsize_t same_fsize = 0;
 
@@ -1721,7 +1721,7 @@ void vfu_global_select()
     case '=' :
     case '-' :
               {
-              String m;
+              VString m;
               int selaction = 0;
               if (ch != '-') selaction = 1;
               if (ch == '+')
@@ -1734,7 +1734,7 @@ void vfu_global_select()
               if ( vfu_get_str( "", m, HID_GS_MASK ))
                 {
                 VArray sm;
-                sm.split( " +", m );
+                sm = str_split( " +", m );
                 while( (m = sm.pop()) != "" )
                   {
                   if (opt.mask_auto_expand)
@@ -1758,7 +1758,7 @@ void vfu_global_select()
                 say1( "GlobalSelect/Different not available in this mode." ); 
                 break; 
                 };
-              String target;
+              VString target;
               if ( vfu_get_dir_name( "Target directory:", target ))
                 {
                 str_fix_path( target );
@@ -1781,7 +1781,7 @@ void vfu_global_select()
     case 'F':
     case 'B': {
               say1("");
-              String pat;
+              VString pat;
               if ( vfu_get_str( "Search string: ", pat, HID_GS_GREP ) )
                 {
                 fsize_t size = 0;
@@ -1866,12 +1866,12 @@ void vfu_global_select()
 
 /*--------------------------------------------------------------------------*/
 
-int vfu_user_external_find( int key, const char* ext, const char* type, String *shell_line )
+int vfu_user_external_find( int key, const char* ext, const char* type, VString *shell_line )
 {
   VArray split;
-  String str;
-  String ext_str = ext;
-  String type_str = type;
+  VString str;
+  VString ext_str = ext;
+  VString type_str = type;
   if ( ext_str == "" )
     ext_str = ".";
   ext_str += ".";
@@ -1879,7 +1879,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, String *
   int z;
   for ( z = 0; z < user_externals.count(); z++ )
     {
-    split.split( ",", user_externals[z] );
+    split = str_split( ",", user_externals[z] );
     if ( key_by_name( split[1] ) != key ) continue; /* if key not the same -- skip */
     if ( split[2] != "*" ) /* if we should match and extension */
       {
@@ -1908,7 +1908,7 @@ void vfu_user_external_exec( int key )
     say1( "Directory is empty: user externals are disabled!" );
     return;
     }
-  String shell_line;
+  VString shell_line;
   TF *fi = files_list[FLI];
   if (vfu_user_external_find( key, fi->ext(), fi->type_str(), &shell_line ) != -1)
     {
@@ -1955,14 +1955,14 @@ void vfu_tools()
                break;
                }
     case 'T' : {
-               String str;
+               VString str;
                if (vfu_get_str( "Make directory(ies) (use space for separator)", 
                                 str, HID_MKPATH ))
                  {
                  int err = 0;
                  int z;
                  VArray ms;
-                 ms.split( " +", str );
+                 ms = str_split( " +", str );
                  for ( z = 0; z < ms.count(); z++ )
                    if( make_path(ms[z]) )
                      {
@@ -1986,7 +1986,7 @@ void vfu_tools()
 
 void bookmark_goto( int n )
 {
-  String t;
+  VString t;
   if ( n == -1 )
     {
     int z;
@@ -2016,7 +2016,7 @@ void bookmark_hookup()
 
 void vfu_command()
 {
-  String cmd;
+  VString cmd;
   if ( vfu_get_str( "Command: ", cmd, HID_COMMANDS ) ) vfu_shell( cmd, "" );
 }
 
@@ -2029,7 +2029,7 @@ void vfu_rename_file_in_place()
   int y = (file_list_index.pos - file_list_index.page) + 4;
   int x = tag_mark_pos + 3;
   
-  String str = fi->name();
+  VString str = fi->name();
   
   if(TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 4, &str ) &&
      strcmp( fi->name(), str.data() )
@@ -2057,7 +2057,7 @@ void vfu_rename_file_in_place()
 
 void vfu_change_file_mask( const char* a_new_mask )
 {
-  String tmp = files_mask;
+  VString tmp = files_mask;
   int new_mask = 0;
 
   if ( a_new_mask )
@@ -2077,7 +2077,7 @@ void vfu_change_file_mask( const char* a_new_mask )
     if ( str_len( tmp ) < 1 ) tmp = "*";
     
     files_mask = tmp;
-    files_mask_array.split( " +", files_mask );
+    files_mask_array = str_split( " +", files_mask );
     
     if ( opt.mask_auto_expand )
       {
@@ -2113,14 +2113,14 @@ void vfu_directories_sizes( int n )
   
   if ( n == 'E' || n == '.' ) /* specific directory */
     {
-    String target = work_path;
+    VString target = work_path;
     if ( n == '.' )
       target = work_path;
     else
       if ( !vfu_get_dir_name( "Calculate size of directory: ", target ) ) return;
     fsize_t dir_size = vfu_dir_size( target );
     if ( dir_size == -1 ) return;
-    String dir_size_str;
+    VString dir_size_str;
     dir_size_str.fi( dir_size );
     str_comma( dir_size_str );
     sprintf( t, "Dir size of: %s", target.data() ); 
@@ -2176,7 +2176,7 @@ void vfu_edit_entry( )
   
   int one = ( sel_count == 0 );
   int z;
-  String str;
+  VString str;
   
   mb.undef();
   mb.push( "M Mode" );
@@ -2236,7 +2236,7 @@ void vfu_edit_entry( )
         else
           {
           say1( "Enter octal mode (i.e. 755, 644, 1777, etc.)" );
-          String str;
+          VString str;
           int z = vfu_get_str( "", str, HID_OMODE );
           str_cut_spc( str );
           mode_t m;
@@ -2283,7 +2283,7 @@ void vfu_edit_entry( )
         strcpy( t, time2str(time(NULL))); 
         t[24] = 0;
         
-        String str = t;
+        VString str = t;
         int z = vfu_get_str( "", str, HID_EE_TIME );
         if( !(z && str_len(str) > 0) ) break;
 
@@ -2329,7 +2329,7 @@ void vfu_edit_entry( )
         break;
         #endif
 
-        String str;
+        VString str;
         if (one)
           say1("Enter new `user.group | user | .group' for current file:");
         else
@@ -2397,7 +2397,7 @@ void vfu_edit_entry( )
         }
       char t[MAX_PATH] = "";
       t[ readlink( fi->name(), t, MAX_PATH-1 ) ] = 0;
-      String str = t;
+      VString str = t;
       if ( vfu_get_str( "", str, 0 ) )
         {
         fi->drop_view();
@@ -2425,7 +2425,7 @@ void vfu_edit_entry( )
 
 void vfu_jump_to_mountpoint( int all )
 {
-  String str;
+  VString str;
   char t[2048];
   int z;
   VArray va;
@@ -2501,14 +2501,14 @@ void vfu_user_menu()
 {
   VArray split;
   VArray lines;
-  String des;
+  VString des;
   int z;
   
   mb.undef();
 
   for ( z = 0; z < user_externals.count(); z++ )
     {
-    split.split( ",", user_externals[z] );
+    split = str_split( ",", user_externals[z] );
     if ( strcasecmp( split[1], "menu" ) ) continue; /* not menu item -- skip */
     /* FIXME: should we care about ext's or user will override this? */
     /* split[2]; // extensions */
@@ -2538,7 +2538,7 @@ void vfu_user_menu()
   else
   if ( work_mode == WM_ARCHIVE )
     {
-    String str = lines[z];
+    VString str = lines[z];
     vfu_user_external_archive_exec( str );
     }
 };
@@ -2567,8 +2567,8 @@ void vfu_file_find_results()
 
   if ( bi.ec == 13 )
     {
-    String fname;
-    String str = file_find_results[z];
+    VString fname;
+    VString str = file_find_results[z];
     str_trim_left( str, str_find( str, " | " ) + 3 );
     z = str_rfind( str, '/' );
     fname = str;
@@ -2588,7 +2588,7 @@ void vfu_file_find_results()
     list_panelizer.undef();
     for ( z = 0; z < file_find_results.count(); z++ )
       {
-      String str = file_find_results[z];
+      VString str = file_find_results[z];
       str_trim_left( str, str_find( str, " | " ) + 3 );
       list_panelizer.push( str );
       }
@@ -2602,8 +2602,8 @@ void vfu_file_find_results()
 /*--------------------------------------------------------------------------*/
 
 VArray      __ff_masks;
-String      __ff_path;
-String      __ff_pattern;
+VString      __ff_path;
+VString      __ff_pattern;
 int         __ff_nocase;
 
 int __ff_process( const char* origin,    /* origin path */
@@ -2612,7 +2612,7 @@ int __ff_process( const char* origin,    /* origin path */
                   int is_link,           /* 1 if link */
                   int flag )
 {
-  String str;
+  VString str;
 
   if ( flag == FTWALK_DX ) return 0;
   if ( vfu_break_op() ) return 1;
@@ -2661,7 +2661,7 @@ int __ff_process( const char* origin,    /* origin path */
 
 void vfu_file_find( int menu )
 {
-  String str;
+  VString str;
   char ch;
 
   if (menu)
@@ -2702,7 +2702,7 @@ void vfu_file_find( int menu )
   str = vfu_hist_get( HID_FFMASK, 0 );
   if ( str == "" ) str = "*";
   if (!vfu_get_str( "Enter find masks (space separated): ", str, HID_FFMASK )) return;
-  __ff_masks.split( " +", str );
+  __ff_masks = str_split( " +", str );
 
   str = work_path;
   if (!vfu_get_dir_name( "Enter start path: ", str )) return;
@@ -2759,7 +2759,7 @@ void vfu_read_files_menu()
   VArray list;
 
   int z;
-  String str;
+  VString str;
   mb.undef();
   /* I don't format src like this but it gives clear idea what is all about */
   mb.push( "T Rescan DirTree" );           list.push("");
@@ -2806,7 +2806,7 @@ void vfu_read_files_menu()
 
 void vfu_inc_search()
 {
-  String str;
+  VString str;
   say1( "Enter search pattern: ( use TAB to advance )" );
   int key = con_getch();
   while( ( key >= 32 && key <= 255 ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
@@ -2832,7 +2832,7 @@ void vfu_inc_search()
     int direction = 1;
     int found = 0;
     int loops = 0;
-    String s_mask = str;
+    VString s_mask = str;
     vfu_expand_mask( s_mask );
     while(1)
       {

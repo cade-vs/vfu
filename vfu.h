@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.7 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfu.h,v 1.8 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -171,13 +171,13 @@
 
   /* work context */
   extern int    work_mode;
-  extern String work_path;
+  extern VString work_path;
   /* archive context */
-  extern String archive_name;
-  extern String archive_path;
+  extern VString archive_name;
+  extern VString archive_path;
   extern VArray archive_extensions;
 
-  extern String external_panelizer;
+  extern VString external_panelizer;
   extern VArray list_panelizer;
   
   extern TF*        files_list[MAX_FILES];
@@ -199,13 +199,13 @@
   #define FGO(n)    (file_list_index.gotopos(n))
 
   /* some world wide variables */
-  extern String startup_path;
-  extern String home_path;
-  extern String tmp_path;
-  extern String rc_path;
+  extern VString startup_path;
+  extern VString home_path;
+  extern VString tmp_path;
+  extern VString rc_path;
   
   /* files masks */
-  extern String         files_mask;
+  extern VString         files_mask;
   extern VArray         files_mask_array;
 
 /*############################################ GLOBAL STRUCTS  #########*/
@@ -215,7 +215,7 @@
 
   extern VArray file_find_results; // filefind results
 
-  extern String path_bookmarks[10];
+  extern VString path_bookmarks[10];
 
 
 /*######################################################################*/
@@ -230,27 +230,27 @@
   extern VArray trim_tree;
 
   extern VArray view_profiles;
-  extern String view_profile;
+  extern VString view_profile;
 
 /*############################################ CONFIG SETTINGS #########*/
 
-  extern String ext_colors[16];
+  extern VString ext_colors[16];
 
-  extern String shell_browser;
-  extern String shell_editor;
-  extern String shell_prog;
+  extern VString shell_browser;
+  extern VString shell_editor;
+  extern VString shell_prog;
 
-  extern String user_id_str;
-  extern String group_id_str;
-  extern String host_name_str;
+  extern VString user_id_str;
+  extern VString group_id_str;
+  extern VString host_name_str;
 
-  extern String filename_opt;
-  extern String filename_conf;
-  extern String filename_history;
-  extern String filename_tree;
-  extern String filename_size_cache;
-  extern String filename_ffr; /* file find results */
-  extern String filename_atl; /* bad name I know, it stands for
+  extern VString filename_opt;
+  extern VString filename_conf;
+  extern VString filename_history;
+  extern VString filename_tree;
+  extern VString filename_size_cache;
+  extern VString filename_ffr; /* file find results */
+  extern VString filename_atl; /* bad name I know, it stands for
                                  `archive temp list' */
 
 /*######################################################################*/
@@ -314,7 +314,7 @@ void bookmark_hookup();
 
 void update_status();
 
-int vfu_user_external_find( int key, const char* ext, const char* type, String *shell_line );
+int vfu_user_external_find( int key, const char* ext, const char* type, VString *shell_line );
 void vfu_user_external_exec( int a_key );
 void vfu_user_menu();
 

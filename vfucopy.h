@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.h,v 1.4 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfucopy.h,v 1.5 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -51,7 +51,7 @@ struct CopyInfo
   int over_mode;     /* what to do if dest exist? see OM_XXX defines */
   int abort;         /* if != 0 -- abort and return */
 
-  String description;
+  VString description;
 };
 
 fsize_t device_free_space( const char *target ); /* user free space, NOT real! */

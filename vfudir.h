@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.5 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfudir.h,v 1.6 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -18,7 +18,7 @@ extern VArray size_cache;
 
 /*###########################################################################*/
 
-int vfu_get_dir_name( const char *prompt, String &target, int should_exist = 1 );
+int vfu_get_dir_name( const char *prompt, VString &target, int should_exist = 1 );
 void vfu_chdir( const char *a_new_dir );
 void vfu_chdir_history();
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.10 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfuopt.cpp,v 1.11 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -109,7 +109,7 @@ void vfu_load_dir_colors()
 
   while( va.count() )
     {
-    String str = va[0];
+    VString str = va[0];
     va.del( 0 );
     int comment = str_find( str, '#' );
     if ( comment != -1 ) str_sleft( str, comment );
@@ -170,7 +170,7 @@ int set_arr( const char *line, const char *keyword, VArray &target )
 
 /*---------------------------------------------------------------------------*/
 
-int set_str( const char *line, const char *keyword, String &target )
+int set_str( const char *line, const char *keyword, VString &target )
 {
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
   if ( ! re.m( line ) ) return 0;
@@ -197,7 +197,7 @@ int set_splitter( const char *line, const char *keyword, VArray &splitter )
   VRegexp re("^[ \011]*([a-zA-Z0-9]+)[ \011]*=[ \011]*(.+)");
   if ( ! re.m( line ) ) return 0;
   if ( str_low( re[1] ) != keyword ) return 0;
-  splitter.split( PATH_DELIMITER, re[2] );
+  splitter = str_split( PATH_DELIMITER, re[2] );
   return 1;
 }
 
@@ -233,7 +233,7 @@ int key_by_name( const char* key_name )
 
 void vfu_settings_load()
 {
-  String str;
+  VString str;
   
   user_externals.undef();
   history.undef();
@@ -247,6 +247,7 @@ void vfu_settings_load()
   
   opt.svo.reset();
   opt.seo.reset();
+  opt.seo.handle_tab = 1;
   
   opt.sort_order = 'N'; 
   opt.sort_direction = 'A'; 
@@ -389,7 +390,7 @@ void vfu_settings_load()
         str = "";
         str = str + re_ux[1] + ","; /* get description */
         str = str + re_ux[2] + ","; /* get key name */
-        String t = re_ux[3]; /* get extensions */
+        VString t = re_ux[3]; /* get extensions */
         if ( t != "*" && t[-1] != '.' ) t += ".";
         str = str + t + ",";
         str += re_ux[4]; /* get shell line */
@@ -457,7 +458,7 @@ void vfu_edit_conf_file()
     }
   else
     {
-    String line = shell_editor;
+    VString line = shell_editor;
     str_replace( line, "%f", filename_conf );
     str_replace( line, "%F", filename_conf );
     vfu_shell( line.data(), 0 );

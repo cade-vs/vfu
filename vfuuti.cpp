@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.11 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfuuti.cpp,v 1.12 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -19,10 +19,10 @@
 
 /*---------------------------------------------------------------------------*/
 
-int vfu_update_shell_line( String &a_line, String &a_options )
+int vfu_update_shell_line( VString &a_line, VString &a_options )
 {
-String out;
-String s;
+VString out;
+VString s;
 
 int i = 0;
 
@@ -207,7 +207,7 @@ int vfu_ask( const char *prompt, const char *allowed )
 
 /*---------------------------------------------------------------------------*/
 
-String& vfu_expand_mask( String& mask )
+VString& vfu_expand_mask( VString& mask )
 {
   if ( str_count( mask, "*?" ) > 0 ) return mask;
   mask += "*";
@@ -260,7 +260,7 @@ void vfu_beep()
 
 void vfu_hist_add( int hist_id, const char* str )
 {
-  String hstr = hist_id;
+  VString hstr = hist_id;
   str_pad( hstr, HISTIDPAD );
   hstr += ",";
   hstr += str;
@@ -279,7 +279,7 @@ void vfu_hist_add( int hist_id, const char* str )
 
 const char* vfu_hist_get( int hist_id, int index )
 {
-  String hstr = hist_id;
+  VString hstr = hist_id;
   str_pad( hstr, HISTIDPAD );
   hstr += ",";
   int i = 0;
@@ -315,7 +315,7 @@ int vfu_hist_index( int hist_id, const char* value )
 
 int vfu_hist_count( int hist_id )
 {
-  String hstr = hist_id;
+  VString hstr = hist_id;
   str_pad( hstr, HISTIDPAD );
   hstr += ",";
   int cnt = 0;
@@ -328,7 +328,7 @@ int vfu_hist_count( int hist_id )
 // use hist_id=-1 and/or index=-1 to remove all
 void vfu_hist_remove( int hist_id, int index )
 {
-  String hstr = hist_id;
+  VString hstr = hist_id;
   str_pad( hstr, HISTIDPAD );
   hstr += ",";
   int i = 0;
@@ -345,7 +345,7 @@ void vfu_hist_remove( int hist_id, int index )
 static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
-  String str;
+  VString str;
   
   mb.undef();
   int z;
@@ -365,7 +365,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 /*---------------------------------------------------------------------------*/
 
 int __vfu_get_str_hist_id; /* used to keep history id passed here... */
-void vfu_get_str_history( int key, String &s, int &pos )
+void vfu_get_str_history( int key, VString &s, int &pos )
 {
   if ( __vfu_get_str_hist_id <= 0 ) return;
   if ( key != KEY_NPAGE && key != KEY_PPAGE ) return;
@@ -380,7 +380,7 @@ void vfu_get_str_history( int key, String &s, int &pos )
   pos = str_len( s );
 }
 
-int vfu_get_str( const char *prompt, String& target, int hist_id, int x, int y )
+int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y )
 {
   if ( x == -1 ) x = 1;
   if ( y == -1 ) y = con_max_y();

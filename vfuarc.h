@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.h,v 1.4 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfuarc.h,v 1.5 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -17,7 +17,7 @@
   void vfu_read_archive_files();
   void vfu_browse_archive_file();
   void vfu_extract_files( int one );
-  void vfu_user_external_archive_exec( String &shell_line  );
+  void vfu_user_external_archive_exec( VString &shell_line  );
 
 #endif /* _VFUARC_H_ */
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.8 2003/01/06 00:37:55 cade Exp $
+ * $Id: vfutools.cpp,v 1.9 2003/01/19 17:32:43 cade Exp $
  *
  */
 
@@ -113,9 +113,9 @@ void vfu_tool_rename()
 {
   int z;
   int err;
-  String path;
-  String new_name;
-  String t;
+  VString path;
+  VString new_name;
+  VString t;
 
   if ( files_count < 1 )
     { say1( "No files to rename... (Empty directory)" ); return; };
@@ -210,10 +210,10 @@ void vfu_tool_rename()
 
 void vfu_tool_seq_rename()
 {
-  String prefix;
-  String suffix;
-  String s_digpos;
-  String s_start;
+  VString prefix;
+  VString suffix;
+  VString s_digpos;
+  VString s_start;
   
   if(!vfu_get_str( "Enter filename prefix: ", prefix, HID_SEQ_PREFIX )) return;
   if(!vfu_get_str( "Enter filename suffix: ", suffix, HID_SEQ_SUFFIX )) return;
@@ -226,9 +226,9 @@ void vfu_tool_seq_rename()
   if (digpos < 1 || digpos > 20) digpos = 1;
   if (start < 0) start = 0;
 
-  String new_name;
-  String t;
-  String fmt;
+  VString new_name;
+  VString t;
+  VString fmt;
   
   sprintf( fmt, "%%s%%0%dd%%s", digpos );
 
