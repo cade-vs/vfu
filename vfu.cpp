@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfu.cpp,v 1.3 2001/11/10 09:46:48 cade Exp $
  *
  */
 
@@ -1089,6 +1089,8 @@ void vfu_shell( const char* a_command, const char* a_options )
   String shell_line = a_command;
   String o = a_options;
   
+  String status = "*** exec ok ***";
+  
   int res = vfu_update_shell_line( shell_line, o );
   if (res) return;
 
@@ -1103,11 +1105,7 @@ void vfu_shell( const char* a_command, const char* a_options )
   res = system( shell_line );
   if ( res )
     {
-    char t[128];
-    sprintf( t, "*** execution failed, system() == %d, press enter ***", res );
-    printf( t ); 
-    fflush( stdout );
-    fgetc( stdin );
+    sprintf( status, "*** execution failed, system() == %d, press enter ***", res );
     }
 
   if ( str_find( o, 'w' ) != -1 ) /* [w]ait after shell */
@@ -1133,7 +1131,7 @@ void vfu_shell( const char* a_command, const char* a_options )
   if ( str_find( o, 'n' ) != -1 ) do_draw = 0;
   if ( str_find( o, 'i' ) != -1 ) vfu_nav_down();
   
-  say1("");
+  say1( status );
   say2("");
 }
 
