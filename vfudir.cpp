@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.13 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfudir.cpp,v 1.14 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -42,7 +42,7 @@ VArray size_cache;
              strcmp( de->d_name, ".." ) == 0 ) continue;
         if ( a_fnpattern[0] == 0 || FNMATCH( pat, de->d_name)==0 )
           { 
-          String str = a_path;
+          String str; // = a_path;
           str += de->d_name;
           if ( file_is_dir(str) ) 
             {
@@ -188,7 +188,11 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
         else
           ch = 0;
         if ( z != -1 )
-          target = dir_list[z];
+          {
+          while( str_len( target ) > 0 && target[-1] != '/' )
+            str_chop( target );
+          target += dir_list[z];
+          }
         
         pos = str_len( target );
         
@@ -410,8 +414,7 @@ void vfu_chdir( const char *a_new_dir )
     {
     str = work_path + str;
     str_fix_path( str );
-    str_reduce_path( str, t );
-    target = t;
+    target = str_reduce_path( str );
     }
   if (chdir( target ) != 0)
     {
@@ -583,9 +586,7 @@ fsize_t __tree_rebuild_process( const char* path )
   closedir(dir);
   
   /* show some progress :) */
-  strcpy( new_name, path );
-  str_dot_reduce( NULL, new_name, con_max_x()-1 );
-  say2( new_name );
+  say2( str_dot_reduce( path, con_max_x()-1 ) );
   return size;
 }
 
@@ -717,7 +718,7 @@ void tree_draw_pos( TScrollPos &scroll, int opos )
   str_pad( sz, 12 );
   str = sz + "  " + str;
 
-  str_dot_reduce( NULL, str, con_max_x()-1 );
+  str = str_dot_reduce( str, con_max_x()-1 );
   
   con_out( 1, con_max_y()-3, str, cINFO ); 
   con_ce( cINFO );
@@ -1109,9 +1110,7 @@ fsize_t __dir_size_process( const char* path )
   closedir(dir);
     
   /* show some progress :) */
-  strcpy( new_name, path );
-  str_dot_reduce( NULL, new_name, con_max_x()-1 );
-  say2( new_name );
+  say2( str_dot_reduce( path, con_max_x()-1 ) );
   return size;
 }
 

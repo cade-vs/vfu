@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.27 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfu.cpp,v 1.28 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -125,7 +125,7 @@ void say( int line, int attr, const char* format, ... )
   va_start( vlist, format );
   int res = vsprintf( say_buf, format, vlist );
   va_end( vlist );
-  str_dot_reduce( say_buf, say_str, con_max_x()-1 );
+  say_str = str_dot_reduce( say_buf, con_max_x()-1 );
   con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
   con_ce( attr );
 };
@@ -239,6 +239,7 @@ const char* TF::full_name( int fix )
 
 void TF::set_name( const char* a_new_name )
 {
+  if ( _name ) delete [] _name;
   _name = new char[ strlen(a_new_name) + 1 ];
   ASSERT( _name ); /* this is run-time err but for now will be asserted */
   strcpy( _name, a_new_name );
@@ -1295,7 +1296,7 @@ void vfu_browse( const char *fname, int no_filters )
       split.split( ",", see_filters[z] );
       String mask = split[0];
       String str  = split[1];
-      if ( FNMATCH( mask, str_file_name_ext( fname, new_name ) ) ) continue;
+      if ( FNMATCH( mask, str_file_name_ext( fname ) ) ) continue;
       /* found */
       tmp_name = vfu_temp();
       str_replace( str, "%f", fname );
@@ -1307,7 +1308,6 @@ void vfu_browse( const char *fname, int no_filters )
       break;
       }
     }
-  new_name = fname; /* hack :( str_file_name_ext() may strip path above... */
   
   if ( tmp_name != "" )
     new_name = tmp_name;
@@ -1986,7 +1986,7 @@ void vfu_tools()
 
 void bookmark_goto( int n )
 {
-  char t[MAX_PATH];
+  String t;
   if ( n == -1 )
     {
     int z;
@@ -1994,9 +1994,7 @@ void bookmark_goto( int n )
     for(z = 1; z < 10; z++)
       {
       sprintf(t, "%d %-60s", z%10, path_bookmarks[z].data());
-      if ( str_len(t) > 60 )
-        str_dot_reduce( NULL, t, 60 );
-      mb.push(t);
+      mb.push( str_dot_reduce( t, 60 ) );
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");
     if ( n == -1 ) return;
@@ -2338,22 +2336,21 @@ void vfu_edit_entry( )
           say1("Enter new `user.group | user | .group' for all SELECTED files:");
         if( !(vfu_get_str( "", str, HID_EE_OWNER ) && str_len(str) > 0) ) break;
 
-        int uid = 0;
-        int gid = 0;
-        char temp[100];
-        regexp *re = regcomp("^ *([^\\.]*)(\\.([^\\.]*))? *$");
-        if( !regexec(re, str) )
+        VRegexp re( "^ *([^\\.]*)(\\.([^\\.]*))? *$" );
+        if( ! re.m( str ) )
           {
           say1("Format is 'uid.gid', for example 'cade.users', 'cade.', '.users'");
-          free(re);
           break;
           }
 
-        struct passwd *pwd; regsubn(re, 1, temp);
-        uid = -1; (pwd = getpwnam(temp))? uid = pwd->pw_uid : -2;
-        struct group  *grp; regsubn(re, 3, temp);
-        gid = -1; (grp = getgrnam(temp))? gid = grp->gr_gid : -2;
-        free(re);
+        int uid = -1;
+        int gid = -1;
+        
+        struct passwd *pwd = getpwnam(re[1]);
+        if ( pwd ) uid = pwd->pw_uid;
+        
+        struct group  *grp = getgrnam(re[3]);
+        if ( grp ) gid = grp->gr_gid;
 
         int err = 0;
         for ( z = 0; z < files_count; z++ )
@@ -2622,7 +2619,7 @@ int __ff_process( const char* origin,    /* origin path */
   if ( flag == FTWALK_D )
     {
     str = fname;
-    str_dot_reduce( NULL, str, con_max_x()-1 );
+    str = str_dot_reduce( str, con_max_x()-1 );
     say2( str );
     }
 
@@ -2655,7 +2652,7 @@ int __ff_process( const char* origin,    /* origin path */
   str = "";
   str = str + time_str + " " + size_str + " | " + fname;
   file_find_results.push( str );
-  str_dot_reduce( NULL, str, con_max_x()-1 );
+  str = str_dot_reduce( str, con_max_x()-1 );
   con_puts( "\r" );
   con_puts( str, cSTATUS );
   con_puts( "\n" );

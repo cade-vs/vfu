@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.8 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfufiles.cpp,v 1.9 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -92,7 +92,10 @@ void vfu_read_files( int a_recursive )
   /* clear files list -- delete all found entries */
   for ( z = 0; z < MAX_FILES ; z++) 
     if (files_list[z]) 
-      { delete files_list[z]; files_list[z] = NULL; }
+      { 
+      delete files_list[z]; 
+      files_list[z] = NULL; 
+      }
 
   /* vfu_add_file() will need this */
   files_count = 0;
@@ -142,10 +145,9 @@ void vfu_read_files( int a_recursive )
 int vfu_add_file( const char* fname, const struct stat *st, int is_link )
 {
   if ( files_count == MAX_FILES ) return 1;
-  char t[MAX_PATH];
-  str_file_name_ext( fname, t );
+  String ne = str_file_name_ext( fname );
 
-  if ( strcmp( t, "." ) == 0 || strcmp( t, ".." ) == 0 ) return 0;
+  if ( ne == "."  || ne == ".." ) return 0;
   
   /* now try to hide `system/special' files */
   if ( !opt.show_hidden_files )
@@ -155,12 +157,12 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
       file_get_mode_str( st->st_mode, mode_str );
       if ( mode_str[7] == 'H' || mode_str[8] == 'S' ) return 0;
     #else
-      if ( t[0] == '.' ) return 0;
+      if ( ne[0] == '.' ) return 0;
     #endif  
     }
 
   if ( !S_ISDIR( st->st_mode ) ) /* mask is not allowed for dirs */
-    if ( vfu_fmask_match( t ) ) return 0; /* doesn't match the mask */
+    if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
   files_list[files_count] = fi;
   files_count++;
@@ -180,8 +182,8 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   /* show progress ... */
   if ( files_count % 123 == 0 )
     {
-    sprintf(t, "Rescanning files... (%5d)  ", files_count);
-    say1( t );
+    sprintf( ne, "Rescanning files... (%5d)  ", files_count);
+    say1( ne );
     }
   return 0;
 };

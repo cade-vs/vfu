@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.10 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfuuti.cpp,v 1.11 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -74,11 +74,7 @@ while( a_line[i] )
       case 'e' : /* name only */
       case 'E' : /* extension only */
                  if ( a_line[i+1] == 'e' )
-                   {
-                   char t[MAX_PATH];
-                   str_file_name( s, t );    
-                   s = t;
-                   }
+                   s = str_file_name( s );
                  else
                    s = files_list[FLI]->ext(); 
                  out += s;

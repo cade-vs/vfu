@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.9 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfuview.cpp,v 1.10 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -143,7 +143,7 @@ void vfu_redraw() /* redraw file list and header */
     str += "]/"; /* NOTE: to simulate root dir visually */
     str += archive_path;
     }
-  str_dot_reduce( NULL, str, con_max_x()-1 );
+  str = str_dot_reduce( str, con_max_x()-1 );
   con_out(1,2,str,cINFO);
   con_ce(cINFO);
 

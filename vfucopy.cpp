@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.8 2002/12/12 23:45:00 cade Exp $
+ * $Id: vfucopy.cpp,v 1.9 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -29,10 +29,8 @@ int ignore_copy_errors = 0; /* actually it is used for copy/move/erase */
 
 fsize_t device_free_space( const char *target ) /* user free space, NOT real! */
 {
-  char t[MAX_PATH];
   struct statfs stafs;
-  str_file_path( target, t );
-  statfs( t, &stafs );
+  statfs( str_file_path( target ), &stafs );
   return ((fsize_t)(stafs.f_bsize)) * stafs.f_bfree;
 };
 
@@ -248,7 +246,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
   /* progress report */
   String str = dst;
-  str_dot_reduce( NULL, str, con_max_x() - 10 );
+  str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
   con_out( 1, con_max_y(), copy_info->description, cMESSAGE );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.9 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfuopt.cpp,v 1.10 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -234,7 +234,6 @@ int key_by_name( const char* key_name )
 void vfu_settings_load()
 {
   String str;
-  char t[1024];
   
   user_externals.undef();
   history.undef();
@@ -333,14 +332,10 @@ void vfu_settings_load()
     shell_browser  += " %f";
     }
 
-  regexp *re_ux  = regcomp("^[ \011]*u?x[ \011]*=[ \011]*([^,]*)[ \011]*,[ \011]*([^, \011]*)[ \011]*,[ \011]*([^, \011]*)[ \011]*,(.*)$");
-  regexp *re_see = regcomp( "^[ \011]*see[ \011]*=[ \011]*([^, \011]*)[ \011]*,(.*)$" );
-  regexp *re_pan = regcomp( "^[ \011]*panelize[ \011]*=[ \011]*([^,]*)[ \011]*,(.*)$" );
+  VRegexp re_ux("^\\s*u?x\\s*=\\s*([^,]*)[ \011]*,\\s*([^, \011]*)\\s*,\\s*([^, \011]*)\\s*,(.*)$", "i");
+  VRegexp re_see( "^\\s*see\\s*=\\s*([^, \011]*)\\s*,(.*)$", "i" );
+  VRegexp re_pan( "^\\s*panelize\\s*=\\s*([^,]*)\\s*,(.*)$", "i" );
 
-  ASSERT( re_ux );
-  ASSERT( re_see );
-  ASSERT( re_pan );
-  
   char line[1024];
   if ( (fsett = fopen( filename_conf, "r")) )
     {
@@ -389,51 +384,34 @@ void vfu_settings_load()
       if(set_splitter( line, "trimtree",  trim_tree  ))continue;
   
       /* following code is used to clean input data */
-      if( regexec( re_ux, line ) )
+      if( re_ux.m( line ) )
         {
         str = "";
-        regsubn( re_ux, 1, t ); /* get description */
+        str = str + re_ux[1] + ","; /* get description */
+        str = str + re_ux[2] + ","; /* get key name */
+        String t = re_ux[3]; /* get extensions */
+        if ( t != "*" && t[-1] != '.' ) t += ".";
         str = str + t + ",";
-        regsubn( re_ux, 2, t ); /* get key name */
-        str = str + t + ",";
-        regsubn( re_ux, 3, t ); /* get extensions */
-        if ( strlen( t ) > 0 && strcmp( t, "*" ) != 0 )
-          if ( str_get_ch( t, -1 ) != '.' ) 
-            str_add_ch( t, '.' );
-        str = str + t + ",";
-        regsubn( re_ux, 4, t ); /* get shell line */
-        str += t;
+        str += re_ux[4]; /* get shell line */
         user_externals.push( str );
         continue;
         } else
-      if ( regexec( re_see, line ) )
+      if( re_see.m( line ) )
         {
         str = "";
-        regsubn( re_see, 1, t ); /* get fnmatch mask */
-        str = str + t + ",";
-        regsubn( re_see, 2, t ); /* get shell line */
-        str += t;
-        see_filters.push( str );
+        see_filters.push( str + re_see[1] + "," + re_see[2] );
         continue;
         } else
-      if ( regexec( re_pan, line ) )
+      if( re_pan.m( line ) )
         {
         str = "";
-        regsubn( re_pan, 1, t ); /* get description */
-        str = str + t + ",";
-        regsubn( re_pan, 2, t ); /* get shell line */
-        str += t;
-        panelizers.push( str );
+        panelizers.push( str + re_see[1] + "," + re_see[2] );
         continue;
         }
       }
     fclose(fsett);
     }
   
-  free( re_ux );
-  free( re_see );
-  free( re_pan );
-    
   #ifdef _TARGET_GO32_
   int z;
   for ( z = 0; z < 16; z++ ) str_low( ext_colors[z] );

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.12 2003/01/04 18:59:11 cade Exp $
+ * $Id: see.cpp,v 1.13 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -95,6 +95,8 @@
   SeeViewer::~SeeViewer()  
   {
   close();
+  if ( buff ) free( buff );
+  buff = NULL;
   };
   
 /*--------------------------------------------------------------------*/
@@ -141,9 +143,7 @@
   void SeeViewer::close()  
   {
   if (f) fclose( f );
-  if (buff) free( buff );
   f = NULL;
-  buff = NULL;
   };
 
 /*--------------------------------------------------------------------*/
@@ -1481,7 +1481,7 @@
     if ( opt->no_case )
       str_up( str );
     if ( opt->last_search[0] == '~' )  
-      pos = regmatchpos( opt->last_search + 1, str );
+      pos = str_find_regexp( str, opt->last_search + 1 );
     else if ( str[0] == '\\' )
       pos = str_find( str, opt->last_search + 1 );
     else  

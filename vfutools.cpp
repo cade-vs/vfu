@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.7 2003/01/01 15:40:39 cade Exp $
+ * $Id: vfutools.cpp,v 1.8 2003/01/06 00:37:55 cade Exp $
  *
  */
 
@@ -22,17 +22,17 @@ void __get_classify_str( const char *fname, char ch, char *tmp )
   tmp[0] = 0;
   if (ch == 'N')
     {
-    str_file_name( fname, tmp );
+    strcpy( tmp, str_file_name( fname ) );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     } else
   if (ch == 'E')
     {
-    str_file_ext( fname, tmp );
+    strcpy( tmp, str_file_ext( fname ) );
     if (strlen(tmp) == 0) strcat( tmp, "---" );
     }
   else
     {
-    str_file_name( fname, tmp );
+    strcpy( tmp, str_file_name( fname ) );
     str_sleft( tmp, ch - '0' );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     }
@@ -115,7 +115,7 @@ void vfu_tool_rename()
   int err;
   String path;
   String new_name;
-  char t[MAX_PATH];
+  String t;
 
   if ( files_count < 1 )
     { say1( "No files to rename... (Empty directory)" ); return; };
@@ -151,17 +151,17 @@ void vfu_tool_rename()
                  
                  // if ( fi->is_dir() ) continue; // why not? ;)
                  if ( !fi->sel ) continue;
-                 str_file_path( fi->name(), path );
+                 path = str_file_path( fi->name() );
                  new_name = "";
                  
-                 str_file_name( fi->name(), t );
+                 t = str_file_name( fi->name() );
                  if (menu_box_info.ec == '1' || menu_box_info.ec == '2')
                    str_low( t );
                  if (menu_box_info.ec == '4' || menu_box_info.ec == '5')
                    str_up( t );
                  new_name += t;
                  
-                 str_file_ext( fi->name(), t );
+                 t = str_file_ext( fi->name() );
                  if (menu_box_info.ec == '1' || menu_box_info.ec == '3')
                    str_low( t );
                  if (menu_box_info.ec == '4' || menu_box_info.ec == '6')
@@ -227,7 +227,7 @@ void vfu_tool_seq_rename()
   if (start < 0) start = 0;
 
   String new_name;
-  char t[MAX_PATH];
+  String t;
   String fmt;
   
   sprintf( fmt, "%%s%%0%dd%%s", digpos );
@@ -243,7 +243,7 @@ void vfu_tool_seq_rename()
     
     sprintf( new_name, fmt, prefix.data(), start, suffix.data() );
     
-    str_file_path( fi->name(), t ); /* FIXME: full name? */
+    t = str_file_path( fi->name() ); /* FIXME: full name? */
     new_name = t + new_name;
     
     if (access( new_name, F_OK ) == 0) { err++; continue; }
