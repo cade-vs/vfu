@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.24 2003/03/11 21:25:35 cade Exp $
+ * $Id: see.cpp,v 1.25 2003/03/11 21:34:44 cade Exp $
  *
  */
 
@@ -87,7 +87,7 @@
     "| F S  -- find string (F=no case, S=case sense)     | r -- show ruler (TEXT)  |\n"
     "| \\ /  -- regexp search (\\=no case, /=case sense)   | a -- filter backspaces  |\n"
     "| E    -- hex pattern search                        | t -- tab expansion      |\n"
-    "| N F3 -- find next                                 | g G -- grid (HEX)       |\n"
+    "| N F3 -- find next, M -- find next backwards       | g G -- grid (HEX)       |\n"
     "+-----------------------------------------------------------------------------+";
   };
   
@@ -540,6 +540,7 @@
   
   int SeeViewer::find_next_hex( int rev )
   {
+  //FIXME: !!!
   }
   
   int SeeViewer::find_next_txt( int rev )
@@ -555,7 +556,7 @@
     }
   long opos = fpos;
   VString msg;
-  down();
+  if ( ! rev ) down();
   while(4)
     {
     rev ? up() : down();
