@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.15 2003/11/22 03:26:48 cade Exp $
+ * $Id: vfuopt.cpp,v 1.16 2004/07/08 01:25:52 cade Exp $
  *
  */
 
@@ -349,6 +349,7 @@ void vfu_settings_load()
       if(set_arr( line, "archive",  archive_extensions))continue;
       
       if(set_str( line, "editor", shell_editor))continue;
+      if(set_str( line, "diff",   shell_diff))continue;
       
       if(set_arr( line, "bookmark",  path_bookmarks))continue;
       // follow 10 are deprecated

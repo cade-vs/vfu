@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.11 2003/04/28 17:17:01 cade Exp $
+ * $Id: vfu.h,v 1.12 2004/07/08 01:25:52 cade Exp $
  *
  */
 
@@ -238,6 +238,7 @@
 
   extern VString shell_browser;
   extern VString shell_editor;
+  extern VString shell_diff;
   extern VString shell_prog;
 
   extern VString user_id_str;

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.40 2004/04/04 23:18:48 cade Exp $
+ * $Id: vfu.cpp,v 1.41 2004/07/08 01:25:52 cade Exp $
  *
  */
 
@@ -89,6 +89,7 @@
   VString shell_browser;
   VString shell_editor;
   VString shell_options;
+  VString shell_diff;
   VString shell_prog;
   
   VString user_id_str;
@@ -574,6 +575,13 @@ void vfu_init()
   }
   #ifdef _TARGET_GO32_
   str_tr( home_path, "\\", "/" );
+  #endif
+
+
+  #ifdef _TARGET_GO32_
+  shell_diff = "fc";
+  #else
+  shell_diff = "/usr/bin/diff";
   #endif
   
   /* 

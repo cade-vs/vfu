@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.14 2003/05/06 10:56:04 cade Exp $
+ * $Id: vfucopy.cpp,v 1.15 2004/07/08 01:25:52 cade Exp $
  *
  */
 
@@ -169,29 +169,46 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
   if ( copy_info->over_mode == OM_ALWAYS_IF_MTIME &&
        stat_src.st_mtime > stat_dst.st_mtime ) return 1; /* newer mtime, do it! */
 
-  VString str;
-  char sttime[32];
+  int ch = 0;
+  while(4)
+    {
+    vfu_redraw();
+    vfu_redraw_status();
+    VString str;
+    char sttime[32];
+  
+    char s_t = (stat_src.st_mtime == stat_dst.st_mtime)?'*':' '; // same time
+    char s_s = (stat_src.st_size  == stat_dst.st_size)?'*':' '; // same size
+  
+    char t[MAX_PATH];
+  
+    time_str_compact( stat_src.st_mtime, sttime); 
+    str = (long int)stat_src.st_size; 
+    str_comma(str);
+    sprintf(t, "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
+    say1(t);
+  
+    time_str_compact(stat_dst.st_mtime, sttime); 
+    str = (long int)stat_dst.st_size; 
+    str_comma(str);
+    sprintf(t, "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
+    say2(t);
 
-  char s_t = (stat_src.st_mtime == stat_dst.st_mtime)?'*':' '; // same time
-  char s_s = (stat_src.st_size  == stat_dst.st_size)?'*':' '; // same size
-
-  char t[MAX_PATH];
-
-  time_str_compact( stat_src.st_mtime, sttime); 
-  str = (long int)stat_src.st_size; 
-  str_comma(str);
-  sprintf(t, "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
-  say1(t);
-
-  time_str_compact(stat_dst.st_mtime, sttime); 
-  str = (long int)stat_dst.st_size; 
-  str_comma(str);
-  sprintf(t, "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
-  say2(t);
-
-  vfu_beep();
-  vfu_menu_box( "Overwrite", "Y Yes,N No,A Always overwrite,V Never overwrite,I If newer (MODIFY),W Always if newer (MODIFY),  Abort (ESC)", -1 );
-  int ch = menu_box_info.ec;
+    vfu_beep();
+    vfu_menu_box( "Overwrite", "Y Yes,N No,A Always overwrite,V Never overwrite,I If newer (MODIFY),W Always if newer (MODIFY),D View differences,  Abort (ESC)", -1 );
+    ch = menu_box_info.ec;
+    if( ch == 'D' )
+      {
+      VString diff = vfu_temp();
+      VString cmd;
+      cmd = shell_diff + " '" + src + "' '" + dst + "' > " + diff;
+      system( cmd );
+      vfu_browse( diff );
+      unlink( diff );
+      continue;
+      }
+    break;
+    }
   say1( "" );
   say2( "" );
 
