@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.7 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfu.cpp,v 1.8 2001/11/18 14:38:48 cade Exp $
  *
  */
 
@@ -1242,10 +1242,12 @@ void vfu_browse_selected_files()
 void vfu_browse( const char *fname, int no_filters )
 {
   String new_name = fname;
+  int remove_new_name = 0;
 
   if ( !no_filters && see_filters.count() > 0 )
     {
     new_name = vfu_temp();
+    remove_new_name = 1;
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
@@ -1263,7 +1265,10 @@ void vfu_browse( const char *fname, int no_filters )
       break;
       }
     if ( z >= see_filters.count() )
+      {
       new_name = fname; /* not found */
+      remove_new_name = 0;
+      }
     }
 
   if ( opt.internal_browser )
@@ -1289,6 +1294,8 @@ void vfu_browse( const char *fname, int no_filters )
   do_draw = 2;
   say1("");
   say2("");
+  
+  if ( remove_new_name ) unlink( new_name );
 }
 
 /*--------------------------------------------------------------------------*/

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.3 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfucopy.cpp,v 1.4 2001/11/18 14:38:48 cade Exp $
  *
  */
 
@@ -19,6 +19,8 @@
 
 char *CM_DESC[] = { "COPY", "MOVE", "LINK" };
 char *copy_buff = NULL;
+
+int ignore_copy_errors = 0; /* actually it is used for copy/move/erase */
 
 /////////////////////////////////////////////
 //
@@ -406,11 +408,19 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
   
   if ( make_path( dst ) ) 
     {
+    if ( ignore_copy_errors ) return CR_ABORT; /* cancel operation */
+    
     say1( dst );
     say2errno();
-    vfu_menu_box( "Create dir error", "C Continue anyway,  Abort (ESC)", -1 );
+    vfu_menu_box( "Create dir error", 
+                  "C Continue anyway,I Ignore further errors,  Abort (ESC)", -1 );
     if ( menu_box_info.ec != 'C' )
       return CR_ABORT; /* cancel operation */
+    if ( menu_box_info.ec != 'I' )
+      {
+      ignore_copy_errors = 1;
+      return CR_ABORT; /* cancel operation */
+      }
     }
     
   DIR *dir;
@@ -450,15 +460,22 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
         }
       if ( r && r != CR_SKIP )
         {
+        if ( ignore_copy_errors ) break;
+        
         say1( fname_dst );
         say2errno();
         vfu_menu_box( "Copy/Move/SymLink error", 
-                      "T Try again,S Skip/continue,  Abort (ESC)" );
+                      "T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
         if ( menu_box_info.ec == 'T' )
           continue; /* while(4) */
         else
         if ( menu_box_info.ec == 'S' )
           break; /* consider it ok */
+        if ( menu_box_info.ec == 'I' )
+          {
+          ignore_copy_errors = 1;
+          break;
+          }  
         else
           {
           closedir(dir);
@@ -603,14 +620,22 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
         }
       if ( r && r != CR_SKIP )
         {
+        if ( ignore_copy_errors ) break;
+        
         say1( fname );
         say2errno();
-        vfu_menu_box( "Erase error", "T Try again,S Skip/continue,  Abort (ESC)" );
+        vfu_menu_box( "Erase error", 
+                      "T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
         if ( menu_box_info.ec == 'T' )
           continue; /* while(4) */
         else
         if ( menu_box_info.ec == 'S' )
           break; /* consider it ok */
+        if ( menu_box_info.ec == 'I' )
+          {
+          ignore_copy_errors = 1;
+          break;
+          }
         else
           {
           closedir(dir);
@@ -690,6 +715,7 @@ void __copy_calc_totals( CopyInfo &copy_info, int a_one )
 
 void vfu_copy_files( int a_one, int a_mode )
 {
+  ignore_copy_errors = 0;
   if ( files_count == 0 )
     {
     say1( "No files" );
@@ -730,7 +756,8 @@ void vfu_copy_files( int a_one, int a_mode )
     say1( "Target is file, not directory!" );
     say2( t );
     
-    vfu_menu_box( "Error prompt", "C Continue anyway,E Erase first,  Abort (ESC)", -1 );
+    vfu_menu_box( "Error prompt", 
+                  "C Continue anyway,E Erase first,  Abort (ESC)", -1 );
     if ( menu_box_info.ec == 'E' )
       {
       unlink( t );
@@ -760,7 +787,8 @@ void vfu_copy_files( int a_one, int a_mode )
       say1( t );
       say2( target );
       
-      vfu_menu_box( "Error prompt", "C Continue anyway,  Abort (ESC)", -1 );
+      vfu_menu_box( "Error prompt", 
+                    "C Continue anyway,  Abort (ESC)", -1 );
       if ( menu_box_info.ec != 'C' ) return; /* abort */
       }
     } /* free space check */
@@ -865,12 +893,15 @@ void vfu_copy_files( int a_one, int a_mode )
     str += " DONE";
     }
   say2( str );
+
+  ignore_copy_errors = 0;
 };
 
 /*---------------------------------------------------------------------------*/
 
 void vfu_erase_files( int a_one )
 {
+  ignore_copy_errors = 0;
   if ( files_count == 0 )
     {
     say1( "No files" );
@@ -933,13 +964,16 @@ void vfu_erase_files( int a_one )
       }
     if ( r == 0 )
       { delete fi; files_list[z] = NULL; }
-    else if ( r != CR_ABORT )
+    else if ( r != CR_ABORT && !ignore_copy_errors )
       {
       say1( target );
       say2errno();
-      vfu_menu_box( "Erase error", "C Continue operation,  Abort (ESC)" );
-      if ( menu_box_info.ec != 'C' )
+      vfu_menu_box( "Erase error", 
+                    "C Continue operation,I Ignore further errors,  Abort (ESC)" );
+      if ( menu_box_info.ec != 'C' && menu_box_info.ec != 'I' )
         r = CR_ABORT;
+      if ( menu_box_info.ec == 'I' )
+        ignore_copy_errors = 1;
       }
     if ( r == CR_ABORT ) break; /* cancel operation */
     } /* for files_list[] */
@@ -959,6 +993,8 @@ void vfu_erase_files( int a_one )
     }
   else
     say2( "ERASE DONE" );
+  
+  ignore_copy_errors = 0;
 };
 
 /*---------------------------------------------------------------------------*/
