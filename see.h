@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.h,v 1.12 2003/02/16 23:33:45 cade Exp $
+ * $Id: see.h,v 1.13 2003/02/16 23:45:29 cade Exp $
  *
  */
 
@@ -137,7 +137,9 @@ class SeeViewer
   
   void go_to();
   
-  int find_next();
+  int find_next_txt();
+  int find_next_hex();
+  int find_next() { opt->hex_mode ? find_next_hex() : find_next_txt(); }
   int find( const char* opts );
   
   void hex_edit();

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.21 2003/02/16 23:33:45 cade Exp $
+ * $Id: see.cpp,v 1.22 2003/02/16 23:45:29 cade Exp $
  *
  */
 
@@ -546,7 +546,11 @@
 
 /*--------------------------------------------------------------------*/
   
-  int SeeViewer::find_next()  
+  int SeeViewer::find_next_hex()
+  {
+  }
+  
+  int SeeViewer::find_next_txt()
   {
   if ( ! re.ok() )
     {
@@ -563,6 +567,11 @@
   while(4)
     {
     down();
+    if ( line % 768 == 0)
+      {
+      sprintf( msg, "Searching.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
+      status( msg );
+      }
     if ( re.m( buff ) ) 
       {
       up();
@@ -577,6 +586,7 @@
       status( msg );
       break;
       }
+    if ( con_kbhit() && con_getch() == 27 ) break;
     }
   draw();
   /*
