@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.9 2001/11/18 15:41:58 cade Exp $
+ * $Id: vfu.cpp,v 1.10 2001/11/20 19:09:50 cade Exp $
  *
  */
 
@@ -78,6 +78,9 @@
   PSZCluster mb; /* menu boxes */
   
   StrSplitter trim_tree( PATH_DELIMITER );
+
+  VArray view_profiles;
+  String view_profile;
 
 /*############################################ CONFIG SETTINGS #########*/
 
@@ -632,6 +635,9 @@ void vfu_init()
   files_mask = "*";
   files_mask_array.set( files_mask );
 
+  view_profiles.push( "123456" );
+  view_profile = "123456";
+  
   /* setup menu colors */
   menu_box_info.ti = 95; /* title */
   menu_box_info.cn = 23; /* normal */
@@ -1786,7 +1792,7 @@ void vfu_global_select()
               mb.add( "O Owner" );
               mb.add( "G Group" );
               #endif
-              mb.add( "P Type (TP)" );
+              mb.add( "Y Type (TP)" );
 
               vfu_menu_box( 50, 5, "Select Same..." );
               ch = menu_box_info.ec;
@@ -1802,7 +1808,7 @@ void vfu_global_select()
                 case 'O' : vfu_global_select_same( GSAME_OWNER ); break;
                 case 'G' : vfu_global_select_same( GSAME_GROUP ); break;
                 case 'A' : vfu_global_select_same( GSAME_MODE  ); break;
-                case 'P' : vfu_global_select_same( GSAME_TYPE  ); break;
+                case 'Y' : vfu_global_select_same( GSAME_TYPE  ); break;
                 }
               }; break;
     case 'M': {

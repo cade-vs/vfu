@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuview.cpp,v 1.3 2001/11/20 19:09:50 cade Exp $
  *
  */
 
@@ -69,8 +69,8 @@ int get_item_color( TF *fi )
 void show_pos( int curr, int all )
 {
   char t[64];
-  sprintf( t, "%5d of %5d ", curr, all );
-  con_out( con_max_x() - 14, 3, t, cHEADER );
+  sprintf( t, "%5d of %5d", curr, all );
+  con_out( con_max_x() - 13, 3, t, cHEADER );
 }
 
 /*#######################################################################*/
@@ -142,6 +142,23 @@ void vfu_redraw() /* redraw file list and header */
   con_ce(cINFO);
 
   str = "";
+  
+  if ( opt.sort_order == 'N' ) str = "NAME";
+  if ( opt.sort_order == 'M' ) str = "NAME";
+  if ( opt.sort_order == 'E' ) str = "EXT";
+  if ( opt.sort_order == 'A' ) str = "MODE";
+  if ( opt.sort_order == 'O' ) str = "OWNER";
+  if ( opt.sort_order == 'G' ) str = "GROUP";
+  if ( opt.sort_order == 'T' ) str = "MTIME";
+  if ( opt.sort_order == 'H' ) str = "CTIME";
+  if ( opt.sort_order == 'C' ) str = "ATIME";
+  if ( opt.sort_order == 'S' ) str = "SIZE";
+  if ( opt.sort_order == 'Y' ) str = "TYPE";
+  str += opt.sort_direction == 'A' ? "+" : "-";
+  str = "(" + str + ")";
+  con_out( con_max_x() - str_len( str ) + 1, 2, str, cHEADER );
+  
+  str = "";
  
   t[0] = 0;
   char *spos = t;
@@ -173,7 +190,6 @@ void vfu_redraw() /* redraw file list and header */
   show_pos( FLI+1, files_count );
 
   int z;
-
 
   for ( z = 0; z < PS; z++ )
     {

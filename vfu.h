@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfu.h,v 1.3 2001/11/20 19:09:50 cade Exp $
  *
  */
 
@@ -224,6 +224,9 @@
   extern PSZCluster mb; /* menu boxes */
   
   extern StrSplitter trim_tree;
+
+  extern VArray view_profiles;
+  extern String view_profile;
 
 /*############################################ CONFIG SETTINGS #########*/
 

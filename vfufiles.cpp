@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfufiles.cpp,v 1.3 2001/11/20 19:09:50 cade Exp $
  *
  */
 
@@ -343,23 +343,22 @@ void vfu_pack_files_list()
 /* this compares Name20 and Name3 and returns second as smaller :) (or so) */
 int namenumcmp( const char* s1, const char* s2 )
 {
-  int s1l = strlen( s1 );
-  int s2l = strlen( s2 );
-  int z;
-  for ( z = 0; z < ( s1l < s2l ? s1l : s2l ); z++ )
-    if ( s1[z] != s2[z] ) break;
-  if ( z == s1l && z == s2l ) return 0;
-  if ( z == s1l ) return -1;
-  if ( z == s2l ) return  1;
-  String str1 = s1+z;
-  String str2 = s2+z;
-  z = str_find( str1, '.' ); if (z != -1) str_sleft( str1, z );
-  z = str_find( str2, '.' ); if (z != -1) str_sleft( str2, z );
-  if ( str_count( str1, "0123456789" ) == str_len(str1) && 
-       str_count( str2, "0123456789" ) == str_len(str2) )
-     return atoi(str1.data()) - atoi(str2.data());
-   else
-     return pathcmp( s1, s2 );
+  VRegexp re1( "^(.*)([0123456789]+)(\\.(.*))?$" );
+  VRegexp re2( "^(.*)([0123456789]+)(\\.(.*))?$" );
+  if ( re1.m(s1) && re2.m(s2) )
+    {
+    String ss1;
+    String ss2;
+    sprintf( ss1, "%020d", atoi(re1[2]) );
+    sprintf( ss2, "%020d", atoi(re1[2]) );
+    ss1 = re1[1] + ss1 + re1[3];
+    ss2 = re2[1] + ss2 + re2[3];
+    return pathcmp( ss1, ss2 );
+    }
+  else
+    {
+    return pathcmp( s1, s2 );
+    }  
 }
 
 /*---------------------------------------------------------------------------*/
@@ -390,10 +389,13 @@ switch (opt.sort_order)
  case 'S' : z = (f2->size()  < f1->size()) - (f2->size()  > f1->size());
             break;
 
- case 'D' :
- case 'T' : if ( vfu_opt_time(f1->st()) > vfu_opt_time(f2->st()) ) z = 1; 
-            else
-            if ( vfu_opt_time(f1->st()) < vfu_opt_time(f2->st()) ) z = -1; 
+ case 'T' : z = f1->st()->st_mtime - f2->st()->st_mtime;
+            break;
+
+ case 'H' : z = f1->st()->st_ctime - f2->st()->st_ctime;
+            break;
+
+ case 'C' : z = f1->st()->st_atime - f2->st()->st_atime;
             break;
 
  case 'A' : z = strcmp( f1->mode_str(), f2->mode_str() );
@@ -492,8 +494,9 @@ void vfu_arrange_files()
   mb.add( "M Name### (RTFM)" );
   mb.add( "E Extension" );
   mb.add( "S Size" );
-  mb.add( "T Time" );
-  mb.add( "D Time" );
+  mb.add( "T Modify Time" );
+  mb.add( "H Change Time" );
+  mb.add( "C Access Time" );
   mb.add( "A Attr/mode" );
   mb.add( "O Owner" );
   mb.add( "G Group" );
