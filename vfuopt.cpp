@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.2 2001/10/28 13:56:40 cade Exp $
+ * $Id: vfuopt.cpp,v 1.3 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -101,7 +101,7 @@ void vfu_load_dir_colors()
   #ifdef _TARGET_UNIX_
 
   int z;
-  for ( z = 0; z < 16; z++ ) ext_colors[z] = "";
+  // for ( z = 0; z < 16; z++ ) ext_colors[z] = "";
   
   PSZCluster sc;
   sc.create( 16, 16 );
@@ -366,7 +366,7 @@ void vfu_settings_load()
     shell_browser  = getenv("VIEWER");
     shell_browser  += " %f";
     }
-  
+
   regexp *re_ux  = regcomp("^[ \011]*u?x[ \011]*=[ \011]*([^,]*)[ \011]*,[ \011]*([^, \011]*)[ \011]*,[ \011]*([^, \011]*)[ \011]*,(.*)$");
   regexp *re_see = regcomp( "^[ \011]*see[ \011]*=[ \011]*([^, \011]*)[ \011]*,(.*)$" );
   regexp *re_pan = regcomp( "^[ \011]*panelize[ \011]*=[ \011]*([^,]*)[ \011]*,(.*)$" );

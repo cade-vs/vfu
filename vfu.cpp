@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.11 2002/01/01 15:54:28 cade Exp $
+ * $Id: vfu.cpp,v 1.12 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -1252,6 +1252,8 @@ void vfu_browse( const char *fname, int no_filters )
   
   if ( !no_filters && see_filters.count() > 0 )
     {
+    char full_fname[MAX_PATH];
+    expand_path( fname, full_fname );
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
@@ -1263,7 +1265,7 @@ void vfu_browse( const char *fname, int no_filters )
       /* found */
       tmp_name = vfu_temp();
       str_replace( str, "%f", fname );
-      str_replace( str, "%F", fname );
+      str_replace( str, "%F", full_fname );
       str += " > ";
       str += tmp_name;
       vfu_shell( str, "" );
@@ -1537,7 +1539,8 @@ for (z = 0; z < files_count; z++)
                        break;
     case GSAME_EXT   : sel = (pathcmp(same_str, fi->ext()) == 0);
                        break;
-    case GSAME_SIZE  : sel = (same_fsize == fi->size()); break;
+    case GSAME_SIZE  : sel = (same_fsize == fi->size()); 
+                       if ( fi->is_dir() ) sel = 0; break;
     case GSAME_DATETIME  :
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st()));
                        break;

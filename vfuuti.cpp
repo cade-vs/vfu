@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.4 2001/11/18 13:38:22 cade Exp $
+ * $Id: vfuuti.cpp,v 1.5 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -259,7 +259,7 @@ void vfu_beep()
 
 /*###########################################################################*/
 
-#define MAXHIST         10      // max history items per id
+#define MAXHIST         14      // max history items per id
 #define HISTIDPAD       8
 
 void vfu_hist_add( int hist_id, const char* str )
@@ -346,6 +346,7 @@ void vfu_hist_remove( int hist_id, int index )
     };
 };
 
+static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
   String str;
@@ -356,7 +357,9 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
   if ( cnt < 1 ) return -1;
   for ( z = 0; z < cnt; z++ )
     {
-    str = (z+1)%10;
+    ASSERT( z < strlen( hist_menu_hotkeys ) );
+    str = "";
+    str_add_ch( str, hist_menu_hotkeys[z] );
     str = str + " " + vfu_hist_get( hist_id, z );
     mb.add( str );
     }

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.4 2001/11/18 15:41:58 cade Exp $
+ * $Id: see.cpp,v 1.5 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -1572,7 +1572,7 @@
         save();
         return key;
       } else
-    if (key == 27)
+    if (key == 27 || key == KEY_ALT_X)
       if ( request_quit() == 0 )
         return key;
       else

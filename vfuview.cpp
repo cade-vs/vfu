@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.4 2001/11/21 00:59:28 cade Exp $
+ * $Id: vfuview.cpp,v 1.5 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -48,17 +48,23 @@ int get_item_color( TF *fi )
   #endif
  
   int z;
-  for ( z = cBLACK; z <= chWHITE; z++ )
-    if (str_find( ext_colors[z], str ) != -1)
-      return z;
+  if ( str != ".." )
+    {
+    for ( z = cBLACK; z <= chWHITE; z++ )
+      if (str_find( ext_colors[z], str ) != -1)
+        return z;
+    }    
 
   /* extension not found -- try type string */
   str = fi->type_str();
   str = "." + str + ".";
  
-  for ( z = cBLACK; z <= chWHITE; z++ )
-    if (str_find( ext_colors[z], str ) != -1)
-      return z;
+  if ( str != ".." )
+    {
+    for ( z = cBLACK; z <= chWHITE; z++ )
+      if (str_find( ext_colors[z], str ) != -1)
+        return z;
+    }    
 
   /* type string not found too return std color */
   return cNORMAL;

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.3 2001/11/11 22:47:08 cade Exp $
+ * $Id: vfutools.cpp,v 1.4 2002/04/14 10:10:54 cade Exp $
  *
  */
 
@@ -179,7 +179,7 @@ void vfu_tool_rename()
                  if (menu_box_info.ec == 'Y')
                    {
                    str_replace( new_name, "%20", "_" );
-                   str_tr( new_name, " `'&\"\\/,", "________" );
+                   str_tr( new_name, " `'&\"\\/,()", "__________" );
                    str_squeeze( new_name, "_" );
                    str_replace( new_name, "_-_", "-" );
                    }
