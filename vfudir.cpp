@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.8 2002/10/02 22:36:28 cade Exp $
+ * $Id: vfudir.cpp,v 1.9 2002/10/09 08:44:11 cade Exp $
  *
  */
 
@@ -954,7 +954,7 @@ void size_cache_clean( const char *s )
     {
     const char* ps = size_cache[z].data() + 9;
     ASSERT( size_cache[z][8] == ' ' );
-    if ( strncmp( ps, s, sl ) == 0 )
+    if ( strncmp( ps, s, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0))
       {
       size_cache.del( z );
       size_cache.del( z );
