@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.12 2004/07/08 01:25:52 cade Exp $
+ * $Id: vfu.h,v 1.13 2005/02/11 01:02:04 cade Exp $
  *
  */
 
@@ -251,8 +251,6 @@
   extern VString filename_tree;
   extern VString filename_size_cache;
   extern VString filename_ffr; /* file find results */
-  extern VString filename_atl; /* bad name I know, it stands for
-                                 `archive temp list' */
 
 /*######################################################################*/
 

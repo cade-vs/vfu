@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.43 2004/12/29 02:44:11 cade Exp $
+ * $Id: vfu.cpp,v 1.44 2005/02/11 01:02:04 cade Exp $
  *
  */
 
@@ -102,7 +102,6 @@
   VString filename_tree;
   VString filename_size_cache;
   VString filename_ffr; /* file find results */
-  VString filename_atl;
 
   char TF::_full_name[MAX_PATH]; 
   
@@ -1049,10 +1048,6 @@ void vfu_done()
   if ( dir_tree.count() && dir_tree_changed ) tree_save();
 
   vfu_settings_save();
-
-  if ( access( filename_atl, F_OK ) == 0 )
-    unlink( filename_atl );
-  
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1358,8 +1353,7 @@ void vfu_action_plus( int key )
       { /* file */
       int z;
       for ( z = 0; z < archive_extensions.count(); z++ )
-        if ( FNMATCH_OC( archive_extensions[z], fi->name_ext(),
-	                 opt.lower_case_ext_config ) == 0 )
+        if ( FNMATCH_OC( archive_extensions[z], fi->name_ext(), opt.lower_case_ext_config ) == 0 )
           {
           z = -1; /* FIXME: this shouldn't be -1 for TRUE really :) */
           break;
@@ -1369,10 +1363,8 @@ void vfu_action_plus( int key )
         work_mode = WM_ARCHIVE;
         archive_name = fi->name();
         archive_path = ""; /* NOTE: archives' root dir is `' but not `/'! */
-        filename_atl = vfu_temp(); /* this is help for rx_*'s */
-        setenv( RX_TEMP_LIST, filename_atl, 1 );
         vfu_read_files();
-        say1( "ARCHIVE mode activated. ( some keys/commands are disabled! )" );
+        say1( "ARCHIVE mode activated ( some keys/commands are disabled! )" );
         } else
       if ( key == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
         vfu_user_external_exec( KEY_ENTER );
@@ -1437,11 +1429,6 @@ void vfu_action_minus()
       work_mode = WM_NORMAL;
       archive_name = "";
       archive_path = ""; /* NOTE: this shouldn't be `/'! */
-      #ifndef _TARGET_GO32_
-      unsetenv( RX_TEMP_LIST );
-      #endif
-      if ( access( filename_atl, F_OK ) == 0 )
-        unlink( filename_atl );
       vfu_chdir( "." );
       }
     }
