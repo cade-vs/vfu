@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.15 2003/01/26 21:48:42 cade Exp $
+ * $Id: see.cpp,v 1.16 2003/01/27 07:47:03 cade Exp $
  *
  */
 
@@ -350,7 +350,7 @@
   z = 0;
   while( z < res && buff[z] != '\n' ) z++;
   if (buff[z] == '\n') z++;
-  buff[z] = 0;           // need by SeeFindNext()
+  buff[z] = 0; // need by SeeFindNext()
 //    strcpy( cline, buff ); // need by SeeFindNext()
   fpos += z;
   if ( line >= 0 ) line++;
@@ -503,7 +503,7 @@
     fpos++;
   else
     down(); /* start search from the next line -- avoid blocking */
-  int new_pos = file_find_string( opt->last_search, f, opt->no_case, fpos );
+  int new_pos = file_find_string( opt->last_search, f, opt->no_case, fpos+1 );
   if ( new_pos >= 0 )
     {
     fpos = new_pos;
