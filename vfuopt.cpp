@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.8 2002/11/27 21:42:06 cade Exp $
+ * $Id: vfuopt.cpp,v 1.9 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -236,11 +236,11 @@ void vfu_settings_load()
   String str;
   char t[1024];
   
-  user_externals.zap();
-  history.zap();
-  see_filters.zap();
-  panelizers.zap();
-  archive_extensions.zap();
+  user_externals.undef();
+  history.undef();
+  see_filters.undef();
+  panelizers.undef();
+  archive_extensions.undef();
   
   /***** LOAD DEFAULTS *******/
 
@@ -442,7 +442,7 @@ void vfu_settings_load()
   if (opt.use_dir_colors) vfu_load_dir_colors();
 //  if (file_load_crc32( filename_size_cache, &size_cache, sizeof(size_cache)))
 //    memset( &size_cache, 0, sizeof(size_cache) );
-  size_cache.zap();
+  size_cache.undef();
   size_cache.fload( filename_size_cache );
 }
 

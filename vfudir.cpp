@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.12 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfudir.cpp,v 1.13 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -27,7 +27,7 @@ VArray size_cache;
     String pat = a_fnpattern;
     pat += "*";
     
-    a_va.zap();
+    a_va.undef();
     DIR *dir;
     dirent *de; 
     if ( !a_path || a_path[0] == 0 ) 
@@ -133,7 +133,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
     if ( ch == 9 && str_len( target ) > 0)
       { 
       int z; 
-      dir_list.zap();
+      dir_list.undef();
       String dmain; /* main/base path */
       String dtail; /* item that should be expanded/glob */
       
@@ -178,7 +178,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
           
           vfu_beep();
           ch = con_getch();
-          if ( ch != 9 ) { dir_list.zap(); continue; }
+          if ( ch != 9 ) { dir_list.undef(); continue; }
           dir_list.sort();
           con_chide();
           z = vfu_menu_box( 10, 5, "Complete...", &dir_list );
@@ -192,7 +192,7 @@ int vfu_get_dir_name( const char *prompt, String &target, int should_exist )
         
         pos = str_len( target );
         
-        dir_list.zap();
+        dir_list.undef();
         if (ch != 0) continue;
         }
       else
@@ -372,7 +372,7 @@ void vfu_chdir( const char *a_new_dir )
       {
       int z = 0;
       if ( dir_tree.count() == 0 ) tree_load();
-      mb.zap();
+      mb.undef();
       z = tree_find( target, &mb );
       if (z > 1)
         {
@@ -473,7 +473,7 @@ void tree_drop()
 {
   if ( dir_tree_changed )
     tree_save();
-  dir_tree.zap();
+  dir_tree.undef();
   dir_tree_changed = 0;
 }
 
@@ -598,8 +598,8 @@ _djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
                 _STAT_WRITEBIT;
 // _djstat_flags = 0;
 #endif
-  dir_tree.zap();
-  size_cache.zap();
+  dir_tree.undef();
+  size_cache.undef();
   say1( "Rebuilding tree..." );
   
   __tree_rebuild_process( "/" );

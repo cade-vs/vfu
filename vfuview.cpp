@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.8 2002/11/27 21:42:06 cade Exp $
+ * $Id: vfuview.cpp,v 1.9 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -161,7 +161,7 @@ void vfu_redraw() /* redraw file list and header */
   if ( opt.sort_order == 'S' ) str = "SIZE";
   if ( opt.sort_order == 'Y' ) str = "TYPE";
   str += opt.sort_direction == 'A' ? "+" : "-";
-  str = "(" + str + ")";
+  str = "(SORT:" + str + ")";
   con_out( con_max_x() - str_len( str ) + 1, 2, str, cHEADER );
   
   str = "";

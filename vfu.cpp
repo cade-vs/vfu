@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.26 2002/12/12 23:45:00 cade Exp $
+ * $Id: vfu.cpp,v 1.27 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -425,7 +425,7 @@ void TF::update_stat( const struct stat* a_new_stat = NULL,
 void vfu_help()
 {
   say1center( HEADER );
-  mb.zap();
+  mb.undef();
   mb.push( "*keypad -- navigation keys" );
   mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
   mb.push( "BACKSPC -- chdir to prent directory ( `-' and ^H too )"         );
@@ -490,7 +490,7 @@ void vfu_help()
   mb.push( "        5. " FILENAME_CONF_GLOBAL2 );
   mb.push( "" );
   vfu_menu_box( 1, 4, "VFU Help ( PageUp/PageDown to scroll )" );
-  mb.zap();
+  mb.undef();
   say1("");
   do_draw = 1;
 };
@@ -716,7 +716,7 @@ void vfu_exit_path( const char *a_path )
 int vfu_exit( const char* a_path )
 {
   int z;
-  mb.zap();
+  mb.undef();
   mb.push( "X Exit (to startup path)" );
   mb.push( "Q Quit (to work path)   " );
 
@@ -1604,7 +1604,7 @@ void vfu_global_select()
 {
   char ch;
 
-  mb.zap();
+  mb.undef();
   mb.push( "S All" );
   mb.push( "A All (+Dirs)" );
   mb.push( "R Reverse" );
@@ -1628,7 +1628,7 @@ void vfu_global_select()
       say1( "GlobalSelect/Extended not available in this mode." ); 
       return; 
       };
-    mb.zap();
+    mb.undef();
     mb.push( "--searching--" );
     mb.push( "F Find string (no case)" );
     mb.push( "S Scan string (case sense)" );
@@ -1816,7 +1816,7 @@ void vfu_global_select()
 
     case 'L':
               {
-              mb.zap();
+              mb.undef();
               mb.push( "N Name" );
               mb.push( "E Extension" );
               mb.push( "S Size" );
@@ -1932,7 +1932,7 @@ void vfu_user_external_exec( int key )
 
 void vfu_tools()
 {
-  mb.zap();
+  mb.undef();
   mb.push( "R Real path" );
   mb.push( "D ChDir to Real path" );
   mb.push( "T Make directory" );
@@ -1990,7 +1990,7 @@ void bookmark_goto( int n )
   if ( n == -1 )
     {
     int z;
-    mb.zap();
+    mb.undef();
     for(z = 1; z < 10; z++)
       {
       sprintf(t, "%d %-60s", z%10, path_bookmarks[z].data());
@@ -2103,7 +2103,7 @@ void vfu_directories_sizes( int n )
   n = toupper( n );
   if ( n == 0 )
     {
-    mb.zap();
+    mb.undef();
     mb.push( "E Specify directory" );
     mb.push( "Z Directory under cursor" );
     mb.push( ". Current directory `.'" );
@@ -2180,7 +2180,7 @@ void vfu_edit_entry( )
   int z;
   String str;
   
-  mb.zap();
+  mb.undef();
   mb.push( "M Mode" );
   mb.push( "A Octal Mode" );
   mb.push( "O Owner/Group" );
@@ -2447,7 +2447,7 @@ void vfu_jump_to_mountpoint( int all )
 #endif
   if (va.count() < 1) return;
 
-  mb.zap();
+  mb.undef();
   for(z = 0; z < va.count(); z++)
     {
     str = va[z];
@@ -2507,7 +2507,7 @@ void vfu_user_menu()
   String des;
   int z;
   
-  mb.zap();
+  mb.undef();
 
   for ( z = 0; z < user_externals.count(); z++ )
     {
@@ -2588,7 +2588,7 @@ void vfu_file_find_results()
     }
   else if ( tolower(bi.ec) == 'p' )
     {
-    list_panelizer.zap();
+    list_panelizer.undef();
     for ( z = 0; z < file_find_results.count(); z++ )
       {
       String str = file_find_results[z];
@@ -2683,7 +2683,7 @@ void vfu_file_find( int menu )
     }
   if ( ch == 'D' )
     {
-    file_find_results.zap();
+    file_find_results.undef();
     vfu_file_find_results(); /* FIXME: this will show `no results' warning */
     return;
     }
@@ -2732,7 +2732,7 @@ void vfu_file_find( int menu )
     con_out( 1, 4, str );
     }
   
-  file_find_results.zap();
+  file_find_results.undef();
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
 };
@@ -2743,7 +2743,7 @@ void vfu_clipboard( int act )
 {
   if ( act == 0 )
     {
-    mb.zap();
+    mb.undef();
     mb.push( "P Clipboard files list" );
     mb.push( "C Copy files to clipboard" );
     mb.push( "X Cut  files to clipboard" );
@@ -2763,7 +2763,7 @@ void vfu_read_files_menu()
 
   int z;
   String str;
-  mb.zap();
+  mb.undef();
   /* I don't format src like this but it gives clear idea what is all about */
   mb.push( "T Rescan DirTree" );           list.push("");
   mb.push( "F Rescan Files" );             list.push("");

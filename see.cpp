@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.10 2002/12/12 23:59:37 cade Exp $
+ * $Id: see.cpp,v 1.11 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -998,7 +998,7 @@
   col = 0;
   colpage = 0;
   sv.gotopos( 0 );
-  va.zap();
+  va.undef();
   mod = 0;
   con_chide();
   };

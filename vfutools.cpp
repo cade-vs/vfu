@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.6 2002/11/27 21:42:06 cade Exp $
+ * $Id: vfutools.cpp,v 1.7 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -49,7 +49,7 @@ void vfu_tool_classify()
     return;
     }
 
-  mb.zap();
+  mb.undef();
   mb.push("N Name");
   mb.push("E Ext");
   mb.push("1 First 1 letter");
@@ -64,7 +64,7 @@ void vfu_tool_classify()
   if ( vfu_menu_box( 50, 5, "Classify files by") == -1 ) return;
   char ch = menu_box_info.ec;
 
-  mb.zap();
+  mb.undef();
   int z;
   int i;
   for ( z = 0; z < files_count; z++ )
@@ -122,7 +122,7 @@ void vfu_tool_rename()
   if ( sel_count < 1 )
     { say1( "No files to rename... (You have to select required files)" ); return; };
 
-  mb.zap();
+  mb.undef();
   mb.push( "1 README.TXT => readme.txt" );
   mb.push( "2 README.TXT => readme.TXT" );
   mb.push( "3 README.TXT => README.txt" );

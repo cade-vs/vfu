@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.9 2002/11/27 21:42:06 cade Exp $
+ * $Id: vfuuti.cpp,v 1.10 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -351,7 +351,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
   String str;
   
-  mb.zap();
+  mb.undef();
   int z;
   int cnt = vfu_hist_count( hist_id );
   if ( cnt < 1 ) return -1;

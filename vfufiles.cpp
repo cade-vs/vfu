@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.7 2002/11/27 21:42:05 cade Exp $
+ * $Id: vfufiles.cpp,v 1.8 2003/01/01 15:40:39 cade Exp $
  *
  */
 
@@ -299,7 +299,7 @@ void vfu_read_pszlist_files()
     stat( pc, &st );
     vfu_add_file( pc, &st, file_is_link( pc )  );
     }
-  list_panelizer.zap(); /* reset -- there's no reload on this */
+  list_panelizer.undef(); /* reset -- there's no reload on this */
 }
 
 /*---------------------------------------------------------------------------*/
@@ -499,7 +499,7 @@ void vfu_arrange_files()
 {
   int _ord;
   int _rev;
-  mb.zap();
+  mb.undef();
   mb.push( "N Name" );
   mb.push( "M Name### (RTFM)" );
   mb.push( "E Extension" );
@@ -544,7 +544,7 @@ void vfu_arrange_files()
     return;
     }
   
-  mb.zap();
+  mb.undef();
   mb.push( "A Ascending");
   mb.push( "D Descending" );
   if ( vfu_menu_box( 50, 5, "Order" ) == -1 ) return;
