@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuarc.cpp,v 1.8 2002/11/06 19:57:58 cade Exp $
+ * $Id: vfuarc.cpp,v 1.9 2002/11/06 20:22:24 cade Exp $
  *
  */
 
@@ -30,7 +30,7 @@ void vfu_read_archive_files( int a_recursive )
   
   String s;
   s = "rx_auto ";
-  s += ( a_recursive ) ? "v " : "l \"";
+  s += ( a_recursive ) ? "v \"" : "l \"";
   s += archive_name;
   s += "\" ";
   s += archive_path;
