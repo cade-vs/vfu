@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.15 2002/05/17 08:16:34 cade Exp $
+ * $Id: vfu.cpp,v 1.16 2002/05/24 16:52:59 cade Exp $
  *
  */
 
@@ -644,7 +644,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  signal( SIGWINCH, vfu_signal );
+  // signal( SIGWINCH, vfu_signal );
   // this is for xterm resize refresh handle
   // signal( SIGWINCH, VFUsignal );
   // still doesn't work?...
@@ -1035,13 +1035,14 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
+  /* there is no simple solution... :/
   if ( sig == SIGWINCH )
     {
     signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
-    // vfu_reset_screen();
     do_draw = 3;
     return;
     }
+  */
     
   vfu_done();
 
