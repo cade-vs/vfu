@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.24 2004/04/04 23:18:48 cade Exp $
+ * $Id: vfudir.cpp,v 1.25 2005/05/07 16:28:57 cade Exp $
  *
  */
 
@@ -960,7 +960,7 @@ fsize_t size_cache_get( const char *s )
     return -1;  
 }
 
-void size_cache_set( const char *s, fsize_t size )
+void size_cache_set( const char *s, fsize_t size, int sort )
 {
   int z = size_cache_index( s );
   if ( z != -1 )
@@ -970,8 +970,16 @@ void size_cache_set( const char *s, fsize_t size )
   else
     {
     size_cache.push( size_cache_compose_key( s, size ) );
-    size_cache.sort( 0, size_cache_cmp );
+    if( sort )
+      size_cache.sort( 0, size_cache_cmp );
     }
+}
+
+// this function is used to add quickly entries to the cache
+// it REQUIRES that size_cache_sort() is called after it!
+void size_cache_append( const char *s, fsize_t size )
+{
+  size_cache.push( size_cache_compose_key( s, size ) );
 }
 
 void size_cache_clean( const char *s )
@@ -1125,7 +1133,7 @@ fsize_t __dir_size_process( const char* path )
       else
         {
         size += dir_size;
-        size_cache_set( new_name, dir_size );
+        size_cache_append( new_name, dir_size );
         }
       }
     else
@@ -1145,6 +1153,7 @@ fsize_t vfu_dir_size( const char *s )
   expand_path( s, t );
   size_cache_clean( t );
   str_fix_path( t );
+  size_cache_clean( t );
   fsize_t size = __dir_size_process( t );
   size_cache_set( t, size );
   return size;

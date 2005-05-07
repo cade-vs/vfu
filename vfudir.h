@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.h,v 1.9 2003/01/30 00:03:51 cade Exp $
+ * $Id: vfudir.h,v 1.10 2005/05/07 16:28:57 cade Exp $
  *
  */
 
@@ -46,8 +46,10 @@ int tree_find( const char *s, VArray *va );
 VString size_cache_compose_key( const char *s, fsize_t size );
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );
-void size_cache_set( const char *s, fsize_t size );
+void size_cache_set( const char *s, fsize_t size, int sort = 1 );
+void size_cache_append( const char *s, fsize_t size );
 void size_cache_clean( const char *s );
+void size_cache_sort();
 
 /*###########################################################################*/
 
