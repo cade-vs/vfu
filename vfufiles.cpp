@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.15 2004/01/05 02:56:40 cade Exp $
+ * $Id: vfufiles.cpp,v 1.16 2005/05/09 10:46:07 cade Exp $
  *
  */
 
@@ -412,18 +412,18 @@ switch (opt.sort_order)
  case 'A' : z = strcmp( f1->mode_str(), f2->mode_str() );
             break;
 
- case 'O' : z = (f2->st()->st_uid  > f1->st()->st_uid)  - 
-                (f2->st()->st_uid  < f1->st()->st_uid);
+ case 'O' : z =   (f2->st()->st_uid  > f1->st()->st_uid)  - 
+                  (f2->st()->st_uid  < f1->st()->st_uid);
             if ( z == 0 )
-            z = (f2->st()->st_gid  > f1->st()->st_gid)  - 
-                (f2->st()->st_gid  < f1->st()->st_gid);
+              z = (f2->st()->st_gid  > f1->st()->st_gid)  - 
+                  (f2->st()->st_gid  < f1->st()->st_gid);
             break;
 
- case 'G' : z = (f2->st()->st_gid  > f1->st()->st_gid)  - 
-                (f2->st()->st_gid  < f1->st()->st_gid);
+ case 'G' : z =   (f2->st()->st_gid  > f1->st()->st_gid)  - 
+                  (f2->st()->st_gid  < f1->st()->st_gid);
             if ( z == 0 )
-            z = (f2->st()->st_uid  > f1->st()->st_uid)  - 
-                (f2->st()->st_uid  < f1->st()->st_uid);
+              z = (f2->st()->st_uid  > f1->st()->st_uid)  - 
+                  (f2->st()->st_uid  < f1->st()->st_uid);
             break;
 
  case 'Y' : z = strcmp( f1->type_str(), f2->type_str() );
