@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.25 2005/05/07 16:28:57 cade Exp $
+ * $Id: vfudir.cpp,v 1.26 2005/06/01 23:13:08 cade Exp $
  *
  */
 
@@ -593,7 +593,7 @@ fsize_t __tree_rebuild_process( const char* path )
       }
     else
       { /* file */
-      size += st.st_size;
+      size += (unsigned)st.st_size;
       }  
     
     }
@@ -1137,7 +1137,7 @@ fsize_t __dir_size_process( const char* path )
         }
       }
     else
-      size += st.st_size;  
+      size += (unsigned)st.st_size;  
     
     }
   closedir(dir);

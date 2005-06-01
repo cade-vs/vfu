@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuview.cpp,v 1.16 2004/07/08 01:25:52 cade Exp $
+ * $Id: vfuview.cpp,v 1.17 2005/06/01 23:13:08 cade Exp $
  *
  */
 
@@ -75,7 +75,7 @@ int get_item_color( TF *fi )
 VString fsize_fmt( fsize_t fs ) /* return commified number */
 {
   VString str;
-  if( fs > 99999999999.0 )
+  if( fs > 99999999999.0 ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
     str.fi( int( fs / ( 1024*1024 ) ) );
     str_comma( str );
