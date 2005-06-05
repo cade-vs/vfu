@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.h,v 1.7 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfuuti.h,v 1.8 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -13,6 +13,10 @@
 #define _VFUUTI_H_
 
 #include "vfu.h"
+
+/*###########################################################################*/
+
+fsize_t file_st_size( struct stat* st );
 
 /*###########################################################################*/
 

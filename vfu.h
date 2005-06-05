@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.13 2005/02/11 01:02:04 cade Exp $
+ * $Id: vfu.h,v 1.14 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -22,6 +22,7 @@
 
   #include <stdio.h>
   #include <stdlib.h>
+  #include <stdint.h>
   #include <unistd.h>
   #include <string.h>
   #include <time.h>

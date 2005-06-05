@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.15 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfuuti.cpp,v 1.16 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -16,6 +16,13 @@
 #include "vfudir.h"
 #include "vfuopt.h"
 #include "vfuview.h"
+
+/*---------------------------------------------------------------------------*/
+
+fsize_t file_st_size( struct stat* st )
+{
+  return st->st_size + ( st->st_size < 0 ) * ((uintmax_t)TYPE_MAXIMUM(off_t) - TYPE_MINIMUM(off_t) + 1);
+}
 
 /*---------------------------------------------------------------------------*/
 

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfucopy.cpp,v 1.15 2004/07/08 01:25:52 cade Exp $
+ * $Id: vfucopy.cpp,v 1.16 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -183,13 +183,13 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     char t[MAX_PATH];
   
     time_str_compact( stat_src.st_mtime, sttime); 
-    str = (long int)stat_src.st_size; 
+    str = file_st_size( &stat_src ); 
     str_comma(str);
     sprintf(t, "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
     say1(t);
   
     time_str_compact(stat_dst.st_mtime, sttime); 
-    str = (long int)stat_dst.st_size; 
+    str = file_st_size( &stat_dst ); 
     str_comma(str);
     sprintf(t, "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
     say2(t);

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.29 2004/04/04 23:18:48 cade Exp $
+ * $Id: see.cpp,v 1.30 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -230,7 +230,7 @@
     char t[256];
     for( y = 0; y < rows; y++ )
       {
-      sprintf( t, opt->dec_pos ? "%10d":"%010X", fpos + rowsz * y );
+      sprintf( t, opt->dec_pos ? "%10ld":"%010lX", fpos + rowsz * y );
       offset = t;
       ascii = "";
       hexdump = "";

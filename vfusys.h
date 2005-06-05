@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfusys.h,v 1.5 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfusys.h,v 1.6 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -15,6 +15,23 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+/*
+  following defines are taken from coreutils-5.2.1
+  Copyright (C) 1989, 1991-2004 Free Software Foundation, Inc.
+  to address the file size problem when file is larger than 2GB
+*/
+
+#ifndef CHAR_BIT
+# define CHAR_BIT 8
+#endif
+#define TYPE_SIGNED(t) (! ((t) 0 < (t) -1))
+#define TYPE_MINIMUM(t) ((t) (TYPE_SIGNED (t) ? ~ (t) 0 << (sizeof (t) * CHAR_BIT - 1) : (t) 0))
+#define TYPE_MAXIMUM(t) ((t) (~ (t) 0 - TYPE_MINIMUM (t)))
+
+/*
+    VFU specific defines
+*/
 
 #define MODE_OFF      "----------"
   

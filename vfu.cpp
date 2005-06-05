@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.45 2005/06/01 23:13:08 cade Exp $
+ * $Id: vfu.cpp,v 1.46 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -410,7 +410,7 @@ void TF::update_stat( const struct stat* a_new_stat = NULL,
   if ( _is_dir )
     _size = -1; /* FIXME: some auto thing here? */
   else
-    _size = (unsigned)_st.st_size;
+    _size = file_st_size( &_st );
   _color = get_item_color( this );
   
   drop_view();
