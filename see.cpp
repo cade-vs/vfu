@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.30 2005/06/05 22:00:10 cade Exp $
+ * $Id: see.cpp,v 1.31 2005/06/06 06:20:29 cade Exp $
  *
  */
 
@@ -264,8 +264,8 @@
       con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
       }
     
-    status( "%3.0f%% | Pos. %4d of %4d | Alt+H Help | %s", 
-            (100.0*fpos)/(fsize?fsize:1), fpos, fsize, fname.data() );
+    status( "%3.0f%% | Pos. %4ld of %4ld | Alt+H Help | %s", 
+            (100.0*fpos)/(fsize>0?fsize:1), fpos, fsize, fname.data() );
   };
 
 /*--------------------------------------------------------------------*/
@@ -336,7 +336,7 @@
       if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
       }
     status( "%3.0f%% | Pos. %4d | Line %4d of %4d%c|%4d+ | Alt+H Help | %s", 
-            (100.0*fpos)/(fsize?fsize:1), fpos, line, last_line, 
+            (100.0*fpos)/(fsize>0?fsize:1), fpos, line, last_line, 
             end_reached?' ':'?', col+1, fname.data() );
   };
 
