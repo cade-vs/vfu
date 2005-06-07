@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.27 2005/06/05 22:00:10 cade Exp $
+ * $Id: vfudir.cpp,v 1.28 2005/06/07 22:33:48 cade Exp $
  *
  */
 
@@ -903,15 +903,8 @@ VString size_cache_compose_key( const char *s, fsize_t size )
 {
   const char *ps;
   char ss[MAX_PATH];
-  if ( opt.fast_size_cache )
-    {
-    ps = s;
-    }
-  else
-    {  
-    expand_path( s, ss );
-    ps = ss;
-    }
+  expand_path( s, ss );
+  ps = ss;
   
   char s_adler[16];
   char s_size[32];

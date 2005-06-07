@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.16 2004/07/08 01:25:52 cade Exp $
+ * $Id: vfuopt.cpp,v 1.17 2005/06/07 22:33:48 cade Exp $
  *
  */
 
@@ -51,7 +51,6 @@ ToggleEntry Toggles[] =
   {  0 , "--trees/dirs-- " , NULL, NULL },
   { ' ', "Compact DirTree", &(opt.tree_compact), NOYES },
   { ' ', "CDTree (cdpath) ", &(opt.tree_cd), NOYES },
-  { ' ', "Fast dir size cache ", &(opt.fast_size_cache), NOYES },
   {  0 , "--troubleshooting--", NULL, NULL },
   { ' ', "Clear screen on shell", &(opt.shell_cls), NOYES },
   {  0 , "--compatibility--", NULL, NULL },
@@ -260,8 +259,7 @@ void vfu_settings_load()
   opt.long_name_view = 0;
   opt.tree_compact = 0;
   opt.tree_cd = 1;
-  opt.fast_size_cache = 0;
-
+  
   opt.show_hidden_files = 1;
   
   opt.allow_beep = 1;
@@ -474,7 +472,7 @@ void vfu_options()
 {
   say1("press SPACE to toggle, ENTER or ESC to exit");
   say2("");
-  vfu_toggle_box( 30, 5, "Options/Toggles   (scroll down...)", Toggles );
+  vfu_toggle_box( 30, 5, "Options/Toggles (scroll down, SPACE selects)", Toggles );
   vfu_settings_save();
   vfu_settings_load();
   vfu_drop_all_views();

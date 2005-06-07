@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.h,v 1.8 2003/01/29 22:59:16 cade Exp $
+ * $Id: vfuopt.h,v 1.9 2005/06/07 22:33:48 cade Exp $
  *
  */
 
@@ -39,7 +39,6 @@
     int long_name_view;
     int tree_compact;
     int tree_cd;
-    int fast_size_cache;
 
     int show_hidden_files; /* `dot' files in UNIX, `HS' files in dos */
     
