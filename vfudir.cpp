@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.28 2005/06/07 22:33:48 cade Exp $
+ * $Id: vfudir.cpp,v 1.29 2005/07/25 00:23:48 cade Exp $
  *
  */
 
@@ -893,6 +893,7 @@ void tree_view()
 /*###########################################################################*/
 
 #define SIZE_CACHE_OFFSET 12
+#define SIZE_CACHE_OFFSET_CLEAN (12+8+1)
 
 int size_cache_cmp( const char* s1, const char* s2 )
 {
@@ -978,15 +979,15 @@ void size_cache_append( const char *s, fsize_t size )
 void size_cache_clean( const char *s )
 {
   VString str = size_cache_compose_key( s, 0 );
-  str_trim_left( str, SIZE_CACHE_OFFSET );
+  str_trim_left( str, SIZE_CACHE_OFFSET_CLEAN );
   int sl = str_len( str );
   int z = 0;
   while( z < size_cache.count() )
     {
-    const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET;
+    const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET_CLEAN;
     if ( ( strncmp( ps, str, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0) )
          ||
-         ( size_cache[z][SIZE_CACHE_OFFSET] != '|' ) )
+         ( size_cache[z][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
       size_cache.del( z );
     else
       z++;
