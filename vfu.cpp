@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.46 2005/06/05 22:00:10 cade Exp $
+ * $Id: vfu.cpp,v 1.47 2005/07/28 10:29:01 cade Exp $
  *
  */
 
@@ -57,6 +57,9 @@
   /* files masks */
   VString   files_mask;
   VArray   files_mask_array;
+
+  /* misc */
+  int print_help_on_exit;
 
 /*############################################ GLOBAL STRUCTS  #########*/
 
@@ -983,7 +986,7 @@ void vfu_run()
 
 void vfu_help_cli()
 {
-  con_out( 1, 1, 
+  printf( "%s",   
     HEADER
     "Command line switches:\n"
     "  none    -- run in interactive mode (DEFAULT)\n"
@@ -1000,9 +1003,7 @@ void vfu_help_cli()
     "compile information:\n"
     "  target description: " _TARGET_DESCRIPTION_ "\n"
     "  compile date: " __DATE__ "\n"
-    "\n*** press a key ***", cSTATUS
     );
-  con_getch();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1014,7 +1015,7 @@ void vfu_cli( int argc, char* argv[] )
     {
     switch(optc)
       {
-      case 'h'  : vfu_help_cli(); break;
+      case 'h'  : print_help_on_exit = 1; break;
       case 'i'  : vfu_run(); break;
       case 'd'  : temp = optarg;
             #ifdef _TARGET_GO32_
@@ -2886,7 +2887,8 @@ int main( int argc, char* argv[] )
   // mtrace(); /* memory allocation debug */
   #endif
   
-
+  print_help_on_exit = 0;
+  
   con_init();
   con_cs();
   con_fg( cNORMAL );
@@ -2901,6 +2903,7 @@ int main( int argc, char* argv[] )
   con_cshow();
   con_done();
   
+  if( print_help_on_exit ) vfu_help_cli();
   /*
   printf("%s\n<cade@biscom.net> [http://soul.datamax.bg/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
   */

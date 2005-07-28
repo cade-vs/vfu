@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.14 2005/06/05 22:00:10 cade Exp $
+ * $Id: vfu.h,v 1.15 2005/07/28 10:29:01 cade Exp $
  *
  */
 
@@ -208,6 +208,9 @@
   /* files masks */
   extern VString         files_mask;
   extern VArray         files_mask_array;
+
+  /* misc */
+  extern int print_help_on_exit;
 
 /*############################################ GLOBAL STRUCTS  #########*/
 

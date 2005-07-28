@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.10 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfutools.cpp,v 1.11 2005/07/28 10:29:01 cade Exp $
  *
  */
 
@@ -84,10 +84,11 @@ void vfu_tool_classify()
     if ( res && !dir_exist( mb[i] ) )
       {
       char t[MAX_PATH];
-      sprintf( t, "Cannot create directory: %s (press a key)", mb.get(i) );
+      sprintf( t, "Cannot create directory: %s, (press a key for cancel)", mb.get(i) );
       say1( t );
       say2errno();
       con_getch();
+      return;
       }
     }
   CopyInfo copy_info;
