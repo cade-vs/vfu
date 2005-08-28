@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.15 2005/07/28 10:29:01 cade Exp $
+ * $Id: vfu.h,v 1.16 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -146,8 +146,8 @@
       const char*   view();
       void          drop_view();
 
-      void          update_stat( const struct stat* a_new_stat,
-                                 int a_is_link );
+      void          update_stat( const struct stat* a_new_stat = NULL, int a_is_link = -1 );
+      
       const char*   type_str() { return (const char*)_type_str; }
       const char*   mode_str() { return (const char*)_mode_str; }
       const struct  stat* st() { return (const struct stat*)&_st; }

@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.11 2005/07/28 10:29:01 cade Exp $
+ * $Id: vfutools.cpp,v 1.12 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -133,10 +133,12 @@ void vfu_tool_rename()
   mb.push( "_ Replace spaces with _" );
   mb.push( "Y Simplify name (RTFM)" );
   mb.push( "S Sequential rename" );
+  mb.push( "R Replace SymLink w. Original" );
   if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {
     case 'S' : vfu_tool_seq_rename(); break;
+    case 'R' : vfu_tool_replace_sym_org(); break;
     case '1' :
     case '2' :
     case '3' :
@@ -255,6 +257,43 @@ void vfu_tool_seq_rename()
     
     }
   sprintf( t, "Rename complete (errors: %d)", err );
+  say1( t );
+}
+
+/*------------------------------------------------------------------------*/
+
+// replaces symlink entry with original one:
+// rm symlink
+// mv original symlink
+
+void vfu_tool_replace_sym_org()
+{
+  int err = 0;
+  int z;
+  for ( z = 0; z < files_count; z++ )
+    {
+    TF* fi = files_list[z];
+  
+    if ( fi->is_dir() ) continue; // FIXME: dali?
+    if ( !fi->sel ) continue;
+    if ( !fi->is_link() ) continue;
+    
+    VString sym = fi->full_name();
+    VString org = vfu_readlink( sym );
+
+    say1( sym );
+    con_getch();
+    say1( org );
+    con_getch();
+    
+    if (access( org, F_OK )) { err++; continue; }
+    if (unlink( sym ))       { err++; continue; }
+    if (rename( org, sym ))  { err++; continue; }
+    fi->update_stat();
+    do_draw = 2; /* FIXME: this should be optimized? */
+    }
+  char t[256];
+  sprintf( t, "Replace complete (errors: %d)", err );
   say1( t );
 }
 

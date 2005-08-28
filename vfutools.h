@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.h,v 1.5 2003/01/26 21:48:42 cade Exp $
+ * $Id: vfutools.h,v 1.6 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -14,11 +14,10 @@
 
 #include "vfu.h"
 
-  void vfu_tool_classify();
-
-  void vfu_tool_rename();
-  
-  void vfu_tool_seq_rename();
+void vfu_tool_classify();
+void vfu_tool_rename();
+void vfu_tool_seq_rename();
+void vfu_tool_replace_sym_org();
 
 #endif //_VFUTOOLS_H_
 

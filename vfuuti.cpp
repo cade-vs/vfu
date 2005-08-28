@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.16 2005/06/05 22:00:10 cade Exp $
+ * $Id: vfuuti.cpp,v 1.17 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -22,6 +22,16 @@
 fsize_t file_st_size( struct stat* st )
 {
   return st->st_size + ( st->st_size < 0 ) * ((uintmax_t)TYPE_MAXIMUM(off_t) - TYPE_MINIMUM(off_t) + 1);
+}
+
+VString vfu_readlink( const char* fname )
+{
+  char t[MAX_PATH+1];
+  t[0] = 0;
+  int l = readlink( fname, t, MAX_PATH );
+  if (l != -1) t[l] = 0;
+  VString res = t;
+  return res;
 }
 
 /*---------------------------------------------------------------------------*/

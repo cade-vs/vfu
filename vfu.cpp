@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.47 2005/07/28 10:29:01 cade Exp $
+ * $Id: vfu.cpp,v 1.48 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -366,10 +366,7 @@ void TF::refresh_view()
   if ( _is_link )
     {
       name_view += " -> ";
-      char t[MAX_PATH+1];
-      int l = readlink( _name, t, MAX_PATH );
-      if (l != -1) t[l] = 0;
-      name_view += t;
+      name_view += vfu_readlink( _name );
     }
   #endif
 
@@ -394,8 +391,7 @@ void TF::refresh_view()
 
 /*-----------------------------------------------------------------------*/
 
-void TF::update_stat( const struct stat* a_new_stat = NULL,
-                      int a_is_link = -1 )
+void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
 {
   ASSERT( _name );
   ASSERT( _name_ext );

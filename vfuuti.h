@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.h,v 1.8 2005/06/05 22:00:10 cade Exp $
+ * $Id: vfuuti.h,v 1.9 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -17,6 +17,8 @@
 /*###########################################################################*/
 
 fsize_t file_st_size( struct stat* st );
+
+VString vfu_readlink( const char* fname );
 
 /*###########################################################################*/
 
