@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.16 2005/08/28 14:02:19 cade Exp $
+ * $Id: vfu.h,v 1.17 2005/08/28 14:54:15 cade Exp $
  *
  */
 
@@ -322,6 +322,7 @@ void vfu_user_external_exec( int a_key );
 void vfu_user_menu();
 
 void vfu_inc_search();
+void vfu_goto_filename( const char* fname );
 
 /*
   Main files op's

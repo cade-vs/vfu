@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.48 2005/08/28 14:02:19 cade Exp $
+ * $Id: vfu.cpp,v 1.49 2005/08/28 14:54:15 cade Exp $
  *
  */
 
@@ -1945,11 +1945,14 @@ void vfu_user_external_exec( int key )
 
 /*--------------------------------------------------------------------------*/
 
+VString tools_last_target;
 void vfu_tools()
 {
   mb.undef();
   mb.push( "R Real path" );
-  mb.push( "D ChDir to Real path" );
+  mb.push( "D ChDir to symlink path" );
+  mb.push( "G Go to symlink target" );
+  mb.push( "B Go back to last target" );
   mb.push( "T Make directory" );
   mb.push( "P Path bookmarks" );
   mb.push( "A Rename tools..." );
@@ -1964,9 +1967,26 @@ void vfu_tools()
                break;
                }
     case 'D' : {
-               char s[MAX_PATH];
-               expand_path(files_list[FLI]->name(), s);
-               vfu_chdir( s );
+               if( ! files_list[FLI]->is_link() ) break;
+               tools_last_target = files_list[FLI]->full_name();
+               if( ! files_list[FLI]->is_dir() ) break;
+               vfu_chdir( expand_path( files_list[FLI]->name() ) );
+               break;
+               }
+    case 'G' : {
+               if( ! files_list[FLI]->is_link() ) break;
+               tools_last_target = files_list[FLI]->full_name();
+               VString target = vfu_readlink( files_list[FLI]->full_name() );
+               vfu_chdir( expand_path( str_file_path( target ) ) );
+               vfu_goto_filename( str_file_name_ext( target ) );
+               break;
+               }
+    case 'B' : {
+               if( tools_last_target == "" ) break;
+               VString target = tools_last_target;
+               tools_last_target = files_list[FLI]->full_name();
+               vfu_chdir( expand_path( str_file_path( target ) ) );
+               vfu_goto_filename( str_file_name_ext( target ) );
                break;
                }
     case 'T' : {
@@ -2871,6 +2891,20 @@ void vfu_inc_search()
     }
   say1( "" );
   say2( "" );
+}
+
+/*--------------------------------------------------------------------------*/
+
+void vfu_goto_filename( const char* fname )
+{
+  if ( files_count == 0 ) return;
+
+  for (int z = 0; z < files_count; z++)
+    {
+    if( strcmp( fname, files_list[z]->name_ext() ) ) continue;
+    FGO(z);
+    return;
+    }
 }
 
 /*######################################################################*/
