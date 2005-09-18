@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfutools.cpp,v 1.13 2005/08/28 14:54:15 cade Exp $
+ * $Id: vfutools.cpp,v 1.14 2005/09/18 11:50:16 cade Exp $
  *
  */
 
@@ -133,8 +133,8 @@ void vfu_tool_rename()
   mb.push( "_ Replace spaces with _" );
   mb.push( "Y Simplify name (RTFM)" );
   mb.push( "S Sequential rename" );
-  mb.push( "R Replace SymLink w. Original" );
-  mb.push( "W Swap SymLink w. Original" );
+  mb.push( "W Swap SymLink w.Original" );
+  mb.push( "R Replace S.Link w.Original" );
   if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {
