@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.17 2005/08/28 14:02:19 cade Exp $
+ * $Id: vfuuti.cpp,v 1.18 2005/10/26 00:16:32 cade Exp $
  *
  */
 
@@ -42,6 +42,8 @@ VString out;
 VString s;
 
 int i = 0;
+int one = 0;
+int full = 0;
 
 // toggles
 #ifdef _TARGET_GO32_
@@ -60,34 +62,54 @@ while( a_line[i] )
       case 'r' : /* rescan files after */
       case 'R' : a_options += "r"; break; // refresh all files after (readdir)
       case 'f' : /* file name */
-      case 'F' : if ( files_count > 0 && work_mode == WM_ARCHIVE )
+      case 'F' : 
+      case 'g' :
+      case 'G' : one = 0;
+                 if ( a_line[i+1] == 'f' ) one = 1;
+                 if ( a_line[i+1] == 'F' ) one = 1;
+                 full = 0;
+                 if ( a_line[i+1] == 'F' ) full = 1;
+                 if ( a_line[i+1] == 'G' ) full = 1;
+                 // FIXME: 'one' is used to merge F and G options in the future
+                 int z;
+                 for( z = 0; z < files_count; z++ )
                    {
-                   /*
-                     If in WM_ARCHIVE, suppose we are in temp
-                     directory already and required file is extracted
-                     in here... so we don't use full_name()
-                   */
-                   out += files_list[FLI]->name();
-                   }
-                 else
-                 if ( files_count > 0 )  
-                   {
-                   s = ( a_line[i+1] == 'F' ) ?
-                       files_list[FLI]->full_name() 
-                       :
-                       files_list[FLI]->name(); 
-                   #ifdef _TARGET_GO32_
-                   if (use_SFN)
+                   TF *fi = files_list[z];
+                   if (  one && z != FLI ) continue; /* if one and not current -- skip */
+                   if ( !one && !fi->sel ) continue; /* if not one and not selected -- skip */
+                   if( work_mode == WM_ARCHIVE )
                      {
-                     char short_name[32]; /* well longest short dos name is 12 */
-                     file_get_sfn( s, short_name );
-                     s = short_name;
+                     s = files_list[z]->name();
                      }
-                     str_tr( s, "/", "\\" ); /* use \ under dos */
-                   #endif /* _TARGET_GO32_ */
+                   else if( full )
+                     {
+                     files_list[z]->full_name();
+                     }
+                   else
+                     {
+                     s = files_list[z]->name();
+                     }
+                   if( !one )
+                     {
+                     // need to list files, quote them...
+                     // FIXME: this should be optional for all one and !one
+                     if ( str_find( s, "'" ) == -1 ) 
+                       {
+                       s = "'" + s +"' ";
+                       }
+                     else if ( str_find( s, "\"" ) == -1 ) 
+                       {
+                       s = "\"" + s +"\" ";
+                       }
+                     else 
+                       {
+                       s = "";
+                       }
+                     }  
                    out += s;
                    }
                  break;
+
       case 'e' : /* name only */
       case 'E' : /* extension only */
                  if ( a_line[i+1] == 'e' )
@@ -144,6 +166,7 @@ while( a_line[i] )
       case 'W' : a_options += "w"; break;
       case 'i' : a_options += "i"; break;
       case 'n' : a_options += "n"; break;
+      case '!' : a_options += "!"; break;
       default  : /* chars not recognized are accepted "as is" */
                  str_add_ch( out, a_line[i+1] );
                  break;

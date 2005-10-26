@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.49 2005/08/28 14:54:15 cade Exp $
+ * $Id: vfu.cpp,v 1.50 2005/10/26 00:16:32 cade Exp $
  *
  */
 
@@ -1126,6 +1126,16 @@ void vfu_shell( const char* a_command, const char* a_options )
   
   int res = vfu_update_shell_line( shell_line, o );
   if (res) return;
+
+  if ( str_find( o, '!' ) > -1 )
+    {
+    // review shell_line
+    say1( "Review shell line to be executed:" );
+    VString sl = shell_line;
+    sl = str_dot_reduce( sl, con_max_x()-1 );
+    say2( sl );
+    con_getch();
+    }
 
   if ( str_find( o, 'n' ) == -1 ) /* [n]o console suspend */
     {
