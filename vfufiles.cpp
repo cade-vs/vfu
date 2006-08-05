@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfufiles.cpp,v 1.16 2005/05/09 10:46:07 cade Exp $
+ * $Id: vfufiles.cpp,v 1.17 2006/08/05 20:15:13 cade Exp $
  *
  */
 
@@ -23,7 +23,7 @@ const char* file_type_str( mode_t mode, int is_link )
 {
   strcpy(__file_stat_type_buf, "--");
   if (S_ISDIR(mode) && is_link)
-                      strcpy(__file_stat_type_buf, "<>"); else // box, but not exact 
+                      strcpy(__file_stat_type_buf, "<>"); else // box, but not exact
   if (S_ISBLK(mode) ) strcpy(__file_stat_type_buf, "=="); else // block, stacked
   if (S_ISCHR(mode) ) strcpy(__file_stat_type_buf, "++"); else // like dots, separates
   if (S_ISFIFO(mode)) strcpy(__file_stat_type_buf, "()"); else // () pipe mimic
@@ -41,7 +41,7 @@ const char* file_type_str( mode_t mode, int is_link )
 /*
   actually this function is called only when 'R' key is pressed
   it calls vfu_read_files() and keeps selection and tag mark position
-  
+
   update: now it is called and from vfu_shell when %r
 */
 
@@ -91,11 +91,11 @@ void vfu_read_files( int a_recursive )
   int z;
 
   /* clear files list -- delete all found entries */
-  for ( z = 0; z < MAX_FILES ; z++) 
-    if (files_list[z]) 
-      { 
-      delete files_list[z]; 
-      files_list[z] = NULL; 
+  for ( z = 0; z < MAX_FILES ; z++)
+    if (files_list[z])
+      {
+      delete files_list[z];
+      files_list[z] = NULL;
       }
 
   /* vfu_add_file() will need this */
@@ -107,7 +107,7 @@ void vfu_read_files( int a_recursive )
     ASSERT( work_mode == WM_ARCHIVE );
     vfu_read_archive_files( a_recursive );
     } else
-  if ( external_panelizer != "" )  
+  if ( external_panelizer != "" )
     {
     ASSERT( work_mode == WM_NORMAL );
     vfu_read_external_files();
@@ -120,7 +120,7 @@ void vfu_read_files( int a_recursive )
   else
     {
     ASSERT( work_mode == WM_NORMAL );
-    vfu_read_local_files( a_recursive );  
+    vfu_read_local_files( a_recursive );
     }
 
   /* update scroll parameters */
@@ -147,7 +147,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   VString ne = str_file_name_ext( fname );
 
   if ( ne == "."  || ne == ".." ) return 0;
-  
+
   /* now try to hide `system/special' files */
   if ( !opt.show_hidden_files )
     {
@@ -157,7 +157,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
       if ( mode_str[7] == 'H' || mode_str[8] == 'S' ) return 0;
     #else
       if ( ne[0] == '.' ) return 0;
-    #endif  
+    #endif
     }
 
   if ( !S_ISDIR( st->st_mode ) ) /* mask is not allowed for dirs */
@@ -189,7 +189,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
 
 /*---------------------------------------------------------------------------*/
 
-int __vfu_ftw_add( const char* origin, const char* fname, 
+int __vfu_ftw_add( const char* origin, const char* fname,
                    const struct stat *st, int is_link, int flag )
 {
   if ( vfu_break_op() ) return 1;
@@ -197,15 +197,15 @@ int __vfu_ftw_add( const char* origin, const char* fname,
 
   VString str = fname;
   str_trim_left( str, str_len( origin ) );
-  
+
   return vfu_add_file( str, st, file_is_link( fname ) );
 }
 
 void vfu_read_local_files( int a_recursive )
 {
   ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
-  
-  if ( opt.auto_mount && files_count == 1 && 
+
+  if ( opt.auto_mount && files_count == 1 &&
        ( FNMATCH( files_list[0]->name(), "automount" ) == 0 ||
          FNMATCH( files_list[0]->name(), ".automount" ) == 0 ) )
    {
@@ -213,7 +213,7 @@ void vfu_read_local_files( int a_recursive )
    tmp_file_name += tmp_path;
    tmp_file_name += "vfu_automount_error.";
    tmp_file_name += user_id_str;
-   
+
    VString str = work_path;
    chdir( "/" );
    str = "mount " + str + " 2> " + tmp_file_name;
@@ -246,7 +246,7 @@ void vfu_read_local_files( int a_recursive )
      con_beep();
      con_getch();
      }
-   unlink( tmp_file_name );  
+   unlink( tmp_file_name );
    }
 };
 
@@ -257,8 +257,8 @@ void vfu_read_external_files()
   /* FIXME: this is not completely correct: lines read are in most
      cases far less in length that MAX_PATH which is about 2-4K so
      in general case this will work fine... */
-  char tmp[MAX_PATH]; 
-  char tmp1[MAX_PATH]; 
+  char tmp[MAX_PATH];
+  char tmp1[MAX_PATH];
 
   if ( external_panelizer == "" ) return;
   say1( "Rescanning files...(external panelizer)" );
@@ -273,10 +273,10 @@ void vfu_read_external_files()
 
       struct stat st;
       stat( tmp1, &st );
-      
+
       say2( tmp1 );
-      
-      if ( vfu_add_file( tmp1, &st, file_is_link( tmp1 ) ) ) 
+
+      if ( vfu_add_file( tmp1, &st, file_is_link( tmp1 ) ) )
         {
         pclose(f);
         external_panelizer = ""; /* reset -- there's no reload on this */
@@ -369,7 +369,7 @@ int namenumcmp( const char* s1, const char* s2 )
   else
     {
     return pathcmp( s1, s2 );
-    }  
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -382,7 +382,7 @@ int z = 0;
 
 /* keep dirs on top */
 if ( f1->is_dir() && !f2->is_dir()) return -1;
-if (!f1->is_dir() &&  f2->is_dir()) return 1;
+if (!f1->is_dir() &&  f2->is_dir()) return  1;
 
 z = 0;
 if (opt.sort_order == 'U') return 0;
@@ -412,17 +412,17 @@ switch (opt.sort_order)
  case 'A' : z = strcmp( f1->mode_str(), f2->mode_str() );
             break;
 
- case 'O' : z =   (f2->st()->st_uid  > f1->st()->st_uid)  - 
+ case 'O' : z =   (f2->st()->st_uid  > f1->st()->st_uid)  -
                   (f2->st()->st_uid  < f1->st()->st_uid);
             if ( z == 0 )
-              z = (f2->st()->st_gid  > f1->st()->st_gid)  - 
+              z = (f2->st()->st_gid  > f1->st()->st_gid)  -
                   (f2->st()->st_gid  < f1->st()->st_gid);
             break;
 
- case 'G' : z =   (f2->st()->st_gid  > f1->st()->st_gid)  - 
+ case 'G' : z =   (f2->st()->st_gid  > f1->st()->st_gid)  -
                   (f2->st()->st_gid  < f1->st()->st_gid);
             if ( z == 0 )
-              z = (f2->st()->st_uid  > f1->st()->st_uid)  - 
+              z = (f2->st()->st_uid  > f1->st()->st_uid)  -
                   (f2->st()->st_uid  < f1->st()->st_uid);
             break;
 
@@ -541,10 +541,10 @@ void vfu_arrange_files()
       files_list[j] = tmp;
       i--;
       }
-    do_draw = 2;  
+    do_draw = 2;
     return;
     }
-  
+
   mb.undef();
   mb.push( "A Ascending");
   mb.push( "D Descending" );

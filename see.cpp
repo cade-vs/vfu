@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: see.cpp,v 1.31 2005/06/06 06:20:29 cade Exp $
+ * $Id: see.cpp,v 1.32 2006/08/05 20:15:13 cade Exp $
  *
  */
 
@@ -35,9 +35,9 @@
   };
 
   #define MAXCOLS 1024
-  
+
 /*--------------------------------------------------------------------*/
-  
+
   SeeViewer::SeeViewer( SeeViewerOptions *a_opt )
   {
     opt = a_opt;
@@ -50,7 +50,7 @@
     fname = "";
     freezed = 0;
     do_draw = 0;
-    
+
     if ( opt->auto_size )
       {
       opt->xmin = 1;
@@ -60,11 +60,11 @@
       }
     rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
     cols = opt->xmax - opt->xmin + 1;
-    
+
     //FIXME: fix bsize! +32?
     buff = new char[opt->bsize + 32]; /* +32 for tab expansion */
-    
-    help_str = 
+
+    help_str =
     "+-----------------------------------------------------------------------------+\n"
     "| SeeViewer v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
     "|                                                                             |\n"
@@ -90,20 +90,20 @@
     "| N F3 -- find next, M -- find next backwards       | g G -- grid (HEX)       |\n"
     "+-----------------------------------------------------------------------------+";
   };
-  
+
 /*--------------------------------------------------------------------*/
-  
-  SeeViewer::~SeeViewer()  
+
+  SeeViewer::~SeeViewer()
   {
     close();
     if ( buff ) delete buff;
     buff = NULL;
   };
-  
+
 /*--------------------------------------------------------------------*/
-  
+
   /* add escape key which will cause run() exit */
-  void SeeViewer::escape_on( int key )  
+  void SeeViewer::escape_on( int key )
   {
     int z = 0;
     while( z < MAX_ESCAPE_KEYS-1 )
@@ -118,7 +118,7 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   int SeeViewer::open( const char* a_fname )
   {
     if (!buff) return 1;
@@ -140,23 +140,23 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::close()  
+
+  void SeeViewer::close()
   {
     if ( f ) fclose( f );
     f = NULL;
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::status( const char* format, ... )  
+
+  void SeeViewer::status( const char* format, ... )
   {
     char buf[1024];
     va_list vlist;
     va_start( vlist, format );
     vsnprintf( buf, 1024, format, vlist );
     va_end( vlist );
-    
+
     VString str;
     str = "| ";
     str += buf;
@@ -169,10 +169,10 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  
+
+
   //FIXME: 2 versions not needed
-  void SeeViewer::filter( char *s, int size )  
+  void SeeViewer::filter( char *s, int size )
   {
     int z;
     for ( z = 0; z < size; z++ ) if ( (unsigned char)s[z] < 32 ) s[z] = '.';
@@ -180,7 +180,7 @@
     if (xlat == 2) str_tr( s, bgw_xlat_table[0], bgw_xlat_table[1] );
   };
 
-  void SeeViewer::filter( VString &s, int size )  
+  void SeeViewer::filter( VString &s, int size )
   {
     int z;
     for ( z = 0; z < size; z++ ) if ( (unsigned char)s[z] < 32 ) s[z] = '.';
@@ -189,14 +189,14 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::draw_hex()  
+
+  void SeeViewer::draw_hex()
   {
     CHKPOS;
 
     int rowsz; // row size
     int needw; // needed screen width
-    
+
     con_max_x();
     while(4)
       {
@@ -205,10 +205,10 @@
               rowsz * 3 + rowsz / 8 + 2 + // hexdump
               rowsz; // ascii
       if ( opt->hex_cols == 1 ) break;
-      if ( needw > con_max_x() ) 
+      if ( needw > con_max_x() )
         opt->hex_cols = 1;
       else
-        break;  
+        break;
       }
 
     if ( needw > con_max_x() )
@@ -216,21 +216,21 @@
       status( "HEX mode not available for this screen width" );
       return;
       }
-    
-    
+
+
     fseeko( f, fpos, SEEK_SET );
     int rs = fread( buff, 1, rowsz * rows, f );
     int x;
     int y;
-    
-    
+
+
     VString offset;
     VString hexdump;
     VString ascii;
     char t[256];
     for( y = 0; y < rows; y++ )
       {
-      sprintf( t, opt->dec_pos ? "%10ld":"%010lX", fpos + rowsz * y );
+      sprintf( t, opt->dec_pos ? "%10"FMT_OFF_T"d":"%010"FMT_OFF_T"X", fpos + rowsz * y );
       offset = t;
       ascii = "";
       hexdump = "";
@@ -246,7 +246,7 @@
           sprintf( t, "%02X ", c );
           hexdump += t;
           str_add_ch( ascii, c < 32 ? '.' : c );
-          if ( (x + 1) % 8 == 0 && x > 0 && x < rowsz - 1 ) 
+          if ( (x + 1) % 8 == 0 && x > 0 && x < rowsz - 1 )
             hexdump += "- ";
           }
         }
@@ -255,36 +255,36 @@
 
       str_pad( hexdump, -( rowsz * 3 + (opt->hex_cols - 1) * 2 ) );
       str_pad( ascii, -rowsz );
-      
+
       VString line = offset + "| " + hexdump + "|" + ascii;
-      
+
       if ( hexdump[0] == '~' ) line = "~";
-      
+
       str_pad( line, -cols );
       con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
       }
-    
-    status( "%3.0f%% | Pos. %4ld of %4ld | Alt+H Help | %s", 
-            (100.0*fpos)/(fsize>0?fsize:1), fpos, fsize, fname.data() );
+
+    status( "%3.0f%% | Pos. %4"FMT_OFF_T"d of %4"FMT_OFF_T"d | Alt+H Help | %s",
+            fpos_percent(), fpos, fsize, fname.data() );
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::draw_txt()  
+
+  void SeeViewer::draw_txt()
   {
     CHKPOS;
-    
+
     if ( line == -1 ) last_line = -1;
-    
+
     off_t cpos = fpos;
     int z = 0;
     int y = 0;
     VString str;
-    
+
     if( ftello(f) != cpos ) fseeko( f, cpos, SEEK_SET ); // FIXME: ?
-    
+
     for( y = 0; y < rows; y++ )
-      {              
+      {
       if ( cpos >= fsize )
         {
         str = "~";
@@ -292,16 +292,16 @@
         con_out( 1, y+1, str, (opt->grid && y%2==0) ? opt->ch : opt->cn );
         continue;
         }
-  
+
       z = read_text( cpos );
       while ( z > 0 && ( buff[z-1] == '\r' || buff[z-1] == '\n' ) ) z--;
       buff[z] = 0;
       filter( buff, z );
-      
+
       int show_lmark = 0;
       int show_rmark = 0;
       int show_eol   = -1;
-      
+
       if ( col > 0 )
         {
         if (col >= z)
@@ -327,30 +327,30 @@
         }
       str_pad( buff, -cols );
       con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
-      
+
       if ( re.ok() && re.m( buff ) )
         con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
-      
+
       if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
       if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
       if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
       }
-    status( "%3.0f%% | Pos. %4d | Line %4d of %4d%c|%4d+ | Alt+H Help | %s", 
-            (100.0*fpos)/(fsize>0?fsize:1), fpos, line, last_line, 
+    status( "%3.0f%% | Pos. %4"FMT_OFF_T"d | Line %4"FMT_OFF_T"d of %4"FMT_OFF_T"d%c|%4d+ | Alt+H Help | %s",
+            fpos_percent(), fpos, line, last_line,
             end_reached?' ':'?', col+1, fname.data() );
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::draw() 
-  { 
-    (opt->hex_mode) ? draw_hex() : draw_txt(); 
+
+  void SeeViewer::draw()
+  {
+    (opt->hex_mode) ? draw_hex() : draw_txt();
     if ( xlat == 1 ) con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
     if ( xlat == 2 ) con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
   }
 
 /*--------------------------------------------------------------------*/
-  
+
   void SeeViewer::up_hex()
   {
     CHKPOS;
@@ -358,13 +358,13 @@
     if ( fpos < 0 ) fpos = 0;
     line = -1; // hex moving invalidates text line position
   }
-      
+
   void SeeViewer::up_txt()
   {
     CHKPOS;
     off_t cpos = fpos;
     if ( cpos == 0 ) return;
-  
+
     int i = opt->wrap;
     if ( cpos - i < 0 ) i = cpos;
     cpos -= i;
@@ -385,16 +385,16 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::down_hex()  
+
+  void SeeViewer::down_hex()
   {
     CHKPOS;
     fpos += opt->hex_cols * 8;
     if ( fpos > fsize ) fpos = fsize;
     line = -1; // hex moving invalidates text line position
   }
-  
-  void SeeViewer::down_txt()  
+
+  void SeeViewer::down_txt()
   {
     CHKPOS;
     int z = 0;
@@ -413,8 +413,8 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::home()  
+
+  void SeeViewer::home()
   {
     fpos = 0;
     line = 1;
@@ -427,7 +427,7 @@
     fpos = fsize;
     end2();
   }
-  
+
   void SeeViewer::end_txt()
   {
     if (end_reached)
@@ -440,14 +440,14 @@
       if ( con_kbhit() && con_getch() == 27 ) return;
       down();
       if (line % 768 == 0)
-        status( " Going down.... line: %6d (%3.0f%%) press ESCAPE to cancel ", line, (100.0*fpos)/(fsize?fsize:1) );
+        status( " Going down.... line: %6"FMT_OFF_T"d (%3.0f%%) press ESCAPE to cancel ", line, fpos_percent() );
       }
     end2();
   };
 
 /*--------------------------------------------------------------------*/
 
-  void SeeViewer::end2()  
+  void SeeViewer::end2()
   {
     int z = 0;
     if (!end_reached)
@@ -457,22 +457,22 @@
     fpos = fsize;
     for ( z = 0; z < 2 * rows / 3; z++ ) up();
   };
-  
+
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::go_to()  
+
+  void SeeViewer::go_to()
   {
   VString sss;
   if(opt->hex_mode)
     {
-    sprintf( sss, "x%X", fpos );
+    sprintf( sss, "x%"FMT_OFF_T"X", fpos );
     status( " Goto pos: " );
     if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
       {
       draw();
       return;
       }
-    int new_pos = fpos;
+    off_t new_pos = fpos;
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
@@ -492,14 +492,14 @@
       status( "Cannot determine line number..." );
       return;
       }
-    sprintf( sss, "%d", line);
+    sprintf( sss, "%"FMT_OFF_T"d", line);
     status( " Goto line: " );
     if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
       {
       draw();
       return;
       }
-    int new_line = line;
+    off_t new_line = line;
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
@@ -522,7 +522,7 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         down();
         if ( line % 768 == 0)
-          status( " Going down.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
+          status( " Going down.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
         }
     else
       while( new_line != line && fpos >  0 )
@@ -530,20 +530,20 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         up();
         if ( line % 768 == 0)
-          status( " Going up.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/fsize );
+          status( " Going up.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
         }
     draw();
     }
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   int SeeViewer::find_next_hex( int rev )
   {
   //FIXME: implement!!!
   return 0;
   }
-  
+
   int SeeViewer::find_next_txt( int rev )
   {
   if ( ! re.ok() )
@@ -562,24 +562,24 @@
     {
     rev ? up() : down();
     if ( line % 768 == 0)
-      status( "Searching.... line: %6d -- %3.0f%% (press ESCAPE to cancel) ", line, (100.0*fpos)/(fsize?fsize:1) );
-    if ( re.m( buff ) ) 
+      status( "Searching.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
+    if ( re.m( buff ) )
       {
-      long spos = re.sub_sp( 0 );
+      off_t spos = re.sub_sp( 0 );
       if ( ! rev ) up();
       draw();
       spos += fpos;
-      status( "Pattern `%s' found at pos: %d (0x%X)", opt->last_search, spos, spos );
+      status( "Pattern `%s' found at pos: %"FMT_OFF_T"d (0x%"FMT_OFF_T"X)", opt->last_search, spos, spos );
       break;
       }
-    if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) ) 
+    if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) )
       {
       fpos = opos;
       fseeko( f, opos, SEEK_SET );
       status( "Pattern `%s' not found...", opt->last_search );
       break;
       }
-    if ( con_kbhit() && con_getch() == 27 ) 
+    if ( con_kbhit() && con_getch() == 27 )
       {
       fpos = opos;
       fseeko( f, opos, SEEK_SET );
@@ -591,8 +591,8 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  int SeeViewer::find( const char* opts )  
+
+  int SeeViewer::find( const char* opts )
   {
   VString sss;
   status( "Find %s: ", opts );
@@ -609,10 +609,10 @@
   re.comp( opt->last_search, opt->last_opt );
   return find_next();
   };
-  
+
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::hex_edit()  
+
+  void SeeViewer::hex_edit()
   {
   if (!opt->hex_mode)
     {
@@ -687,12 +687,12 @@
                        break;
       case KEY_DOWN  : if ( epos + rowsz <  editbs ) epos += rowsz; break;
       case KEY_UP    : if ( epos - rowsz >= 0      ) epos -= rowsz; break;
-      
+
       case KEY_PPAGE : epos = epos % rowsz; break;
-      case KEY_NPAGE : epos = editbs - editbs % rowsz + epos % rowsz; 
+      case KEY_NPAGE : epos = editbs - editbs % rowsz + epos % rowsz;
                        if (epos >= editbs) epos = editbs - 1;
                        break;
-      
+
       case KEY_HOME  : epos = epos - epos % rowsz; bytepos = 0; break;
       case KEY_END   : epos = epos + (rowsz - epos%rowsz - 1);
                        if (epos >= editbs) epos = editbs - 1;
@@ -740,17 +740,17 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
-  void SeeViewer::help()  
+
+  void SeeViewer::help()
   {
   con_out( 1, 1, help_str );
   do_draw = 1;
   con_getch();
   };
-  
+
 /*--------------------------------------------------------------------*/
-  
-  int SeeViewer::run()  
+
+  int SeeViewer::run()
   {
   CHKPOS;
   if (!f) return 27;
@@ -770,7 +770,7 @@
     int z = 0;
     while( escape_keys[z] )
       if ( escape_keys[z++] == ch )
-        return ch;      
+        return ch;
     switch(ch)
       {
       case KEY_F1     :
@@ -839,15 +839,15 @@
                           };
                         break;
       case 9          : opt->hex_mode = !opt->hex_mode;
-                        if (!opt->hex_mode) 
+                        if (!opt->hex_mode)
                           {
                           fpos++;
                           if ( fpos > fsize ) fpos = fsize;
                           up();
                           }
-                        draw(); 
+                        draw();
                         break;
-      case 'g'        : 
+      case 'g'        :
       case 'G'        : opt->grid = !opt->grid; draw(); break;
       case 'W'        :
       case 'w'        : if ( opt->hex_mode )
@@ -862,10 +862,10 @@
                           status( (opt->wrap == cols)? " Wrap ON" : " Wrap OFF" );
                           }
                         break;
-      
+
       case 'l'        : xlat = (xlat == 1) ? 0 : 1; draw(); break;
       case 'L'        : xlat = (xlat == 2) ? 0 : 2; draw(); break;
-      
+
       case 'f'        :
       case 'F'        : find( "i" ); break;
       case 's'        :
@@ -881,32 +881,32 @@
       case 'M'        : find_next( 1 ); break;
       case '+'        : go_to(); break;
       case 'd'        :
-      case 'D'        : if (opt->hex_mode) 
-                          { 
-                          opt->dec_pos = !opt->dec_pos; 
-                          draw(); 
+      case 'D'        : if (opt->hex_mode)
+                          {
+                          opt->dec_pos = !opt->dec_pos;
+                          draw();
                           }
                         break;
       case 'o'        :
-      case 'O'        : if (!opt->hex_mode) 
-                          { 
-                          opt->show_eol = !opt->show_eol; 
-                          draw(); 
-                          } 
+      case 'O'        : if (!opt->hex_mode)
+                          {
+                          opt->show_eol = !opt->show_eol;
+                          draw();
+                          }
                         break;
       case 'a'        :
       case 'A'        : if (!opt->hex_mode)
                           {
-                          opt->handle_bs = !opt->handle_bs; 
-                          draw(); 
+                          opt->handle_bs = !opt->handle_bs;
+                          draw();
                           status( opt->handle_bs? " BackSpace handling ON" : " BackSpace handling OFF" );
                           }
                         break;
       case 't'        :
       case 'T'        : if (!opt->hex_mode)
                           {
-                          opt->handle_tab = !opt->handle_tab; 
-                          draw(); 
+                          opt->handle_tab = !opt->handle_tab;
+                          draw();
                           status( opt->handle_tab? " TAB expansion ON" : " TAB expansion OFF" );
                           }
                         break;
@@ -915,7 +915,7 @@
                           {
                           int z = 0;
                           VString ruler;
-                          while ( str_len(ruler) < opt->xmax ) 
+                          while ( str_len(ruler) < opt->xmax )
                             {
                             ruler += "|0-------";
                             z++;
@@ -983,10 +983,10 @@
   fname = "";
   col = 0;
   colpage = 0;
-  
+
   mod = 0;
   freezed = 0;
-  
+
   if ( opt->auto_size )
     {
     opt->xmin = 1;
@@ -1000,8 +1000,8 @@
   sv.set_min_max( 0, va.count() - 1 );
   sv.set_pagesize( rows );
   sv.go( 0 );
-  
-  help_str = 
+
+  help_str =
   "+-----------------------------------------------------------------------------+\n"
   "| SeeEditor v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
   "| ^ is Ctrl+key, @ is Alt+key, # is Shift+key                                 |\n"
@@ -1029,7 +1029,7 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   SeeEditor::~SeeEditor()
   {
   };
@@ -1052,7 +1052,7 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   int SeeEditor::open( const char* a_fname )
   {
   if ( va.count() || str_len( fname ) )
@@ -1097,7 +1097,7 @@
     va_start( vlist, format );
     vsnprintf( buf, 1024, format, vlist );
     va_end( vlist );
-    
+
     VString str;
     str = "| ";
     str += buf;
@@ -1154,18 +1154,18 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   void SeeEditor::set_cursor()
   {
   con_xy( SEEDCOL, SEEDROW );
   };
-                 
+
 /*--------------------------------------------------------------------*/
 
   void SeeEditor::draw_line( int n )
   {
   if ( freezed ) return;
-  
+
   ASSERT( sv.max() == va.count() - 1 );
   if ( n > sv.max() )
     {
@@ -1191,16 +1191,16 @@
   void SeeEditor::draw( int from )
   {
   if ( freezed ) return;
-  
+
   int z;
   con_chide();
   if ( from > -1 ) /* from == -1 to update status line only */
     for( z = from; z < rows; z++ )
       draw_line( sv.page() + z );
   con_cshow();
-  status( "%s | %3.0f%% | Line:%5d of%5d |%4d+ %s | Alt+H Help | %s", 
-          mod?"MOD!":"----", 
-          (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1, 
+  status( "%s | %3.0f%% | Line:%5d of%5d |%4d+ %s | Alt+H Help | %s",
+          mod?"MOD!":"----",
+          (100.0*sv.pos())/(sv.max()?sv.max():1), sv.pos()+1, sv.max()+1, col+1,
           opt->insert?"INS":"ovr", fname.data() );
   set_cursor();
   };
@@ -1217,7 +1217,7 @@
     }
   else
     {
-    status( "File saved ok" );  
+    status( "File saved ok" );
     mod = 0;
     return 1;
     }
@@ -1232,11 +1232,11 @@
     {
     con_beep();
     status( "File is modified! Press: <S> Save, <Q> Quit, <ESC> Cancel" );
-    
+
     con_chide();
     int k = con_getch();
     con_cshow();
-    
+
     if ( k == 'S' || k == 's' )
       {
       if(!save())
@@ -1252,7 +1252,7 @@
       mod = 0; /* considered unmodified at that point */
       return 0; /* okay */
       }
-    if ( k == 27 ) 
+    if ( k == 27 )
       {
       return 1; /* denied */
       }
@@ -1312,7 +1312,7 @@
   VString map;
   expand_tabs( str, map );
   col = str_len( str );
-  
+
   if (SEEDCOL > cols)
     {
     colpage = col - cols/2;
@@ -1441,7 +1441,7 @@
   str_ins_ch( str, c, ch );
   va.set( sv.pos(), str );
   right();
-  
+
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
     {
     colpage = col - cols/2;
@@ -1453,17 +1453,17 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   void SeeEditor::insert_file( const char* fn )
   {
   mod = va.count();
-  
+
   /* FIXME: this should insert file in current position! */
   va.fload( fname );
   remove_trails();
   sv.set_min_max( 0, va.count() - 1 );
   };
-  
+
 /*--------------------------------------------------------------------*/
 
   void SeeEditor::remove_line( int n )
@@ -1478,12 +1478,12 @@
     va.set( n, "" );
     }
   else
-    {  
+    {
     va.del( n );
     sv.set_min_max( 0, va.count() - 1 );
     sv.go( sv.pos() );
-    }  
-  draw();  
+    }
+  draw();
   };
 
 /*--------------------------------------------------------------------*/
@@ -1498,7 +1498,7 @@
   };
 
 /*--------------------------------------------------------------------*/
-  
+
   void SeeEditor::remove_trails( int n ) /* remove trailing spaces/tabs */
   {
   if ( n != -1 )
@@ -1509,7 +1509,7 @@
     str_cut_right( str, " \t\n\r" );
     va.set( n, str );
     }
-  else  
+  else
   for ( int z = 0; z < va.count(); z++ )
     {
     VString str = va[z];
@@ -1517,7 +1517,7 @@
     va.set( z, str );
     }
   };
-  
+
 /*--------------------------------------------------------------------*/
 
   void SeeEditor::insert_pipe_cmd()
@@ -1558,7 +1558,7 @@
     status( "No pattern" );
     return 0;
     }
-  
+
   int z;
   int pos = -1;
   for ( z = sv.pos() + 1; z <= sv.max(); z++ )
@@ -1566,16 +1566,16 @@
     VString str = va[z];
     if ( opt->no_case )
       str_up( str );
-    if ( opt->last_search[0] == '~' )  
+    if ( opt->last_search[0] == '~' )
       pos = str_find_regexp( str, opt->last_search + 1 );
     else if ( str[0] == '\\' )
       pos = str_find( str, opt->last_search + 1 );
-    else  
+    else
       pos = str_find( str, opt->last_search );
-    if ( pos != -1 )  
+    if ( pos != -1 )
       break;
     }
-  if ( pos != -1 )  
+  if ( pos != -1 )
     {
     sv.go( z );
     col = pos;
@@ -1591,7 +1591,7 @@
     {
     status( "Pattern not found" );
     return 0;
-    }  
+    }
   };
 
 /*--------------------------------------------------------------------*/
@@ -1718,7 +1718,7 @@
       case KEY_F3        : find_next(); break;
 
       case KEY_DEL       : kdel(); break;
-      
+
       #ifndef _TARGET_GO32_
       case KEY_BACKSPACE :
       #endif
@@ -1726,7 +1726,7 @@
 
       case 10            :
       case 13            : kenter(); break;
-      
+
       case KEY_CTRL_L    : if ( opt->auto_size )
                               {
                               opt->xmin = 1;
@@ -1737,8 +1737,8 @@
                            rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
                            cols = opt->xmax - opt->xmin + 1;
                            sv.set_pagesize( rows );
-                           con_cs(); 
-                           draw(); 
+                           con_cs();
+                           draw();
                            break;
       case KEY_CTRL_W    : insert_pipe_cmd(); break;
 
@@ -1767,7 +1767,7 @@
         draw();
         set_cursor();
         do_draw = 0;
-        } 
+        }
       else if ( ox != SEEDCOL || oy != SEEDROW )
         {
         draw( -1 ); /* just update status line */
@@ -1778,4 +1778,5 @@
   };
 
 /***eof****************************************************************/
+
 
