@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.h,v 1.17 2005/08/28 14:54:15 cade Exp $
+ * $Id: vfu.h,v 1.18 2006/09/01 21:34:26 cade Exp $
  *
  */
 
@@ -346,6 +346,5 @@ void vfu_read_files_menu();
 void vfu_clipboard( int act );
 
 void vfu_jump_to_mountpoint( int all );
-
 
 #endif//_VFU_H_
