@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.50 2005/10/26 00:16:32 cade Exp $
+ * $Id: vfu.cpp,v 1.51 2007/01/31 22:34:56 cade Exp $
  *
  */
 
@@ -34,7 +34,7 @@
 
   VString external_panelizer;
   VArray list_panelizer;
-  
+
   TF*       files_list[MAX_FILES];
   /* file list statistics */
   int       files_count;
@@ -46,7 +46,7 @@
   fsize_t   fs_total;
   fsize_t   fs_block_size;
   /* index in the files list */
-  ScrollPos file_list_index; 
+  ScrollPos file_list_index;
 
   /* some world wide variables */
   VString startup_path;
@@ -79,7 +79,7 @@
   VArray panelizers;
 
   VArray mb; /* menu boxes */
-  
+
   VArray trim_tree;
 
   VArray view_profiles;
@@ -94,7 +94,7 @@
   VString shell_options;
   VString shell_diff;
   VString shell_prog;
-  
+
   VString user_id_str;
   VString group_id_str;
   VString host_name_str;
@@ -106,8 +106,8 @@
   VString filename_size_cache;
   VString filename_ffr; /* file find results */
 
-  char TF::_full_name[MAX_PATH]; 
-  
+  char TF::_full_name[MAX_PATH];
+
 /*######################################################################*/
 
   int do_draw;
@@ -134,13 +134,13 @@ void say( int line, int attr, const char* format, ... )
 };
 
 void say1(const char *a_str, int attr )
-{ 
-  say( 1, attr, "%s", a_str ); 
+{
+  say( 1, attr, "%s", a_str );
 }
 
 void say2(const char *a_str, int attr )
 {
-  say( 2, attr, "%s", a_str ); 
+  say( 2, attr, "%s", a_str );
 }
 
 void say2errno()
@@ -160,7 +160,7 @@ void saycenter( int line, int attr, const char *a_str )
     str_mul( str, sl );
     str = str + a_str;
     }
-  say( line, attr, "%s", str.data() );  
+  say( line, attr, "%s", str.data() );
 };
 
 void say1center(const char *a_str, int attr )
@@ -220,7 +220,7 @@ TF::~TF()
 const char* TF::full_name( int fix )
 {
   ASSERT( _name );
-  
+
   if ( _name[0] == '/' )
     {
     strcpy( _full_name, _name );
@@ -246,17 +246,17 @@ void TF::set_name( const char* a_new_name )
   _name = new char[ strlen(a_new_name) + 1 ];
   ASSERT( _name ); /* this is run-time err but for now will be asserted */
   strcpy( _name, a_new_name );
-  
+
   int last_slash = str_rfind( _name, '/' );
   if ( last_slash == -1 )
     _name_ext = _name;
   else
     _name_ext = _name + last_slash + 1;
-    
+
   int last_dot = str_rfind( _name, '.' );
   if ( last_dot == -1 || last_dot == 0 ) /* no dot or dot-file (hidden) */
     _ext = _name + strlen( _name );
-  else  
+  else
     _ext = _name + last_dot;
 
   _color = get_item_color( this ); /* this is duplicated here and in update_stat() */
@@ -312,7 +312,7 @@ void TF::refresh_view()
       strcpy( stmode, _mode_str );
       strcat( stmode, " " ); /* field separator */
       }
-    
+
     if (opt.f_owner)
       {
       struct passwd* _pwd = getpwuid(_st.st_uid);
@@ -320,7 +320,7 @@ void TF::refresh_view()
         sprintf( stowner, "%8s", _pwd->pw_name );
       else
         sprintf( stowner, "%8d", _st.st_uid);
-      stowner[8] = 0; /* safe */  
+      stowner[8] = 0; /* safe */
       strcat( stowner, " " ); /* field separator */
       }
 
@@ -360,7 +360,7 @@ void TF::refresh_view()
     }
 
   VString name_view = _name;
-  
+
   #ifdef _TARGET_UNIX_
   /* links are supported only under UNIX */
   if ( _is_link )
@@ -378,13 +378,13 @@ void TF::refresh_view()
   if ( str_len( view ) > x )
     str_sleft( view, x );
   else
-    str_pad( view, - x );  
+    str_pad( view, - x );
 
   if ( _view ) delete [] _view;
   _view = new char[ con_max_x() + 1 ]; /* +1 for the zero :) */
 
   strcpy( _view, view );
-  
+
   ASSERT( _view );
   ASSERT( strlen( _view ) == (size_t)con_max_x() );
 }
@@ -399,21 +399,21 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
   if ( a_new_stat )
     memcpy( &_st, a_new_stat, sizeof(_st) );
   else
-    stat( _name, &_st );  
+    stat( _name, &_st );
 
   _is_link = (a_is_link == -1) ? file_is_link( _name ) : a_is_link;
   _is_dir = S_ISDIR(_st.st_mode );
   strcpy( _type_str, file_type_str( _st.st_mode, _is_link ) );
-  
+
   file_get_mode_str( _st.st_mode, _mode_str );
   if ( _is_dir )
     _size = -1; /* FIXME: some auto thing here? */
   else
     _size = file_st_size( &_st );
   _color = get_item_color( this );
-  
+
   drop_view();
-};                      
+};
 
 /*######################################################################*/
 
@@ -499,27 +499,27 @@ void vfu_init()
   char t[MAX_PATH];
 
   if( expand_path( "." ) == "" ) chdir( "/" );
-  
+
   work_mode = WM_NORMAL;
   getcwd( t, MAX_PATH-1 );
   str_fix_path( t );
   work_path = t;
-  
+
   archive_name = "";
   archive_path = ""; /* NOTE: archives' root directory is `' but not `/'! */
-  
+
   external_panelizer = "";
-  
+
   memset( &files_list, 0, sizeof(files_list) );
   files_count = 0;
   files_size = 0;
   sel_count = 0;
   sel_size = 0;
-  
+
   fs_free = 0;
   fs_total = 0;
   fs_block_size = 0;
-  
+
   file_list_index.wrap = 0;
   /* file_list_index.* are setup by vfu_read_files() */
 
@@ -535,19 +535,19 @@ void vfu_init()
   struct passwd* _pwd = getpwuid(_uid);
   struct group*  _grp = getgrgid(_gid);
   if ( _pwd )
-    user_id_str  = _pwd->pw_name; 
-  else  
+    user_id_str  = _pwd->pw_name;
+  else
     user_id_str = (int)_uid;
-  if ( _grp )  
+  if ( _grp )
     group_id_str = _grp->gr_name;
   else
     group_id_str = (int)_gid;
   gethostname( t, MAX_PATH-1 );
   host_name_str = t;
 #endif
- 
+
   startup_path = work_path;
-  
+
   tmp_path = "";
   if ( getenv( "TEMP" ) ) tmp_path = getenv( "TEMP" );
   if ( getenv( "TMP"  ) ) tmp_path = getenv( "TMP" );
@@ -561,7 +561,7 @@ void vfu_init()
   }
   else
     str_fix_path( tmp_path );
-  
+
   if ( getenv( "HOME" ) )
     home_path = getenv( "HOME" );
   else
@@ -581,15 +581,15 @@ void vfu_init()
   #else
   shell_diff = "/usr/bin/diff";
   #endif
-  
-  /* 
-     FIXME: this should something relevant to the home_path 
+
+  /*
+     FIXME: this should something relevant to the home_path
      from above if $HOME does not exist(?) well still can
    accept /tmp/ as it is default now
   */
-  
+
   rc_path = get_rc_directory( "vfu" );
-  
+
   /* setup config files locations */
   filename_opt = rc_path;
   filename_conf = rc_path;
@@ -607,37 +607,37 @@ void vfu_init()
 
   if ( access( filename_conf, R_OK ) != 0 )
     { /* cannot find local/user conf file, try copy one */
-    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 ) 
+    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 )
       {
       VArray va;
       va.fload( FILENAME_CONF_GLOBAL0 );
       va.fsave( filename_conf );
       }
-    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 )
       {
       VArray va;
       va.fload( FILENAME_CONF_GLOBAL1 );
       va.fsave( filename_conf );
       }
-    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 )
       {
       VArray va;
       va.fload( FILENAME_CONF_GLOBAL2 );
       va.fsave( filename_conf );
       }
     }
-  
+
   if ( access( filename_conf, R_OK ) != 0 )
     { /* cannot find local/user conf file, try globals */
-    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 ) 
+    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 )
       filename_conf = FILENAME_CONF_GLOBAL0;
-    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 )
       filename_conf = FILENAME_CONF_GLOBAL1;
-    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) 
+    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 )
       filename_conf = FILENAME_CONF_GLOBAL2;
-    /* if we get here then no readable conf file found */   
+    /* if we get here then no readable conf file found */
     }
-  
+
   /* shell setup */
   shell_prog = "";
   if (getenv("SHELL")) shell_prog = getenv("SHELL");
@@ -649,7 +649,7 @@ void vfu_init()
   /* this will load defaults first then load vfu.opt and at the
      end will load vfu.conf which will overwrite all if need to */
   vfu_settings_load();
- 
+
   file_list_index.wrap = 0; /* just to be safe :) */
 
   files_mask = "*";
@@ -657,12 +657,12 @@ void vfu_init()
 
   view_profiles.push( "123456" );
   view_profile = "123456";
-  
+
   /* setup menu colors */
   menu_box_info.ti = 95; /* title */
   menu_box_info.cn = 23; /* normal */
   menu_box_info.ch = 47; /* selected */
-  
+
   //////////////////////////////////////////
   // setup signals to VFUdone
   // this is a patch but at least will reset terminal and save settings
@@ -681,7 +681,7 @@ void vfu_init()
 
   srand( time( NULL ) );
   do_draw = 1;
- 
+
   vfu_read_files();
 }
 
@@ -705,7 +705,7 @@ void vfu_exit_path( const char *a_path )
     str += "vfu.exit.";
     str += user_id_str;
     }
-  
+
   FILE *f = fopen( str, "wt" );
   file_set_mode_str( str, "-rw-------" );
   if (!f) return;
@@ -715,7 +715,7 @@ void vfu_exit_path( const char *a_path )
 }
 
 /*--------------------------------------------------------------------------*/
-/* return 0 for exit-confirmed! */ 
+/* return 0 for exit-confirmed! */
 int vfu_exit( const char* a_path )
 {
   int z;
@@ -749,14 +749,14 @@ void vfu_run()
   int ch = 0;
   while (4)
     {
-    if (do_draw) 
+    if (do_draw)
       {
       if ( do_draw > 2 ) vfu_reset_screen();
       if ( do_draw > 1 ) do_draw_status = 1;
-      vfu_redraw(); 
-      do_draw = 0; 
+      vfu_redraw();
+      do_draw = 0;
       }
-    if (do_draw_status)  
+    if (do_draw_status)
       {
       vfu_redraw_status();
       do_draw_status = 0;
@@ -769,18 +769,18 @@ void vfu_run()
       const char* fn = files_list[FLI]->full_name();
       file_save( "/tmp/vfu-quick-view", (void*)fn, strlen( fn ) );
       }
-    */  
-    show_pos( FLI+1, files_count ); /* FIXME: should this be in vfu_redraw()? */  
-    
+    */
+    show_pos( FLI+1, files_count ); /* FIXME: should this be in vfu_redraw()? */
+
     ch = con_getch();
     if( ch == 0 ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
-    say1( "" ); 
+    say1( "" );
     if ( user_id_str == "root" )
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
     else
       say2( "" );
-    
+
     if ( work_mode == WM_NORMAL || work_mode == WM_ARCHIVE ) switch (ch)
       { /* actually this is ANY work_mode (since there are two modes only) */
       case '1'       :
@@ -792,47 +792,47 @@ void vfu_run()
       case '7'       :
       case '8'       :
       case '0'       : vfu_toggle_view_fields( ch ); break;
-      
-      case '.'       : vfu_toggle_view_fields( ch ); 
+
+      case '.'       : vfu_toggle_view_fields( ch );
                        vfu_rescan_files( 0 ); break;
-      
+
       case 's'       : vfu_inc_search(); break;
 
       case KEY_CTRL_L: do_draw = 3; break;
-      
+
       case 'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
-  
+
       case KEY_ALT_X :
       case 'x'       : if( vfu_exit( startup_path ) == 0 ) return; break;
-  
+
       case 27        : if( vfu_exit( NULL ) == 0 ) return; break;
-  
+
       case KEY_UP    : vfu_nav_up(); break;
       case KEY_DOWN  : vfu_nav_down(); break;
       case KEY_PPAGE : vfu_nav_ppage(); break;
       case KEY_NPAGE : vfu_nav_npage(); break;
-      
+
       case KEY_CTRL_A    :
       case KEY_HOME  : vfu_nav_home(); break;
       case KEY_CTRL_E    :
       case KEY_END   : vfu_nav_end(); break;
-  
+
       case 'h' : vfu_help(); break;
-  
+
       case 'f'        : vfu_change_file_mask( NULL ); break;
       case KEY_CTRL_F : vfu_change_file_mask( "*" ); break;
-  
+
       case KEY_CTRL_D : tree_view(); break;
       case KEY_ALT_R  : vfu_read_files_menu(); break;
-  
+
       /* this will be in alt+r menu
       case 'R' : con_cs(); vfu_refresh_all_views(); do_draw = 1; break;
       */
       case KEY_CTRL_R : vfu_rescan_files( 1 ); break;
       case 'r'        : vfu_rescan_files( 0 ); break;
-  
+
       case ' ' : vfu_nav_select(); break;
-  
+
   #ifdef _TARGET_UNIX_
       case KEY_BACKSPACE :
   #endif
@@ -842,7 +842,7 @@ void vfu_run()
       case 13  :
       case '+' :
       case '=' : vfu_action_plus( ch ); break;
-  
+
       case KEY_LEFT  : if (opt.lynx_navigation) vfu_action_minus(); break;
       case KEY_RIGHT : if (opt.lynx_navigation)
                          vfu_action_plus( '+' );
@@ -850,50 +850,50 @@ void vfu_run()
                          if ( work_mode == WM_NORMAL )
                            vfu_rename_file_in_place();
                        break;
-  
+
       case 'd' : vfu_chdir( NULL ); break;
       case KEY_ALT_D : vfu_chdir_history(); break;
-  
+
       case KEY_ALT_EQ :
-      case '>' : opt.long_name_view = !opt.long_name_view; 
+      case '>' : opt.long_name_view = !opt.long_name_view;
                  vfu_drop_all_views();
-                 do_draw = 1; 
+                 do_draw = 1;
                  break;
-  
+
       case 'a' : vfu_arrange_files(); break;
-  
+
       case 'g' : vfu_global_select(); break;
-  
+
       case 'o' : vfu_options(); break;
-  
+
       case 'v' : vfu_edit_conf_file(); break;
-  
+
       case '!' :
-      case '?' : con_cs(); 
-                 vfu_shell( shell_prog, 0 ); 
-                 do_draw = 1; 
+      case '?' : con_cs();
+                 vfu_shell( shell_prog, 0 );
+                 do_draw = 1;
                  break;
 
       case 'u'        : vfu_user_menu(); break;
 
-  
+
       /* not documented unless here :) */
-      case KEY_CTRL_T  : 
+      case KEY_CTRL_T  :
         {
         char s[128];
-        say1( "Timing screen draws (x1000)..." ); 
+        say1( "Timing screen draws (x1000)..." );
         clock_t t = clock();
-        for(int z = 0; z < 1000; z++) vfu_redraw(); 
+        for(int z = 0; z < 1000; z++) vfu_redraw();
         t = clock() - t;
-        sprintf(s,"Draw speed: %f dps.",(100.0/((double)t/CLOCKS_PER_SEC))); 
+        sprintf(s,"Draw speed: %f dps.",(100.0/((double)t/CLOCKS_PER_SEC)));
         say1(s);
-        break; 
+        break;
         }
-  
-      case '*' : FGO( rand() % files_count ); 
-                 do_draw = 1; 
+
+      case '*' : FGO( rand() % files_count );
+                 do_draw = 1;
                  break;
-  
+
       case 'z'        : vfu_directories_sizes(  0  ); break;
       case KEY_ALT_Z  : vfu_directories_sizes( 'A' ); break;
       case KEY_CTRL_Z : vfu_directories_sizes( 'Z' ); break;
@@ -913,38 +913,38 @@ void vfu_run()
                          if ( files_count > 0 )
                            vfu_browse( files_list[FLI]->name(), ch == KEY_ALT_B );
                          else
-                           say1( "No files" );  
+                           say1( "No files" );
                          }
                        break;
-  
+
       case 'n' : vfu_file_find( 0 ); break;
       case KEY_ALT_N  : vfu_file_find( 1 ); break;
-  
+
       case '~' : vfu_chdir( home_path ); break;
-  
+
       case '/' : vfu_command(); break;
-  
-      case 'i' : if ( files_count > 0 ) 
-                   vfu_edit( files_list[FLI]->name() ); 
+
+      case 'i' : if ( files_count > 0 )
+                   vfu_edit( files_list[FLI]->name() );
                  else
                    say1( "No files");
                  break;
-  
+
       case 'm'        : vfu_copy_files(sel_count == 0, CM_MOVE); break;
       case KEY_ALT_M  : vfu_copy_files(1, CM_MOVE); break;
-  
+
       case 'c'        : vfu_copy_files(sel_count == 0, CM_COPY); break;
       case KEY_ALT_C  : vfu_copy_files(1, CM_COPY); break;
-  
+
       case 'l'        : vfu_copy_files(sel_count == 0, CM_LINK); break;
       case KEY_ALT_L  : vfu_copy_files(1, CM_LINK); break;
-  
+
       case 'e'        : vfu_erase_files(sel_count == 0); break;
       case KEY_ALT_E  : vfu_erase_files(1); break;
-  
+
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
       case KEY_ALT_J  : vfu_jump_to_mountpoint( 1 ); break;
-  
+
       case KEY_ALT_0  : bookmark_goto( 0 ); break;
       case KEY_ALT_1  : bookmark_goto( 1 ); break;
       case KEY_ALT_2  : bookmark_goto( 2 ); break;
@@ -956,18 +956,18 @@ void vfu_run()
       case KEY_ALT_8  : bookmark_goto( 8 ); break;
       case KEY_ALT_9  : bookmark_goto( 9 ); break;
       case '`'        : bookmark_goto(-1 ); break;
-  
+
       case 9          : vfu_edit_entry(); break;
-  
+
       case 't'        : vfu_tools(); break;
-  
+
       case 'p'        : clipboard_menu( 0 ); break;
       /*
       case KEY_CTRL_C : vfu_clipboard( 'C' ); break; // copy
       case KEY_CTRL_X : vfu_clipboard( 'X' ); break; // cut
       case KEY_CTRL_V : vfu_clipboard( 'V' ); break; // paste
       */
-      
+
       }
     if (  ( KEY_F1 <= ch && ch <= KEY_F10)
        || ( KEY_SH_F1 <= ch && ch <= KEY_SH_F10)
@@ -982,7 +982,7 @@ void vfu_run()
 
 void vfu_help_cli()
 {
-  printf( "%s",   
+  printf( "%s",
     HEADER
     "Command line switches:\n"
     "  none    -- run in interactive mode (DEFAULT)\n"
@@ -1019,11 +1019,11 @@ void vfu_cli( int argc, char* argv[] )
           #endif
           vfu_chdir( temp );
           break;
-      case 'r'  : con_out(1,1,HEADER,cINFO); 
+      case 'r'  : con_out(1,1,HEADER,cINFO);
                 temp = "Rebuilding directory tree ( work_path is";
           temp += work_path;
           temp += " )";
-          say2( temp ); 
+          say2( temp );
           tree_rebuild();
           break;
       case 't'  : con_out(1,1,HEADER,cINFO);
@@ -1054,7 +1054,7 @@ void vfu_reset_screen()
   con_done();
   con_init();
   con_chide();
-    
+
   /* update scroll parameters */
   file_list_index.set_min_max( 0, files_count - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
@@ -1081,7 +1081,7 @@ void vfu_signal( int sig )
   con_cs();
   con_cshow();
   con_done();
-  
+
   printf( "vfu: signal received: %d -- terminated\n", sig );
   exit(200);
 };
@@ -1121,9 +1121,9 @@ void vfu_shell( const char* a_command, const char* a_options )
 {
   VString shell_line = a_command;
   VString o = a_options;
-  
+
   VString status = "";
-  
+
   int res = vfu_update_shell_line( shell_line, o );
   if (res) return;
 
@@ -1153,7 +1153,7 @@ void vfu_shell( const char* a_command, const char* a_options )
 
   if ( str_find( o, 'w' ) != -1 ) /* [w]ait after shell */
     {
-    printf( "*** press enter ***" ); 
+    printf( "*** press enter ***" );
     fflush( stdout );
     fgetc( stdin );
     }
@@ -1173,7 +1173,7 @@ void vfu_shell( const char* a_command, const char* a_options )
 
   if ( str_find( o, 'n' ) != -1 ) do_draw = 0;
   if ( str_find( o, 'i' ) != -1 ) vfu_nav_down();
-  
+
   say1("");
   say2( status );
 }
@@ -1196,9 +1196,9 @@ void update_status()
       sel_size += s;
       sel_count++;
       }
-    files_size += s;  
-    }  
-  /* current fs statistics */  
+    files_size += s;
+    }
+  /* current fs statistics */
   struct statfs stafs;
   statfs( ".", &stafs );
   fs_free  = (fsize_t)(stafs.f_bsize) * (opt.show_user_free?stafs.f_bavail:stafs.f_bfree);
@@ -1216,7 +1216,7 @@ void vfu_edit( const char *fname )
     say1( "No files");
     return;
     }
-  if ( files_list[FLI]->is_dir() ) 
+  if ( files_list[FLI]->is_dir() )
     {
     say1( "Cannot edit directory");
     return;
@@ -1261,9 +1261,9 @@ void vfu_browse_selected_files()
   /*
   FIXME: multiple files browsing should be back ASAP
   #define VFU_BROWSE_MAX_FILES 10
-  int i;  // index 
-  int ic; // count 
-  
+  int i;  // index
+  int ic; // count
+
   for ( z = 0; z < files_count; z++ )
     if ( files_list[z]->sel )
       if ( !files_list[z]->is_dir() )
@@ -1286,7 +1286,7 @@ void vfu_browse( const char *fname, int no_filters )
 {
   VString new_name = fname;
   VString tmp_name;
-  
+
   if ( !no_filters && see_filters.count() > 0 )
     {
     char full_fname[MAX_PATH];
@@ -1310,10 +1310,10 @@ void vfu_browse( const char *fname, int no_filters )
       break;
       }
     }
-  
+
   if ( tmp_name != "" )
     new_name = tmp_name;
-  
+
   if ( opt.internal_browser )
     {
     opt.svo.cs = cINFO;
@@ -1321,7 +1321,7 @@ void vfu_browse( const char *fname, int no_filters )
     if( viewer.open( new_name ) == 0 )
       viewer.run();
     else
-      say1( "Error loading file..." );  
+      say1( "Error loading file..." );
     viewer.close();
     }
   else
@@ -1337,7 +1337,7 @@ void vfu_browse( const char *fname, int no_filters )
   do_draw = 2;
   say1("");
   say2("");
-  
+
   if ( tmp_name != "" )
     unlink( tmp_name );
 }
@@ -1351,7 +1351,7 @@ void vfu_action_plus( int key )
   TF *fi = files_list[FLI];
 
   if ( work_mode == WM_NORMAL )
-    { 
+    {
     if ( fi->is_dir() )
       { /* directory */
       vfu_chdir( fi->name() );
@@ -1380,7 +1380,7 @@ void vfu_action_plus( int key )
       }
     }
   else
-    { /* work_mode == WM_ARCHIVE */ 
+    { /* work_mode == WM_ARCHIVE */
     if ( fi->is_dir() )
       { /* directory */
       VString p = fi->name();
@@ -1403,14 +1403,14 @@ void vfu_action_plus( int key )
 void vfu_action_minus()
 {
   VString o = work_path; /* save old path i.e. current */
-  
+
   if ( work_mode == WM_NORMAL )
     {
       #ifdef _TARGET_GO32_
-        if ( work_path[1] == ':' && work_path[2] == '/' && work_path[3] == 0 ) 
+        if ( work_path[1] == ':' && work_path[2] == '/' && work_path[3] == 0 )
            return;
       #else
-        if ( work_path[0] == '/' && work_path[1] == 0 ) 
+        if ( work_path[0] == '/' && work_path[1] == 0 )
           return;
       #endif
       vfu_chdir( ".." );
@@ -1568,21 +1568,21 @@ for (z = 0; z < files_count; z++)
                        break;
     case GSAME_EXT   : sel = (pathcmp(same_str, fi->ext()) == 0);
                        break;
-    case GSAME_SIZE  : sel = (same_fsize == fi->size()); 
+    case GSAME_SIZE  : sel = (same_fsize == fi->size());
                        if ( fi->is_dir() ) sel = 0; break;
     case GSAME_DATETIME  :
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st()));
                        break;
     case GSAME_DATE      :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), 
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
                                     TIMECMP_D );
                        break;
     case GSAME_TIME      :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), 
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
                                     TIMECMP_T );
                        break;
     case GSAME_TIME1     :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), 
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
                                       TIMECMP_T1 );
                        break;
     case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid); break;
@@ -1617,10 +1617,10 @@ void vfu_global_select()
   ch = menu_box_info.ec;
   if (ch == 'X')
     {
-    if ( work_mode != WM_NORMAL ) 
-      { 
-      say1( "GlobalSelect/Extended not available in this mode." ); 
-      return; 
+    if ( work_mode != WM_NORMAL )
+      {
+      say1( "GlobalSelect/Extended not available in this mode." );
+      return;
       };
     mb.undef();
     mb.push( "A Select to begin" );
@@ -1751,10 +1751,10 @@ void vfu_global_select()
               }; break;
     case 'D' :
               {
-              if ( work_mode != WM_NORMAL ) 
-                { 
-                say1( "GlobalSelect/Different not available in this mode." ); 
-                break; 
+              if ( work_mode != WM_NORMAL )
+                {
+                say1( "GlobalSelect/Different not available in this mode." );
+                break;
                 };
               VString target;
               if ( vfu_get_dir_name( "Target directory:", target ))
@@ -1765,8 +1765,8 @@ void vfu_global_select()
                   {
                   if ( files_list[z]->is_dir() ) continue;
                   say1( files_list[z]->name() );
-                  files_list[z]->sel = 
-                      (vfu_cmp_files_crc32( work_path, target, 
+                  files_list[z]->sel =
+                      (vfu_cmp_files_crc32( work_path, target,
                         files_list[z]->name() ) != 0 );
                   }
                 }
@@ -1785,39 +1785,39 @@ void vfu_global_select()
                 fsize_t size = 0;
                 say1("");
                 say2("");
-                
+
                 size = 0;
                 for ( int z = 0; z < files_count; z++ )
                   {
                   size += files_list[z]->size();
                   if ( files_list[z]->is_dir() ) continue;
-                  
+
                   int pos = -1;
                   switch( ch )
                     {
-                    case 'F': 
+                    case 'F':
                        pos = file_string_search( pat, files_list[z]->name(), "i" );
                        break;
-                    case 'B': 
+                    case 'B':
                        pos = file_string_search( pat, files_list[z]->name(), "" );
                        break;
-                    case 'E': 
+                    case 'E':
                        pos = file_string_search( pat, files_list[z]->name(), "h" );
                        break;
-                    case '/': 
+                    case '/':
                        pos = file_string_search( pat, files_list[z]->name(), "r" );
                        break;
-                    case '\\': 
+                    case '\\':
                        pos = file_string_search( pat, files_list[z]->name(), "ri" );
                        break;
                     }
-                  
+
                   files_list[z]->sel = ( pos > -1 );
-                  
+
                   char s[128];
-                  sprintf( s, "Scanning %4.1f%% (%12.0f bytes in %s ) ", 
-                              (100.0 * size) / (files_size+1.0), 
-                              files_list[z]->size(), 
+                  sprintf( s, "Scanning %4.1f%% (%12.0f bytes in %s ) ",
+                              (100.0 * size) / (files_size+1.0),
+                              files_list[z]->size(),
                               files_list[z]->name() );
                   say1( s );
                   }
@@ -1867,7 +1867,7 @@ void vfu_global_select()
               if(vfu_edit_attr( mode_str, 0 ))
                 {
                 for ( int z = 0; z < files_count; z++ )
-                  files_list[z]->sel = 
+                  files_list[z]->sel =
                      (strcmp( files_list[z]->mode_str()+1, mode_str+1 ) == 0);
                 do_draw = 1;
                 }
@@ -1909,11 +1909,11 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
     if ( split[2] != "*" ) /* if we should match and extension */
       {
       if ( opt.lower_case_ext_config )
-	{
-	str_low( split[2] );
-	str_low( ext_str );
-	str_low( type_str );
-	}
+        {
+        str_low( split[2] );
+        str_low( ext_str );
+        str_low( type_str );
+        }
       if ( str_find( split[2], ext_str ) == -1 &&
            str_find( split[2], type_str ) == -1 ) continue; /* not found -- next one */
       }
@@ -1925,7 +1925,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
 };
 
 /*--------------------------------------------------------------------------*/
-	    
+
 void vfu_user_external_exec( int key )
 {
   if ( files_count == 0 )
@@ -2001,7 +2001,7 @@ void vfu_tools()
                }
     case 'T' : {
                VString str;
-               if (vfu_get_str( "Make directory(ies) (use space for separator)", 
+               if (vfu_get_str( "Make directory(ies) (use space for separator)",
                                 str, HID_MKPATH ))
                  {
                  int err = 0;
@@ -2050,13 +2050,13 @@ void bookmark_goto( int n )
     if ( n == -1 ) return;
     n++;
     }
-  // FIXME: neshto ne raboti :/  
+  // FIXME: neshto ne raboti :/
   switch( menu_box_info.ec )
     {
     case '`' : vfu_chdir( NULL ); return;
     case 'A' : bookmark_hookup(); return;
     }
-  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[n - '0'] ) > 0 ) 
+  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[n - '0'] ) > 0 )
     {
     vfu_chdir( path_bookmarks[n - '0'] );
     return;
@@ -2083,12 +2083,12 @@ void vfu_command()
 void vfu_rename_file_in_place()
 {
   TF *fi = files_list[FLI];
-  
+
   int y = (file_list_index.pos() - file_list_index.page()) + 4;
   int x = tag_mark_pos + 3;
-  
+
   VString str = fi->name();
-  
+
   if(TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 4, &str ) &&
      strcmp( fi->name(), str.data() )
     )
@@ -2107,7 +2107,7 @@ void vfu_rename_file_in_place()
       say2errno();
       }
     }
-  
+
   do_draw = 1;
 }
 
@@ -2128,15 +2128,15 @@ void vfu_change_file_mask( const char* a_new_mask )
     new_mask = vfu_get_str( "", tmp, HID_FMASK, 6, 1 );
     do_draw = 1;
     }
-    
+
   if(new_mask)
     {
     str_cut_spc( tmp );
     if ( str_len( tmp ) < 1 ) tmp = "*";
-    
+
     files_mask = tmp;
     files_mask_array = str_split( " +", files_mask );
-    
+
     if ( opt.mask_auto_expand )
       {
       int z;
@@ -2168,7 +2168,7 @@ void vfu_directories_sizes( int n )
     if ( vfu_menu_box( 5, PS - 4, "Directory size of:" ) == -1 ) return;
     n = menu_box_info.ec;
     }
-  
+
   if ( n == 'E' || n == '.' ) /* specific directory */
     {
     VString target = work_path;
@@ -2181,7 +2181,7 @@ void vfu_directories_sizes( int n )
     VString dir_size_str;
     dir_size_str.fi( dir_size );
     str_comma( dir_size_str );
-    sprintf( t, "Dir size of: %s", target.data() ); 
+    sprintf( t, "Dir size of: %s", target.data() );
     say1( t );
     sprintf( t, "Size: %s bytes", dir_size_str.data() );
     say2( t );
@@ -2231,11 +2231,11 @@ void vfu_directories_sizes( int n )
 void vfu_edit_entry( )
 {
   char errstr[128];
-  
+
   int one = ( sel_count == 0 );
   int z;
   VString str;
-  
+
   mb.undef();
   mb.push( "M Mode" );
   mb.push( "A Octal Mode" );
@@ -2289,8 +2289,8 @@ void vfu_edit_entry( )
             }
           else
             strcpy(new_mode, MODE_MASK);
-          ok = vfu_edit_attr(new_mode, !one );  
-          }  
+          ok = vfu_edit_attr(new_mode, !one );
+          }
         else
           {
           say1( "Enter octal mode (i.e. 755, 644, 1777, etc.)" );
@@ -2317,7 +2317,7 @@ void vfu_edit_entry( )
                 err++;
               }
           }
-        
+
         if (err)
           sprintf( errstr, "Change attr/mode errors: %d", err );
         else
@@ -2327,7 +2327,7 @@ void vfu_edit_entry( )
           say2errno();
         break;
       } else
-    if ( menu_box_info.ec == 'T' || 
+    if ( menu_box_info.ec == 'T' ||
          menu_box_info.ec == 'I' ||
          menu_box_info.ec == 'E' )
       {
@@ -2337,10 +2337,10 @@ void vfu_edit_entry( )
         strcat( t, one ? " for the current file:" : " for SELECTED FILES/DIRS:" );
         strcat( t, "    PLEASE KEEP THE FORMAT!" );
         say1( t );
-        
-        strcpy( t, time2str(time(NULL))); 
+
+        strcpy( t, time2str(time(NULL)));
         t[24] = 0;
-        
+
         VString str = t;
         int z = vfu_get_str( "", str, HID_EE_TIME );
         if( !(z && str_len(str) > 0) ) break;
@@ -2403,10 +2403,10 @@ void vfu_edit_entry( )
 
         int uid = -1;
         int gid = -1;
-        
+
         struct passwd *pwd = getpwnam(re[1]);
         if ( pwd ) uid = pwd->pw_uid;
-        
+
         struct group  *grp = getgrnam(re[3]);
         if ( grp ) gid = grp->gr_gid;
 
@@ -2519,9 +2519,9 @@ void vfu_jump_to_mountpoint( int all )
     if (toupper(t[0]) >= 'A' && toupper(t[0]) <= 'Z' && toupper(t[1]) == ':')
       hk = toupper(t[0]);
     #endif
-    sprintf( str, "%c | %8.1fM | %8.1fM | %-20s ", 
-             hk, 
-             stafs.f_bsize * (opt.show_user_free?stafs.f_bavail:stafs.f_bfree) 
+    sprintf( str, "%c | %8.1fM | %8.1fM | %-20s ",
+             hk,
+             stafs.f_bsize * (opt.show_user_free?stafs.f_bavail:stafs.f_bfree)
                               / (1024.0*1024.0),
              stafs.f_bsize * stafs.f_blocks / (1024.0*1024.0),
              t
@@ -2561,7 +2561,7 @@ void vfu_user_menu()
   VArray lines;
   VString des;
   int z;
-  
+
   mb.undef();
 
   for ( z = 0; z < user_externals.count(); z++ )
@@ -2785,7 +2785,7 @@ void vfu_file_find( int menu )
     sprintf( str, "Containing pattern: %s", __ff_pattern.data() );
     con_out( 1, 4, str );
     }
-  
+
   file_find_results.undef();
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
@@ -2858,9 +2858,9 @@ void vfu_inc_search()
     if ( key != 9 )
       str_add_ch( str, key );
     say2( str );
-    
+
     if ( files_count == 0 ) { key = con_getch(); continue; }
-    
+
     int z;
     if ( key == 9 )
       {
@@ -2869,7 +2869,7 @@ void vfu_inc_search()
       }
     else
       z = FLI;
-      
+
     int direction = 1;
     int found = 0;
     int loops = 0;
@@ -2922,13 +2922,13 @@ void vfu_goto_filename( const char* fname )
 // #include <mcheck.h> /* memory allocation debug */
 int main( int argc, char* argv[] )
 {
-  
+
   #ifndef NDEBUG
   // mtrace(); /* memory allocation debug */
   #endif
-  
+
   print_help_on_exit = 0;
-  
+
   con_init();
   con_cs();
   con_fg( cNORMAL );
@@ -2942,7 +2942,7 @@ int main( int argc, char* argv[] )
   con_cs();
   con_cshow();
   con_done();
-  
+
   if( print_help_on_exit ) vfu_help_cli();
   /*
   printf("%s\n<cade@biscom.net> [http://soul.datamax.bg/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
