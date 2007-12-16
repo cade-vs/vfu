@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuuti.cpp,v 1.18 2005/10/26 00:16:32 cade Exp $
+ * $Id: vfuuti.cpp,v 1.19 2007/12/16 13:52:50 cade Exp $
  *
  */
 
@@ -58,11 +58,11 @@ while( a_line[i] )
       #ifdef _TARGET_GO32_
       case '_' : use_SFN = 1; break;
       #endif
-      
+
       case 'r' : /* rescan files after */
       case 'R' : a_options += "r"; break; // refresh all files after (readdir)
       case 'f' : /* file name */
-      case 'F' : 
+      case 'F' :
       case 'g' :
       case 'G' : one = 0;
                  if ( a_line[i+1] == 'f' ) one = 1;
@@ -93,19 +93,19 @@ while( a_line[i] )
                      {
                      // need to list files, quote them...
                      // FIXME: this should be optional for all one and !one
-                     if ( str_find( s, "'" ) == -1 ) 
+                     if ( str_find( s, "'" ) == -1 )
                        {
                        s = "'" + s +"' ";
                        }
-                     else if ( str_find( s, "\"" ) == -1 ) 
+                     else if ( str_find( s, "\"" ) == -1 )
                        {
                        s = "\"" + s +"\" ";
                        }
-                     else 
+                     else
                        {
                        s = "";
                        }
-                     }  
+                     }
                    out += s;
                    }
                  break;
@@ -115,7 +115,7 @@ while( a_line[i] )
                  if ( a_line[i+1] == 'e' )
                    s = str_file_name( s );
                  else
-                   s = files_list[FLI]->ext(); 
+                   s = files_list[FLI]->ext();
                  out += s;
                  break;
       case 's' : /* current file size */
@@ -142,7 +142,7 @@ while( a_line[i] )
                  #endif
                  out += s;
                  break;
-  
+
       case 'C' : /* startup dir */
                  s = startup_path;
                  #ifdef _TARGET_GO32_
@@ -150,7 +150,7 @@ while( a_line[i] )
                  #endif
                  out += s;
                  break;
-  
+
       case 'a' : /* Archive name */
                  out += archive_name;
                  break;
@@ -161,7 +161,7 @@ while( a_line[i] )
                  #endif
                  out += s;
                  break;
-  
+
       case 'w' :
       case 'W' : a_options += "w"; break;
       case 'i' : a_options += "i"; break;
@@ -205,6 +205,7 @@ fsize_t vfu_update_sel_size( int one ) // used before copy/move to calc estimate
 {
   fsize_t size = 0;
   int z;
+  int need_size_cache_sort = 0;
   for( z = 0; z < files_count; z++ )
     {
     TF *fi = files_list[z];
@@ -212,10 +213,11 @@ fsize_t vfu_update_sel_size( int one ) // used before copy/move to calc estimate
     if ( one && z != FLI ) continue; /* if one and not current -- skip */
     if ( !one && !fi->sel ) continue; /* if not one and not selected -- skip */
     if ( fi->is_link() ) continue; /* links does not have own size -- skip */
-    
+
     if ( fi->is_dir() )
       { /* this is directory */
-      fsize_t dir_size = vfu_dir_size( fi->name() );
+      fsize_t dir_size = vfu_dir_size( fi->name(), 0 );
+      need_size_cache_sort = 1;
       if ( dir_size == -1 )
         { /* dir size calculation has been canceled */
         size = -1;
@@ -229,6 +231,7 @@ fsize_t vfu_update_sel_size( int one ) // used before copy/move to calc estimate
       size += fi->size();
       }
     } /* for */
+  if( need_size_cache_sort ) size_cache_sort();
   update_status(); /*  */
   vfu_redraw(); /* just to redraw before copy/move/etc... */
   vfu_redraw_status(); /* just to redraw before copy/move/etc... */
@@ -257,7 +260,7 @@ VString& vfu_expand_mask( VString& mask )
 }
 
 /*---------------------------------------------------------------------------*/
-  
+
 char* time_str_compact( const time_t tim, char* buf )
 {
   ASSERT( buf );
@@ -385,7 +388,7 @@ static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
   VString str;
-  
+
   mb.undef();
   int z;
   int cnt = vfu_hist_count( hist_id );
@@ -424,30 +427,30 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
   if ( x == -1 ) x = 1;
   if ( y == -1 ) y = con_max_y();
   int len = con_max_x() - 3 - x;
-  
+
   /* FIXME: this is not correct if x and y are specified */
   if ( prompt && prompt[0] )
     say1( prompt );
   say2( "" );
-  
+
   __vfu_get_str_hist_id = hist_id;
   if ( strcmp( target, "" ) == 0 && vfu_hist_get( hist_id, 0 ) )
     target = vfu_hist_get( hist_id, 0 );
   char t[1024]; /* FIXME: can be overflowed? */
   strcpy( t, target );
   int r = TextInput( x, y, "", len, len, t, vfu_get_str_history );
-  target = t; 
+  target = t;
   say1( "" );
   say2( "" );
   __vfu_get_str_hist_id = 0;
   if( r )
     vfu_hist_add( hist_id, target );
-  return ( r != 0 );  
+  return ( r != 0 );
 };
 
 /*---------------------------------------------------------------------------*/
 
-/* to fool gcc warning that mktemp() is not safe, I don't really care :/ 
+/* to fool gcc warning that mktemp() is not safe, I don't really care :/
    still there is no mkstemp for directories :)) */
 char vfu_temp_filename[MAX_PATH];
 const char* vfu_temp()

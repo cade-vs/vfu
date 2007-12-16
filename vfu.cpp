@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.52 2007/12/16 13:44:09 cade Exp $
+ * $Id: vfu.cpp,v 1.53 2007/12/16 13:52:50 cade Exp $
  *
  */
 
@@ -2209,7 +2209,7 @@ void vfu_directories_sizes( int n )
     say1("");
     say2("");
     }  else
-  if ( n == 'Z' ) /* all or selected  */
+  if ( n == 'Z' ) /* single one, under cursor  */
     {
     VFU_CHECK_LIST_POS( FLI );
     if ( files_list[FLI]->is_dir() )
