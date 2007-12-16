@@ -1,11 +1,11 @@
-/*                              
+/*
  *
  * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
  * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfudir.cpp,v 1.29 2005/07/25 00:23:48 cade Exp $
+ * $Id: vfudir.cpp,v 1.30 2007/12/16 13:44:10 cade Exp $
  *
  */
 
@@ -21,38 +21,38 @@ VArray size_cache;
 
 /*###########################################################################*/
 
-  void __glob_gdn( const char* a_path, const char* a_fnpattern, 
+  void __glob_gdn( const char* a_path, const char* a_fnpattern,
                    VArray &a_va ) // glob getdirname
   {
     VString pat = a_fnpattern;
     pat += "*";
-    
+
     a_va.undef();
     DIR *dir;
-    dirent *de; 
-    if ( !a_path || a_path[0] == 0 ) 
+    dirent *de;
+    if ( !a_path || a_path[0] == 0 )
       dir = opendir(".");
-    else 
+    else
       dir = opendir( a_path );
-    if (dir) 
-      { 
+    if (dir)
+      {
       while ( (de = readdir(dir)) )
-        { 
-        if ( strcmp( de->d_name, "." ) == 0 || 
+        {
+        if ( strcmp( de->d_name, "." ) == 0 ||
              strcmp( de->d_name, ".." ) == 0 ) continue;
         if ( a_fnpattern[0] == 0 || FNMATCH( pat, de->d_name)==0 )
-          { 
+          {
           VString str; // = a_path;
           str += de->d_name;
-          if ( file_is_dir( a_path + str ) ) 
+          if ( file_is_dir( a_path + str ) )
             {
             str += "/";
             a_va.push(str);
             }
-          } 
-        } 
-      closedir(dir); 
-      } 
+          }
+        }
+      closedir(dir);
+      }
   }
 
 /*
@@ -60,7 +60,7 @@ VArray size_cache;
 */
 
 int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
-{ 
+{
   int res = -1;
   /*
   #ifdef _TARGET_UNIX_
@@ -68,28 +68,28 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
   #endif
   */
   VArray dir_list;
-   
-  say1(prompt); 
-  say2(""); 
-  
-  int pos = 0; 
+
+  say1(prompt);
+  say2("");
+
+  int pos = 0;
   int page = 0;
-  int ch = 0; 
-  
+  int ch = 0;
+
   int insert = 1;
   int firsthit = 1;
-  
+
   pos = str_len( target );
 
   //------------------------------------------------------------------
-  
+
   con_cshow();
   say2( target, firsthit ? cINPUT2 : cINPUT );
-  while(1) 
+  while(1)
     {
     int mx = con_max_x() - 1;
     VString target_out = target;
-    if ( (pos < page) || (pos+1 > page + mx) || (page > 0 && pos == page) ) 
+    if ( (pos < page) || (pos+1 > page + mx) || (page > 0 && pos == page) )
       page = pos - mx / 2;
     if ( page < 0 ) page = 0;
 
@@ -100,11 +100,11 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       str_set_ch( target_out, 0, '<' );
     if ( str_len( target ) - page > mx )
       str_set_ch( target_out, mx-1, '>' );
-    
+
     say2( target_out, firsthit ? cINPUT2 : cINPUT );
     con_xy( pos-page+1, con_max_y() );
 
-    
+
     if (ch == 0) ch = con_getch();
     if (ch == '\\') ch = '/'; /* dos hack :)) */
     if ( ch == '/' && str_find( target, '/' ) == -1 && target[0] == '~' )
@@ -114,12 +114,12 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       pos = str_len( target );
       ch = 0;
       }
-      
-    if ((ch == 8 || ch == KEY_BACKSPACE) && pos > 0) 
-      { 
-      pos--; 
+
+    if ((ch == 8 || ch == KEY_BACKSPACE) && pos > 0)
+      {
+      pos--;
       str_del( target, pos, 1 );
-      } 
+      }
     else
     if (ch == KEY_CTRL_A && str_len( target ) > 0)
       {
@@ -132,18 +132,18 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       }
     else
     if ( ch == 9 && str_len( target ) > 0)
-      { 
-      int z; 
+      {
+      int z;
       dir_list.undef();
       VString dmain; /* main/base path */
       VString dtail; /* item that should be expanded/glob */
-      
+
       dmain = str_file_path( target );
       dtail = str_file_name_ext( target );
-      
+
       /*
       int lastslash = str_rfind(target, '/');
-      if ( lastslash == -1 ) 
+      if ( lastslash == -1 )
         {
         dmain = "";
         dtail = target;
@@ -156,11 +156,11 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         str_trim_left( dtail, lastslash+1 );
         }
       */
-      
+
       __glob_gdn( dmain, dtail, dir_list );
-  
+
       z = dir_list.count()-1;
-      if (dir_list.count()) 
+      if (dir_list.count())
         {
         if ( dir_list.count() > 1)
           {
@@ -172,7 +172,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
             int li; /* counter */
             for ( li = 0; li < dir_list.count(); li++ )
               {
-              if ( str_get_ch( dir_list[ 0], mi ) == 
+              if ( str_get_ch( dir_list[ 0], mi ) ==
                    str_get_ch( dir_list[li], mi ) )
                 mc++;
               }
@@ -184,7 +184,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
           pos = str_len( target );
           say2( target, cINPUT );
           con_xy( pos+1, con_max_y() );
-          
+
           vfu_beep();
           ch = con_getch();
           if ( ch != 9 ) { dir_list.undef(); continue; }
@@ -202,9 +202,9 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
             str_chop( target );
           target += dir_list[z];
           }
-        
+
         pos = str_len( target );
-        
+
         dir_list.undef();
         if (ch != 0) continue;
         }
@@ -212,22 +212,22 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         { /* no match found -- cannot complete */
         vfu_beep();
         }
-      } 
-    else 
+      }
+    else
     if (ch == 13)
-      { 
+      {
       res = 1;
-      break; 
-      } 
-    else 
-    if (ch == 27) 
-      { 
+      break;
+      }
+    else
+    if (ch == 27)
+      {
       target = "";
       res = 0;
-      break; 
-      } 
+      break;
+      }
     if (ch == KEY_CTRL_U)
-      { 
+      {
       target = "";
       pos = 0;
       }
@@ -242,10 +242,10 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         target = t;
         pos = str_len( target );
       }
-    else 
-    if (ch >= 32 && ch <= 255 ) // && pos < 70) 
-      { 
-      if (firsthit) 
+    else
+    if (ch >= 32 && ch <= 255 ) // && pos < 70)
+      {
+      if (firsthit)
         {
         target = "";
         pos = 0;
@@ -267,12 +267,12 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
     if ( ch == KEY_IC   ) insert = !insert; else
     if ( ch == KEY_HOME ) pos = 0; else
     if ( ch == KEY_END  ) pos = str_len(target); else
-    if ( ch == KEY_DC  && pos < str_len(target) ) 
+    if ( ch == KEY_DC  && pos < str_len(target) )
        str_del( target, pos, 1 ); else
     if ( ch == KEY_NPAGE || ch == KEY_PPAGE )
       {
       con_chide();
-      int zz = vfu_hist_menu( 5, 5, ( ch == KEY_PPAGE ) ? "Dir Entry History" : "ChDir History", 
+      int zz = vfu_hist_menu( 5, 5, ( ch == KEY_PPAGE ) ? "Dir Entry History" : "ChDir History",
                               ( ch == KEY_PPAGE ) ? HID_GETDIR : HID_CHDIR );
       con_cshow();
       if (zz != -1)
@@ -285,11 +285,11 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
           }
         }
       }
-    ch = 0; 
+    ch = 0;
     firsthit = 0;
     }
   con_chide();
-  
+
   //------------------------------------------------------------------
   str_cut_spc( target );
   if ( res == 1 && target[0] == '~' )
@@ -297,9 +297,9 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
     target = tilde_expand( target );
     str_fix_path( target );
     }
-/*  
+/*
   if ( target.len() > 0 )
-    { 
+    {
     // well this tmp is kind of s... ama k'vo da pravi chovek :)
     // FIXME: dos version?
     if ( __ExpandGetDirName && target[0] != '/'
@@ -309,8 +309,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
        )
       target = CPath + target;
     StrFixPath( target ); // add trailing slash if not exist
-    } 
-*/    
+    }
+*/
   /*
   #ifdef _TARGET_UNIX_
   leaveok(stdscr, TRUE);
@@ -322,17 +322,17 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
     int ch = tolower( vfu_ask( "Directory does not exist! Create? "
                                "( ENTER=Yes, ESC=cancel )",
                                "\033\rcC" ));
-    if ( ch == 27 ) 
+    if ( ch == 27 )
       {
       res = 0;
-      target = ""; 
+      target = "";
       }
     else
     if ( ch == 13 )
        if (make_path( target ))
          {
          if(tolower(
-            vfu_ask( "Cannot create path! ( ESC=cancel, C=continue-anyway )", 
+            vfu_ask( "Cannot create path! ( ESC=cancel, C=continue-anyway )",
             "\033Cc" )) == 27)
             {
             res = 0;
@@ -340,20 +340,20 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
             }
          }
     }
-  
-  say1(" "); 
-  say2(" "); 
+
+  say1(" ");
+  say2(" ");
   if ( str_len( target ) > 0)
     {
     str_fix_path( target );
     vfu_hist_add( HID_GETDIR, target );
     }
-    
+
   str_cut_spc( target );
-  
+
   ASSERT( res == 0 || res == 1 );
   return res;
-} 
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -370,10 +370,10 @@ void vfu_chdir( const char *a_new_dir )
     {
     target = vfu_hist_get( HID_CHDIR, 0 );
     if (!vfu_get_dir_name( "ChDir to? (TAB, PageUp, PageDown, ^X, ^A)",
-                           target, 0 )) 
+                           target, 0 ))
                            return; /* get_dir_name canceled */
     }
-  /* get_dir_name confirmed */  
+  /* get_dir_name confirmed */
   /*
   if ( work_path[0] != target[0] && DirTreeChanged && opt.AutoTree ) SaveTree();
   */
@@ -382,7 +382,7 @@ void vfu_chdir( const char *a_new_dir )
     archive_name = "";
     archive_path = "";
     }
-  
+
   vfu_hist_add( HID_CHDIR, work_path );
   char ch = work_path[0];
   if (opt.tree_cd)
@@ -404,7 +404,7 @@ void vfu_chdir( const char *a_new_dir )
       if (z == 1)
         target = mb.get(0);
       }
-  VString str = target; 
+  VString str = target;
   str_cut_spc( str );
   #ifdef _TARGET_GO32_
     if ( str[0] == '/' )
@@ -440,12 +440,12 @@ void vfu_chdir( const char *a_new_dir )
   else
     {
     work_path = target;
-    if ( work_mode == WM_ARCHIVE ) 
+    if ( work_mode == WM_ARCHIVE )
       work_mode = WM_NORMAL;
     }
   if ( ch != work_path[0] ) tree_drop(); /* drop tree--it is for another drive*/
   vfu_read_files();
-} 
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -453,7 +453,7 @@ void vfu_chdir_history()
 {
   int z = vfu_hist_menu( 5, 5, "ChDir History", HID_CHDIR );
   if (z == -1) return;
-  do_draw = 1; 
+  do_draw = 1;
   //strcpy(opt.LastDir, CPath);
   vfu_chdir( vfu_hist_get( HID_CHDIR, z ) );
 }
@@ -533,13 +533,13 @@ void tree_fix()
 fsize_t __tree_rebuild_process( const char* path )
 {
   if ( vfu_break_op() ) return -1;
-  
+
   DIR* dir;
   dirent* de;
   struct stat st;
   fsize_t size = 0;
   char new_name[MAX_PATH];
-  
+
   dir = opendir( path );
   if ( !dir ) return 0;
   while( (de = readdir(dir)) )
@@ -550,36 +550,36 @@ fsize_t __tree_rebuild_process( const char* path )
     sprintf(new_name, "%s%s", path, de->d_name);
     lstat(new_name, &st);
     int is_link = int(S_ISLNK(st.st_mode));
-    
+
     if (is_link) continue;
-    
+
     #ifdef _TARGET_GO32_
     dosstat(dir, &st);
     #else
     stat(new_name, &st);
     #endif
-    
+
     int is_dir = S_ISDIR(st.st_mode);
-    
+
     if ( is_dir )
       { /* directory */
       strcat( new_name, "/" );
-      
+
       int z;
       int trim = 0;
       for ( z = 0; z < trim_tree.count(); z++ )
         {
         VString trim_temp = trim_tree[z];
         str_fix_path( trim_temp );
-        if ( pathcmp(trim_temp, new_name) == 0 ) 
+        if ( pathcmp(trim_temp, new_name) == 0 )
           { /* trim_tree item found */
           trim = 1;
           break;
           }
-        }  
-      if (trim) 
+        }
+      if (trim)
         continue; /* cut this branch */
-      
+
       int pos = dir_tree.count();
       fsize_t dir_size = __tree_rebuild_process( new_name );
       if ( dir_size < 0 )
@@ -594,11 +594,11 @@ fsize_t __tree_rebuild_process( const char* path )
     else
       { /* file */
       size += file_st_size( &st );
-      }  
-    
+      }
+
     }
   closedir(dir);
-  
+
   /* show some progress :) */
   say2( str_dot_reduce( path, con_max_x()-1 ) );
   return size;
@@ -616,9 +616,9 @@ _djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
   dir_tree.undef();
   size_cache.undef();
   say1( "Rebuilding tree..." );
-  
+
   __tree_rebuild_process( "/" );
-  
+
   tree_fix();
 #ifdef _TARGET_GO32_
  _djstat_flags = 0;
@@ -666,7 +666,7 @@ void tree_draw_item( int page, int index, int hilite )
 
   VString str = dir_tree[page+index];
   str_tr( str,"\\", "/" );
-  
+
   VString sz;
   sz.fi( size_cache_get( str ) );
   if ( sz == "-1" )
@@ -674,7 +674,7 @@ void tree_draw_item( int page, int index, int hilite )
   else
     str_comma( sz );
   str_pad( sz, 14 );
-  
+
   s1 = sz + " " + s1;
 
   int m = con_max_x() - 1; /* doesn't speed the code... :) */
@@ -710,7 +710,7 @@ void tree_draw_page( ScrollPos &scroll )
   VString str = " ";
   str_mul( str, con_max_x() );
   str = "          SiZE DiRECTORY" + str;
-  str_sleft( str, con_max_x()-16 ); 
+  str_sleft( str, con_max_x()-16 );
   con_out(1,3, str, cHEADER );
   int z = 0;
   for(z = 0; z < scroll.pagesize(); z++)
@@ -738,7 +738,7 @@ void tree_draw_pos( ScrollPos &scroll, int opos )
   VString str;
   str = dir_tree[scroll.pos()];
   str_tr( str,"\\", "/" );
-  
+
   VString sz;
   sz.fi( size_cache_get( str ) );
   str_comma( sz );
@@ -746,7 +746,7 @@ void tree_draw_pos( ScrollPos &scroll, int opos )
   str = sz + " " + str;
 
   str = str_dot_reduce( str, con_max_x()-1 );
-  
+
   say1( str, cINFO );
   say2( "         Help: R Rebuild, S Incremental search, Z Recalc directory size", cINFO );
   show_pos( scroll.pos()+1, scroll.max()+1 );
@@ -760,7 +760,7 @@ void tree_view()
   if (dir_tree.count() == 0)
     {
     tree_load();
-    if (dir_tree.count() == 0) 
+    if (dir_tree.count() == 0)
       tree_rebuild();
     }
   say1( " " );
@@ -774,16 +774,16 @@ void tree_view()
   set.set_range1( '0', '9' );
   set.set_str1( "._-~" );
   set.set_str1( "?*>[]" );
-  
+
   ScrollPos scroll;
   scroll.set_min_max( 0, dir_tree.count()-1 );
   scroll.set_pagesize( PS+2 );
   scroll.go( new_pos );
-  
+
   int key = 0;
   int opos = -1;
   int opage = -1;
-  while( key != 27 && key != 13 && key != '-' && 
+  while( key != 27 && key != 13 && key != '-' &&
          toupper( key ) != 'Q' && toupper( key ) != 'X' && key != KEY_ALT_X )
     {
     if ( key >= 'A' && key <= 'Z' ) key = tolower( key );
@@ -800,9 +800,9 @@ void tree_view()
           if ( key != 9 )
             str_add_ch( str, key );
           say2( str );
-          
+
           if ( dir_tree.count() == 0 ) { key = con_getch(); continue; }
-          
+
           int z;
           if ( key == 9 )
             {
@@ -820,11 +820,11 @@ void tree_view()
             {
             if ( z > scroll.max() ) z = scroll.min();
             if ( z < scroll.min() ) z = scroll.max();
-            
+
             VString str1 = dir_tree[z];
             str_trim_right( str1, 1 );
             int j = str_rfind(str1,'/');
-            if (j < 0) 
+            if (j < 0)
               str1 = "";
             else
               str_trim_left( str1, j+1 );
@@ -859,11 +859,11 @@ void tree_view()
                         say1( "Rebuild done." );
                         break;
       case 'w'        : tree_save(); break;
-      case 'l'        : tree_load(); 
+      case 'l'        : tree_load();
                         scroll.set_min_max( 0, dir_tree.count()-1 );
                         scroll.home();
                         break;
-      case 'z'        : 
+      case 'z'        :
       case KEY_CTRL_Z :
                         str = dir_tree[scroll.pos()];
                         str_tr( str, "\\", "/" );
@@ -873,9 +873,9 @@ void tree_view()
                         say1( "Done." );
                         break;
       }
-    if (opage != scroll.page()) 
+    if (opage != scroll.page())
       tree_draw_page( scroll );
-    if (opos != scroll.pos() - scroll.page() || opage != scroll.page()) 
+    if (opos != scroll.pos() - scroll.page() || opage != scroll.page())
       tree_draw_pos( scroll, opos );
     opos = scroll.pos() - scroll.page();
     opage = scroll.page();
@@ -906,16 +906,16 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   char ss[MAX_PATH];
   expand_path( s, ss );
   ps = ss;
-  
+
   char s_adler[16];
   char s_size[32];
-  
+
   sprintf( s_size, "%012.0f", size ); //WARNING: THIS IS SIZE_CACHE_OFFSET
   sprintf( s_adler, "%08X", (unsigned int)str_adler32( ps ) );
-  
+
   VString str;
   str = str + s_size + "|" + s_adler + "|" + ps;
-  
+
   return str;
 }
 
@@ -934,7 +934,7 @@ int size_cache_index( const char *s )
     if ( r > 0 )
       h = m; else
     if ( r < 0 )
-      l = m; 
+      l = m;
     else
       return m;
     m = ( l + h ) / 2;
@@ -951,7 +951,7 @@ fsize_t size_cache_get( const char *s )
     return atof( str );
     }
   else
-    return -1;  
+    return -1;
 }
 
 void size_cache_set( const char *s, fsize_t size, int sort )
@@ -994,6 +994,11 @@ void size_cache_clean( const char *s )
     }
 }
 
+void size_cache_sort()
+{
+  size_cache.sort( 0, size_cache_cmp );
+}
+
 /*###########################################################################*/
 
 /* return index in the dir_tree of directory named `s' or -1 if not found */
@@ -1019,7 +1024,7 @@ int tree_index( const char *s )
     {
     if ( z >= dir_tree.count() ) z = 0;
     if ( z == __tree_index_last_cache ) break;
-    
+
     const char *s2 = dir_tree[z];
     sl2 = strlen( s2 );
 
@@ -1057,13 +1062,13 @@ const char* tree_find( const char *s ) // return full path by dirname
       return dir_tree[z];
       }
     }
-  return NULL;  
+  return NULL;
 }
 
 /*-----------------------------------------------------------------------*/
 /* return count of found dirnames and stores them to va */
 
-int tree_find( const char *s, VArray *va ) 
+int tree_find( const char *s, VArray *va )
 {
   VString str;
   int z = 0;
@@ -1089,20 +1094,20 @@ fsize_t __dir_size_process( const char* path )
 {
   if ( vfu_break_op() )
     return -1;
-  
+
   DIR* dir;
   dirent* de;
   struct stat st;
   fsize_t size = 0;
   char new_name[MAX_PATH];
-  
+
   dir = opendir( path );
   if ( !dir ) return 0;
   while( (de = readdir(dir)) )
     {
     if ( strcmp( de->d_name, "." ) == 0 ||
          strcmp( de->d_name, ".." ) == 0 ) continue;
-    
+
     sprintf(new_name, "%s%s", path, de->d_name);
     lstat(new_name, &st);
     int is_link = int(S_ISLNK(st.st_mode));
@@ -1113,7 +1118,7 @@ fsize_t __dir_size_process( const char* path )
       stat(new_name, &st);
     #endif
     int is_dir = int(S_ISDIR(st.st_mode));
-    
+
     if ( is_link ) continue; /* skip links */
     if ( is_dir )
       {
@@ -1132,16 +1137,16 @@ fsize_t __dir_size_process( const char* path )
       }
     else
       size += file_st_size( &st );
-    
+
     }
   closedir(dir);
-    
+
   /* show some progress :) */
   say2( str_dot_reduce( path, con_max_x()-1 ) );
   return size;
 }
 
-fsize_t vfu_dir_size( const char *s )
+fsize_t vfu_dir_size( const char *s, int sort )
 {
   char t[MAX_PATH];
   expand_path( s, t );
@@ -1149,7 +1154,7 @@ fsize_t vfu_dir_size( const char *s )
   str_fix_path( t );
   size_cache_clean( t );
   fsize_t size = __dir_size_process( t );
-  size_cache_set( t, size );
+  size_cache_set( t, size, sort );
   return size;
 }
 

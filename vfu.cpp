@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfu.cpp,v 1.51 2007/01/31 22:34:56 cade Exp $
+ * $Id: vfu.cpp,v 1.52 2007/12/16 13:44:09 cade Exp $
  *
  */
 
@@ -2196,7 +2196,7 @@ void vfu_directories_sizes( int n )
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
         /* if ( n == 'A' ) continue; // all */
         say1( fi->name() );
-        fsize_t dir_size = vfu_dir_size( fi->name() );
+        fsize_t dir_size = vfu_dir_size( fi->name(), 0 );
         if ( dir_size == -1 )
           {
           say1(""); /* clear status text */
@@ -2205,6 +2205,7 @@ void vfu_directories_sizes( int n )
         fi->set_size( dir_size );
         }
       }
+    size_cache_sort();
     say1("");
     say2("");
     }  else
