@@ -5,7 +5,7 @@
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- * $Id: vfuopt.cpp,v 1.17 2005/06/07 22:33:48 cade Exp $
+ * $Id: vfuopt.cpp,v 1.18 2008/01/18 18:40:30 cade Exp $
  *
  */
 
@@ -138,7 +138,7 @@ void vfu_load_dir_colors()
     str_replace( str, "EXEC", ".**" );
 
     str_ins( ext_colors[pos], 0, str );
-    
+
     };
 
   for ( int z = 0; z < 16; z++ )
@@ -148,7 +148,7 @@ void vfu_load_dir_colors()
       if ( opt.lower_case_ext_config )
         str_low( ext_colors[z] );
       }
-    
+
   #endif /* _TARGET_UNIX_ */
 };
 
@@ -209,7 +209,7 @@ int key_by_name( const char* key_name )
   if (strcmp (key_name, "MENU"  ) == 0) ux.key = - menucount;
   */
   VRegexp reFKEYS( "[\\@\\^\\#]?[fF][01234567890]+" );
-  
+
   if ( reFKEYS.m( key_name ) )
     {
     if ( toupper(key_name[0]) == 'F' )
@@ -221,7 +221,7 @@ int key_by_name( const char* key_name )
     if ( toupper(key_name[0]) == '#' )
       return KEY_SH_F1 + atoi( key_name + 2 ) - 1;
     }
-  return 0;    
+  return 0;
 };
 
 /*---------------------------------------------------------------------------*/
@@ -229,23 +229,23 @@ int key_by_name( const char* key_name )
 void vfu_settings_load()
 {
   VString str;
-  
+
   user_externals.undef();
   history.undef();
   see_filters.undef();
   panelizers.undef();
   archive_extensions.undef();
-  
+
   /***** LOAD DEFAULTS *******/
 
   memset( &opt, 0, sizeof( opt ) );
-  
+
   opt.svo.reset();
   opt.seo.reset();
   opt.seo.handle_tab = 1;
-  
-  opt.sort_order = 'N'; 
-  opt.sort_direction = 'A'; 
+
+  opt.sort_order = 'N';
+  opt.sort_direction = 'A';
   opt.sort_top_dirs = 1;
 
   opt.f_size = 1;
@@ -259,9 +259,9 @@ void vfu_settings_load()
   opt.long_name_view = 0;
   opt.tree_compact = 0;
   opt.tree_cd = 1;
-  
+
   opt.show_hidden_files = 1;
-  
+
   opt.allow_beep = 1;
 
   opt.use_colors = 1;
@@ -293,18 +293,18 @@ void vfu_settings_load()
   opt.bytes_freed = 1;
 
   /***** LOAD DEFAULTS END ***/
-  
+
   FILE *fsett;
-  
+
   Options tmp_opt;
   memset( &tmp_opt, 0, sizeof( tmp_opt ) );
   if ( file_load_crc32( filename_opt, &tmp_opt, sizeof( tmp_opt ) ) == 0 )
     memcpy( &opt, &tmp_opt, sizeof(Options) );
   else
     say1( "warning: bad vfu.options file, loading defaults..." );
-  
+
   history.fload( filename_history );
-  
+
   if (getenv("EDITOR"))
     {
     shell_editor  = getenv("EDITOR");
@@ -339,16 +339,16 @@ void vfu_settings_load()
       if ( line[0] == ';' ) continue;
       str_cut( line, "\n\r" );
       if ( strlen( line ) == 0 ) continue;
-      
+
       if(set_str( line, "browser", shell_browser))continue;
       if(set_str( line, "pager", shell_browser))continue;
       if(set_str( line, "viewer", shell_browser))continue;
 
       if(set_arr( line, "archive",  archive_extensions))continue;
-      
+
       if(set_str( line, "editor", shell_editor))continue;
       if(set_str( line, "diff",   shell_diff))continue;
-      
+
       if(set_arr( line, "bookmark",  path_bookmarks))continue;
       // follow 10 are deprecated
       if(set_arr( line, "bookmark1", path_bookmarks))continue;
@@ -360,7 +360,7 @@ void vfu_settings_load()
       if(set_arr( line, "bookmark7", path_bookmarks))continue;
       if(set_arr( line, "bookmark8", path_bookmarks))continue;
       if(set_arr( line, "bookmark9", path_bookmarks))continue;
-            
+
    /* if(set_str( line, "cblack"   , ext_colors[0]); */
       if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;
       if(set_str( line, "cred"     , ext_colors[cRED]))continue;
@@ -377,9 +377,9 @@ void vfu_settings_load()
       if(set_str( line, "chmagenta", ext_colors[chMAGENTA]))continue;
       if(set_str( line, "chblue"   , ext_colors[chBLUE]))continue;
       if(set_str( line, "chyellow" , ext_colors[chYELLOW]))continue;
-    
+
       if(set_splitter( line, "trimtree",  trim_tree  ))continue;
-  
+
       /* following code is used to clean input data */
       if( re_ux.m( line ) )
         {
@@ -408,12 +408,12 @@ void vfu_settings_load()
       }
     fclose(fsett);
     }
-  
+
   #ifdef _TARGET_GO32_
   int z;
   for ( z = 0; z < 16; z++ ) str_low( ext_colors[z] );
   #endif
-  
+
   if (opt.use_dir_colors) vfu_load_dir_colors();
 //  if (file_load_crc32( filename_size_cache, &size_cache, sizeof(size_cache)))
 //    memset( &size_cache, 0, sizeof(size_cache) );
@@ -476,7 +476,7 @@ void vfu_options()
   vfu_settings_save();
   vfu_settings_load();
   vfu_drop_all_views();
-  vfu_redraw(); 
+  vfu_redraw();
   vfu_redraw_status();
   say1("");
   say2("");
