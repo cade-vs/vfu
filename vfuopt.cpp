@@ -18,13 +18,13 @@
 
 Options opt;
 
-char *NOYES[] = { " - ", "YES", NULL };
-char *NOYESPRECOPY[] = { " - ", "YES", "PRELIM", NULL };
-char *FTIMETYPE[] = { "CHANGE", "MODIFY", "ACCESS", NULL };
+const char *NOYES[] = { " - ", "YES", NULL };
+const char *NOYESPRECOPY[] = { " - ", "YES", "PRELIM", NULL };
+const char *FTIMETYPE[] = { "CHANGE", "MODIFY", "ACCESS", NULL };
 #ifdef _TARGET_GO32_
-char *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
+const char *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
 #else
-char *TAGMARKS[] = { ">>", "=>", "->", NULL };
+const char *TAGMARKS[] = { ">>", "=>", "->", NULL };
 #endif
 
 ToggleEntry Toggles[] =

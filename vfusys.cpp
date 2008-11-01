@@ -8,7 +8,7 @@
  * $Id: vfusys.cpp,v 1.8 2003/01/29 22:59:16 cade Exp $
  *
  */
-      
+
 #include "vfu.h"
 #include "vfusys.h"
 #include "vfuuti.h"
@@ -45,7 +45,7 @@ void file_get_mode_str( const mode_t tm, mode_str_t &mod_str )
   if ((tm & S_ISGID) != 0) mod_str[6] = ((tm & S_IXGRP) != 0) ? 's' : 'S';
   if ((tm & S_ISVTX) != 0) mod_str[9] = ((tm & S_IXOTH) != 0) ? 't' : 'T';
   #endif
-  
+
   #ifdef _TARGET_GO32_
   mod_str[4]=mod_str[5]=mod_str[6]=mod_str[7]=mod_str[8]=mod_str[9]='-';
   #endif
@@ -69,12 +69,12 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
   mode_str_t old_mod_str;
   mode_str_t new_mod_str;
   mode_t new_mode = 0;
-  strcpy( new_mod_str, mod_str ); 
-  
+  strcpy( new_mod_str, mod_str );
+
   if (strchr( new_mod_str, '?' ))
     {
     if (file_get_mode_str(filename, old_mod_str)) return 1;
-    
+
     if (new_mod_str[1] == '?') new_mod_str[1] = old_mod_str[1];
     if (new_mod_str[2] == '?') new_mod_str[2] = old_mod_str[2];
     if (new_mod_str[3] == '?') new_mod_str[3] = old_mod_str[3];
@@ -85,7 +85,7 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
     if (new_mod_str[8] == '?') new_mod_str[8] = old_mod_str[8];
     if (new_mod_str[9] == '?') new_mod_str[9] = old_mod_str[9];
     }
-    
+
   if (new_mod_str[1] == 'r') new_mode |= S_IRUSR;
   if (new_mod_str[2] == 'w') new_mode |= S_IWUSR;
   if (new_mod_str[3] == 'x') new_mode |= S_IXUSR;
@@ -95,7 +95,7 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
   if (new_mod_str[7] == 'r') new_mode |= S_IROTH;
   if (new_mod_str[8] == 'w') new_mode |= S_IWOTH;
   if (new_mod_str[9] == 'x') new_mode |= S_IXOTH;
-  
+
   #ifndef _TARGET_GO32_
   if (new_mod_str[3] == 's') { new_mode |= S_ISUID; new_mode |= S_IXUSR; }
   if (new_mod_str[3] == 'S') new_mode |= S_ISUID;
@@ -104,7 +104,7 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
   if (new_mod_str[9] == 't') { new_mode |= S_ISVTX; new_mode |= S_IXOTH; }
   if (new_mod_str[9] == 'T') new_mode |= S_ISVTX;
   #endif
-  
+
   return ( chmod( filename, new_mode ) != 0 );
 }
 
@@ -125,7 +125,7 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
     mode_i[ 7] = (mod_str[7] != 'r');
     mode_i[ 8] = (mod_str[8] != 'w');
     mode_i[ 9] = (mod_str[9] != 'x');
-    
+
     mode_i[10] = !((mod_str[3] == 's') || (mod_str[3] == 'S'));
     mode_i[11] = !((mod_str[6] == 's') || (mod_str[6] == 'S'));
     mode_i[12] = !((mod_str[9] == 't') || (mod_str[9] == 'T'));
@@ -138,8 +138,8 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
     for ( int z = 0; z < 16; z++ ) mode_i[z] = 2;
     }
 
-  char* AONOFF1[] = { "YES", " - ", " ? ", NULL };
-  char* AONOFF2[] = { "YES", " - ", NULL };
+  const char* AONOFF1[] = { "YES", " - ", " ? ", NULL };
+  const char* AONOFF2[] = { "YES", " - ", NULL };
   #define AONOFF  ( allow_masking ? AONOFF1 : AONOFF2 )
   ToggleEntry mode_toggles[] =
   {
@@ -235,5 +235,5 @@ int file_get_lfn( const char *in, char *out )
 
 /*###########################################################################*/
 
-/* eof vfusys.cpp */ 
- 
+/* eof vfusys.cpp */
+

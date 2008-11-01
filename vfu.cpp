@@ -1007,7 +1007,7 @@ void vfu_help_cli()
 void vfu_cli( int argc, char* argv[] )
 {
   VString temp;
-  GETOPT("hrd:ti")
+  GETOPT((char*)"hrd:ti")
     {
     switch(optc)
       {

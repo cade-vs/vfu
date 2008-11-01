@@ -15,19 +15,19 @@
 #include "see.h"
 #include "vfuuti.h"
 
-  extern char *NOYES[];
-  extern char *FTIMETYPE[];
-  extern char *TAGMARKS[];
+  extern const char *NOYES[];
+  extern const char *FTIMETYPE[];
+  extern const char *TAGMARKS[];
 
   struct Options {
-    int sort_order; 
-    int sort_direction; 
+    int sort_order;
+    int sort_direction;
     int sort_top_dirs;
 
     max_path_str_t last_copy_path[3];
 
     max_path_str_t path_bookmarks[10];
-  
+
     int f_size;
     int f_time;
     int f_mode;
@@ -41,7 +41,7 @@
     int tree_cd;
 
     int show_hidden_files; /* `dot' files in UNIX, `HS' files in dos */
-    
+
     int allow_beep;
 
     int use_colors;
@@ -71,7 +71,7 @@
     int keep_selection; /* on rescan files */
 
     int bytes_freed; /* calc/show bytes freed on erase */
-    
+
     SeeViewerOptions svo;
     SeeEditorOptions seo;
   };
@@ -83,17 +83,17 @@
   time_t vfu_opt_time( const struct stat st );
   time_t vfu_opt_time( const struct stat* st );
   time_t vfu_opt_time( time_t ctime, time_t mtime, time_t atime );
-  
+
   int set_set( const char *line, const char *keyword, char *target );
   int set_set( const char *line, const char *keyword, VString &target );
   int set_set( const char *line, const char *keyword, int &target );
   int set_set( const char *line, const char *keyword, VArray &splitter );
-  
+
   void vfu_settings_load();
   void vfu_settings_save();
-  
+
   void vfu_edit_conf_file();
   void vfu_options();
-  
+
 #endif /* _VFUOPT_H_ */
 

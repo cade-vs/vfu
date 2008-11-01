@@ -24,10 +24,10 @@ int get_item_color( TF *fi )
   VString str;
 
   ASSERT( fi );
- 
+
   if (!opt.use_colors)
     return cNORMAL; /* don't use colors -- option */
- 
+
   if ( fi->is_dir() ) return cCYAN; // dirs are cCYAN by default
 
   str = fi->name();
@@ -39,32 +39,32 @@ int get_item_color( TF *fi )
     if ( str == "" ) str = ".";
     }
   str += ".";
-  
+
   if ( opt.lower_case_ext_config ) str_low( str ); // lowercase extension
 
   #ifdef _TARGET_GO32_
   /* under dos/windows file names are not case sensitive */
   str_low( str );
   #endif
- 
+
   int z;
   if ( str != ".." )
     {
     for ( z = cBLACK; z <= chWHITE; z++ )
       if (str_find( ext_colors[z], str ) != -1)
         return z;
-    }    
+    }
 
   /* extension not found -- try type string */
   str = fi->type_str();
   str = "." + str + ".";
- 
+
   if ( str != ".." )
     {
     for ( z = cBLACK; z <= chWHITE; z++ )
       if (str_find( ext_colors[z], str ) != -1)
         return z;
-    }    
+    }
 
   /* type string not found too return std color */
   return cNORMAL;
@@ -86,7 +86,7 @@ VString fsize_fmt( fsize_t fs ) /* return commified number */
     str.fi( fs );
     str_comma( str );
     }
-  return str;  
+  return str;
 }
 
 /*-----------------------------------------------------------------------*/
@@ -114,9 +114,9 @@ void vfu_draw( int n )
   VFU_CHECK_LIST_POS( n );
   if ( n < FLP || n > FLP + PS )
     return; /* we are out of screen -- don't draw */
- 
+
   TF* fi = files_list[n];
- 
+
   int c = fi->color(); /* color to be used */
   VString view = fi->view();
   if ( fi->sel )
@@ -138,7 +138,7 @@ void vfu_draw( int n )
 
 /*#######################################################################*/
 
-extern char *FTIMETYPE[]; /* in vfuopt.cpp */
+extern const char *FTIMETYPE[]; /* in vfuopt.cpp */
 void vfu_redraw() /* redraw file list and header */
 {
   char t[MAX_PATH];
@@ -167,7 +167,7 @@ void vfu_redraw() /* redraw file list and header */
   con_ce(cINFO);
 
   str = "";
-  
+
   if ( opt.sort_order == 'N' ) str = "NAME";
   if ( opt.sort_order == 'M' ) str = "NAME#";
   if ( opt.sort_order == 'E' ) str = "EXT";
@@ -182,9 +182,9 @@ void vfu_redraw() /* redraw file list and header */
   str += opt.sort_direction == 'A' ? "+" : "-";
   str = "(SORT:" + str + ")";
   con_out( con_max_x() - str_len( str ) + 1, 2, str, cHEADER );
-  
+
   str = "";
- 
+
   t[0] = 0;
   char *spos = t;
   if (opt.sort_order == 'D') opt.sort_order = 'T'; /* hack anyway */
@@ -207,7 +207,7 @@ void vfu_redraw() /* redraw file list and header */
 
   str_pad( t, - con_max_x() );
   str_sleft( t, con_max_x() );
- 
+
   con_out(1,3, t, cHEADER );
   show_pos( FLI+1, files_count );
 
@@ -241,14 +241,14 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   VString s1;
   VString s2;
   VString tmp;
- 
+
   /* first line here */
   s1  = "Select:";
   tmp = sel_count;
   str_comma(tmp);
   str_pad(tmp,14);
   s1 += tmp;
- 
+
   s1 += "  Free: ";
   tmp = fsize_fmt( fs_free );
   str_pad(tmp,14);
@@ -257,7 +257,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
     tmp = "  n/a%";
   else
     sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
- 
+
   s1 += "  " + tmp + "  FSize:";
   tmp = fsize_fmt( files_size );
   str_pad(tmp,14);
@@ -270,7 +270,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
 
   /* second line here */
   s2  = "S.Size:";
- 
+
   tmp = fsize_fmt( sel_size );
   str_pad(tmp,14);
   s2 += tmp;
@@ -278,10 +278,10 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   tmp = fsize_fmt( fs_total );
   str_pad(tmp,14);
   s2 += tmp;
- 
+
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
-  sprintf( tmp,"  %s.%s@%s ", user_id_str.data(), group_id_str.data(), 
-                              host_name_str.data() ); 
+  sprintf( tmp,"  %s.%s@%s ", user_id_str.data(), group_id_str.data(),
+                              host_name_str.data() );
   s2 += tmp;
 
   str_pad( s1, - con_max_x() );
@@ -297,7 +297,7 @@ void vfu_nav_up()
 {
   if ( files_count == 0) return;
   if ( FLI == 0 ) return;
- 
+
   int old_flp = FLP;
   file_list_index.up();
   if ( old_flp != FLP )
@@ -315,7 +315,7 @@ void vfu_nav_down()
 {
   if ( files_count == 0 ) return;
   if ( FLI == files_count - 1 ) return;
- 
+
   int old_flp = FLP;
   file_list_index.down();
   if ( old_flp != FLP )
@@ -393,10 +393,10 @@ void vfu_nav_select()
 {
   if ( files_count == 0 ) return;
   TF *fi = files_list[FLI];
- 
+
   fsize_t f = fi->size();
   if ( f < 0 ) f = 0; /* dirs w/o size i.e. -1 */
- 
+
   if ( fi->sel )
     { /* unselect */
     sel_count --;
@@ -409,7 +409,7 @@ void vfu_nav_select()
     }
 
   fi->sel = - ( fi->sel - 1 ); /* I know -- !!(fi->sel) ... :) */
- 
+
   vfu_draw( FLI );
   vfu_nav_down();
   vfu_draw( FLI );
