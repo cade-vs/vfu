@@ -71,7 +71,7 @@
 #define cWARNING (CONCOLOR(chWHITE,cRED)) // warning messages
 
 #define cBAR     (CONCOLOR(chWHITE,cBLUE)) // inverted select bar (dir tree)
-#define cTAG     (CONCOLOR(cRED,cWHITE)) // currently selected file 
+#define cTAG     (CONCOLOR(cRED,cWHITE)) // currently selected file
 
 #define cMENU_CN (CONCOLOR(chWHITE,cBLUE)) // menu normal
 #define cMENU_CH (CONCOLOR(chWHITE,cGREEN)) // menu highlite
