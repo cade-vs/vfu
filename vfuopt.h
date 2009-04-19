@@ -67,6 +67,8 @@
 
     int lynx_navigation; /* should <- == - and -> == + */
 
+    int default_copy_to_cwd; /* default copy dir always points to CWD */
+
     int auto_mount;
     int keep_selection; /* on rescan files */
 

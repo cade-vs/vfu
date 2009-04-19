@@ -810,7 +810,11 @@ void vfu_copy_files( int a_one, int a_mode )
   if ( opt.copy_calc_totals == 2 ) /* PRELIMINARY copy calc totals */
     __copy_calc_totals( copy_info, a_one );
 
-  VString target = opt.last_copy_path[ a_mode ];
+  VString target;
+  if( opt.default_copy_to_cwd )
+    target = work_path;
+  else
+    target = opt.last_copy_path[ a_mode ];
   const char* cm_mode_str[] = { "COPY", "MOVE", "LINK" };
   VString str = cm_mode_str[ a_mode ];
   if ( a_one )

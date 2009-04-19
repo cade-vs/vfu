@@ -24,7 +24,7 @@
 
   char bg_xlat_table[2][64] =
   {
-  " ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º¼¾¿€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™šœŸ",
+  " ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º¼¾¿€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—?™šœŸ",
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
   };
 
@@ -1655,11 +1655,13 @@
         save();
         return key;
       } else
-    if (key == 27 || key == KEY_ALT_X)
+    if ( key == 27 || key == KEY_ALT_X )
+      {
       if ( request_quit() == 0 )
         return key;
       else
         continue;
+      }
     if ( key == KEY_CTRL_K )
       {
       pend = key;

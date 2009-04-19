@@ -56,6 +56,7 @@ ToggleEntry Toggles[] =
   {  0 , "--compatibility--", NULL, NULL },
   { ' ', "Lynx style navigation",       &(opt.lynx_navigation), NOYES },
   { ' ', "Mask auto expand", &(opt.mask_auto_expand), NOYES },
+  { ' ', "Use CWD as target for COPY/MOVE", &(opt.default_copy_to_cwd), NOYES },
   {  0 , "--other--", NULL, NULL },
 /*  { ' ', "Can Zap/Erase READ-ONLY Files?!",       &(opt.zap_ro), NOYES }, ? */
   { 'b', "Allow beep!",       &(opt.allow_beep), NOYES },
