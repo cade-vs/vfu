@@ -29,7 +29,7 @@ void vfu_read_archive_files( int a_recursive )
     archive_path = ""; /* cannot have path when recursing archive */
   
   VString s;
-  s = "rx_auto ";
+  s = "/usr/lib/vfu/rx_auto ";
   s += ( a_recursive ) ? "v \"" : "l \"";
   s += archive_name;
   s += "\" ";
@@ -103,7 +103,7 @@ void vfu_browse_archive_file()
   VString fn = files_list[FLI]->full_name();
 
   VString s;
-  s = "rx_auto x \"";
+  s = "/usr/lib/vfu/rx_auto x \"";
   s += work_path;
   s += archive_name;
   s += "\" ";
@@ -136,7 +136,7 @@ void vfu_user_external_archive_exec( VString &shell_line  )
   VString fn = files_list[FLI]->full_name();
 
   VString s;
-  s = "rx_auto x \"";
+  s = "/usr/lib/vfu/rx_auto x \"";
   s += work_path;
   s += archive_name;
   s += "\" ";
@@ -198,7 +198,7 @@ void vfu_extract_files( int one )
   chmod( tmpfile, S_IRUSR|S_IWUSR );  
 
   VString s;
-  s = "rx_auto x \"";
+  s = "/usr/lib/vfu/rx_auto x \"";
   s += work_path;
   s += archive_name;
   s += "\" @";

@@ -201,7 +201,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
       {
       VString diff = vfu_temp();
       VString cmd;
-      cmd = shell_diff + " '" + src + "' '" + dst + "' > " + diff;
+      cmd = shell_diff + " '" + dst + "' '" + src + "' > " + diff;
       system( cmd );
       vfu_browse( diff );
       unlink( diff );

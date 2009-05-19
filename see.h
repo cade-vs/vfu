@@ -14,7 +14,7 @@
 
 #include <vslib.h>
 
-#define SEE_VERSION "4.05"
+#define SEE_VERSION "4.09"
 
 #define MAX_SEARCH_LEN  128
 #define MAX_PIPE_LEN  128
