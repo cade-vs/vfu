@@ -945,16 +945,16 @@ void vfu_run()
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
       case KEY_ALT_J  : vfu_jump_to_mountpoint( 1 ); break;
 
-      case KEY_ALT_0  : bookmark_goto( 0 ); break;
-      case KEY_ALT_1  : bookmark_goto( 1 ); break;
-      case KEY_ALT_2  : bookmark_goto( 2 ); break;
-      case KEY_ALT_3  : bookmark_goto( 3 ); break;
-      case KEY_ALT_4  : bookmark_goto( 4 ); break;
-      case KEY_ALT_5  : bookmark_goto( 5 ); break;
-      case KEY_ALT_6  : bookmark_goto( 6 ); break;
-      case KEY_ALT_7  : bookmark_goto( 7 ); break;
-      case KEY_ALT_8  : bookmark_goto( 8 ); break;
-      case KEY_ALT_9  : bookmark_goto( 9 ); break;
+      case KEY_ALT_0  : bookmark_goto( '0' ); break;
+      case KEY_ALT_1  : bookmark_goto( '1' ); break;
+      case KEY_ALT_2  : bookmark_goto( '2' ); break;
+      case KEY_ALT_3  : bookmark_goto( '3' ); break;
+      case KEY_ALT_4  : bookmark_goto( '4' ); break;
+      case KEY_ALT_5  : bookmark_goto( '5' ); break;
+      case KEY_ALT_6  : bookmark_goto( '6' ); break;
+      case KEY_ALT_7  : bookmark_goto( '7' ); break;
+      case KEY_ALT_8  : bookmark_goto( '8' ); break;
+      case KEY_ALT_9  : bookmark_goto( '9' ); break;
       case '`'        : bookmark_goto(-1 ); break;
 
       case 9          : vfu_edit_entry(); break;
@@ -2056,9 +2056,9 @@ void bookmark_goto( int n )
     case '`' : vfu_chdir( NULL ); return;
     case 'A' : bookmark_hookup(); return;
     }
-  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[n - '0'] ) > 0 )
+  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[ n - '0' ] ) > 0 )
     {
-    vfu_chdir( path_bookmarks[n - '0'] );
+    vfu_chdir( path_bookmarks[ n - '0' ] );
     return;
     }
 }
