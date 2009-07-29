@@ -945,7 +945,6 @@ void vfu_run()
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
       case KEY_ALT_J  : vfu_jump_to_mountpoint( 1 ); break;
 
-      case KEY_ALT_0  : bookmark_goto( '0' ); break;
       case KEY_ALT_1  : bookmark_goto( '1' ); break;
       case KEY_ALT_2  : bookmark_goto( '2' ); break;
       case KEY_ALT_3  : bookmark_goto( '3' ); break;
@@ -2041,30 +2040,40 @@ void bookmark_goto( int n )
     mb.push( "---" );
     for( z = 1; z < 10; z++ )
       {
-      const char* ps = path_bookmarks.get( z );
+      const char* ps = path_bookmarks.get( z-1 );
       if( !ps ) break;
       sprintf(t, "%d %s", z%10, ps );
       mb.push( str_dot_reduce( t, 60 ) );
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");
     if ( n == -1 ) return;
-    n++;
+    n = menu_box_info.ec;
     }
   // FIXME: neshto ne raboti :/
-  switch( menu_box_info.ec )
+  switch( n )
     {
     case '`' : vfu_chdir( NULL ); return;
     case 'A' : bookmark_hookup(); return;
     }
-  if ( n >= '0' && n <= '9' && str_len( path_bookmarks[ n - '0' ] ) > 0 )
+  if ( n >= '1' && n <= '9' && str_len( path_bookmarks[ n - '1' ] ) > 0 )
     {
-    vfu_chdir( path_bookmarks[ n - '0' ] );
+    vfu_chdir( path_bookmarks[ n - '1' ] );
     return;
     }
 }
 
 void bookmark_hookup()
 {
+  int found = -1;
+  for( int z = 0; z < path_bookmarks.count(); z++ )
+    {
+    if( work_path == path_bookmarks[z] ) found = z;
+    }
+  if( found > -1 )
+    {
+    say1( "Current directory is already hooked", chRED );
+    return;
+    }
   path_bookmarks.push( work_path );
   if ( path_bookmarks.count() > 10 )
     path_bookmarks.shift();

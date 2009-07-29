@@ -27,13 +27,12 @@ void vfu_read_archive_files( int a_recursive )
 
   if ( a_recursive )
     archive_path = ""; /* cannot have path when recursing archive */
-  
+
   VString s;
   s = "/usr/lib/vfu/rx_auto ";
-  s += ( a_recursive ) ? "v \"" : "l \"";
-  s += archive_name;
-  s += "\" ";
-  s += archive_path;
+  s += ( a_recursive ) ? "v" : "l";
+  s += " '" + archive_name + "' ";
+  s += " '" + archive_path + "' ";
   s += " 2> /dev/null";
   /* NOTE: calling rx_* should be safe and result should be proper
      all bugs must be traced outside VFU ...
@@ -82,7 +81,7 @@ void vfu_read_archive_files( int a_recursive )
       s = "";
       memset( &st, 0, sizeof(st) );
       }
-      
+
     }
   pclose( f );
 };
@@ -195,7 +194,7 @@ void vfu_extract_files( int one )
     say1( t );
     return;
     }
-  chmod( tmpfile, S_IRUSR|S_IWUSR );  
+  chmod( tmpfile, S_IRUSR|S_IWUSR );
 
   VString s;
   s = "/usr/lib/vfu/rx_auto x \"";

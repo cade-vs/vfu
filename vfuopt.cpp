@@ -236,6 +236,7 @@ void vfu_settings_load()
   see_filters.undef();
   panelizers.undef();
   archive_extensions.undef();
+  path_bookmarks.undef();
 
   /***** LOAD DEFAULTS *******/
 
@@ -352,6 +353,7 @@ void vfu_settings_load()
 
       if(set_arr( line, "bookmark",  path_bookmarks))continue;
       // follow 10 are deprecated
+      /*
       if(set_arr( line, "bookmark1", path_bookmarks))continue;
       if(set_arr( line, "bookmark2", path_bookmarks))continue;
       if(set_arr( line, "bookmark3", path_bookmarks))continue;
@@ -361,6 +363,7 @@ void vfu_settings_load()
       if(set_arr( line, "bookmark7", path_bookmarks))continue;
       if(set_arr( line, "bookmark8", path_bookmarks))continue;
       if(set_arr( line, "bookmark9", path_bookmarks))continue;
+      */
 
    /* if(set_str( line, "cblack"   , ext_colors[0]); */
       if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;
