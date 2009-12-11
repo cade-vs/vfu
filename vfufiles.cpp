@@ -80,7 +80,7 @@ void vfu_rescan_files( int a_recursive )
   file_list_index.set_page( old_flp );
   file_list_index.set_pos( old_fli );
   vfu_nav_update_pos();
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -137,7 +137,7 @@ void vfu_read_files( int a_recursive )
   say1( "" );
   say2( "" );
   do_draw = 2;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -185,7 +185,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     say1( ne );
     }
   return 0;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -248,7 +248,7 @@ void vfu_read_local_files( int a_recursive )
      }
    unlink( tmp_file_name );
    }
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -286,7 +286,7 @@ void vfu_read_external_files()
     }
   pclose( f );
   external_panelizer = ""; /* reset -- there's no reload on this */
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -491,7 +491,7 @@ void vfu_sort_files()
         FGO(z);
         break;
         }
-    };
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -588,7 +588,7 @@ void vfu_file_entry_move()
     }
   say1( " " );
   say2( " " );
-};
+}
 
 /*###########################################################################*/
 

@@ -78,12 +78,12 @@ time_t vfu_opt_time( const struct stat st )
   if (opt.f_time_type == 1) return st.st_mtime; else
   if (opt.f_time_type == 2) return st.st_atime; else
   return 0;
-};
+}
 
 time_t vfu_opt_time( const struct stat* st )
 {
   return vfu_opt_time( *st );
-};
+}
 
 time_t vfu_opt_time( time_t ctime, time_t mtime, time_t atime )
 {
@@ -151,7 +151,7 @@ void vfu_load_dir_colors()
       }
 
   #endif /* _TARGET_UNIX_ */
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -223,7 +223,7 @@ int key_by_name( const char* key_name )
       return KEY_SH_F1 + atoi( key_name + 2 ) - 1;
     }
   return 0;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -484,5 +484,5 @@ void vfu_options()
   vfu_redraw_status();
   say1("");
   say2("");
-};
+}
 

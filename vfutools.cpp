@@ -146,41 +146,41 @@ void vfu_tool_rename()
     case '3' :
     case '4' :
     case '5' :
-    case '6' : 
+    case '6' :
     case '_' :
     case 'Y' :
                err = 0;
                for ( z = 0; z < files_count; z++ )
                  {
                  TF* fi = files_list[z];
-                 
+
                  // if ( fi->is_dir() ) continue; // why not? ;)
                  if ( !fi->sel ) continue;
                  path = str_file_path( fi->name() );
                  new_name = "";
-                 
+
                  t = str_file_name( fi->name() );
                  if (menu_box_info.ec == '1' || menu_box_info.ec == '2')
                    str_low( t );
                  if (menu_box_info.ec == '4' || menu_box_info.ec == '5')
                    str_up( t );
                  new_name += t;
-                 
+
                  t = str_file_ext( fi->name() );
                  if (menu_box_info.ec == '1' || menu_box_info.ec == '3')
                    str_low( t );
                  if (menu_box_info.ec == '4' || menu_box_info.ec == '6')
                    str_up( t );
-                 
+
                  if (strlen(t) > 0)
                    {
                    new_name += ".";
                    new_name += t;
                    }
-                 
+
                  if (menu_box_info.ec == '_')
                    str_tr( new_name, " ", "_" );
-                 
+
                  if (menu_box_info.ec == 'Y')
                    {
                    str_replace( new_name, "%20", "_" );
@@ -189,9 +189,9 @@ void vfu_tool_rename()
                    str_squeeze( new_name, "_" );
                    str_replace( new_name, "_-_", "-" );
                    }
-                 
+
                  new_name = path + new_name;
-                 
+
                  if ( !file_exist( new_name) )
                    {
                    if (rename( fi->name(), new_name ) == 0) /* FIXME: full name ? */
@@ -208,9 +208,9 @@ void vfu_tool_rename()
                sprintf( t, "Rename complete (errors: %d)", err );
                say1( t );
                break;
-    
+
     }
-};
+}
 
 /*------------------------------------------------------------------------*/
 
@@ -220,7 +220,7 @@ void vfu_tool_seq_rename()
   VString suffix;
   VString s_digpos;
   VString s_start;
-  
+
   if(!vfu_get_str( "Enter filename prefix: ", prefix, HID_SEQ_PREFIX )) return;
   if(!vfu_get_str( "Enter filename suffix: ", suffix, HID_SEQ_SUFFIX )) return;
   if(!vfu_get_str( "Enter digit places: (digits only) ", s_digpos, HID_SEQ_DIGPOS )) return;
@@ -235,7 +235,7 @@ void vfu_tool_seq_rename()
   VString new_name;
   VString t;
   VString fmt;
-  
+
   sprintf( fmt, "%%s%%0%dd%%s", digpos );
 
   int err = 0;
@@ -243,21 +243,21 @@ void vfu_tool_seq_rename()
   for ( z = 0; z < files_count; z++ )
     {
     TF* fi = files_list[z];
-  
+
     if ( fi->is_dir() ) continue;
     if ( !fi->sel ) continue;
-    
+
     sprintf( new_name, fmt, prefix.data(), start, suffix.data() );
-    
+
     t = str_file_path( fi->name() ); /* FIXME: full name? */
     new_name = t + new_name;
-    
+
     if (access( new_name, F_OK ) == 0) { err++; continue; }
     if (rename( fi->name(), new_name )) { err++; continue; }
     fi->set_name( new_name );
     do_draw = 2; /* FIXME: this should be optimized? */
     start++;
-    
+
     }
   sprintf( t, "Rename complete (errors: %d)", err );
   say1( t );
@@ -276,11 +276,11 @@ void vfu_tool_replace_sym_org( int swap )
   for ( z = 0; z < files_count; z++ )
     {
     TF* fi = files_list[z];
-  
+
     if ( fi->is_dir() ) continue; // FIXME: dali?
     if ( !fi->sel ) continue;
     if ( !fi->is_link() ) continue;
-    
+
     VString sym = fi->full_name();
     VString org = vfu_readlink( sym );
 

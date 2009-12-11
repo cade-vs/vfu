@@ -46,7 +46,7 @@ fsize_t device_free_space( const char *target ) /* user free space, NOT real! */
   struct statfs stafs;
   statfs( str_file_path( target ), &stafs );
   return ((fsize_t)(stafs.f_bsize)) * stafs.f_bfree;
-};
+}
 
 /*
  *  return 0 if src and dst are actually the same file
@@ -68,7 +68,7 @@ int file_is_same( const char *src, const char *dst )
     return !( st1.st_dev == st2.st_dev && /* same device */
               st1.st_ino == st2.st_ino ); /* same inode */
   #endif
-};
+}
 
 /*
   return 0 if src and dst are on the same device
@@ -100,7 +100,7 @@ int device_is_same( const char *src, const char *dst )
     if(stat( _f2, &st2 )) return 1;
     return !( st1.st_dev == st2.st_dev );
   #endif
-};
+}
 
 #ifdef _TARGET_GO32_
   int fast_stat( const char* s, struct stat *st )
@@ -117,7 +117,7 @@ int device_is_same( const char *src, const char *dst )
       int r = stat( s, st );
       _djstat_flags = 0;
       return r;
-  };
+  }
 #else
   #define fast_stat stat
 #endif
@@ -248,7 +248,7 @@ int vfu_copy_mode( const char* src, const char* dst )
     chown( dst, st.st_uid, st.st_gid );
 
   return 0;
-};
+}
 
 /***************************************************************************
 **
@@ -500,7 +500,7 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
   if ( vfu_copy_mode( src, dst ) ) return 1;
 
   return 0;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -528,7 +528,7 @@ int __vfu_dir_move( const char* src, const char* dst, CopyInfo* copy_info )
     if ( __vfu_dir_erase( src ) ) return 1;
     }
   return 0;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -558,7 +558,7 @@ int __vfu_link_copy( const char* src, const char* dst, CopyInfo* copy_info )
     /* FIXME: should we keep src mode? does links have this? */
     return 0;
   #endif /* _TARGET_UNIX_ */
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -571,7 +571,7 @@ int __vfu_link_move( const char* src, const char* dst, CopyInfo* copy_info )
   r = __vfu_link_erase( src );
   if ( r && r != CR_SKIP ) return 1;
   return 0;
-};
+}
 
 /* erase *******************************************************************/
 
@@ -660,7 +660,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
     }
   say1( target );
   return ( rmdir( target ) != 0 );
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -682,7 +682,7 @@ int __vfu_file_erase( const char* target, fsize_t* bytes_freed  )
   if ( r == 0 && bytes_freed )
     *bytes_freed += target_size;
   return (r != 0);
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -695,7 +695,7 @@ int __vfu_link_erase( const char* target, fsize_t* bytes_freed )
   #else
     return (unlink( target ) != 0);
   #endif
-};
+}
 
 
 /* shells, call __*_*_*() above ********************************************/
@@ -712,7 +712,7 @@ int __vfu_copy( const char* src, const char* dst, CopyInfo* copy_info )
     r = __vfu_file_copy( src, dst, copy_info ); /* regular file */
 
   return r;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -728,7 +728,7 @@ int __vfu_move( const char* src, const char* dst, CopyInfo* copy_info )
     r = __vfu_file_move( src, dst, copy_info ); /* regular file */
 
   return r;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -765,7 +765,7 @@ int __vfu_erase( const char* target, fsize_t* bytes_freed )
     r = __vfu_file_erase( target, bytes_freed ); /* regular file */
 
   return r;
-};
+}
 
 /* high-level interface functions ******************************************/
 
@@ -953,7 +953,7 @@ void vfu_copy_files( int a_one, int a_mode )
   say2( str );
 
   ignore_copy_errors = 0;
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -1041,7 +1041,7 @@ void vfu_erase_files( int a_one )
     say2( "ERASE DONE" );
 
   ignore_copy_errors = 0;
-};
+}
 
 /***************************************************************************
 **
@@ -1080,7 +1080,7 @@ void clipboard_add()
   say( 1, cINFO, "CLIPBOARD: %d files added.",
                  clipboard_copy_info.files_count );
   say2( "" );
-};
+}
 
 void clipboard_paste( int mode )
 {
@@ -1134,7 +1134,7 @@ void clipboard_paste( int mode )
                  clipboard_copy_info.files_count );
 
   if ( mode == CLIPBOARD_MOVE ) clipboard_clear();
-};
+}
 
 void clipboard_clear()
 {
@@ -1144,7 +1144,7 @@ void clipboard_clear()
     say( 2, cINFO, "CLIPBOARD: empty" );
   Clipboard.undef();
   clipboard_copy_info.reset();
-};
+}
 
 void clipboard_view()
 {
@@ -1155,7 +1155,7 @@ void clipboard_view()
     return;
     }
   vfu_menu_box( 5, 5, "File Clipboard Content" );
-};
+}
 
 void clipboard_menu( int act )
 {

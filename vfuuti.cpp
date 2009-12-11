@@ -318,7 +318,7 @@ void vfu_hist_add( int hist_id, const char* str )
     }
   if (z) z++;
   history.ins( 0, hstr );
-};
+}
 
 const char* vfu_hist_get( int hist_id, int index )
 {
@@ -335,7 +335,7 @@ const char* vfu_hist_get( int hist_id, int index )
       i++;
       }
   return NULL;
-};
+}
 
 char* vfu_hist_get( int hist_id, int index, char* str )
 {
@@ -343,7 +343,7 @@ char* vfu_hist_get( int hist_id, int index, char* str )
   const char* pstr = vfu_hist_get( hist_id, index );
   if ( pstr ) strcpy( str, pstr );
   return str;
-};
+}
 
 int vfu_hist_index( int hist_id, const char* value )
 {
@@ -353,7 +353,7 @@ int vfu_hist_index( int hist_id, const char* value )
     if ( strcmp( value, vfu_hist_get( hist_id, z ) ) == 0 )
       return z;
   return -1;
-};
+}
 
 int vfu_hist_count( int hist_id )
 {
@@ -365,7 +365,7 @@ int vfu_hist_count( int hist_id )
   for ( z = 0; z < history.count(); z++ )
     cnt += ( strncmp( hstr, history[z], HISTIDPAD+1 ) == 0 );
   return cnt;
-};
+}
 
 // use hist_id=-1 and/or index=-1 to remove all
 void vfu_hist_remove( int hist_id, int index )
@@ -381,8 +381,8 @@ void vfu_hist_remove( int hist_id, int index )
     if ( index != -1 && index != i ) { z++; i++; continue; }
     history.del( z );
     if ( index != -1 ) break;
-    };
-};
+    }
+}
 
 static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int vfu_hist_menu( int x, int y, const char* title, int hist_id )
@@ -402,7 +402,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
     mb.push( str );
     }
   return vfu_menu_box( x, y, title );
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -446,7 +446,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
   if( r )
     vfu_hist_add( hist_id, target );
   return ( r != 0 );
-};
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -459,7 +459,7 @@ const char* vfu_temp()
     mkstemp( vfu_temp_filename );
     unlink( vfu_temp_filename );
     return vfu_temp_filename;
-};
+}
 
 /*###########################################################################*/
 

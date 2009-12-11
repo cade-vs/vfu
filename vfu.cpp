@@ -131,7 +131,7 @@ void say( int line, int attr, const char* format, ... )
   say_str = str_dot_reduce( say_buf, con_max_x()-1 );
   con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
   con_ce( attr );
-};
+}
 
 void say1(const char *a_str, int attr )
 {
@@ -161,7 +161,7 @@ void saycenter( int line, int attr, const char *a_str )
     str = str + a_str;
     }
   say( line, attr, "%s", str.data() );
-};
+}
 
 void say1center(const char *a_str, int attr )
 {
@@ -188,14 +188,14 @@ void TF::reset() /* reset -- NULL all fields */
   _view = NULL;
   _color = cPLAIN;
   sel = 0;
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
 TF::TF()
 {
   reset();
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -204,7 +204,7 @@ TF::TF( const char* a_name, const struct stat* a_stat, int a_is_link )
   reset();
   set_name( a_name );
   update_stat( a_stat, a_is_link );
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -213,7 +213,7 @@ TF::~TF()
   if ( _name ) delete [] _name;
   if ( _view ) delete [] _view;
   reset();
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -236,7 +236,7 @@ const char* TF::full_name( int fix )
   if ( fix && _is_dir )
     strcat( _full_name, "/" ); /* i.e. str_fix_path() */
   return _full_name;
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -262,7 +262,7 @@ void TF::set_name( const char* a_new_name )
   _color = get_item_color( this ); /* this is duplicated here and in update_stat() */
 
   drop_view();
-};
+}
 
 /*-----------------------------------------------------------------------*/
 
@@ -413,7 +413,7 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
   _color = get_item_color( this );
 
   drop_view();
-};
+}
 
 /*######################################################################*/
 
@@ -490,7 +490,7 @@ void vfu_help()
   vfu_menu_box( 1, 4, "VFU Help ( PageUp/PageDown to scroll )" );
   mb.undef();
   do_draw = 1;
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -1083,7 +1083,7 @@ void vfu_signal( int sig )
 
   printf( "vfu: signal received: %d -- terminated\n", sig );
   exit(200);
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -1112,7 +1112,7 @@ void vfu_toggle_view_fields( int ch )
     default  : return; /* cannot be reached really */
     }
   vfu_drop_all_views();
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -1219,7 +1219,7 @@ void vfu_edit( const char *fname )
     {
     say1( "Cannot edit directory");
     return;
-    };
+    }
   con_cs();
   if ( opt.internal_editor )
     {
@@ -1394,7 +1394,7 @@ void vfu_action_plus( int key )
       { /* file */
       vfu_browse_archive_file();
       }
-    };
+    }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1620,7 +1620,7 @@ void vfu_global_select()
       {
       say1( "GlobalSelect/Extended not available in this mode." );
       return;
-      };
+      }
     mb.undef();
     mb.push( "A Select to begin" );
     mb.push( "E Select to end" );
@@ -1646,22 +1646,22 @@ void vfu_global_select()
                for (int z = 0; z < files_count; z++)
                  if (!files_list[z]->is_dir())
                    files_list[z]->sel = 1;
-               }; break;
+               } break;
     case 'A' : {
                for (int z = 0; z < files_count; z++)
                  files_list[z]->sel = 1;
-               }; break;
+               } break;
     case 'R' : {
                int z;
                for (z = 0; z < files_count; z++)
                  if (!files_list[z]->is_dir())
                    files_list[z]->sel = !files_list[z]->sel;
-               }; break;
+               } break;
     case 'C' : {
                int z;
                for (z = 0; z < files_count; z++)
                    files_list[z]->sel = 0;
-               }; break;
+               } break;
     case 'P' :
                {
                int z;
@@ -1674,7 +1674,7 @@ void vfu_global_select()
                    }
                  }
                vfu_pack_files_list();
-               }; break;
+               } break;
     case 'H' :
                {
                int z;
@@ -1687,7 +1687,7 @@ void vfu_global_select()
                    }
                  }
                vfu_pack_files_list();
-               }; break;
+               } break;
     case '.' :
                {
                int z;
@@ -1700,7 +1700,7 @@ void vfu_global_select()
                    }
                  }
                vfu_pack_files_list();
-               }; break;
+               } break;
     case ',' :
                {
                int z;
@@ -1713,7 +1713,7 @@ void vfu_global_select()
                    }
                  }
                vfu_pack_files_list();
-               }; break;
+               } break;
     case '+' :
     case '=' :
     case '-' :
@@ -1747,14 +1747,14 @@ void vfu_global_select()
                 }
               say1( " " );
               say2( " " );
-              }; break;
+              } break;
     case 'D' :
               {
               if ( work_mode != WM_NORMAL )
                 {
                 say1( "GlobalSelect/Different not available in this mode." );
                 break;
-                };
+                }
               VString target;
               if ( vfu_get_dir_name( "Target directory:", target ))
                 {
@@ -1771,7 +1771,7 @@ void vfu_global_select()
                 }
               say1( "Done." );
               say2( " " );
-              }; break;
+              } break;
     case '/':
     case '\\':
     case 'E':
@@ -1859,7 +1859,7 @@ void vfu_global_select()
                 case 'A' : vfu_global_select_same( GSAME_MODE  ); break;
                 case 'Y' : vfu_global_select_same( GSAME_TYPE  ); break;
                 }
-              }; break;
+              } break;
     case 'M': {
               mode_str_t mode_str;
               strcpy( mode_str, MODE_STRING );
@@ -1870,19 +1870,19 @@ void vfu_global_select()
                      (strcmp( files_list[z]->mode_str()+1, mode_str+1 ) == 0);
                 do_draw = 1;
                 }
-              }; break;
+              } break;
     case '<' : {
                if( files_count > 0)
                  for (int z = 0; z <= FLI; z++)
                    if (!files_list[z]->is_dir())
                      files_list[z]->sel = 1;
-               }; break;
+               } break;
     case '>' : {
                if( files_count > 0)
                  for (int z = FLI; z < files_count; z++)
                    if (!files_list[z]->is_dir())
                      files_list[z]->sel = 1;
-               }; break;
+               } break;
     }
   update_status();
   do_draw = 1;
@@ -1921,7 +1921,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
     return z;
     }
   return -1;
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -2609,7 +2609,7 @@ void vfu_user_menu()
     VString str = lines[z];
     vfu_user_external_archive_exec( str );
     }
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -2664,7 +2664,7 @@ void vfu_file_find_results()
 
   file_find_results.fsave( filename_ffr );
   con_cs();
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -2799,7 +2799,7 @@ void vfu_file_find( int menu )
   file_find_results.undef();
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
@@ -2828,7 +2828,7 @@ void vfu_read_files_menu()
       str_set_ch( t, 0, toupper(str_get_ch(t, 0)) );
       mb.push(t);
       list.push(str);
-      };
+      }
     }
   z = vfu_menu_box( 25, 5, "Read/Rescan Files" );
   if ( z == -1 )
@@ -2850,7 +2850,7 @@ void vfu_read_files_menu()
     case 'R' : vfu_read_files( 1 ); break;
     case 'L' : con_cs(); vfu_drop_all_views(); do_draw = 2; break;
     }
-};
+}
 
 /*--------------------------------------------------------------------------*/
 
