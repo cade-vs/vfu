@@ -56,6 +56,13 @@ void vfu_read_archive_files( int a_recursive )
         }
         /* FIXME: my man page for stat() says S_IFDIR is not POSIX?! */
       } else
+    if ( strncmp( line, "MODE:", 5 ) == 0 )
+      {
+      VString ms = line + 5;
+      if( ms[0] == 'd' )
+        st.st_mode |= S_IFDIR;
+      // FIXME: parse and the rest of the modeline
+      } else
     if ( strncmp( line, "SIZE:", 5 ) == 0 )
       {
       st.st_size = atoi( line+5 );
