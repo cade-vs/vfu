@@ -273,7 +273,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       {
       con_chide();
       int zz = vfu_hist_menu( 5, 5, ( ch == KEY_PPAGE ) ? "Dir Entry History" : "ChDir History",
-                              ( ch == KEY_PPAGE ) ? HID_GETDIR : HID_CHDIR );
+                                    ( ch == KEY_PPAGE ) ? HID_GETDIR : HID_CHDIR );
       con_cshow();
       if (zz != -1)
         {

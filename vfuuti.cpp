@@ -298,7 +298,8 @@ void vfu_beep()
 
 /*###########################################################################*/
 
-#define MAXHIST         14      // max history items per id
+static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+#define MAXHIST         128      // max history items per id
 #define HISTIDPAD       8
 
 void vfu_hist_add( int hist_id, const char* str )
@@ -384,7 +385,6 @@ void vfu_hist_remove( int hist_id, int index )
     }
 }
 
-static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 {
   VString str;
@@ -393,11 +393,12 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
   int z;
   int cnt = vfu_hist_count( hist_id );
   if ( cnt < 1 ) return -1;
+  if ( cnt > con_max_y() - 9 ) cnt = con_max_y() - 9; // limit to visible space
   for ( z = 0; z < cnt; z++ )
     {
-    ASSERT( z < str_len( hist_menu_hotkeys ) );
+//    ASSERT( z < str_len( hist_menu_hotkeys ) );
     str = "";
-    str_add_ch( str, hist_menu_hotkeys[z] );
+    str_add_ch( str, z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
     str = str + " " + vfu_hist_get( hist_id, z );
     mb.push( str );
     }
