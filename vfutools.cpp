@@ -20,19 +20,20 @@
 void __get_classify_str( const char *fname, char ch, char *tmp )
 {
   tmp[0] = 0;
+  strcpy( tmp, str_file_path( fname ) );
   if (ch == 'N')
     {
-    strcpy( tmp, str_file_name( fname ) );
+    strcat( tmp, str_file_name( fname ) );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     } else
   if (ch == 'E')
     {
-    strcpy( tmp, str_file_ext( fname ) );
+    strcat( tmp, str_file_ext( fname ) );
     if (strlen(tmp) == 0) strcat( tmp, "---" );
     }
   else
     {
-    strcpy( tmp, str_file_name( fname ) );
+    strcat( tmp, str_file_name( fname ) );
     str_sleft( tmp, ch - '0' );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     }
