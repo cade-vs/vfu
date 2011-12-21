@@ -28,8 +28,6 @@ int get_item_color( TF *fi )
   if (!opt.use_colors)
     return cNORMAL; /* don't use colors -- option */
 
-  //if ( fi->is_dir() ) return cCYAN; // dirs are cCYAN by default
-
   str = fi->name();
   if ( str_get_ch( str, 0 ) == '.' )
     str = ".dotfiles";
