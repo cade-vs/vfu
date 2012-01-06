@@ -129,6 +129,11 @@ void vfu_draw( int n )
     c += cBOLD;
     /* this is a hack, can be removed w/o warning :) -- more visibility */
     if ( c == 120 ) c = cTAG; // 116; // 123; // 63; // 123
+    //str_replace( view, " ", "_" );
+    //c += A_UNDERLINE;
+    //c += A_STANDOUT;
+    //str_replace( view, " ", "-" );
+    //c = CONCOLOR(cWHITE,cBLUE);
     }
   con_out( 1, n - FLP + 4, view, c );
   //  con_ce( c );

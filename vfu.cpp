@@ -2896,7 +2896,10 @@ void vfu_inc_search()
       if( s_size )
         found = files_list[z]->size() == s_size;
       else
-        found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
+        if( opt.no_case_glob )
+          found = ( FNMATCH_NC( s_mask, files_list[z]->name_ext() ) == 0 );
+        else
+          found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
       if ( found ) break;
       z += direction;
       if ( loops++ > files_count ) break;

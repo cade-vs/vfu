@@ -62,6 +62,8 @@
 
     int zap_ro; /* zap/erase read-only files */
 
+    int no_case_glob;
+
     int show_user_free; /* ...space instead of real fs free */
     int menu_borders;
 

@@ -59,6 +59,7 @@ ToggleEntry Toggles[] =
   { ' ', "Use CWD as target for COPY/MOVE", &(opt.default_copy_to_cwd), NOYES },
   {  0 , "--other--", NULL, NULL },
 /*  { ' ', "Can Zap/Erase READ-ONLY Files?!",       &(opt.zap_ro), NOYES }, ? */
+  { ' ', "Case insensitive file/dir names matching",       &(opt.no_case_glob), NOYES },
   { 'b', "Allow beep!",       &(opt.allow_beep), NOYES },
   { 's', "Free space check on copy",  &(opt.copy_free_space_check), NOYES },
   { ' ', "Auto mount on change dir",  &(opt.auto_mount), NOYES},

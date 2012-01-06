@@ -40,7 +40,12 @@ VArray size_cache;
         {
         if ( strcmp( de->d_name, "." ) == 0 ||
              strcmp( de->d_name, ".." ) == 0 ) continue;
-        if ( a_fnpattern[0] == 0 || FNMATCH( pat, de->d_name)==0 )
+        int match_ok = 0;
+        if( opt.no_case_glob )
+          match_ok = FNMATCH_NC( pat, de->d_name) == 0;
+        else
+          match_ok = FNMATCH( pat, de->d_name) == 0;
+        if ( a_fnpattern[0] == 0 || match_ok )
           {
           VString str; // = a_path;
           str += de->d_name;
@@ -172,8 +177,14 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
             int li; /* counter */
             for ( li = 0; li < dir_list.count(); li++ )
               {
-              if ( str_get_ch( dir_list[ 0], mi ) ==
-                   str_get_ch( dir_list[li], mi ) )
+              char ch1 = str_get_ch( dir_list[ 0], mi );
+              char ch2 = str_get_ch( dir_list[li], mi );
+              if( opt.no_case_glob )
+                {
+                ch1 = toupper( ch1 );
+                ch2 = toupper( ch2 );
+                }
+              if ( ch1 == ch2 )
                 mc++;
               }
             if ( mc != dir_list.count() )
