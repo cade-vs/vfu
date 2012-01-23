@@ -2699,7 +2699,7 @@ int __ff_process( const char* origin,    /* origin path */
   int add = 0;
   int z;
   for ( z = 0; z < __ff_masks.count(); z++ )
-    if ( FNMATCH( __ff_masks[z], pc ) == 0 )
+    if ( opt.no_case_glob ? FNMATCH_NC( __ff_masks[z], pc ) == 0 : FNMATCH( __ff_masks[z], pc ) == 0 )
       {
       add = 1;
       break;

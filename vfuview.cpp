@@ -22,11 +22,27 @@ int tag_mark_pos;
 int get_item_color( TF *fi )
 {
   VString str;
+  int z;
 
   ASSERT( fi );
 
   if (!opt.use_colors)
     return cNORMAL; /* don't use colors -- option */
+
+  /* try to find file type color first */
+
+  str = fi->type_str();
+  str = "." + str + ".";
+
+  if ( str != ".." )
+    {
+    for ( z = cBLACK; z <= chWHITE; z++ )
+      if (str_find( ext_colors[z], str ) != -1)
+        return z;
+    }
+
+
+  /* regular file, try to find extension color */
 
   str = fi->name();
   if ( str_get_ch( str, 0 ) == '.' )
@@ -44,18 +60,6 @@ int get_item_color( TF *fi )
   /* under dos/windows file names are not case sensitive */
   str_low( str );
   #endif
-
-  int z;
-  if ( str != ".." )
-    {
-    for ( z = cBLACK; z <= chWHITE; z++ )
-      if (str_find( ext_colors[z], str ) != -1)
-        return z;
-    }
-
-  /* extension not found -- try type string */
-  str = fi->type_str();
-  str = "." + str + ".";
 
   if ( str != ".." )
     {
