@@ -169,15 +169,24 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         {
         if ( dir_list.count() > 1)
           {
+          int li; /* counter */
+          int xm = 0; /* exact match entry  */
+          for ( li = 0; li < dir_list.count(); li++ )
+            {
+            VString tmp1;
+            if( dtail != str_copy( tmp1, dir_list[li], 0, str_len( dtail ) ) )
+              continue;
+            xm = li;
+            break;
+            }
           int mc = 0; /* match count        */
           int mi = 0; /* match letter index */
           while(4)
             {
             mc = 0;
-            int li; /* counter */
             for ( li = 0; li < dir_list.count(); li++ )
               {
-              char ch1 = str_get_ch( dir_list[ 0], mi );
+              char ch1 = str_get_ch( dir_list[xm], mi );
               char ch2 = str_get_ch( dir_list[li], mi );
               if( opt.no_case_glob )
                 {
@@ -191,7 +200,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
               break;
             mi++;
             }
-          target.setn( dmain + dir_list[0], str_len( dmain ) + mi );
+          target.setn( dmain + dir_list[xm], str_len( dmain ) + mi );
           pos = str_len( target );
           say2( target, cINPUT );
           con_xy( pos+1, con_max_y() );
