@@ -16,6 +16,7 @@
 #include "vfuview.h"
 #include "vfusys.h"
 #include "vfucopy.h"
+#include <errno.h>
 
 /****************************************************************************
 **
@@ -41,11 +42,12 @@ CopyInfo clipboard_copy_info;
 **
 ****************************************************************************/
 
-fsize_t device_free_space( const char *target ) /* user free space, NOT real! */
+fsize_t device_free_space( const char *target ) /* TODO: get bavail/bfree depending on current user */
 {
   struct statfs stafs;
-  statfs( str_file_path( target ), &stafs );
-  return ((fsize_t)(stafs.f_bsize)) * stafs.f_bfree;
+  int res = statfs( str_file_path( target ), &stafs );
+  if( res == 0 ) return ((fsize_t)(stafs.f_bsize)) * stafs.f_bfree;
+  return 0;
 }
 
 /*
@@ -340,8 +342,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       aborted = 1;
       break;
       }
-    z = fread(copy_buff, 1, COPY_BUFFER_SIZE, f1);
-    if (z > 0) z = fwrite(copy_buff, 1, z, f2);
+    z = fread( copy_buff, 1, COPY_BUFFER_SIZE, f1 );
+    if (z > 0) z = fwrite( copy_buff, 1, z, f2 );
     if (z == -1)
       {
       fclose(f1);
@@ -353,7 +355,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
     ASSERT( cp <= size );
     show_copy_pos( cp, size, copy_info );
     }
-  while (z == COPY_BUFFER_SIZE);
+  while ( z == COPY_BUFFER_SIZE );
 
   fclose(f1);
   fclose(f2);

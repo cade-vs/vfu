@@ -25,8 +25,8 @@ void __get_classify_str( const char *fname, char ch, char *tmp )
     {
     strcat( tmp, str_file_name( fname ) );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
-    } else
-  if (ch == 'E')
+    }
+  else if (ch == 'E')
     {
     strcat( tmp, str_file_ext( fname ) );
     if (strlen(tmp) == 0) strcat( tmp, "---" );
@@ -73,16 +73,18 @@ void vfu_tool_classify()
     if ( files_list[z]->is_dir() ) continue;
     if ( !files_list[z]->sel  ) continue;
     __get_classify_str( files_list[z]->name(), ch, tmp );
-    tl = strlen( tmp );
+//    tl = strlen( tmp );
     int found = 0;
     for ( i = 0; i < mb.count(); i++ )
-      if ( pathncmp( tmp, mb[i], tl ) == 0 ) { found = 1; break; }
+      // if ( pathncmp( tmp, mb[i], tl ) == 0 ) { found = 1; break; }
+      if ( pathcmp( tmp, mb[i] ) == 0 ) { found = 1; break; }
     if (!found) mb.push(tmp);
     }
   for ( i = 0; i < mb.count(); i++ )
     {
+    if( dir_exist( mb[i] ) ) continue;
     int res = make_path( mb[i] );
-    if ( res && !dir_exist( mb[i] ) )
+    if ( res )
       {
       char t[MAX_PATH];
       sprintf( t, "Cannot create directory: %s, (press a key for cancel)", mb.get(i) );
@@ -103,6 +105,7 @@ void vfu_tool_classify()
     if ( !fi->sel  ) continue;
     __get_classify_str( fi->name(), ch, tmp );
     strcat( tmp, "/" );
+    ASSERT( dir_exist( tmp ) );
     strcat( tmp, fi->name_ext());
     if ( __vfu_file_move( fi->name(), tmp, &copy_info ) == 255 ) break;
     }
