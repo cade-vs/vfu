@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfuuti.h,v 1.9 2005/08/28 14:02:19 cade Exp $
  *
  */
 
@@ -26,7 +24,7 @@ int vfu_update_shell_line( VString &a_line, VString &a_options );
 int vfu_break_op(); /* return != 0 if ESC pressed, non blocking */
 int vfu_ask( const char *prompt, const char *allowed ); /* blocking */
 /* used before copy/move to calc estimated size */
-fsize_t vfu_update_sel_size( int one ); 
+fsize_t vfu_update_sel_size( int one );
 VString& vfu_expand_mask( VString& mask );
 char* time_str_compact( const time_t tim, char* buf );
 void vfu_beep();

@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfusys.cpp,v 1.8 2003/01/29 22:59:16 cade Exp $
  *
  */
 
@@ -192,8 +190,8 @@ int file_get_sfn( const char *in, char *out )
 
   __dpmi_regs r;
   dosmemput(src, strlen (src)+1, __tb);
-  r.x.ax = 0x7160;		/* Truename */
-  r.x.cx = 1;			/* Get short name */
+  r.x.ax = 0x7160;    /* Truename */
+  r.x.cx = 1;     /* Get short name */
   r.x.ds = r.x.es = __tb / 16;
   r.x.si = r.x.di = __tb & 15;
   __dpmi_int(0x21, &r);
@@ -216,8 +214,8 @@ int file_get_lfn( const char *in, char *out )
 
   __dpmi_regs r;
   dosmemput(src, strlen (src)+1, __tb);
-  r.x.ax = 0x7160;		/* Truename */
-  r.x.cx = 2;			/* Get long name */
+  r.x.ax = 0x7160;    /* Truename */
+  r.x.cx = 2;     /* Get long name */
   r.x.ds = r.x.es = __tb / 16;
   r.x.si = r.x.di = __tb & 15;
   __dpmi_int(0x21, &r);

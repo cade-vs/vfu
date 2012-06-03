@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfu.h,v 1.18 2006/09/01 21:34:26 cade Exp $
  *
  */
 
@@ -125,9 +123,9 @@
       char*         _view; /* up to screen width */
       int           _color; /* view colors */
 
-      /* !!! this is used when full name required */ 
+      /* !!! this is used when full name required */
       /* and this is not thread-safe :) */
-      static char   _full_name[MAX_PATH]; 
+      static char   _full_name[MAX_PATH];
 
       void          reset(); /* reset -- NULL all fields */
       void          refresh_view(); /* this is called by view() only! */
@@ -141,32 +139,32 @@
       const char*   name() { ASSERT(_name); return (const char*)_name; }
       const char*   name_ext() { ASSERT(_name_ext); return (const char*)_name_ext; }
       const char*   ext() { ASSERT(_ext); return (const char*)_ext; }
-    
+
       void          set_name( const char* a_new_name );
       const char*   view();
       void          drop_view();
 
       void          update_stat( const struct stat* a_new_stat = NULL, int a_is_link = -1 );
-      
+
       const char*   type_str() { return (const char*)_type_str; }
       const char*   mode_str() { return (const char*)_mode_str; }
       const struct  stat* st() { return (const struct stat*)&_st; }
-      
+
       void          set_size( fsize_t a_new_size );
       fsize_t       size() { if ( _is_dir && _size == -1 ) return 0; else return _size; }
-      
+
       int           is_link() { return _is_link; }
       int           is_dir() { return _is_dir; }
-      
+
       int           color() { return _color; }
-      
+
       /* public member variables */
       int           sel; /* this saves set/get_sel() functions :) */
       int           x; /* misc used extra field */
     };
 
 /*######################################################################*/
-  
+
   #define WM_NORMAL    0
   #define WM_ARCHIVE   1
 
@@ -180,7 +178,7 @@
 
   extern VString external_panelizer;
   extern VArray list_panelizer;
-  
+
   extern TF*        files_list[MAX_FILES];
   /* file list statistics */
   extern int        files_count;
@@ -193,7 +191,7 @@
   extern fsize_t    fs_block_size;
   /* index in the files list */
   /* NOTE: following defines are kept for historical reasons :) */
-  extern  ScrollPos file_list_index; 
+  extern  ScrollPos file_list_index;
   #define FLI       (file_list_index.pos())
   #define FLP       (file_list_index.page())
   #define PS        (file_list_index.pagesize())
@@ -204,7 +202,7 @@
   extern VString home_path;
   extern VString tmp_path;
   extern VString rc_path;
-  
+
   /* files masks */
   extern VString         files_mask;
   extern VArray         files_mask_array;
@@ -230,7 +228,7 @@
   extern VArray panelizers;
 
   extern VArray mb; /* menu boxes */
-  
+
   extern VArray trim_tree;
 
   extern VArray view_profiles;

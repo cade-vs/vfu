@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfusetup.h,v 1.13 2007/02/12 06:14:42 cade Exp $
  *
  */
 
@@ -27,16 +25,16 @@
 
 #ifdef _TARGET_GO32_
   #define FILENAME_OPT     "vfu.opt"
-  #define FILENAME_CONF	   "vfu.cfg"
-  #define FILENAME_TREE	   "vfu.tre"
-  #define FILENAME_SIZE_CACHE	   "vfu.siz"
+  #define FILENAME_CONF    "vfu.cfg"
+  #define FILENAME_TREE    "vfu.tre"
+  #define FILENAME_SIZE_CACHE    "vfu.siz"
   #define FILENAME_HISTORY "vfu.hst"
   #define FILENAME_FFR     "vfu.ffr"
 #else
   #define FILENAME_OPT     "vfu.options"
-  #define FILENAME_CONF	   "vfu.conf"
-  #define FILENAME_TREE	   "vfu.tree"
-  #define FILENAME_SIZE_CACHE	   "vfu.size"
+  #define FILENAME_CONF    "vfu.conf"
+  #define FILENAME_TREE    "vfu.tree"
+  #define FILENAME_SIZE_CACHE    "vfu.size"
   #define FILENAME_HISTORY "vfu.history"
   #define FILENAME_FFR     "vfu.ffr"
 #endif

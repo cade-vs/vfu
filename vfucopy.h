@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfucopy.h,v 1.7 2003/04/28 17:17:01 cade Exp $
  *
  */
 
@@ -78,9 +76,9 @@ struct CopyInfo
 fsize_t device_free_space( const char *target ); /* user free space, NOT real! */
 
 int file_is_same( const char *src, const char *dst );
-int device_is_same( const char *src, const char *dst ); 
+int device_is_same( const char *src, const char *dst );
 int fast_stat( const char* s, struct stat *st );
-int over_if_exist( const char* src, const char *dst, 
+int over_if_exist( const char* src, const char *dst,
                    CopyInfo* copy_info );
 
 void show_copy_pos( fsize_t a_fc, /* file under copy current pos */

@@ -1,11 +1,9 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2003
- * http://soul.datamax.bg/~cade  <cade@biscom.net>  <cade@datamax.bg>
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
- * $Id: vfusys.h,v 1.6 2005/06/05 22:00:10 cade Exp $
  *
  */
 
@@ -34,7 +32,7 @@
 */
 
 #define MODE_OFF      "----------"
-  
+
 #define MODE_STRING   "drwxrwxrwx"
 #define MODE_MASK     "-?????????"
 #define MODE_WRITE_ON "??w???????" /* allow WRITE mask */
@@ -55,7 +53,7 @@ int  file_get_mode_str( const char *filename, mode_str_t &mod_str );
 int  file_set_mode_str( const char *filename, const mode_str_t mod_str );
 int  vfu_edit_attr( mode_str_t mod_str, int allow_masking = 1 );
 
-/* FIXME: dir_exist should check if directory really */ 
+/* FIXME: dir_exist should check if directory really */
 #define  dir_exist( d ) ( access( d, F_OK ) == 0)
 #define file_exist( d ) ( access( d, F_OK ) == 0)
 
