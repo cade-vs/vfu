@@ -47,7 +47,7 @@ struct CopyInfo
   CopyInfo() { reset(); };
   void reset()
     {
-    no_info = files_count = current_count = ok_count =
+    no_info = files_count = current_count = ok_count = skipped_count =
     no_free_check = over_mode = abort = 0;
     files_size = current_size = 0;
     };
@@ -59,6 +59,7 @@ struct CopyInfo
   long    current_count; /* not used */
 
   long    ok_count; /* files copied ok */
+  long    skipped_count; /* files skipped */
 
   int no_free_check; /* if 1 -- don't check for destination free space */
   int over_mode;     /* what to do if dest exist? see OM_XXX defines */

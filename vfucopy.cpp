@@ -268,16 +268,20 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   fsize_t size = file_size( src );
   if ( size == -1 ) return 1;
 
-  if (!over_if_exist( src, dst, copy_info ))
+  if ( ! over_if_exist( src, dst, copy_info ) )
     {
     copy_info->current_size += size; /* consider it ok */
+    copy_info->skipped_count++;
     return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
     }
 
   if ( file_exist( dst ) )
     { /* destination file exists */
     if ( file_is_same( src, dst ) == 0 )
+      {
+      copy_info->skipped_count++;
       return CR_SKIP; /* dst is src actually */
+      }
     __vfu_file_erase( dst ); /* overwrite! */
     }
 
@@ -305,9 +309,17 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       switch (menu_box_info.ec)
         {
         case 'C' : break;
-        case 'S' : return CR_SKIP; break; /* skip it */
-        case 'N' : copy_info->no_free_check = 1; break;
-        default  : copy_info->abort = 1; return CR_ABORT; break; /* abort! */
+
+        case 'S' : copy_info->skipped_count++;
+                   return CR_SKIP;
+                   break; /* skip it */
+
+        case 'N' : copy_info->no_free_check = 1;
+                   break;
+
+        default  : copy_info->abort = 1;
+                   return CR_ABORT;
+                   break; /* abort! */
         }
       }
     }
@@ -382,12 +394,18 @@ int __vfu_file_move( const char* src, const char* dst, CopyInfo* copy_info )
   if ( device_is_same( src, dst ) == 0 )
     { /* same device */
     if (!over_if_exist( src, dst, copy_info ))
+      {
+      copy_info->skipped_count++;
       return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+      }
 
     if ( file_exist( dst ) )
       {
       if ( file_is_same( src, dst ) == 0 )
+        {
+        copy_info->skipped_count++;
         return CR_SKIP; /* dst is src actually */
+        }
       /* FIXME: what if dst is symlink? */
       if ( __vfu_file_erase( dst ) ) return 1;
       }
@@ -471,6 +489,7 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
         {
         if ( ignore_copy_errors ) break;
 
+        vfu_beep();
         say1( fname_dst );
         say2errno();
         vfu_menu_box( "Copy/Move/SymLink error",
@@ -479,7 +498,10 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
           continue; /* while(4) */
         else
         if ( menu_box_info.ec == 'S' )
+          {
+          copy_info->skipped_count++;
           break; /* consider it ok */
+          };
         if ( menu_box_info.ec == 'I' )
           {
           ignore_copy_errors = 1;
@@ -517,10 +539,15 @@ int __vfu_dir_move( const char* src, const char* dst, CopyInfo* copy_info )
     }
   else
     { /* different devices */
-    if ( __vfu_dir_copy( src, dst, copy_info ) )
+    if ( __vfu_dir_copy( src, dst, copy_info ) || copy_info->skipped_count > 0 )
       {
-      say1( "There were errors or files are skipped, you have to erase dir manually" );
-      return 1;
+      vfu_beep();
+      say1( "There were errors or files were skipped! You have to erase dir manually." );
+      vfu_menu_box( "Copy/Move error", "C Continue operation,  Abort (ESC)" );
+      if ( menu_box_info.ec != 'C' )
+        return CR_ABORT;
+      else
+        return CR_SKIP;
       }
     /* NOTE: whatever __vfu_dir_copy() returns it is considered
        as error even if it is CR_SKIP!, i.e. directory never
@@ -540,13 +567,19 @@ int __vfu_link_copy( const char* src, const char* dst, CopyInfo* copy_info )
   #else
     errno = 0; /* clear error status */
 
-    if (!over_if_exist( src, dst, copy_info ))
+    if ( ! over_if_exist( src, dst, copy_info ) )
+      {
+      copy_info->skipped_count++;
       return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+      }
 
     if ( file_exist( dst ) )
       { /* destination file exists */
       if ( file_is_same( src, dst ) == 0 )
+        {
+        copy_info->skipped_count++;
         return CR_SKIP; /* dst is src actually */
+        }
       __vfu_file_erase( dst ); /* overwrite! */
       }
 
@@ -623,6 +656,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
         {
         if ( ignore_copy_errors ) break;
 
+        vfu_beep();
         say1( fname );
         say2errno();
         vfu_menu_box( "Erase error",
@@ -737,12 +771,18 @@ int __vfu_symlink( const char* src, const char* dst, CopyInfo* copy_info )
   errno = 0; /* clear error status */
 
   if (!over_if_exist( src, dst, copy_info ))
+    {
+    copy_info->skipped_count++;
     return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+    }
 
   if ( file_exist( dst ) )
     {
     if ( file_is_same( src, dst ) == 0 )
+      {
+      copy_info->skipped_count++;
       return CR_SKIP; /* dst is src actually */
+      }
     /* FIXME: what if dst is symlink? */
     if ( __vfu_file_erase( dst ) ) return 1;
     }
@@ -828,6 +868,8 @@ void vfu_copy_files( int a_one, int a_mode )
   str_trim_right( t, 1 );
   if ( file_exists( t ) && !file_is_dir( t ) )
     {
+
+    vfu_beep();
     say1( "Target is file, not directory!" );
     say2( t );
 
@@ -1012,6 +1054,7 @@ void vfu_erase_files( int a_one )
       { delete fi; files_list[z] = NULL; }
     else if ( r != CR_ABORT && !ignore_copy_errors )
       {
+      vfu_beep();
       say1( target );
       say2errno();
       vfu_menu_box( "Erase error",
@@ -1115,6 +1158,7 @@ void clipboard_paste( int mode )
     if ( r == 0 ) clipboard_copy_info.ok_count++;
     if ( r != 0 && r != CR_SKIP && r != CR_ABORT )
       {
+      vfu_beep();
       say1( dst + r );
       say2errno();
       vfu_menu_box( "Copy/Move/Symlink error", "C Continue operation,  Abort (ESC)" );
