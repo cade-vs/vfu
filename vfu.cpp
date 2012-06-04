@@ -59,6 +59,8 @@
   /* misc */
   int print_help_on_exit;
 
+  VString last_inc_search;
+
 /*############################################ GLOBAL STRUCTS  #########*/
 
   VArray   dir_tree;
@@ -463,6 +465,8 @@ void vfu_help()
   mb.push( "Alt+N   -- file find menu"   );
   mb.push( "O       -- options/toggles menu"       );
   mb.push( "P       -- file clipboard menu"       );
+  mb.push( "S       -- incremental filename search"       );
+  mb.push( "Alt+S   -- find next incremental search entry"       );
   /*
   mb.push( "Ctrl+C  -- copy files to clipboard"       );
   mb.push( "Ctrl+X  -- cut  files to clipboard"       );
@@ -794,7 +798,8 @@ void vfu_run()
       case '.'       : vfu_toggle_view_fields( ch );
                        vfu_rescan_files( 0 ); break;
 
-      case 's'       : vfu_inc_search(); break;
+      case 's'       : vfu_inc_search( 0 ); break;
+      case KEY_ALT_S : vfu_inc_search( 1 ); break;
 
       case KEY_CTRL_L: do_draw = 3; break;
 
@@ -2852,11 +2857,24 @@ void vfu_read_files_menu()
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_inc_search()
+void vfu_inc_search( int use_last_one )
 {
   VString str;
-  say1( "Enter search pattern: ( use TAB to advance )" );
-  int key = con_getch();
+  int key;
+  if( use_last_one && last_inc_search == "" )
+    use_last_one = 0;
+  if( use_last_one && last_inc_search != "" )
+    str = last_inc_search;
+  if( use_last_one )
+    {
+    say1( "Incremental search pattern: ( use ALT+S to find next matching entry )" );
+    key = 9;
+    }
+  else
+    {
+    say1( "Enter incremental search pattern: ( use TAB to find next matching entry )" );
+    key = con_getch();
+    }
   VRegexp size_re("^size:(\\d+)$");
   while( ( key >= 32 && key <= 255 ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
     {
@@ -2908,8 +2926,15 @@ void vfu_inc_search()
       vfu_redraw();
       show_pos( FLI+1, files_count );
       }
-    key = con_getch();
+    if( use_last_one )
+      break;
+    else
+      key = con_getch();
     }
+  last_inc_search = str;
+  if( use_last_one )
+    return;
+
   say1( "" );
   say2( "" );
 }

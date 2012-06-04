@@ -210,6 +210,8 @@
   /* misc */
   extern int print_help_on_exit;
 
+  extern VString last_inc_search;
+
 /*############################################ GLOBAL STRUCTS  #########*/
 
   extern VArray dir_tree;
@@ -319,7 +321,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
 void vfu_user_external_exec( int a_key );
 void vfu_user_menu();
 
-void vfu_inc_search();
+void vfu_inc_search( int use_last_one = 0 );
 void vfu_goto_filename( const char* fname );
 
 /*
