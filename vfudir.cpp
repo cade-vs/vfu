@@ -387,7 +387,7 @@ void vfu_chdir( const char *a_new_dir )
   else
     {
     target = vfu_hist_get( HID_CHDIR, 0 );
-    if (!vfu_get_dir_name( "ChDir to? (use keys: TAB, PageUp, PageDown, ^X, ^A)",
+    if (!vfu_get_dir_name( "ChDir to? (use keys: TAB, PageUp, PageDown, Ctrl+X, Ctrl+A)",
                            target, 0 ))
                            return; /* get_dir_name canceled */
     }

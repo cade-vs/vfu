@@ -2181,6 +2181,7 @@ void vfu_directories_sizes( int n )
     n = menu_box_info.ec;
     }
 
+  say1( "Calculating files size. Press ESCAPE to cancel calculation." );
   if ( n == 'E' || n == '.' ) /* specific directory */
     {
     VString target = work_path;
@@ -2207,13 +2208,9 @@ void vfu_directories_sizes( int n )
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
         /* if ( n == 'A' ) continue; // all */
-        say1( fi->name() );
         fsize_t dir_size = vfu_dir_size( fi->name(), 0 );
         if ( dir_size == -1 )
-          {
-          say1(""); /* clear status text */
-          return;
-          }
+          break;
         fi->set_size( dir_size );
         }
       }

@@ -813,6 +813,7 @@ void __copy_calc_totals( CopyInfo &copy_info, int a_one )
 {
   if ( opt.copy_calc_totals )
     {
+    say1( "Calculating files size. Press ESCAPE to cancel calculation." );
     copy_info.files_size = vfu_update_sel_size( a_one );
     copy_info.files_count = a_one ? 1 : sel_count; /* not used */
     copy_info.current_size = 0;
@@ -1012,6 +1013,7 @@ void vfu_erase_files( int a_one )
   fsize_t *bytes_freed_ptr = opt.bytes_freed ? &bytes_freed : NULL;
 
   VString str;
+  say1( "Calculating files size to be ERASED! Press ESCAPE to cancel calculation." );
   fsize_t erase_size = vfu_update_sel_size( a_one );
   if ( erase_size != -1 )
     {
