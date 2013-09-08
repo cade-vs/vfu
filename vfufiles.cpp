@@ -352,14 +352,14 @@ void vfu_pack_files_list()
 /* this compares Name20 and Name3 and returns second as smaller :) (or so) */
 int namenumcmp( const char* s1, const char* s2 )
 {
-  VRegexp re1( "^(.*)([0123456789]+)(\\.(.*))?$" );
-  VRegexp re2( "^(.*)([0123456789]+)(\\.(.*))?$" );
+  VRegexp re1( "^(.*?)([0123456789]+)(\\.(.*))?$" );
+  VRegexp re2( "^(.*?)([0123456789]+)(\\.(.*))?$" );
   if ( re1.m(s1) && re2.m(s2) )
     {
     VString ss1;
     VString ss2;
     sprintf( ss1, "%020d", atoi(re1[2]) );
-    sprintf( ss2, "%020d", atoi(re1[2]) );
+    sprintf( ss2, "%020d", atoi(re2[2]) );
     ss1 = re1[1] + ss1 + re1[3];
     ss2 = re2[1] + ss2 + re2[3];
     return pathcmp( ss1, ss2 );
@@ -457,7 +457,7 @@ void __vfu_sort(int l, int r)
   do
     {
     while (ficmp(i,midf) == -1) i++;
-    while (ficmp(j,midf) == 1) j--;
+    while (ficmp(j,midf) ==  1) j--;
     if (i <= j)
       {
       fi = files_list[i];
