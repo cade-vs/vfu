@@ -1,6 +1,6 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -57,6 +57,8 @@ ToggleEntry Toggles[] =
   { ' ', "Use CWD as target for COPY/MOVE", &(opt.default_copy_to_cwd), NOYES },
   {  0 , "--other--", NULL, NULL },
 /*  { ' ', "Can Zap/Erase READ-ONLY Files?!",       &(opt.zap_ro), NOYES }, ? */
+  { ' ', "Keep directories on top of the list",    &(opt.sort_top_dirs), NOYES },
+  { ' ', "Smart HOME/END keys (only Top Dirs mode)",    &(opt.smart_home_end), NOYES },
   { ' ', "Case insensitive file/dir names matching",       &(opt.no_case_glob), NOYES },
   { 'b', "Allow beep!",       &(opt.allow_beep), NOYES },
   { 's', "Free space check on copy",  &(opt.copy_free_space_check), NOYES },
@@ -292,6 +294,8 @@ void vfu_settings_load()
   opt.keep_selection = 1;
 
   opt.bytes_freed = 1;
+
+  opt.smart_home_end = 1;
 
   /***** LOAD DEFAULTS END ***/
 

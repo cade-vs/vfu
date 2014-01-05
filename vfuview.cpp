@@ -1,6 +1,6 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -355,8 +355,8 @@ if ( FLP == 0 && FLI == 0 ) return;
 
 void vfu_nav_npage()
 {
-if ( files_count == 0 ) return;
-if ( FLP >= files_count - PS && FLI == files_count - 1 ) return;
+  if ( files_count == 0 ) return;
+  if ( FLP >= files_count - PS && FLI == files_count - 1 ) return;
 
   int old_fli = FLI;
   int old_flp = FLP;
@@ -375,10 +375,30 @@ if ( FLP >= files_count - PS && FLI == files_count - 1 ) return;
 void vfu_nav_home()
 {
   if ( files_count == 0 ) return;
+  ASSERT( FLI >= 0 && FLI <= files_count - 1 );
+  if ( opt.sort_top_dirs && opt.smart_home_end && FLI == 0 ) 
+    {
+    int z = 0;
+    while( z < files_count )
+      {
+      TF *fi = files_list[z];
+      if( ! fi->is_dir() ) break;
+      z++;
+      }
+    if( z < files_count )
+      FGO( z );
+    }
+  else
+    FGO( 0 );
+  vfu_nav_update_pos();
+  do_draw = 1;
+/*
+  if ( files_count == 0 ) return;
   if ( FLI == 0 ) return;
   FGO( 0 );
   vfu_nav_update_pos();
   do_draw = 1;
+*/  
 }
 
 /*-----------------------------------------------------------------------*/
@@ -386,10 +406,30 @@ void vfu_nav_home()
 void vfu_nav_end()
 {
   if ( files_count == 0 ) return;
+  ASSERT( FLI >= 0 && FLI <= files_count - 1 );
+  if ( opt.sort_top_dirs && opt.smart_home_end && FLI == files_count - 1 )
+    {
+    int z = FLI;
+    while( z >= 0 )
+      {
+      TF *fi = files_list[z];
+      if( fi->is_dir() ) break;
+      z--;
+      }
+    if( z >= 0 )
+      FGO( z );
+    }
+  else
+    FGO( files_count - 1 );
+  vfu_nav_update_pos();
+  do_draw = 1;
+/*
+  if ( files_count == 0 ) return;
   if ( FLI >= files_count - 1 ) return;
   FGO( files_count - 1 );
   vfu_nav_update_pos();
   do_draw = 1;
+*/
 }
 
 /*-----------------------------------------------------------------------*/

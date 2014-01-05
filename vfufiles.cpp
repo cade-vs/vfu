@@ -1,6 +1,6 @@
 /*
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2012
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -379,8 +379,11 @@ TF *f1 = files_list[nf1];
 int z = 0;
 
 /* keep dirs on top */
-if ( f1->is_dir() && !f2->is_dir()) return -1;
-if (!f1->is_dir() &&  f2->is_dir()) return  1;
+if( opt.sort_top_dirs )
+  {
+  if ( f1->is_dir() && !f2->is_dir()) return -1;
+  if (!f1->is_dir() &&  f2->is_dir()) return  1;
+  }
 
 z = 0;
 if (opt.sort_order == 'U') return 0;

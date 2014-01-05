@@ -74,6 +74,8 @@
 
     int bytes_freed; /* calc/show bytes freed on erase */
 
+    int smart_home_end; /* toggle between first/last entry and first/last file/directory in the list */
+
     SeeViewerOptions svo;
     SeeEditorOptions seo;
   };
