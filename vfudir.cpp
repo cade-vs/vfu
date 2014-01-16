@@ -168,9 +168,13 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         if ( dir_list.count() > 1)
           {
           int li; /* counter */
+          int ll; /* longest directory entry */
           int xm = 0; /* exact match entry  */
           for ( li = 0; li < dir_list.count(); li++ )
             {
+            int len = strlen( dir_list[li] );
+            if( len > ll )
+              ll = len;
             VString tmp1;
             if( dtail != str_copy( tmp1, dir_list[li], 0, str_len( dtail ) ) )
               continue;
@@ -197,6 +201,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
             if ( mc != dir_list.count() )
               break;
             mi++;
+            if( mi >= ll )
+              break;
             }
           target.setn( dmain + dir_list[xm], str_len( dmain ) + mi );
           pos = str_len( target );
