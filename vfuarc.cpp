@@ -27,7 +27,7 @@ void vfu_read_archive_files( int a_recursive )
     archive_path = ""; /* cannot have path when recursing archive */
 
   VString s;
-  s = "/usr/lib/vfu/rx_auto ";
+  s = "rx_auto ";
   s += ( a_recursive ) ? "v" : "l";
   s += " '" + archive_name + "' ";
   s += " '" + archive_path + "' ";
