@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -29,7 +29,7 @@ VString& vfu_expand_mask( VString& mask );
 char* time_str_compact( const time_t tim, char* buf );
 void vfu_beep();
 
-char* size_str_compact( const fsize_t siz, char* buf );
+VString size_str_compact( const fsize_t siz );
 
 /*###########################################################################*/
 

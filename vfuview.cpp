@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -74,12 +74,14 @@ int get_item_color( TF *fi )
 
 VString fsize_fmt( fsize_t fs ) /* return commified number */
 {
+  int units_size = opt.use_si_sizes ? 1000 : 1024;
+  
   VString str;
   if( fs > 99999999999.0 ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
-    str.fi( int( fs / ( 1024*1024 ) ) );
+    str.fi( int( fs / ( units_size * units_size ) ) );
     str_comma( str );
-    str += " MiB";
+    str += opt.use_si_sizes ? " MB " : " MiB";
     }
   else
     {
@@ -251,12 +253,12 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   s1  = "Select:";
   tmp = sel_count;
   str_comma(tmp);
-  str_pad(tmp,14);
+  str_pad(tmp,15);
   s1 += tmp;
 
   s1 += "  Free: ";
-  tmp = fsize_fmt( fs_free );
-  str_pad(tmp,14);
+  tmp = size_str_compact( fs_free );
+  str_pad(tmp,10);
   s1 += tmp;
   if (fs_total == 0 || fs_free > fs_total)
     tmp = "  n/a%";
@@ -265,7 +267,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
 
   s1 += "  " + tmp + "  FSize:";
   tmp = fsize_fmt( files_size );
-  str_pad(tmp,14);
+  str_pad(tmp,15);
   s1 += tmp;
   if (fs_total == 0 || files_size > fs_total)
     tmp = " n/a%";
@@ -277,11 +279,11 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   s2  = "S.Size:";
 
   tmp = fsize_fmt( sel_size );
-  str_pad(tmp,14);
+  str_pad(tmp,15);
   s2 += tmp;
   s2 += "  Total:";
-  tmp = fsize_fmt( fs_total );
-  str_pad(tmp,14);
+  tmp = size_str_compact( fs_total );
+  str_pad(tmp,10);
   s2 += tmp;
 
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";

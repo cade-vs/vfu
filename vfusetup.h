@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -18,9 +18,9 @@
  *
  */
 
-#define VFU_VERSION "4.10"
+#define VFU_VERSION "4.16"
 
-#define HEADER "VF/U v" VFU_VERSION " (" __DATE__ ") by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2009"
+#define HEADER "VF/U v" VFU_VERSION " (" __DATE__ ") by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2015"
 #define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
 
 #ifdef _TARGET_GO32_

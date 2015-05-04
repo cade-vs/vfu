@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -24,6 +24,7 @@ const char *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
 #else
 const char *TAGMARKS[] = { ">>", "=>", "->", NULL };
 #endif
+const char *SIIEC[] = { "IEC", "SI ", NULL };
 
 ToggleEntry Toggles[] =
 {
@@ -68,6 +69,7 @@ ToggleEntry Toggles[] =
   { ' ', "Show user's free space", &(opt.show_user_free), NOYES },
   { ' ', "Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
   { ' ', "Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
+  { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
   {  -1, "---", NULL }
 };
 
@@ -294,6 +296,8 @@ void vfu_settings_load()
   opt.keep_selection = 1;
 
   opt.bytes_freed = 1;
+
+  opt.use_si_sizes = 0;
 
   opt.smart_home_end = 1;
 

@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -276,15 +276,35 @@ char* time_str_compact( const time_t tim, char* buf )
 
 /*---------------------------------------------------------------------------*/
 
-char* size_str_compact( const fsize_t siz, char* buf )
+VString size_str_compact( const fsize_t siz )
 {
-  if ( siz < 1024 )
-    sprintf( buf, "%.0fb", siz );
-  else if ( siz < 1024*1024 )
-    sprintf( buf, "%.0fk", siz/1024 );
+  char buf[32];
+  const char* size_str;
+  int units_size = opt.use_si_sizes ? 1000 : 1024;
+  
+  if ( siz < units_size )
+    {
+    sprintf( buf, "%.0f", siz );
+    size_str = " B  ";
+    }
+  else if ( siz < units_size * units_size )
+    {
+    sprintf( buf, "%.0f", siz/units_size );
+    size_str = opt.use_si_sizes ? " KB " : " KiB";
+    }
+  else if ( siz < units_size * units_size * units_size )
+    {
+    sprintf( buf, "%.0f", siz/( units_size * units_size ) );
+    size_str = opt.use_si_sizes ? " MB " : " MiB";
+    }
   else
-    sprintf( buf, "%.0fm", siz/(1024*1024) );
-  return buf;
+    {
+    sprintf( buf, "%.0f", siz/( units_size * units_size * units_size ) );
+    size_str = opt.use_si_sizes ? " GB " : " GiB";
+    }
+  str_comma( buf );  
+  strcat( buf, size_str );
+  return VString( buf );
 }
 
 /*---------------------------------------------------------------------------*/

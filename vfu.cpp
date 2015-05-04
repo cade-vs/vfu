@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2014
+ * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2015
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -2529,11 +2529,12 @@ void vfu_jump_to_mountpoint( int all )
     if (toupper(t[0]) >= 'A' && toupper(t[0]) <= 'Z' && toupper(t[1]) == ':')
       hk = toupper(t[0]);
     #endif
-    sprintf( str, "%c | %8.1fM | %8.1fM | %-20s ",
+    sprintf( str, "%c | %9s | %9s | %-20s ",
              hk,
-             stafs.f_bsize * (opt.show_user_free?stafs.f_bavail:stafs.f_bfree)
-                              / (1024.0*1024.0),
-             stafs.f_bsize * stafs.f_blocks / (1024.0*1024.0),
+             (const char*)size_str_compact( stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) ),
+             (const char*)size_str_compact( stafs.f_bsize * stafs.f_blocks ),
+             //stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) / (1024.0*1024.0),
+             //stafs.f_bsize * stafs.f_blocks / (1024.0*1024.0),
              t
              );
 
@@ -2709,13 +2710,13 @@ int __ff_process( const char* origin,    /* origin path */
   if (!add) return 0;
 
   char time_str[32];
-  char size_str[32];
+  VString size_str;
   time_str_compact( st->st_mtime, time_str );
   if ( flag == FTWALK_D )
-    strcpy( size_str, "[DIR]" );
+    size_str = "[DIR]";
   else
-    size_str_compact( st->st_size, size_str );
-  str_pad( size_str, 5 );
+    size_str = size_str_compact( st->st_size );
+  str_pad( size_str, 7 );
   str = "";
   str = str + time_str + " " + size_str + " | " + fname;
   file_find_results.push( str );
