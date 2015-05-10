@@ -36,8 +36,8 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: vfu ##############################################################
 
-CC_1       = clang++
-LD_1       = clang++
+CC_1       = g++
+LD_1       = g++
 AR_1       = ar rv
 RANLIB_1   = ranlib
 CCFLAGS_1  = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF) 
