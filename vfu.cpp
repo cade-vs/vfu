@@ -2094,6 +2094,13 @@ void vfu_command()
 
 void vfu_rename_file_in_place()
 {
+  if ( files_count <= 0 )
+    {
+    say1( "No files" );
+    return;
+    }
+  
+  
   TF *fi = files_list[FLI];
 
   int y = (file_list_index.pos() - file_list_index.page()) + 4;
