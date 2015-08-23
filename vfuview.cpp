@@ -80,13 +80,13 @@ VString fsize_fmt( fsize_t fs ) /* return commified number */
   if( fs > 99999999999.0 ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
     str.fi( int( fs / ( units_size * units_size ) ) );
-    str_comma( str );
+    vfu_str_comma( str );
     str += opt.use_si_sizes ? " MB " : " MiB";
     }
   else
     {
     str.fi( fs );
-    str_comma( str );
+    vfu_str_comma( str );
     }
   return str;
 }
@@ -252,7 +252,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   /* first line here */
   s1  = "Select:";
   tmp = sel_count;
-  str_comma(tmp);
+  vfu_str_comma(tmp);
   str_pad(tmp,15);
   s1 += tmp;
 

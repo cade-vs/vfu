@@ -2200,7 +2200,7 @@ void vfu_directories_sizes( int n )
     if ( dir_size == -1 ) return;
     VString dir_size_str;
     dir_size_str.fi( dir_size );
-    str_comma( dir_size_str );
+    vfu_str_comma( dir_size_str );
     sprintf( t, "Dir size of: %s", target.data() );
     say1( t );
     sprintf( t, "Size: %s bytes", dir_size_str.data() );

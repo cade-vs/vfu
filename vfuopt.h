@@ -16,6 +16,7 @@
   extern const char *NOYES[];
   extern const char *FTIMETYPE[];
   extern const char *TAGMARKS[];
+  extern const char *COMMA_TYPES[];
 
   struct Options {
     int sort_order;
@@ -78,6 +79,8 @@
 
     int use_si_sizes;
 
+    int comma_type;
+    
     SeeViewerOptions svo;
     SeeEditorOptions seo;
   };

@@ -184,13 +184,13 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
 
     time_str_compact( stat_src.st_mtime, sttime);
     str = file_st_size( &stat_src );
-    str_comma(str);
+    vfu_str_comma(str);
     sprintf(t, "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
     say1(t);
 
     time_str_compact(stat_dst.st_mtime, sttime);
     str = file_st_size( &stat_dst );
-    str_comma(str);
+    vfu_str_comma(str);
     sprintf(t, "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
     say2(t);
 
@@ -688,7 +688,7 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
     {
     VString t;
     t.fi( *bytes_freed );
-    str_comma( t );
+    vfu_str_comma( t );
     t = "ERASE: " + t + " bytes freed.";
     say2(t);
     }
@@ -915,7 +915,7 @@ void vfu_copy_files( int a_one, int a_mode )
   copy_info.description += cm_mode_str[ a_mode ];
   copy_info.description += ": ";
   sprintf( t, "%.0f", copy_info.files_size );
-  str_comma( t );
+  vfu_str_comma( t );
   copy_info.description += t;
   copy_info.description += " bytes.";
 
@@ -985,7 +985,7 @@ void vfu_copy_files( int a_one, int a_mode )
   if ( copy_info.current_size > 0 )
     { /* i.e. only if there *are* some bytes copied :) */
     str.fi( copy_info.current_size );
-    str_comma( str );
+    vfu_str_comma( str );
     str = copy_info.description + " DONE: " + str + " bytes copied.";
     }
   else
@@ -1018,7 +1018,7 @@ void vfu_erase_files( int a_one )
   if ( erase_size != -1 )
     {
     str.fi( erase_size );
-    str_comma( str );
+    vfu_str_comma( str );
     }
   else
     {
@@ -1078,7 +1078,7 @@ void vfu_erase_files( int a_one )
   if ( opt.bytes_freed )
     {
     str.fi( bytes_freed );
-    str_comma( str );
+    vfu_str_comma( str );
     str = "ERASE DONE: " + str + " bytes freed.";
     say2( str );
     }
@@ -1216,9 +1216,9 @@ void clipboard_menu( int act )
     mb.push( "V View clipboard" );
 
     VString fcnt = clipboard_copy_info.files_count;
-    str_comma( fcnt );
+    vfu_str_comma( fcnt );
     VString fsize = clipboard_copy_info.files_size;
-    str_comma( fsize );
+    vfu_str_comma( fsize );
     mb.push( "---  " + fcnt + " files, " + fsize + " bytes" );
 
     if ( vfu_menu_box( 5, 5, "File Clipboard " + fcnt + " files, " + fsize + " bytes" ) == -1 ) return;

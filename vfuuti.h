@@ -31,6 +31,9 @@ void vfu_beep();
 
 VString size_str_compact( const fsize_t siz );
 
+char* vfu_str_comma( char* target );
+VString& vfu_str_comma( VString& target );
+
 /*###########################################################################*/
 
 void vfu_hist_add( int hist_id, const char* str );

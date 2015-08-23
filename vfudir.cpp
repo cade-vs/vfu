@@ -696,7 +696,7 @@ void tree_draw_item( int page, int index, int hilite )
   if ( sz == "-1" )
     sz = "n/a";
   else
-    str_comma( sz );
+    vfu_str_comma( sz );
   str_pad( sz, 14 );
 
   s1 = sz + " " + s1;
@@ -765,7 +765,7 @@ void tree_draw_pos( ScrollPos &scroll, int opos )
 
   VString sz;
   sz.fi( size_cache_get( str ) );
-  str_comma( sz );
+  vfu_str_comma( sz );
   str_pad( sz, 14 );
   str = sz + " " + str;
 

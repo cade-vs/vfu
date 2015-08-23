@@ -25,6 +25,7 @@ const char *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
 const char *TAGMARKS[] = { ">>", "=>", "->", NULL };
 #endif
 const char *SIIEC[] = { "IEC", "SI ", NULL };
+const char *COMMA_TYPES[] = { "'", "`", ",", " ", "_", NULL };
 
 ToggleEntry Toggles[] =
 {
@@ -70,6 +71,7 @@ ToggleEntry Toggles[] =
   { ' ', "Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
   { ' ', "Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
   { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
+  { ' ', "1000s separator type", &(opt.comma_type), COMMA_TYPES },
   {  -1, "---", NULL }
 };
 

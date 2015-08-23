@@ -302,7 +302,7 @@ VString size_str_compact( const fsize_t siz )
     sprintf( buf, "%.0f", siz/( units_size * units_size * units_size ) );
     size_str = opt.use_si_sizes ? " GB " : " GiB";
     }
-  str_comma( buf );  
+  vfu_str_comma( buf );  
   strcat( buf, size_str );
   return VString( buf );
 }
@@ -479,6 +479,18 @@ const char* vfu_temp()
     unlink( vfu_temp_filename );
     return vfu_temp_filename;
 }
+
+/*---------------------------------------------------------------------------*/
+
+char* vfu_str_comma( char* target )
+{
+  return str_comma( target, COMMA_TYPES[opt.comma_type][0] );
+};
+
+VString& vfu_str_comma( VString& target )
+{
+  return str_comma( target, COMMA_TYPES[opt.comma_type][0] );
+};
 
 /*###########################################################################*/
 
