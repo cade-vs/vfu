@@ -122,7 +122,7 @@ void vfu_browse_archive_file()
     say2( tmpdir );
     return;
     }
-  chdir( tmpdir );
+  if (chdir( tmpdir ));
 
   VString fn = files_list[FLI]->full_name();
 
@@ -136,10 +136,10 @@ void vfu_browse_archive_file()
 
   vfu_shell( s, "" );
 
-  chdir( tmpdir ); /* FIXME: a little hack -- vfu_shell() changes current path */
+  if (chdir( tmpdir )); /* FIXME: a little hack -- vfu_shell() changes current path */
   vfu_browse( fn );
 
-  chdir( work_path );
+  if (chdir( work_path ));
   __vfu_dir_erase( tmpdir );
   say1( "" );
 }
@@ -155,7 +155,7 @@ void vfu_user_external_archive_exec( VString &shell_line  )
     say2( tmpdir );
     return;
     }
-  chdir( tmpdir );
+  if (chdir( tmpdir ));
 
   VString fn = files_list[FLI]->full_name();
 
@@ -169,12 +169,12 @@ void vfu_user_external_archive_exec( VString &shell_line  )
 
   vfu_shell( s, "" );
 
-  chdir( tmpdir ); /* FIXME: a little hack -- vfu_shell() changes current path */
+  if (chdir( tmpdir )); /* FIXME: a little hack -- vfu_shell() changes current path */
   str_replace( shell_line, "%f", fn );
   str_replace( shell_line, "%F", fn );
   vfu_shell( shell_line, "" );
 
-  chdir( work_path );
+  if (chdir( work_path ));
   __vfu_dir_erase( tmpdir );
   say1( "" );
 }

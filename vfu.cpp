@@ -20,7 +20,9 @@
 #include "vfusys.h"
 #include "vfuarc.h"
 #include "vfutools.h"
+#include "stdarg.h"
 #include "see.h"
+#include "locale.h"
 
 /*######################################################################*/
 
@@ -502,10 +504,10 @@ void vfu_init()
 {
   char t[MAX_PATH];
 
-  if( expand_path( "." ) == "" ) chdir( "/" );
+  if( expand_path( "." ) == "" ) if (chdir( "/" ));
 
   work_mode = WM_NORMAL;
-  getcwd( t, MAX_PATH-1 );
+  if (getcwd( t, MAX_PATH-1 ));
   str_fix_path( t );
   work_path = t;
 
@@ -693,7 +695,7 @@ void vfu_init()
 
 void vfu_exit_path( const char *a_path )
 {
-  chdir( a_path );
+  if (chdir( a_path ));
 
   #ifdef _TARGET_GO32_
   return; // this is meaningless under DOS
@@ -987,7 +989,7 @@ void vfu_run()
 void vfu_help_cli()
 {
   printf( "%s",
-    HEADER
+    HEADER "\n"
     "Command line switches:\n"
     "  none    -- run in interactive mode (DEFAULT)\n"
     "  -h      -- this help screen\n"
@@ -1169,7 +1171,7 @@ void vfu_shell( const char* a_command, const char* a_options )
     con_cs();
     }
 
-  chdir( work_path ); /* in case SHELL changed directory... (DOS only :)) */
+  if (chdir( work_path )); /* in case SHELL changed directory... (DOS only :)) */
 
   if ( str_find( o, 'r' ) != -1 ) vfu_rescan_files();
 
@@ -2967,6 +2969,7 @@ void vfu_goto_filename( const char* fname )
 int main( int argc, char* argv[] )
 {
 
+  setlocale(LC_ALL,"");
   #ifndef NDEBUG
   // mtrace(); /* memory allocation debug */
   #endif

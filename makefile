@@ -33,6 +33,19 @@ RMDIR = rm -rf
 RMFILE = rm -f
 SRC = *.c *.cpp *.cc *.cxx
 
+ifdef USE_YASCREEN
+CCDEF:=$(CCDEF) -DUSE_YASCREEN
+LDDEF:=$(LDDEF) -lyascreen
+else
+CCDEF:=$(CCDEF) -I/usr/include/ncurses
+LDDEF:=$(LDDEF) -lncurses
+endif
+
+ifdef USE_FLTO
+CCDEF:=$(CCDEF) -flto
+LDDEF:=$(LDDEF) -flto
+endif
+
 
 ### TARGET 1: vfu ##############################################################
 
@@ -40,8 +53,8 @@ CC_1       = g++
 LD_1       = g++
 AR_1       = ar rv
 RANLIB_1   = ranlib
-CCFLAGS_1  = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF) 
-LDFLAGS_1  = -L../vslib -lvslib -lvscon -lpcre -lncurses $(LDDEF)
+CCFLAGS_1  = -I../vslib -O2 $(CCDEF) 
+LDFLAGS_1  = -L../vslib -lvslib -lvscon -lpcre $(LDDEF)
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = vfu

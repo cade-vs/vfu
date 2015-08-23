@@ -213,7 +213,7 @@ void vfu_read_local_files( int a_recursive )
    tmp_file_name += user_id_str;
 
    VString str = work_path;
-   chdir( "/" );
+   if (chdir( "/" ));
    str = "mount " + str + " 2> " + tmp_file_name;
    say1( "AutoMount point detected, executing:" );
    say2( str );
@@ -228,7 +228,7 @@ void vfu_read_local_files( int a_recursive )
      files_size = 0;
      files_count = 0;
      //---------------
-     chdir( work_path );
+     if (chdir( work_path ));
      ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
      }
    else
@@ -236,7 +236,7 @@ void vfu_read_local_files( int a_recursive )
      char t[128];
      FILE *f = fopen( tmp_file_name, "r" );
      t[0] = 0;
-     fgets( t, 100, f );
+     if (fgets( t, 100, f ));
      fclose(f);
      str_tr( t, "\n\r", "  " );
      say1( "AutoMount failed! ( press ESC ) reason:" );
