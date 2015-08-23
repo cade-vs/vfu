@@ -475,7 +475,7 @@ char vfu_temp_filename[MAX_PATH];
 const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
-    mkstemp( vfu_temp_filename );
+    if (mkstemp( vfu_temp_filename ));
     unlink( vfu_temp_filename );
     return vfu_temp_filename;
 }
