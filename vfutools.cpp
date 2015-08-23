@@ -291,7 +291,7 @@ void vfu_tool_replace_sym_org( int swap )
     if (rename( org, sym ))  { err++; continue; }
     if (swap)
       {
-      symlink( sym, org );
+      if (symlink( sym, org ));
       }
     fi->update_stat();
     do_draw = 2; /* FIXME: this should be optimized? */
