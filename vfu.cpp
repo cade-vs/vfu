@@ -1016,7 +1016,7 @@ void vfu_cli( int argc, char* argv[] )
       case 'h'  : print_help_on_exit = 1; break;
       case 'i'  : vfu_run(); break;
       case 'd'  : temp = optarg;
-            #ifdef _TARGET_GO32_
+          #ifdef _TARGET_GO32_
           str_tr( temp, "\\", "/" );
           #endif
           vfu_chdir( temp );
