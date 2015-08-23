@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <stdarg.h>
 
 #include "see.h"
 
@@ -872,7 +873,7 @@
       case 'E'        : find( "fh" ); break;
       case '/'        : find( "r" ); break; //FIXME: remove 'r', use 'f'
       case '\\'       : find( "ri" ); break;
-      case KEY_F(3)   :
+      case KEY_F3     :
       case 'n'        :
       case 'N'        : find_next( 0 ); break;
       case 'm'        :
