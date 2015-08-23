@@ -564,8 +564,8 @@ void vfu_arrange_files()
 
 void vfu_file_entry_move()
 {
-  char t[128];
-  sprintf( t, "MOVE/REORDER File entry: %s", files_list[FLI]->name() );
+  VString t;
+  t = t + "MOVE/REORDER File entry: " + files_list[FLI]->name();
   say1( t );
   say2( "Use Up/Down Arrows to reorder, ESC,ENTER when done." );
   int key = 0;
