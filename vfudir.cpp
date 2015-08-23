@@ -456,7 +456,7 @@ void vfu_chdir( const char *a_new_dir )
     }
   if (chdir( target ) != 0)
     {
-    sprintf( t, "chdir: %s", target.data() );
+    snprintf( t, sizeof(t), "chdir: %s", target.data() );
     say1( t );
     say2errno();
     return;
@@ -571,7 +571,7 @@ fsize_t __tree_rebuild_process( const char* path )
     if ( strcmp( de->d_name, "." ) == 0 ||
          strcmp( de->d_name, ".." ) == 0 ) continue;
 
-    sprintf(new_name, "%s%s", path, de->d_name);
+    snprintf( new_name, sizeof(new_name), "%s%s", path, de->d_name );
     lstat(new_name, &st);
     int is_link = int(S_ISLNK(st.st_mode));
 
@@ -1132,7 +1132,7 @@ fsize_t __dir_size_process( const char* path )
     if ( strcmp( de->d_name, "." ) == 0 ||
          strcmp( de->d_name, ".." ) == 0 ) continue;
 
-    sprintf(new_name, "%s%s", path, de->d_name);
+    snprintf( new_name, sizeof(new_name), "%s%s", path, de->d_name );
     lstat(new_name, &st);
     int is_link = int(S_ISLNK(st.st_mode));
     memset( &st, 0, sizeof(st) );

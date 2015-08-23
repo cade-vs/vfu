@@ -287,8 +287,10 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   s2 += tmp;
 
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
-  sprintf( tmp,"  %s.%s@%s ", user_id_str.data(), group_id_str.data(),
-                              host_name_str.data() );
+  sprintf( tmp,  "  %s.%s@%s ", 
+                 user_id_str.data(), 
+                 group_id_str.data(),
+                 host_name_str.data() );
   s2 += tmp;
 
   str_pad( s1, - con_max_x() );

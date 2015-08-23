@@ -152,7 +152,7 @@
     char buf[1024];
     va_list vlist;
     va_start( vlist, format );
-    vsnprintf( buf, 1024, format, vlist );
+    vsnprintf( buf, sizeof(buf), format, vlist );
     va_end( vlist );
 
     VString str;

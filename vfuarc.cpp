@@ -190,7 +190,7 @@ void vfu_extract_files( int one )
   if ( one == 0 )
     sprintf( t, "EXTRACT SELECTION to: " );
   else
-    sprintf( t, "EXTRACT `%s' to:", files_list[FLI]->full_name() );
+    snprintf( t, sizeof(t), "EXTRACT `%s' to:", files_list[FLI]->full_name() );
 
   target = opt.last_copy_path[ CM_COPY ];
   if ( !vfu_get_dir_name( t, target ) ) return;
@@ -206,7 +206,7 @@ void vfu_extract_files( int one )
 
   if (chdir(target))
     {
-    sprintf( t, "Cannot chdir to: %s", target.data() );
+    snprintf( t, sizeof(t), "Cannot chdir to: %s", target.data() );
     say1( t );
     say2errno();
     return;
@@ -215,7 +215,7 @@ void vfu_extract_files( int one )
   VString tmpfile = vfu_temp();
   if (va.fsave( tmpfile ))
     {
-    sprintf( t, "Error writing list file: %s", tmpfile.data() );
+    snprintf( t, sizeof(t), "Error writing list file: %s", tmpfile.data() );
     say1( t );
     return;
     }
@@ -234,13 +234,13 @@ void vfu_extract_files( int one )
   if (unlink( tmpfile ))
     {
     /*
-    sprintf( t, "Cannot unlink/erase temp file: %s", tmpfile );
+    snprintf( t, sizeof(t), "Cannot unlink/erase temp file: %s", tmpfile );
     say2( t );
     */
     }
   if (chdir(work_path))
     {
-    sprintf( t, "Cannot chdir back to to: %s", work_path.data() );
+    snprintf( t, sizeof(t), "Cannot chdir back to to: %s", work_path.data() );
     say1( t );
     say2errno();
     return;

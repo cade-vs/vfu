@@ -1817,7 +1817,8 @@ void vfu_global_select()
                   files_list[z]->sel = ( pos > -1 );
 
                   char s[128];
-                  sprintf( s, "Scanning %4.1f%% (%12.0f bytes in %s ) ",
+                  snprintf( s, sizeof(s),
+                              "Scanning %4.1f%% (%12.0f bytes in %s ) ",
                               (100.0 * size) / (files_size+1.0),
                               files_list[z]->size(),
                               files_list[z]->name() );
@@ -1950,7 +1951,7 @@ void vfu_user_external_exec( int key )
   else
     {
     char t[128];
-    sprintf( t, "No user external defined for this key and extension (%d,%s)", key, fi->ext() );
+    snprintf( t, sizeof(t), "No user external defined for this key and extension (%d,%s)", key, fi->ext() );
     say1( t );
     }
 }
@@ -2201,9 +2202,9 @@ void vfu_directories_sizes( int n )
     VString dir_size_str;
     dir_size_str.fi( dir_size );
     vfu_str_comma( dir_size_str );
-    sprintf( t, "Dir size of: %s", target.data() );
+    snprintf( t, sizeof(t), "Dir size of: %s", target.data() );
     say1( t );
-    sprintf( t, "Size: %s bytes", dir_size_str.data() );
+    snprintf( t, sizeof(t), "Size: %s bytes", dir_size_str.data() );
     say2( t );
     } else
   if ( n == 'A' || n == 'S' ) /* all or selected  */
@@ -2560,7 +2561,7 @@ void vfu_jump_to_mountpoint( int all )
       return;
       }
     str = "umount " + str + " 2> /dev/null";
-    sprintf( t, "Unmounting, exec: %s", str.data() );
+    snprintf( t, sizeof(t), "Unmounting, exec: %s", str.data() );
     say1( t );
     if (system( str ) == 0)
       say1( "umount ok" );

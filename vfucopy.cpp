@@ -185,13 +185,13 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     time_str_compact( stat_src.st_mtime, sttime);
     str = file_st_size( &stat_src );
     vfu_str_comma(str);
-    sprintf(t, "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
+    snprintf(t, sizeof(t), "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
     say1(t);
 
     time_str_compact(stat_dst.st_mtime, sttime);
     str = file_st_size( &stat_dst );
     vfu_str_comma(str);
-    sprintf(t, "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
+    snprintf(t, sizeof(t), "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
     say2(t);
 
     vfu_beep();
