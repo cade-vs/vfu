@@ -7,6 +7,8 @@
  *
  ****************************************************************************/
 
+#include <stdarg.h>
+
 #include "vfu.h"
 #include "vfuopt.h"
 #include "vfufiles.h"
