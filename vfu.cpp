@@ -987,7 +987,7 @@ void vfu_run()
 void vfu_help_cli()
 {
   printf( "%s",
-    HEADER
+    HEADER "\n"
     "Command line switches:\n"
     "  none    -- run in interactive mode (DEFAULT)\n"
     "  -h      -- this help screen\n"
