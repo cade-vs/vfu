@@ -765,7 +765,7 @@
     ch = con_getch();
     if( ch == 0 ) ch = KEY_CTRL_L;
     if (  ch == 27        || ch == '-'           || ch == 'q' ||
-          ch == KEY_ALT_X ) return ch;
+          ch == KEY_ALT_X || ch == KEY_BACKSPACE ) return ch;
     int z = 0;
     while( escape_keys[z] )
       if ( escape_keys[z++] == ch )
