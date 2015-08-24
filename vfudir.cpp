@@ -118,7 +118,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       ch = 0;
       }
 
-    if ((ch == 8 || ch == KEY_BACKSPACE) && pos > 0)
+    if ( ( ch == 8 || ch == KEY_BACKSPACE ) && pos > 0 )
       {
       pos--;
       str_del( target, pos, 1 );
@@ -134,7 +134,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
       pos = z;
       }
     else
-    if ( ch == 9 && str_len( target ) > 0)
+    if ( ch == 9 && str_len( target ) > 0 )
       {
       int z;
       dir_list.undef();
@@ -267,7 +267,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         pos = str_len( target );
       }
     else
-    if (ch >= 32 && ch <= 255 ) // && pos < 70)
+    if ( ch >= 32 && ch <= 255 && ch != KEY_BACKSPACE ) // && pos < 70)
       {
       if (firsthit)
         {
