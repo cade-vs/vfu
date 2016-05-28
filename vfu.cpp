@@ -2688,6 +2688,7 @@ VArray      __ff_masks;
 VString     __ff_path;
 VString     __ff_pattern;
 VString     __ff_opt;
+int         __ff_rescount;
 
 int __ff_process( const char* origin,    /* origin path */
                   const char* fname,     /* full file name */
@@ -2724,6 +2725,7 @@ int __ff_process( const char* origin,    /* origin path */
     add = ( file_string_search( __ff_pattern, fname, __ff_opt ) > -1 );
   if (!add) return 0;
 
+  __ff_rescount++;
   char time_str[32];
   VString size_str;
   time_str_compact( st->st_mtime, time_str );
@@ -2739,6 +2741,10 @@ int __ff_process( const char* origin,    /* origin path */
   con_puts( "\r" );
   con_puts( str, cSTATUS );
   con_puts( "\n" );
+
+  str = "Found items: ";
+  str += __ff_rescount;
+  say1( str );
   return 0;
 }
 
@@ -2813,6 +2819,7 @@ void vfu_file_find( int menu )
     }
 
   file_find_results.undef();
+  __ff_rescount = 0;
   ftwalk( __ff_path, __ff_process );
   vfu_file_find_results();
 }
@@ -2878,14 +2885,16 @@ void vfu_inc_search( int use_last_one )
     use_last_one = 0;
   if( use_last_one && last_inc_search != "" )
     str = last_inc_search;
+
+  VString no_case_opt_str = opt.no_case_glob ? " no-case " : " ";
   if( use_last_one )
     {
-    say1( "Incremental search pattern: ( use ALT+S to find next matching entry )" );
+    say1( "Incremental" + no_case_opt_str + "search pattern: ( ALT+S for next match )" );
     key = 9;
     }
   else
     {
-    say1( "Enter incremental search pattern: ( use TAB to find next matching entry )" );
+    say1( "Enter incremental" + no_case_opt_str + "search pattern: ( TAB for next match )" );
     key = con_getch();
     }
   VRegexp size_re("^size:(\\d+)$");
