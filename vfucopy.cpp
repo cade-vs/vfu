@@ -986,14 +986,14 @@ void vfu_copy_files( int a_one, int a_mode )
     { /* i.e. only if there *are* some bytes copied :) */
     str.fi( copy_info.current_size );
     vfu_str_comma( str );
-    str = copy_info.description + " DONE: " + str + " bytes copied.";
+    str = copy_info.description + " DONE: " + str + " bytes.";
     }
   else
     {
     str = copy_info.description;
     str += " DONE";
     }
-  say2( str );
+  say2( str + " Target free: " + size_str_compact( device_free_space( target ) ) );
 
   ignore_copy_errors = 0;
 }
