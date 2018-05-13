@@ -53,7 +53,7 @@
 
 #define RX_TEMP_LIST "RX_TEMP_LIST"
 
-#define MAX_FILES  128000
+#define MAX_FILES  2097152 // 2 Mi, with 8-byte pointer this acquires 16MiB
 
 /* colors */
 

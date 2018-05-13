@@ -167,8 +167,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         {
         if ( dir_list.count() > 1)
           {
-          int li; /* counter */
-          int ll; /* longest directory entry */
+          int li = 0; /* counter */
+          int ll = 0; /* longest directory entry */
           int xm = 0; /* exact match entry  */
           for ( li = 0; li < dir_list.count(); li++ )
             {

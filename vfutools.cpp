@@ -41,7 +41,6 @@ void vfu_tool_classify()
 {
   /* FIXME: how this will handle files with path in the list? */
   char tmp[MAX_PATH];
-  int tl; // tmplen
   if ( sel_count == 0 )
     {
     say1( "Classify function works only on already selected files..." );
