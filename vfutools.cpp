@@ -48,17 +48,17 @@ void vfu_tool_classify()
     }
 
   mb.undef();
-  mb.push("N Name");
-  mb.push("E Ext");
-  mb.push("1 First 1 letter");
-  mb.push("2 First 2 letters");
-  mb.push("3 First 3 letters");
-  mb.push("4 First 4 letters");
-  mb.push("5 First 5 letters");
-  mb.push("6 First 6 letters");
-  mb.push("7 First 7 letters");
-  mb.push("8 First 8 letters");
-  mb.push("9 First 9 letter");
+  mb.push( "N Name"            );
+  mb.push( "E Ext"             );
+  mb.push( "1 First 1 letter"  );
+  mb.push( "2 First 2 letters" );
+  mb.push( "3 First 3 letters" );
+  mb.push( "4 First 4 letters" );
+  mb.push( "5 First 5 letters" );
+  mb.push( "6 First 6 letters" );
+  mb.push( "7 First 7 letters" );
+  mb.push( "8 First 8 letters" );
+  mb.push( "9 First 9 letter"  );
   if ( vfu_menu_box( 50, 5, "Classify files by") == -1 ) return;
   char ch = menu_box_info.ec;
 
@@ -67,15 +67,14 @@ void vfu_tool_classify()
   int i;
   for ( z = 0; z < files_count; z++ )
     {
-    if ( files_list[z]->is_dir() ) continue;
-    if ( !files_list[z]->sel  ) continue;
-    __get_classify_str( files_list[z]->name(), ch, tmp );
-//    tl = strlen( tmp );
+    TF *fi = files_list[z];
+    if (   fi->is_dir() ) continue;
+    if ( ! fi->sel      ) continue;
+    __get_classify_str( fi->name(), ch, tmp );
     int found = 0;
     for ( i = 0; i < mb.count(); i++ )
-      // if ( pathncmp( tmp, mb[i], tl ) == 0 ) { found = 1; break; }
       if ( pathcmp( tmp, mb[i] ) == 0 ) { found = 1; break; }
-    if (!found) mb.push(tmp);
+    if ( ! found ) mb.push( tmp );
     }
   for ( i = 0; i < mb.count(); i++ )
     {
@@ -92,14 +91,14 @@ void vfu_tool_classify()
       }
     }
   CopyInfo copy_info;
-  copy_info.files_size = sel_size;
+  copy_info.files_size  = sel_size;
   copy_info.files_count = sel_count;
   for ( z = 0; z < files_count; z++ )
     {
     TF *fi = files_list[z];
-    if ( fi->is_dir() ) continue;
+    if ( fi->is_dir()  ) continue;
     if ( fi->is_link() ) continue;
-    if ( !fi->sel  ) continue;
+    if ( !fi->sel      ) continue;
     __get_classify_str( fi->name(), ch, tmp );
     strcat( tmp, "/" );
     ASSERT( dir_exist( tmp ) );
@@ -125,16 +124,16 @@ void vfu_tool_rename()
     { say1( "No files to rename... (You have to select required files)" ); return; };
 
   mb.undef();
-  mb.push( "1 README.TXT => readme.txt" );
-  mb.push( "2 README.TXT => readme.TXT" );
-  mb.push( "3 README.TXT => README.txt" );
-  mb.push( "4 readme.txt => README.TXT" );
-  mb.push( "5 readme.txt => README.txt" );
-  mb.push( "6 readme.txt => readme.TXT" );
-  mb.push( "_ Replace spaces with _" );
-  mb.push( "Y Simplify name (RTFM)" );
-  mb.push( "S Sequential rename" );
-  mb.push( "W Swap SymLink w.Original" );
+  mb.push( "1 README.TXT => readme.txt"  );
+  mb.push( "2 README.TXT => readme.TXT"  );
+  mb.push( "3 README.TXT => README.txt"  );
+  mb.push( "4 readme.txt => README.TXT"  );
+  mb.push( "5 readme.txt => README.txt"  );
+  mb.push( "6 readme.txt => readme.TXT"  );
+  mb.push( "_ Replace spaces with _"     );
+  mb.push( "Y Simplify name (RTFM)"      );
+  mb.push( "S Sequential rename"         );
+  mb.push( "W Swap SymLink w.Original"   );
   mb.push( "R Replace S.Link w.Original" );
   if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )

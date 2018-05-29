@@ -194,7 +194,7 @@
   extern  ScrollPos file_list_index;
   #define FLI       (file_list_index.pos())
   #define FLP       (file_list_index.page())
-  #define PS        (file_list_index.pagesize())
+  #define FPS       (file_list_index.pagesize())
   #define FGO(n)    (file_list_index.go(n))
 
   /* some world wide variables */

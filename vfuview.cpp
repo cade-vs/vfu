@@ -114,7 +114,7 @@ void vfu_drop_all_views()
 void vfu_draw( int n )
 {
   VFU_CHECK_LIST_POS( n );
-  if ( n < FLP || n > FLP + PS )
+  if ( n < FLP || n > FLP + FPS )
     return; /* we are out of screen -- don't draw */
 
   TF* fi = files_list[n];
@@ -220,7 +220,7 @@ void vfu_redraw() /* redraw file list and header */
 
   int z;
 
-  for ( z = 0; z < PS; z++ )
+  for ( z = 0; z < FPS; z++ )
     {
     ASSERT( FLP + z >= 0 );
     if ( FLP + z >= files_count )
@@ -360,7 +360,7 @@ if ( FLP == 0 && FLI == 0 ) return;
 void vfu_nav_npage()
 {
   if ( files_count == 0 ) return;
-  if ( FLP >= files_count - PS && FLI == files_count - 1 ) return;
+  if ( FLP >= files_count - FPS && FLI == files_count - 1 ) return;
 
   int old_fli = FLI;
   int old_flp = FLP;

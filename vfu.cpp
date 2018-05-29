@@ -2192,7 +2192,7 @@ void vfu_directories_sizes( int n )
     mb.push( ". Current directory `.'" );
     mb.push( "S Selected directories" );
     mb.push( "A All dir's in the list" );
-    if ( vfu_menu_box( 5, PS - 4, "Directory size of:" ) == -1 ) return;
+    if ( vfu_menu_box( 5, FPS - 4, "Directory size of:" ) == -1 ) return;
     n = menu_box_info.ec;
     }
 
