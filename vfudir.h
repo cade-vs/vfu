@@ -51,7 +51,11 @@ void size_cache_sort();
 
 /*###########################################################################*/
 
-fsize_t vfu_dir_size( const char *s, int sort = 1 );
+#define DIR_SIZE_NORMAL         0
+#define DIR_SIZE_FOLLOWSYMLINKS 2
+#define DIR_SIZE_SAMEDEVONLY    4
+
+fsize_t vfu_dir_size( const char *s, int sort = 1, int mode = DIR_SIZE_NORMAL );
 
 #endif //_VFUDRI_H_
 

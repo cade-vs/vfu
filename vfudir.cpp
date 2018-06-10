@@ -1114,7 +1114,7 @@ int tree_find( const char *s, VArray *va )
 
 /*###########################################################################*/
 
-fsize_t __dir_size_process( const char* path )
+fsize_t __dir_size_process( const char* path, int mode, int src_dev = 0 )
 {
   if ( vfu_break_op() )
     return -1;
@@ -1143,11 +1143,12 @@ fsize_t __dir_size_process( const char* path )
     #endif
     int is_dir = int(S_ISDIR(st.st_mode));
 
-    if ( is_link ) continue; /* skip links */
-    if ( is_dir )
+    if ( is_link && ! ( mode & DIR_SIZE_FOLLOWSYMLINKS ) ) continue; /* skip links */
+    if ( is_dir  )
       {
+      if ( src_dev && src_dev != st.st_dev ) continue;
       strcat( new_name, "/" );
-      fsize_t dir_size = __dir_size_process( new_name );
+      fsize_t dir_size = __dir_size_process( new_name, mode );
       if ( dir_size == -1 )
         {
         closedir(dir);
@@ -1170,14 +1171,22 @@ fsize_t __dir_size_process( const char* path )
   return size;
 }
 
-fsize_t vfu_dir_size( const char *s, int sort )
+fsize_t vfu_dir_size( const char *s, int sort, int mode )
 {
   char t[MAX_PATH];
   expand_path( s, t );
   size_cache_clean( t );
   str_fix_path( t );
   size_cache_clean( t );
-  fsize_t size = __dir_size_process( t );
+
+  int src_dev = 0;
+  if( mode & DIR_SIZE_SAMEDEVONLY )
+    {
+    struct stat st;
+    stat( s, &st);
+    src_dev = st.st_dev;
+    }
+  fsize_t size = __dir_size_process( t, mode, src_dev );
   size_cache_set( t, size, sort );
   return size;
 }

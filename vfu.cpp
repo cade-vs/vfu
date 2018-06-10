@@ -2179,10 +2179,17 @@ void vfu_change_file_mask( const char* a_new_mask )
 /*
   n == 0..nnn for nnn only, -1 current only, -2 all
 */
+
+int __vfu_dir_size_followsymlinks = 0;
+int __vfu_dir_size_samedevonly    = 0;
+
 void vfu_directories_sizes( int n )
 {
   int z;
   char t[256];
+  
+  int dir_size_mode = __vfu_dir_size_followsymlinks | __vfu_dir_size_samedevonly;
+  
   n = toupper( n );
   if ( n == 0 )
     {
@@ -2192,7 +2199,11 @@ void vfu_directories_sizes( int n )
     mb.push( ". Current directory `.'" );
     mb.push( "S Selected directories" );
     mb.push( "A All dir's in the list" );
-    if ( vfu_menu_box( 5, FPS - 4, "Directory size of:" ) == -1 ) return;
+    mb.push( "--directory size options--" );
+    mb.push( "N Normal" );
+    mb.push( "Y Follow symlinks (WARNING: may loop!)" );
+    mb.push( "V Keep on the same device/filesystem only" );
+    if ( vfu_menu_box( 5, FPS - 8, "Directory size of:" ) == -1 ) return;
     n = menu_box_info.ec;
     }
 
@@ -2204,7 +2215,7 @@ void vfu_directories_sizes( int n )
       target = work_path;
     else
       if ( !vfu_get_dir_name( "Calculate size of directory: ", target ) ) return;
-    fsize_t dir_size = vfu_dir_size( target );
+    fsize_t dir_size = vfu_dir_size( target, 1, dir_size_mode );
     if ( dir_size == -1 ) return;
     VString dir_size_str;
     dir_size_str.fi( dir_size );
@@ -2223,7 +2234,7 @@ void vfu_directories_sizes( int n )
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
         /* if ( n == 'A' ) continue; // all */
-        fsize_t dir_size = vfu_dir_size( fi->name(), 0 );
+        fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode );
         if ( dir_size == -1 )
           break;
         fi->set_size( dir_size );
@@ -2238,13 +2249,37 @@ void vfu_directories_sizes( int n )
     VFU_CHECK_LIST_POS( FLI );
     if ( files_list[FLI]->is_dir() )
       {
-      files_list[FLI]->set_size( vfu_dir_size( files_list[FLI]->name() ) );
+      files_list[FLI]->set_size( vfu_dir_size( files_list[FLI]->name(), 1, dir_size_mode ) );
       say1("");
       say2("");
       }
     else
       say1("This is not directory...");
+    } else
+  if( n == 'N' ) /* normal traverse mode */  
+    {
+    __vfu_dir_size_followsymlinks = 0;
+    __vfu_dir_size_samedevonly    = 0;
+    say1( "Directory size calculation mode set to NORMAL (all dev/fs, no symlinks)" );
+    } else
+  if( n == 'Y' ) /* follow symlinks */  
+    {
+    __vfu_dir_size_followsymlinks = __vfu_dir_size_followsymlinks ? 0 : DIR_SIZE_FOLLOWSYMLINKS;
+    if( __vfu_dir_size_followsymlinks )
+      say1( "Directory size calculation will FOLLOW symlinks! LOOP WARNING!" );
+    else
+      say1( "Directory size calculation will NOT follow symlinks" );
+    } else
+  if( n == 'V' ) /* traverse same device/filesystem only */  
+    {
+    __vfu_dir_size_samedevonly = __vfu_dir_size_samedevonly ? 0 : DIR_SIZE_SAMEDEVONLY;
+    if( __vfu_dir_size_samedevonly )
+      say1( "Directory size calculation will KEEP THE SAME device/filesystem only!" );
+    else
+      say1( "Directory size calculation will follow ALL devices/filesystems" );
     }
+    
+    
 
   do_draw = 1;
   update_status();
