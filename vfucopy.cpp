@@ -828,7 +828,7 @@ void __copy_calc_totals( CopyInfo &copy_info, int a_one )
 void vfu_copy_files( int a_one, int a_mode )
 {
   ignore_copy_errors = 0;
-  if ( files_count == 0 )
+  if ( files_list_count() == 0 )
     {
     say1( "No files" );
     return;
@@ -859,7 +859,7 @@ void vfu_copy_files( int a_one, int a_mode )
   const char* cm_mode_str[] = { "COPY", "MOVE", "LINK" };
   VString str = cm_mode_str[ a_mode ];
   if ( a_one )
-    str = str + " `" + files_list[FLI]->name_ext() + "' to:";
+    str = str + " `" + files_list_get(FLI)->name_ext() + "' to:";
   else
     str += " SELECTED FILES/DIRS to:";
   if ( !vfu_get_dir_name( str, target ) ) return;
@@ -929,10 +929,10 @@ void vfu_copy_files( int a_one, int a_mode )
     }
 
   int z;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
     if ( vfu_break_op() ) break; /* cancel operation */
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
 
     if ( a_one && z != FLI ) continue; /* if one and not current -- skip */
     if ( !a_one && !fi->sel ) continue; /* if not one and not selected -- skip */
@@ -955,10 +955,7 @@ void vfu_copy_files( int a_one, int a_mode )
     if ( r == 0 )
       {
       if ( a_mode == CM_MOVE )
-        {
-        delete fi;
-        files_list[z] = NULL;
-        }
+        files_list_del(z);
       }
     else if ( r != CR_SKIP && r != CR_ABORT )
       {
@@ -972,7 +969,7 @@ void vfu_copy_files( int a_one, int a_mode )
     } /* for files_list[] */
 
   if ( a_mode == CM_MOVE )
-    vfu_pack_files_list();
+    files_list_pack();
   update_status();
   do_draw = 2;
 
@@ -1003,7 +1000,7 @@ void vfu_copy_files( int a_one, int a_mode )
 void vfu_erase_files( int a_one )
 {
   ignore_copy_errors = 0;
-  if ( files_count == 0 )
+  if ( files_list_count() == 0 )
     {
     say1( "No files" );
     return;
@@ -1030,7 +1027,7 @@ void vfu_erase_files( int a_one )
   str = "ERASE: " + str + " bytes in: ( ENTER to confirm, other key to cancel )";
   say1( str );
   if ( a_one )
-    say2( files_list[FLI]->full_name() );
+    say2( files_list_get(FLI)->full_name() );
   else
     say2( "SELECTED FILES/DIRS" );
 
@@ -1040,10 +1037,10 @@ void vfu_erase_files( int a_one )
   if (ch != 13) return;
 
   int z;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
     if ( vfu_break_op() ) break; /* cancel operation */
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
 
     if ( a_one && z != FLI ) continue;
     if ( !a_one && !fi->sel ) continue;
@@ -1053,7 +1050,7 @@ void vfu_erase_files( int a_one )
     int r = __vfu_erase( target, bytes_freed_ptr );
 
     if ( r == 0 )
-      { delete fi; files_list[z] = NULL; }
+      files_list_del(z);
     else if ( r != CR_ABORT && !ignore_copy_errors )
       {
       vfu_beep();
@@ -1069,7 +1066,7 @@ void vfu_erase_files( int a_one )
     if ( r == CR_ABORT ) break; /* cancel operation */
     } /* for files_list[] */
 
-  vfu_pack_files_list();
+  files_list_pack();
   update_status();
   do_draw = 2;
 
@@ -1109,9 +1106,9 @@ void clipboard_add()
   VString keep = "1";
 
   int z;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
     if ( !fi->sel ) continue;
     Clipboard[ fi->full_name() ] = keep;
     }

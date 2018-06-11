@@ -9,6 +9,7 @@
 
 #include "vfu.h"
 #include "vfuuti.h"
+#include "vfufiles.h"
 #include "vfumenu.h"
 #include "vfusys.h"
 #include "vfudir.h"
@@ -70,22 +71,22 @@ while( a_line[i] )
                  if ( a_line[i+1] == 'G' ) full = 1;
                  // FIXME: 'one' is used to merge F and G options in the future
                  int z;
-                 for( z = 0; z < files_count; z++ )
+                 for( z = 0; z < files_list_count(); z++ )
                    {
-                   TF *fi = files_list[z];
+                   TF *fi = files_list_get(z);
                    if (  one && z != FLI ) continue; /* if one and not current -- skip */
                    if ( !one && !fi->sel ) continue; /* if not one and not selected -- skip */
                    if( work_mode == WM_ARCHIVE )
                      {
-                     s = files_list[z]->name();
+                     s = files_list_get(z)->name();
                      }
                    else if( full )
                      {
-                     files_list[z]->full_name();
+                     files_list_get(z)->full_name();
                      }
                    else
                      {
-                     s = files_list[z]->name();
+                     s = files_list_get(z)->name();
                      }
                    if( !one )
                      {
@@ -113,11 +114,11 @@ while( a_line[i] )
                  if ( a_line[i+1] == 'e' )
                    s = str_file_name( s );
                  else
-                   s = files_list[FLI]->ext();
+                   s = files_list_get(FLI)->ext();
                  out += s;
                  break;
       case 's' : /* current file size */
-                 sprintf( s, "%.0f", files_list[FLI]->size() );
+                 sprintf( s, "%.0f", files_list_get(FLI)->size() );
                  out += s;
                  break;
       case '?' : /* prompt user for argument */
@@ -204,9 +205,9 @@ fsize_t vfu_update_sel_size( int one ) // used before copy/move to calc estimate
   fsize_t size = 0;
   int z;
   int need_size_cache_sort = 0;
-  for( z = 0; z < files_count; z++ )
+  for( z = 0; z < files_list_count(); z++ )
     {
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
 
     if ( one && z != FLI ) continue; /* if one and not current -- skip */
     if ( !one && !fi->sel ) continue; /* if not one and not selected -- skip */

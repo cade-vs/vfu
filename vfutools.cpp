@@ -65,9 +65,9 @@ void vfu_tool_classify()
   mb.undef();
   int z;
   int i;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
     if (   fi->is_dir() ) continue;
     if ( ! fi->sel      ) continue;
     __get_classify_str( fi->name(), ch, tmp );
@@ -93,9 +93,9 @@ void vfu_tool_classify()
   CopyInfo copy_info;
   copy_info.files_size  = sel_size;
   copy_info.files_count = sel_count;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
-    TF *fi = files_list[z];
+    TF *fi = files_list_get(z);
     if ( fi->is_dir()  ) continue;
     if ( fi->is_link() ) continue;
     if ( !fi->sel      ) continue;
@@ -118,7 +118,7 @@ void vfu_tool_rename()
   VString new_name;
   VString t;
 
-  if ( files_count < 1 )
+  if ( files_list_count() < 1 )
     { say1( "No files to rename... (Empty directory)" ); return; };
   if ( sel_count < 1 )
     { say1( "No files to rename... (You have to select required files)" ); return; };
@@ -150,9 +150,9 @@ void vfu_tool_rename()
     case '_' :
     case 'Y' :
                err = 0;
-               for ( z = 0; z < files_count; z++ )
+               for ( z = 0; z < files_list_count(); z++ )
                  {
-                 TF* fi = files_list[z];
+                 TF* fi = files_list_get(z);
 
                  // if ( fi->is_dir() ) continue; // why not? ;)
                  if ( !fi->sel ) continue;
@@ -240,9 +240,9 @@ void vfu_tool_seq_rename()
 
   int err = 0;
   int z;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
-    TF* fi = files_list[z];
+    TF* fi = files_list_get(z);
 
     if ( fi->is_dir() ) continue;
     if ( !fi->sel ) continue;
@@ -273,9 +273,9 @@ void vfu_tool_replace_sym_org( int swap )
 {
   int err = 0;
   int z;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
-    TF* fi = files_list[z];
+    TF* fi = files_list_get(z);
 
     if ( fi->is_dir() ) continue; // FIXME: dali?
     if ( !fi->sel ) continue;

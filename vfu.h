@@ -102,10 +102,6 @@
   #define HID_SEQ_START  180
   #define HID_OMODE      190 // octal mode
 
-  #define VFU_CHECK_LIST_POS(n) \
-          { ASSERT( files_list[n] != NULL ); \
-            ASSERT( n >= 0 && n < files_count ); }
-
 /*######################################################################*/
 
   /* file class type */
@@ -179,9 +175,7 @@
   extern VString external_panelizer;
   extern VArray list_panelizer;
 
-  extern TF*        files_list[MAX_FILES];
   /* file list statistics */
-  extern int        files_count;
   extern fsize_t    files_size;
   extern int        sel_count;
   extern fsize_t    sel_size;

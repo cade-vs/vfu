@@ -124,7 +124,7 @@ void vfu_browse_archive_file()
     }
   if (chdir( tmpdir ));
 
-  VString fn = files_list[FLI]->full_name();
+  VString fn = files_list_get(FLI)->full_name();
 
   VString s;
   s = "/usr/lib/vfu/rx_auto x \"";
@@ -157,7 +157,7 @@ void vfu_user_external_archive_exec( VString &shell_line  )
     }
   if (chdir( tmpdir ));
 
-  VString fn = files_list[FLI]->full_name();
+  VString fn = files_list_get(FLI)->full_name();
 
   VString s;
   s = "/usr/lib/vfu/rx_auto x \"";
@@ -190,7 +190,7 @@ void vfu_extract_files( int one )
   if ( one == 0 )
     sprintf( t, "EXTRACT SELECTION to: " );
   else
-    snprintf( t, sizeof(t), "EXTRACT `%s' to:", files_list[FLI]->full_name() );
+    snprintf( t, sizeof(t), "EXTRACT `%s' to:", files_list_get(FLI)->full_name() );
 
   target = opt.last_copy_path[ CM_COPY ];
   if ( !vfu_get_dir_name( t, target ) ) return;
@@ -200,9 +200,9 @@ void vfu_extract_files( int one )
   VArray va;
 
   int z;
-  for( z = 0; z < files_count; z++ )
-    if ((files_list[z]->sel && one == 0) || (z == FLI && one != 0))
-      va.push( files_list[z]->full_name() );
+  for( z = 0; z < files_list_count(); z++ )
+    if ((files_list_get(z)->sel && one == 0) || (z == FLI && one != 0))
+      va.push( files_list_get(z)->full_name() );
 
   if (chdir(target))
     {

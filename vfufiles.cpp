@@ -7,12 +7,131 @@
  *
  ****************************************************************************/
 
-#include "vfu.h"
 #include "vfufiles.h"
 #include "vfuopt.h"
 #include "vfuview.h"
 #include "vfumenu.h"
 #include "vfudir.h"
+
+
+/*###########################################################################*/
+
+#define FILES_LIST_BUCKET_SIZE (16*1024)
+
+TF**   files_list = NULL;
+int    files_list_cnt   = 0;
+int    files_list_size  = 0;
+
+/* index in the files list */
+ScrollPos file_list_index;
+
+void __files_list_resize( int new_size )
+{
+  int new_files_list_size = ( int( new_size / FILES_LIST_BUCKET_SIZE ) + 1 ) * FILES_LIST_BUCKET_SIZE;
+  
+  if( new_files_list_size == files_list_size ) return;
+
+  while( new_size < files_list_cnt )
+    {
+    files_list_cnt--;
+    delete files_list[ files_list_cnt ];
+    files_list[ files_list_cnt ] = NULL;
+    }
+      
+  TF** new_files_list = new TF*[ new_files_list_size ];
+  memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt <= new_files_list_size ? files_list_cnt : new_files_list_size ) );
+  delete [] files_list;
+  
+  files_list = new_files_list;
+  
+  file_list_index.set_min_max( 0, files_list_cnt - 1 );
+};
+
+int  files_list_count()
+{
+  return files_list_cnt;
+};
+
+TF* files_list_get( int pos )
+{
+  ASSERT( pos >= 0 && pos < files_list_cnt );
+  ASSERT( files_list[pos] ); // cannot get empty TF*
+  return files_list[pos];
+};
+
+void files_list_set( int pos, TF* fp )
+{
+  ASSERT( pos >= 0 && pos < files_list_cnt );
+  files_list[pos] = fp;
+};
+
+void files_list_add( TF* fp )
+{
+  __files_list_resize( files_list_cnt + 1 );
+  files_list_cnt++;
+  files_list_set( files_list_cnt - 1, fp );
+};
+
+void files_list_trim()
+{
+  if( files_list_cnt <= 0 ) return;
+  __files_list_resize( files_list_cnt - 1 );
+}
+
+void files_list_del( int pos )
+{
+  ASSERT( pos >= 0 && pos < files_list_cnt );
+  ASSERT( files_list[pos] );
+  delete files_list[pos];
+  files_list[pos] = NULL;
+};
+
+void files_list_clear()
+{
+  int z;
+  for ( z = 0; z < files_list_size; z++)
+    if ( files_list[z] )
+      {
+      delete files_list[z];
+      files_list[z] = NULL;
+      }
+  __files_list_resize( 0 );
+  files_list_cnt = 0;
+};
+
+void files_list_pack()
+{
+  int pos  = 0;
+  int next = 0;
+
+  while( pos < files_list_cnt )
+    {
+    if ( files_list[pos] == NULL )
+      {
+      next = pos + 1;
+      while ( next < files_list_cnt && files_list[next] == NULL ) next++;
+      if ( next < files_list_cnt && files_list[next] != NULL )
+        {
+        files_list[pos] = files_list[next];
+        files_list[next] = NULL;
+        }
+      else
+        break;
+      }
+    else
+      pos++;
+    }
+  files_list_cnt = 0;
+  while ( files_list_cnt < files_list_size && files_list[files_list_cnt] ) files_list_cnt++;
+
+  /* update scroll parameters */
+  file_list_index.set_min_max( 0, files_list_cnt - 1 );
+  file_list_index.set_pagesize(  con_max_y() - 7 );
+
+  update_status();
+  vfu_nav_update_pos();
+  do_draw = 2;
+}
 
 /*###########################################################################*/
 
@@ -56,10 +175,10 @@ void vfu_rescan_files( int a_recursive )
   int savea_count = 0;
   if ( opt.keep_selection && sel_count > 0 )
     {
-    for ( z = 0; z < files_count ; z++)
-      if ( files_list[z]->sel )
+    for ( z = 0; z < files_list_cnt ; z++)
+      if ( files_list_get(z)->sel )
         {
-        savea[ files_list[z]->name() ] = keep;
+        savea[ files_list_get(z)->name() ] = keep;
         savea_count++;
         }
     }
@@ -69,9 +188,9 @@ void vfu_rescan_files( int a_recursive )
   /* restore selection */
   if ( opt.keep_selection && savea_count > 0 )
     {
-    for ( z = 0; z < files_count ; z++ )
-      if ( savea.exists( files_list[z]->name() ) )
-        files_list[z]->sel = 1;
+    for ( z = 0; z < files_list_count() ; z++ )
+      if ( savea.exists( files_list_get(z)->name() ) )
+        files_list_get(z)->sel = 1;
     update_status();
     }
 
@@ -89,15 +208,7 @@ void vfu_read_files( int a_recursive )
   int z;
 
   /* clear files list -- delete all found entries */
-  for ( z = 0; z < MAX_FILES ; z++)
-    if (files_list[z])
-      {
-      delete files_list[z];
-      files_list[z] = NULL;
-      }
-
-  /* vfu_add_file() will need this */
-  files_count = 0;
+  files_list_clear();
 
   /* FIXME: perhaps we could check work_mode here? ... anyway will ASSERT it */
   if ( archive_name != "" )
@@ -122,7 +233,7 @@ void vfu_read_files( int a_recursive )
     }
 
   /* update scroll parameters */
-  file_list_index.set_min_max( 0, files_count - 1 );
+  file_list_index.set_min_max( 0, files_list_cnt - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
 
   update_status();
@@ -141,7 +252,6 @@ void vfu_read_files( int a_recursive )
 
 int vfu_add_file( const char* fname, const struct stat *st, int is_link )
 {
-  if ( files_count == MAX_FILES ) return 1;
   VString ne = str_file_name_ext( fname );
 
   if ( ne == "."  || ne == ".." ) return 0;
@@ -161,8 +271,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   if ( !S_ISDIR( st->st_mode ) ) /* mask is not allowed for dirs */
     if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
-  files_list[files_count] = fi;
-  files_count++;
+  files_list_add( fi );
 
   /* get dir sizes for directories, not symlinks */
   if ( work_mode == WM_NORMAL && fi->is_dir() && !fi->is_link() )
@@ -177,9 +286,9 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     }
 
   /* show progress ... */
-  if ( files_count % 123 == 0 )
+  if ( files_list_cnt % 123 == 0 )
     {
-    sprintf( ne, "Rescanning files... (%5d)  ", files_count);
+    sprintf( ne, "Rescanning files... (%5d)  ", files_list_cnt );
     say1( ne );
     }
   return 0;
@@ -203,9 +312,9 @@ void vfu_read_local_files( int a_recursive )
 {
   ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
 
-  if ( opt.auto_mount && files_count == 1 &&
-       ( FNMATCH( files_list[0]->name(), "automount" ) == 0 ||
-         FNMATCH( files_list[0]->name(), ".automount" ) == 0 ) )
+  if ( opt.auto_mount && files_list_count() == 1 &&
+       ( FNMATCH( files_list_get(0)->name(), "automount" ) == 0 ||
+         FNMATCH( files_list_get(0)->name(), ".automount" ) == 0 ) )
    {
    VString tmp_file_name;
    tmp_file_name += tmp_path;
@@ -221,12 +330,10 @@ void vfu_read_local_files( int a_recursive )
    if ( (err = system( str )) == 0)
      {
      //---------------
-     delete files_list[0];
-     files_list[0] = NULL;
+     files_list_trim();
      sel_count = 0;
      sel_size = 0;
      files_size = 0;
-     files_count = 0;
      //---------------
      if (chdir( work_path ));
      ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
@@ -309,42 +416,6 @@ int vfu_fmask_match( const char* fname )
   for(z = 0; z < files_mask_array.count(); z++)
     if ( FNMATCH(files_mask_array[z],fname) == 0) return 0;
   return 1;
-}
-
-/*###########################################################################*/
-
-void vfu_pack_files_list()
-{
-  int pos  = 0;
-  int next = 0;
-
-  while( pos < files_count )
-    {
-    if ( files_list[pos] == NULL )
-      {
-      next = pos + 1;
-      while ( next < files_count && files_list[next] == NULL ) next++;
-      if ( next < files_count && files_list[next] != NULL )
-        {
-        files_list[pos] = files_list[next];
-        files_list[next] = NULL;
-        }
-      else
-        break;
-      }
-    else
-      pos++;
-    }
-  files_count = 0;
-  while ( files_count < MAX_FILES && files_list[files_count] ) files_count++;
-
-  /* update scroll parameters */
-  file_list_index.set_min_max( 0, files_count - 1 );
-  file_list_index.set_pagesize(  con_max_y() - 7 );
-
-  update_status();
-  vfu_nav_update_pos();
-  do_draw = 2;
 }
 
 /*###########################################################################*/
@@ -445,7 +516,7 @@ return z;
 
 /*---------------------------------------------------------------------------*/
 
-void __vfu_sort(int l, int r)
+void __vfu_sort( int l, int r )
 {
   int i;
   int j;
@@ -479,14 +550,14 @@ void __vfu_sort(int l, int r)
 
 void vfu_sort_files()
 {
-  if (!files_count) return;
+  if ( ! files_list_cnt ) return;
   VString str = files_list[FLI]->name();
-  __vfu_sort( 0, files_count - 1 );
+  __vfu_sort( 0, files_list_cnt - 1 );
   do_draw = 1;
   if ( str != "" )
     {
     int z = 0;
-    for (z = 0; z < files_count; z++)
+    for (z = 0; z < files_list_cnt; z++)
       if ( str == files_list[z]->name() )
         {
         FGO(z);
@@ -532,14 +603,13 @@ void vfu_arrange_files()
   if (_ord == 'R')
     {
     /* Fisher-Yates shuffle */
-    int i = files_count - 1;
+    int i = files_list_count() - 1;
     while( i >= 0 )
       {
       int j = rand() % ( i + 1 );
-      TF *tmp;
-      tmp = files_list[i];
-      files_list[i] = files_list[j];
-      files_list[j] = tmp;
+      TF *tmp = files_list_get( i );
+      files_list_set( i, files_list_get(j) );
+      files_list_set( j, tmp );
       i--;
       }
     do_draw = 2;

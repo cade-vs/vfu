@@ -10,6 +10,19 @@
 #ifndef _VFUFILES_H_
 #define _VFUFILES_H_
 
+#include "vfu.h"
+
+int  files_list_count();
+TF*  files_list_get( int pos );
+void files_list_set( int pos, TF* fp );
+void files_list_add( TF* fp );
+void files_list_trim(); // remove last TF* item
+void files_list_del( int pos );
+void files_list_pack();
+void files_list_clear();
+
+/*###########################################################################*/
+
 const char* file_type_str( mode_t mode, int is_link );
 
 /*###########################################################################*/
@@ -39,7 +52,6 @@ void __vfu_sort(int l, int r);
 void vfu_sort_files();
 void vfu_arrange_files();
 
-void vfu_pack_files_list();
 
 /*###########################################################################*/
 

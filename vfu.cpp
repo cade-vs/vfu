@@ -37,9 +37,7 @@
   VString external_panelizer;
   VArray list_panelizer;
 
-  TF*       files_list[MAX_FILES];
   /* file list statistics */
-  int       files_count;
   fsize_t   files_size;
   int       sel_count;
   fsize_t   sel_size;
@@ -47,8 +45,6 @@
   fsize_t   fs_free;
   fsize_t   fs_total;
   fsize_t   fs_block_size;
-  /* index in the files list */
-  ScrollPos file_list_index;
 
   /* some world wide variables */
   VString startup_path;
@@ -519,8 +515,8 @@ void vfu_init()
 
   external_panelizer = "";
 
-  memset( &files_list, 0, sizeof(files_list) );
-  files_count = 0;
+  files_list_clear();
+  
   files_size = 0;
   sel_count = 0;
   sel_size = 0;
@@ -772,14 +768,14 @@ void vfu_run()
       }
     /*
     TODO: quick view?...
-    if ( work_mode == WM_NORMAL && files_count > 0 && oldFLI != FLI )
+    if ( work_mode == WM_NORMAL && files_list_count() > 0 && oldFLI != FLI )
       {
       oldFLI = FLI;
-      const char* fn = files_list[FLI]->full_name();
+      const char* fn = files_list_get(FLI)->full_name();
       file_save( "/tmp/vfu-quick-view", (void*)fn, strlen( fn ) );
       }
     */
-    show_pos( FLI+1, files_count ); /* FIXME: should this be in vfu_redraw()? */
+    show_pos( FLI+1, files_list_count() ); /* FIXME: should this be in vfu_redraw()? */
 
     ch = con_getch();
     if( ch == 0 ) ch = KEY_CTRL_L;
@@ -900,7 +896,7 @@ void vfu_run()
         break;
         }
 
-      case '*' : FGO( rand() % files_count );
+      case '*' : FGO( rand() % files_list_count() );
                  do_draw = 1;
                  break;
 
@@ -920,8 +916,8 @@ void vfu_run()
                          vfu_browse_selected_files();
                        else
                          {
-                         if ( files_count > 0 )
-                           vfu_browse( files_list[FLI]->name(), ch == KEY_ALT_B );
+                         if ( files_list_count() > 0 )
+                           vfu_browse( files_list_get(FLI)->name(), ch == KEY_ALT_B );
                          else
                            say1( "No files" );
                          }
@@ -934,8 +930,8 @@ void vfu_run()
 
       case '/' : vfu_command(); break;
 
-      case 'i' : if ( files_count > 0 )
-                   vfu_edit( files_list[FLI]->name() );
+      case 'i' : if ( files_list_count() > 0 )
+                   vfu_edit( files_list_get(FLI)->name() );
                  else
                    say1( "No files");
                  break;
@@ -1065,7 +1061,7 @@ void vfu_reset_screen()
   con_chide();
 
   /* update scroll parameters */
-  file_list_index.set_min_max( 0, files_count - 1 );
+  file_list_index.set_min_max( 0, files_list_count() - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
   FGO( file_list_index.pos() );
 
@@ -1197,10 +1193,10 @@ void update_status()
   sel_size = 0;
   files_size = 0;
   /* files list statistics */
-  for( z = 0; z < files_count; z++ )
+  for( z = 0; z < files_list_count(); z++ )
     {
-    s = files_list[z]->size();
-    if ( files_list[z]->sel )
+    s = files_list_get(z)->size();
+    if ( files_list_get(z)->sel )
       {
       sel_size += s;
       sel_count++;
@@ -1220,12 +1216,12 @@ void update_status()
 
 void vfu_edit( const char *fname )
 {
-  if ( files_count == 0 )
+  if ( files_list_count() == 0 )
     {
     say1( "No files");
     return;
     }
-  if ( files_list[FLI]->is_dir() )
+  if ( files_list_get(FLI)->is_dir() )
     {
     say1( "Cannot edit directory");
     return;
@@ -1273,16 +1269,16 @@ void vfu_browse_selected_files()
   int i;  // index
   int ic; // count
 
-  for ( z = 0; z < files_count; z++ )
-    if ( files_list[z]->sel )
-      if ( !files_list[z]->is_dir() )
-        SeeAddFile( files_list[z]->full_name() );
+  for ( z = 0; z < files_list_count(); z++ )
+    if ( files_list_get(z)->sel )
+      if ( !files_list_get(z)->is_dir() )
+        SeeAddFile( files_list_get(z)->full_name() );
   //------
   int z;
-  for ( z = 0; z < files_count; z++ )
-    if ( files_list[z]->sel )
-      if ( !files_list[z]->is_dir() )
-        SeeAddFile( files_list[z]->full_name() );
+  for ( z = 0; z < files_list_count(); z++ )
+    if ( files_list_get(z)->sel )
+      if ( !files_list_get(z)->is_dir() )
+        SeeAddFile( files_list_get(z)->full_name() );
   SeeSLColor = cINFO;
   See();
   do_draw = 2;
@@ -1355,9 +1351,9 @@ void vfu_browse( const char *fname, int no_filters )
 
 void vfu_action_plus( int key )
 {
-  if ( files_count == 0 ) return;
+  if ( files_list_count() == 0 ) return;
 
-  TF *fi = files_list[FLI];
+  TF *fi = files_list_get(FLI);
 
   if ( work_mode == WM_NORMAL )
     {
@@ -1450,14 +1446,14 @@ void vfu_action_minus()
     }
 
   int z = 0;
-  for ( z = 0; z < files_count; z++ )
+  for ( z = 0; z < files_list_count(); z++ )
     {
     VString n;
     if ( work_mode == WM_ARCHIVE )
       n = archive_path;
     else
       n = work_path;
-    n += files_list[z]->name();
+    n += files_list_get(z)->name();
     n += "/";
     if ( pathcmp( o, n ) == 0 )
       {
@@ -1546,7 +1542,7 @@ VString same_str;
 long same_int = 0;
 fsize_t same_fsize = 0;
 
-TF* fi = files_list[FLI];
+TF* fi = files_list_get(FLI);
 
 switch( same_mode )
   {
@@ -1567,9 +1563,9 @@ switch( same_mode )
   }
 
 int z = 0;
-for (z = 0; z < files_count; z++)
+for (z = 0; z < files_list_count(); z++)
   {
-  fi = files_list[z];
+  fi = files_list_get(z);
   int sel = 0;
   switch( same_mode )
     {
@@ -1653,76 +1649,64 @@ void vfu_global_select()
   switch(ch)
     {
     case 'S' : {
-               for (int z = 0; z < files_count; z++)
-                 if (!files_list[z]->is_dir())
-                   files_list[z]->sel = 1;
+               for (int z = 0; z < files_list_count(); z++)
+                 if (!files_list_get(z)->is_dir())
+                   files_list_get(z)->sel = 1;
                } break;
     case 'A' : {
-               for (int z = 0; z < files_count; z++)
-                 files_list[z]->sel = 1;
+               for (int z = 0; z < files_list_count(); z++)
+                 files_list_get(z)->sel = 1;
                } break;
     case 'R' : {
                int z;
-               for (z = 0; z < files_count; z++)
-                 if (!files_list[z]->is_dir())
-                   files_list[z]->sel = !files_list[z]->sel;
+               for (z = 0; z < files_list_count(); z++)
+                 if (!files_list_get(z)->is_dir())
+                   files_list_get(z)->sel = !files_list_get(z)->sel;
                } break;
     case 'C' : {
                int z;
-               for (z = 0; z < files_count; z++)
-                   files_list[z]->sel = 0;
+               for (z = 0; z < files_list_count(); z++)
+                   files_list_get(z)->sel = 0;
                } break;
     case 'P' :
                {
                int z;
-               for (z = 0; z < files_count; z++)
+               for (z = 0; z < files_list_count(); z++)
                  {
-                 if (!files_list[z]->sel)
-                   {
-                   delete files_list[z];
-                   files_list[z] = NULL;
-                   }
+                 if (!files_list_get(z)->sel)
+                   files_list_del(z);
                  }
-               vfu_pack_files_list();
+               files_list_pack();
                } break;
     case 'H' :
                {
                int z;
-               for (z = 0; z < files_count; z++)
+               for (z = 0; z < files_list_count(); z++)
                  {
-                 if (files_list[z]->sel)
-                   {
-                   delete files_list[z];
-                   files_list[z] = NULL;
-                   }
+                 if (files_list_get(z)->sel)
+                   files_list_del(z);
                  }
-               vfu_pack_files_list();
+               files_list_pack();
                } break;
     case '.' :
                {
                int z;
-               for (z = 0; z < files_count; z++)
+               for (z = 0; z < files_list_count(); z++)
                  {
-                 if (files_list[z]->is_dir())
-                   {
-                   delete files_list[z];
-                   files_list[z] = NULL;
-                   }
+                 if (files_list_get(z)->is_dir())
+                   files_list_del(z);
                  }
-               vfu_pack_files_list();
+               files_list_pack();
                } break;
     case ',' :
                {
                int z;
-               for (z = 0; z < files_count; z++)
+               for (z = 0; z < files_list_count(); z++)
                  {
-                 if (files_list[z]->name()[0] == '.')
-                   {
-                   delete files_list[z];
-                   files_list[z] = NULL;
-                   }
+                 if (files_list_get(z)->name()[0] == '.')
+                   files_list_del(z);
                  }
-               vfu_pack_files_list();
+               files_list_pack();
                } break;
     case '+' :
     case '=' :
@@ -1747,11 +1731,11 @@ void vfu_global_select()
                   if (opt.mask_auto_expand)
                     vfu_expand_mask( m );
                   int z = 0;
-                  for (z = 0; z < files_count; z++)
+                  for (z = 0; z < files_list_count(); z++)
                     {
-                    if (files_list[z]->is_dir() && ch == '+') continue;
-                    if (FNMATCH(m,files_list[z]->name_ext()) == 0)
-                      files_list[z]->sel = selaction;
+                    if (files_list_get(z)->is_dir() && ch == '+') continue;
+                    if (FNMATCH(m,files_list_get(z)->name_ext()) == 0)
+                      files_list_get(z)->sel = selaction;
                     }
                   }
                 }
@@ -1770,13 +1754,13 @@ void vfu_global_select()
                 {
                 str_fix_path( target );
                 int z = 0;
-                for (z = 0; z < files_count; z++)
+                for (z = 0; z < files_list_count(); z++)
                   {
-                  if ( files_list[z]->is_dir() ) continue;
-                  say1( files_list[z]->name() );
-                  files_list[z]->sel =
+                  if ( files_list_get(z)->is_dir() ) continue;
+                  say1( files_list_get(z)->name() );
+                  files_list_get(z)->sel =
                       (vfu_cmp_files_crc32( work_path, target,
-                        files_list[z]->name() ) != 0 );
+                        files_list_get(z)->name() ) != 0 );
                   }
                 }
               say1( "Done." );
@@ -1796,39 +1780,39 @@ void vfu_global_select()
                 say2("");
 
                 size = 0;
-                for ( int z = 0; z < files_count; z++ )
+                for ( int z = 0; z < files_list_count(); z++ )
                   {
-                  size += files_list[z]->size();
-                  if ( files_list[z]->is_dir() ) continue;
+                  size += files_list_get(z)->size();
+                  if ( files_list_get(z)->is_dir() ) continue;
 
                   int pos = -1;
                   switch( ch )
                     {
                     case 'F':
-                       pos = file_string_search( pat, files_list[z]->name(), "i" );
+                       pos = file_string_search( pat, files_list_get(z)->name(), "i" );
                        break;
                     case 'B':
-                       pos = file_string_search( pat, files_list[z]->name(), "" );
+                       pos = file_string_search( pat, files_list_get(z)->name(), "" );
                        break;
                     case 'E':
-                       pos = file_string_search( pat, files_list[z]->name(), "h" );
+                       pos = file_string_search( pat, files_list_get(z)->name(), "h" );
                        break;
                     case '/':
-                       pos = file_string_search( pat, files_list[z]->name(), "r" );
+                       pos = file_string_search( pat, files_list_get(z)->name(), "r" );
                        break;
                     case '\\':
-                       pos = file_string_search( pat, files_list[z]->name(), "ri" );
+                       pos = file_string_search( pat, files_list_get(z)->name(), "ri" );
                        break;
                     }
 
-                  files_list[z]->sel = ( pos > -1 );
+                  files_list_get(z)->sel = ( pos > -1 );
 
                   char s[128];
                   snprintf( s, sizeof(s),
                               "Scanning %4.1f%% (%12.0f bytes in %s ) ",
                               (100.0 * size) / (files_size+1.0),
-                              files_list[z]->size(),
-                              files_list[z]->name() );
+                              files_list_get(z)->size(),
+                              files_list_get(z)->name() );
                   say1( s );
                   }
                 }
@@ -1876,23 +1860,23 @@ void vfu_global_select()
               strcpy( mode_str, MODE_STRING );
               if(vfu_edit_attr( mode_str, 0 ))
                 {
-                for ( int z = 0; z < files_count; z++ )
-                  files_list[z]->sel =
-                     (strcmp( files_list[z]->mode_str()+1, mode_str+1 ) == 0);
+                for ( int z = 0; z < files_list_count(); z++ )
+                  files_list_get(z)->sel =
+                     (strcmp( files_list_get(z)->mode_str()+1, mode_str+1 ) == 0);
                 do_draw = 1;
                 }
               } break;
     case '<' : {
-               if( files_count > 0)
+               if( files_list_count() > 0)
                  for (int z = 0; z <= FLI; z++)
-                   if (!files_list[z]->is_dir())
-                     files_list[z]->sel = 1;
+                   if (!files_list_get(z)->is_dir())
+                     files_list_get(z)->sel = 1;
                } break;
     case '>' : {
-               if( files_count > 0)
-                 for (int z = FLI; z < files_count; z++)
-                   if (!files_list[z]->is_dir())
-                     files_list[z]->sel = 1;
+               if( files_list_count() > 0)
+                 for (int z = FLI; z < files_list_count(); z++)
+                   if (!files_list_get(z)->is_dir())
+                     files_list_get(z)->sel = 1;
                } break;
     }
   update_status();
@@ -1938,13 +1922,13 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
 
 void vfu_user_external_exec( int key )
 {
-  if ( files_count == 0 )
+  if ( files_list_count() == 0 )
     {
     say1( "Directory is empty: user externals are disabled!" );
     return;
     }
   VString shell_line;
-  TF *fi = files_list[FLI];
+  TF *fi = files_list_get(FLI);
   if (vfu_user_external_find( key, fi->ext(), fi->type_str(), &shell_line ) != -1)
     {
     if ( work_mode == WM_NORMAL )
@@ -1982,21 +1966,21 @@ void vfu_tools()
     {
     case 'R' : {
                char s[MAX_PATH];
-               expand_path(files_list[FLI]->name(), s);
+               expand_path(files_list_get(FLI)->name(), s);
                say1( s );
                break;
                }
     case 'D' : {
-               if( ! files_list[FLI]->is_link() ) break;
-               tools_last_target = files_list[FLI]->full_name();
-               if( ! files_list[FLI]->is_dir() ) break;
-               vfu_chdir( expand_path( files_list[FLI]->name() ) );
+               if( ! files_list_get(FLI)->is_link() ) break;
+               tools_last_target = files_list_get(FLI)->full_name();
+               if( ! files_list_get(FLI)->is_dir() ) break;
+               vfu_chdir( expand_path( files_list_get(FLI)->name() ) );
                break;
                }
     case 'G' : {
-               if( ! files_list[FLI]->is_link() ) break;
-               tools_last_target = files_list[FLI]->full_name();
-               VString target = vfu_readlink( files_list[FLI]->full_name() );
+               if( ! files_list_get(FLI)->is_link() ) break;
+               tools_last_target = files_list_get(FLI)->full_name();
+               VString target = vfu_readlink( files_list_get(FLI)->full_name() );
                vfu_chdir( expand_path( str_file_path( target ) ) );
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
@@ -2004,7 +1988,7 @@ void vfu_tools()
     case 'B' : {
                if( tools_last_target == "" ) break;
                VString target = tools_last_target;
-               tools_last_target = files_list[FLI]->full_name();
+               tools_last_target = files_list_get(FLI)->full_name();
                vfu_chdir( expand_path( str_file_path( target ) ) );
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
@@ -2102,14 +2086,14 @@ void vfu_command()
 
 void vfu_rename_file_in_place()
 {
-  if ( files_count <= 0 )
+  if ( files_list_count() <= 0 )
     {
     say1( "No files" );
     return;
     }
   
   
-  TF *fi = files_list[FLI];
+  TF *fi = files_list_get(FLI);
 
   int y = (file_list_index.pos() - file_list_index.page()) + 4;
   int x = tag_mark_pos + 3;
@@ -2227,9 +2211,9 @@ void vfu_directories_sizes( int n )
     } else
   if ( n == 'A' || n == 'S' ) /* all or selected  */
     {
-    for( z = 0; z < files_count; z++)
+    for( z = 0; z < files_list_count(); z++)
       {
-      TF *fi = files_list[z];
+      TF *fi = files_list_get(z);
       if ( fi->is_dir() ) /* dirs */
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
@@ -2246,10 +2230,9 @@ void vfu_directories_sizes( int n )
     }  else
   if ( n == 'Z' ) /* single one, under cursor  */
     {
-    VFU_CHECK_LIST_POS( FLI );
-    if ( files_list[FLI]->is_dir() )
+    if ( files_list_get(FLI)->is_dir() )
       {
-      files_list[FLI]->set_size( vfu_dir_size( files_list[FLI]->name(), 1, dir_size_mode ) );
+      files_list_get(FLI)->set_size( vfu_dir_size( files_list_get(FLI)->name(), 1, dir_size_mode ) );
       say1("");
       say2("");
       }
@@ -2344,8 +2327,8 @@ void vfu_edit_entry( )
           {
           if (one)
             {
-            strcpy( new_mode, files_list[FLI]->mode_str() );
-            file_get_mode_str( files_list[FLI]->name(), new_mode);
+            strcpy( new_mode, files_list_get(FLI)->mode_str() );
+            file_get_mode_str( files_list_get(FLI)->name(), new_mode);
             }
           else
             strcpy(new_mode, MODE_MASK);
@@ -2364,10 +2347,10 @@ void vfu_edit_entry( )
           }
         if( ok )
           {
-          for ( z = 0; z < files_count; z++ )
-            if ( (one && FLI == z) || (!one && files_list[z]->sel) )
+          for ( z = 0; z < files_list_count(); z++ )
+            if ( (one && FLI == z) || (!one && files_list_get(z)->sel) )
               {
-              TF *fi = files_list[z];
+              TF *fi = files_list_get(z);
               if(file_set_mode_str(fi->name(), new_mode) == 0)
                 {
                 fi->update_stat();
@@ -2413,10 +2396,10 @@ void vfu_edit_entry( )
           }
         int err = 0;
         struct utimbuf tb;
-        for ( z = 0; z < files_count; z++ )
-          if ( (one && FLI == z) || (!one && files_list[z]->sel) )
+        for ( z = 0; z < files_list_count(); z++ )
+          if ( (one && FLI == z) || (!one && files_list_get(z)->sel) )
             {
-            TF *fi = files_list[z];
+            TF *fi = files_list_get(z);
             tb.actime  = fi->st()->st_atime;
             tb.modtime = fi->st()->st_mtime;
             if (menu_box_info.ec == 'M') tb.modtime = new_time;
@@ -2471,10 +2454,10 @@ void vfu_edit_entry( )
         if ( grp ) gid = grp->gr_gid;
 
         int err = 0;
-        for ( z = 0; z < files_count; z++ )
-          if ( (one && FLI == z) || (!one && files_list[z]->sel) )
+        for ( z = 0; z < files_list_count(); z++ )
+          if ( (one && FLI == z) || (!one && files_list_get(z)->sel) )
             {
-            TF *fi = files_list[z];
+            TF *fi = files_list_get(z);
             int u = uid;
             int g = gid;
             if (u == -1) u = fi->st()->st_uid;
@@ -2507,7 +2490,7 @@ void vfu_edit_entry( )
         say1( "Cannot edit symlink reference for selection..." );
         break;
         }
-      TF* fi = files_list[FLI];
+      TF* fi = files_list_get(FLI);
       if ( !fi->is_link() )
         {
         say1( "This is not a symlink..." );
@@ -2693,8 +2676,8 @@ void vfu_file_find_results()
     str_sleft( str, z+1 );
     str_trim_left( fname, z+1 );
     vfu_chdir( str );
-    for( z = 0; z < files_count; z++ )
-      if ( pathcmp( fname, files_list[z]->name_ext() ) == 0 )
+    for( z = 0; z < files_list_count(); z++ )
+      if ( pathcmp( fname, files_list_get(z)->name_ext() ) == 0 )
         {
         FGO(z);
         vfu_nav_update_pos();
@@ -2942,7 +2925,7 @@ void vfu_inc_search( int use_last_one )
       str_add_ch( str, key );
     say2( str );
 
-    if ( files_count == 0 ) { key = con_getch(); continue; }
+    if ( files_list_count() == 0 ) { key = con_getch(); continue; }
 
     int z;
     if ( key == 9 )
@@ -2967,21 +2950,21 @@ void vfu_inc_search( int use_last_one )
       if ( z > file_list_index.max() ) z = file_list_index.min();
       if ( z < file_list_index.min() ) z = file_list_index.max();
       if( s_size )
-        found = files_list[z]->size() == s_size;
+        found = files_list_get(z)->size() == s_size;
       else
         if( opt.no_case_glob )
-          found = ( FNMATCH_NC( s_mask, files_list[z]->name_ext() ) == 0 );
+          found = ( FNMATCH_NC( s_mask, files_list_get(z)->name_ext() ) == 0 );
         else
-          found = ( FNMATCH( s_mask, files_list[z]->name_ext() ) == 0 );
+          found = ( FNMATCH( s_mask, files_list_get(z)->name_ext() ) == 0 );
       if ( found ) break;
       z += direction;
-      if ( loops++ > files_count ) break;
+      if ( loops++ > files_list_count() ) break;
       }
     if (found)
       {
       FGO(z);
       vfu_redraw();
-      show_pos( FLI+1, files_count );
+      show_pos( FLI+1, files_list_count() );
       }
     if( use_last_one )
       break;
@@ -3000,11 +2983,11 @@ void vfu_inc_search( int use_last_one )
 
 void vfu_goto_filename( const char* fname )
 {
-  if ( files_count == 0 ) return;
+  if ( files_list_count() == 0 ) return;
 
-  for (int z = 0; z < files_count; z++)
+  for (int z = 0; z < files_list_count(); z++)
     {
-    if( strcmp( fname, files_list[z]->name_ext() ) ) continue;
+    if( strcmp( fname, files_list_get(z)->name_ext() ) ) continue;
     FGO(z);
     return;
     }
