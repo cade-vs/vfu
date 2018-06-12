@@ -154,7 +154,7 @@
       fsize_t       size() { if ( _is_dir && _size == -1 ) return 0; else return _size; }
 
       int           is_link() { return _is_link; }
-      int           is_dir() { return _is_dir; }
+      int           is_dir()  { return _is_dir;  }
 
       int           color() { return _color; }
 

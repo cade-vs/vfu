@@ -49,6 +49,8 @@ void vfu_rescan_files( int a_recursive )
   int old_fli = FLI;
   int old_flp = FLP;
 
+        clock_t t = clock();
+
   VString keep = "1";
 
   /* save selection, remember which files are selected */
@@ -78,6 +80,15 @@ void vfu_rescan_files( int a_recursive )
   file_list_index.set_page( old_flp );
   file_list_index.set_pos( old_fli );
   vfu_nav_update_pos();
+
+
+        //clock_t t = clock();
+        char s[128];
+        t = clock() - t;
+        sprintf(s,"Rescan time: %f seconds.",((double)t/CLOCKS_PER_SEC));
+        say1(s);
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -158,17 +169,18 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     #endif
     }
 
-  if ( !S_ISDIR( st->st_mode ) ) /* mask is not allowed for dirs */
+  int is_dir = !S_ISDIR( st->st_mode );
+  if ( is_dir ) /* mask is not allowed for dirs */
     if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
   files_list[files_count] = fi;
   files_count++;
 
   /* get dir sizes for directories, not symlinks */
-  if ( work_mode == WM_NORMAL && fi->is_dir() && !fi->is_link() )
+  if ( work_mode == WM_NORMAL && is_dir && is_link )
     fi->set_size( size_cache_get( fi->full_name( 1 ) ) );
   /* get dir sizes for directories, symlinks */
-  if ( work_mode == WM_NORMAL && fi->is_dir() && fi->is_link() )
+  if ( work_mode == WM_NORMAL && is_dir && is_link )
     {
     char t[MAX_PATH];
     expand_path( fi->full_name( 1 ), t );
