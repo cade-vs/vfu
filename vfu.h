@@ -142,17 +142,17 @@
 
       void          update_stat( const struct stat* a_new_stat = NULL, int a_is_link = -1 );
 
-      const char*   type_str() { return (const char*)_type_str; }
-      const char*   mode_str() { return (const char*)_mode_str; }
+      const char*   type_str() { return (const char*)_type_str;   }
+      const char*   mode_str() { return (const char*)_mode_str;   }
       const struct  stat* st() { return (const struct stat*)&_st; }
 
       void          set_size( fsize_t a_new_size );
       fsize_t       size() { if ( _is_dir && _size == -1 ) return 0; else return _size; }
 
       int           is_link() { return _is_link; }
-      int           is_dir() { return _is_dir; }
+      int           is_dir()  { return _is_dir;  }
 
-      int           color() { return _color; }
+      int           color()   { return _color;   }
 
       /* public member variables */
       int           sel; /* this saves set/get_sel() functions :) */

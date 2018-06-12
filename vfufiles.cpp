@@ -67,7 +67,7 @@ void files_list_set( int pos, TF* fp )
 
 void files_list_add( TF* fp )
 {
-  __files_list_resize( files_list_cnt + 1 );
+  if( files_list_cnt + 1 > files_list_size ) __files_list_resize( files_list_cnt + 1 );
   files_list_cnt++;
   files_list_set( files_list_cnt - 1, fp );
 };
@@ -75,7 +75,10 @@ void files_list_add( TF* fp )
 void files_list_trim()
 {
   if( files_list_cnt <= 0 ) return;
-  __files_list_resize( files_list_cnt - 1 );
+  files_list_cnt--;
+  delete files_list[ files_list_cnt ];
+  files_list[ files_list_cnt ] = NULL;
+  if( files_list_cnt < files_list_size - FILES_LIST_BUCKET_SIZE ) __files_list_resize( files_list_cnt );
 }
 
 void files_list_del( int pos )
