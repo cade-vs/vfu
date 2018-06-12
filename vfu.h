@@ -152,7 +152,7 @@
       int           is_link() { return _is_link; }
       int           is_dir()  { return _is_dir;  }
 
-      int           color()   { return _color;   }
+      int           color();
 
       /* public member variables */
       int           sel; /* this saves set/get_sel() functions :) */

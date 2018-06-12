@@ -259,7 +259,7 @@ void TF::set_name( const char* a_new_name )
   else
     _ext = _name + last_dot;
 
-  _color = get_item_color( this ); /* this is duplicated here and in update_stat() */
+  //_color = get_item_color( this ); /* this is duplicated here and in update_stat() */
 
   drop_view();
 }
@@ -274,9 +274,17 @@ void TF::set_size( fsize_t a_new_size )
 
 /*-----------------------------------------------------------------------*/
 
+int TF::color()   
+{ 
+  if ( _color < 0 ) _color = get_item_color( this ); 
+  return _color;   
+}
+
+/*-----------------------------------------------------------------------*/
+
 void TF::drop_view()
 {
-  if ( !_view ) return;
+  if ( ! _view ) return;
   delete [] _view;
   _view = NULL;
 }
@@ -286,7 +294,7 @@ void TF::drop_view()
 const char* TF::view()
 {
   if ( !_view ) refresh_view();
-  ASSERT(_view);
+  ASSERT( _view );
   return (const char*)_view;
 }
 
@@ -410,7 +418,8 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
     _size = -1; /* FIXME: some auto thing here? */
   else
     _size = file_st_size( &_st );
-  _color = get_item_color( this );
+  
+  _color = -1;
 
   drop_view();
 }
@@ -891,7 +900,7 @@ void vfu_run()
         clock_t t = clock();
         for(int z = 0; z < 1000; z++) vfu_redraw();
         t = clock() - t;
-        sprintf(s,"Draw speed: %f dps.",(100.0/((double)t/CLOCKS_PER_SEC)));
+        sprintf(s,"Draw speed: %f dps.",(1000.0/((double)t/CLOCKS_PER_SEC)));
         say1(s);
         break;
         }

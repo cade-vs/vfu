@@ -171,6 +171,8 @@ void vfu_rescan_files( int a_recursive )
   int old_fli = FLI;
   int old_flp = FLP;
 
+        clock_t t = clock();
+
   VString keep = "1";
 
   /* save selection, remember which files are selected */
@@ -200,6 +202,14 @@ void vfu_rescan_files( int a_recursive )
   file_list_index.set_page( old_flp );
   file_list_index.set_pos( old_fli );
   vfu_nav_update_pos();
+
+
+        //clock_t t = clock();
+        char s[128];
+        t = clock() - t;
+        sprintf(s,"Rescan time: %f seconds.",((double)t/CLOCKS_PER_SEC));
+        say1(s);
+
 }
 
 /*---------------------------------------------------------------------------*/
