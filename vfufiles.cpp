@@ -16,7 +16,7 @@
 
 /*###########################################################################*/
 
-#define FILES_LIST_BUCKET_SIZE (16*1024)
+#define FILES_LIST_BUCKET_SIZE (1024*1024)
 
 TF**   files_list = NULL;
 int    files_list_cnt   = 0;
@@ -305,7 +305,7 @@ int __vfu_ftw_add( const char* origin, const char* fname,
   VString str = fname;
   str_trim_left( str, str_len( origin ) );
 
-  return vfu_add_file( str, st, file_is_link( fname ) );
+  return vfu_add_file( str, st, is_link );
 }
 
 void vfu_read_local_files( int a_recursive )
