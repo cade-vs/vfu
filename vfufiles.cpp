@@ -38,13 +38,6 @@ void __files_list_resize( int new_size )
     }
   int new_files_list_size = ( int( new_size / FILES_LIST_BUCKET_SIZE ) + 1 ) * FILES_LIST_BUCKET_SIZE;
 
-/*
-FILE* ff = fopen( "/tmp/resize.txt", "a" );
-fprintf( ff, "new size[%d] new files list size[%d] files list cnt[%d]\n", new_size, new_files_list_size, files_list_cnt );
-fflush(ff);
-fclose(ff);
-/**/
-
   if( new_files_list_size == files_list_size ) return;
 
       
