@@ -50,32 +50,32 @@ void __files_list_resize( int new_size )
   files_list_size = new_files_list_size;
   
   file_list_index.set_min_max( 0, files_list_cnt - 1 );
-};
+}
 
 int  files_list_count()
 {
   return files_list_cnt;
-};
+}
 
 TF* files_list_get( int pos )
 {
   ASSERT( pos >= 0 && pos < files_list_cnt );
   ASSERT( files_list[pos] ); // cannot get empty TF*
   return files_list[pos];
-};
+}
 
 void files_list_set( int pos, TF* fp )
 {
   ASSERT( pos >= 0 && pos < files_list_cnt );
   files_list[pos] = fp;
-};
+}
 
 void files_list_add( TF* fp )
 {
   __files_list_resize( files_list_cnt + 1 );
   files_list_cnt++;
   files_list_set( files_list_cnt - 1, fp );
-};
+}
 
 void files_list_trim()
 {
@@ -89,12 +89,12 @@ void files_list_del( int pos )
   ASSERT( files_list[pos] );
   delete files_list[pos];
   files_list[pos] = NULL;
-};
+}
 
 void files_list_clear()
 {
   __files_list_resize( 0 );
-};
+}
 
 void files_list_pack()
 {
