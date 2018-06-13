@@ -486,12 +486,12 @@ const char* vfu_temp()
 char* vfu_str_comma( char* target )
 {
   return str_comma( target, COMMA_TYPES[opt.comma_type][0] );
-};
+}
 
 VString& vfu_str_comma( VString& target )
 {
   return str_comma( target, COMMA_TYPES[opt.comma_type][0] );
-};
+}
 
 /*###########################################################################*/
 

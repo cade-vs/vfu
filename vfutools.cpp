@@ -124,17 +124,19 @@ void vfu_tool_rename()
     { say1( "No files to rename... (You have to select required files)" ); return; };
 
   mb.undef();
-  mb.push( "1 README.TXT => readme.txt"  );
-  mb.push( "2 README.TXT => readme.TXT"  );
-  mb.push( "3 README.TXT => README.txt"  );
-  mb.push( "4 readme.txt => README.TXT"  );
-  mb.push( "5 readme.txt => README.txt"  );
-  mb.push( "6 readme.txt => readme.TXT"  );
-  mb.push( "_ Replace spaces with _"     );
-  mb.push( "Y Simplify name (RTFM)"      );
-  mb.push( "S Sequential rename"         );
-  mb.push( "W Swap SymLink w.Original"   );
-  mb.push( "R Replace S.Link w.Original" );
+  mb.push( "1 README.TXT => readme.txt"    );
+  mb.push( "2 README.TXT => readme.TXT"    );
+  mb.push( "3 README.TXT => README.txt"    );
+  mb.push( "4 readme.txt => README.TXT"    );
+  mb.push( "5 readme.txt => README.txt"    );
+  mb.push( "6 readme.txt => readme.TXT"    );
+  mb.push( "_ Replace spaces with _"       );
+  mb.push( "Y Simplify name (RTFM)"        );
+  mb.push( "S Sequential rename"           );
+  mb.push( "T Prefix w. current date+time" );
+  mb.push( "D Prefix w. current date"      );
+  mb.push( "W Swap SymLink w.Original"     );
+  mb.push( "R Replace S.Link w.Original"   );
   if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {
@@ -195,6 +197,47 @@ void vfu_tool_rename()
                  if ( !file_exist( new_name) )
                    {
                    if (rename( fi->name(), new_name ) == 0) /* FIXME: full name ? */
+                     {
+                     fi->set_name( new_name );
+                     do_draw = 2; /* FIXME: this should be optimized? */
+                     }
+                   else
+                     err++;
+                   }
+                 else
+                   err++;
+                 }
+               sprintf( t, "Rename complete (errors: %d)", err );
+               say1( t );
+               break;
+
+    case 'T' :
+    case 'D' :
+               char   time_prefix[32];
+               time_t timenow = time( NULL );
+               tm     tmnow;
+               localtime_r( &timenow, &tmnow );
+               if( strftime( time_prefix, sizeof(time_prefix) - 1, menu_box_info.ec == 'T' ? "%Y%m%d_%H%M%S_" : "%Y%m%d_", &tmnow ) <= 0 )
+                 {
+                 t = "Rename error! Cannot constrict date/time prefix: ";
+                 t += strerror( errno );
+                 say1( t );
+                 break;
+                 }
+
+               err = 0;
+               for ( z = 0; z < files_list_count(); z++ )
+                 {
+                 TF* fi = files_list_get(z);
+
+                 // if ( fi->is_dir() ) continue; // why not? ;)
+                 if ( !fi->sel ) continue;
+                 path = str_file_path( fi->name() );
+                 new_name = path + time_prefix + str_file_name_ext( fi->name() );
+
+                 if ( ! file_exist( new_name) )
+                   {
+                   if ( rename( fi->name(), new_name ) == 0) /* FIXME: full name ? */
                      {
                      fi->set_name( new_name );
                      do_draw = 2; /* FIXME: this should be optimized? */
