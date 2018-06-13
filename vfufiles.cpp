@@ -7,6 +7,8 @@
  *
  ****************************************************************************/
 
+#include <stdio.h>
+
 #include "vfufiles.h"
 #include "vfuopt.h"
 #include "vfuview.h"
@@ -16,9 +18,9 @@
 
 /*###########################################################################*/
 
-#define FILES_LIST_BUCKET_SIZE (1024*1024)
+#define FILES_LIST_BUCKET_SIZE (32*1024)
 
-TF**   files_list = NULL;
+TF**   files_list       = NULL;
 int    files_list_cnt   = 0;
 int    files_list_size  = 0;
 
@@ -27,9 +29,6 @@ ScrollPos file_list_index;
 
 void __files_list_resize( int new_size )
 {
-  int new_files_list_size = ( int( new_size / FILES_LIST_BUCKET_SIZE ) + 1 ) * FILES_LIST_BUCKET_SIZE;
-  
-  if( new_files_list_size == files_list_size ) return;
 
   while( new_size < files_list_cnt )
     {
@@ -37,12 +36,25 @@ void __files_list_resize( int new_size )
     delete files_list[ files_list_cnt ];
     files_list[ files_list_cnt ] = NULL;
     }
+  int new_files_list_size = ( int( new_size / FILES_LIST_BUCKET_SIZE ) + 1 ) * FILES_LIST_BUCKET_SIZE;
+
+/*
+FILE* ff = fopen( "/tmp/resize.txt", "a" );
+fprintf( ff, "new size[%d] new files list size[%d] files list cnt[%d]\n", new_size, new_files_list_size, files_list_cnt );
+fflush(ff);
+fclose(ff);
+/**/
+
+  if( new_files_list_size == files_list_size ) return;
+
       
   TF** new_files_list = new TF*[ new_files_list_size ];
-  memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt <= new_files_list_size ? files_list_cnt : new_files_list_size ) );
+  memset( new_files_list,          0, sizeof(TF*) * ( new_files_list_size ) );
+  memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt      ) );
   delete [] files_list;
-  
-  files_list = new_files_list;
+
+  files_list      = new_files_list;
+  files_list_size = new_files_list_size;
   
   file_list_index.set_min_max( 0, files_list_cnt - 1 );
 };
@@ -67,7 +79,7 @@ void files_list_set( int pos, TF* fp )
 
 void files_list_add( TF* fp )
 {
-  if( files_list_cnt + 1 > files_list_size ) __files_list_resize( files_list_cnt + 1 );
+  __files_list_resize( files_list_cnt + 1 );
   files_list_cnt++;
   files_list_set( files_list_cnt - 1, fp );
 };
@@ -75,10 +87,7 @@ void files_list_add( TF* fp )
 void files_list_trim()
 {
   if( files_list_cnt <= 0 ) return;
-  files_list_cnt--;
-  delete files_list[ files_list_cnt ];
-  files_list[ files_list_cnt ] = NULL;
-  if( files_list_cnt < files_list_size - FILES_LIST_BUCKET_SIZE ) __files_list_resize( files_list_cnt );
+  __files_list_resize( files_list_cnt - 1 );
 }
 
 void files_list_del( int pos )
@@ -91,15 +100,7 @@ void files_list_del( int pos )
 
 void files_list_clear()
 {
-  int z;
-  for ( z = 0; z < files_list_size; z++)
-    if ( files_list[z] )
-      {
-      delete files_list[z];
-      files_list[z] = NULL;
-      }
   __files_list_resize( 0 );
-  files_list_cnt = 0;
 };
 
 void files_list_pack()
@@ -171,8 +172,6 @@ void vfu_rescan_files( int a_recursive )
   int old_fli = FLI;
   int old_flp = FLP;
 
-        clock_t t = clock();
-
   VString keep = "1";
 
   /* save selection, remember which files are selected */
@@ -204,19 +203,13 @@ void vfu_rescan_files( int a_recursive )
   vfu_nav_update_pos();
 
 
-        //clock_t t = clock();
-        char s[128];
-        t = clock() - t;
-        sprintf(s,"Rescan time: %f seconds.",((double)t/CLOCKS_PER_SEC));
-        say1(s);
-
 }
 
 /*---------------------------------------------------------------------------*/
 
 void vfu_read_files( int a_recursive )
 {
-  say1( "Rescanning files..." );
+  say1( "Rescanning files... press ESC to interrupt" );
 
   int z;
 
@@ -265,6 +258,7 @@ void vfu_read_files( int a_recursive )
 
 int vfu_add_file( const char* fname, const struct stat *st, int is_link )
 {
+
   VString ne = str_file_name_ext( fname );
 
   if ( ne == "."  || ne == ".." ) return 0;
@@ -285,6 +279,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   if ( is_dir ) /* mask is not allowed for dirs */
     if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
+
   files_list_add( fi );
 
   /* get dir sizes for directories, not symlinks */
@@ -300,11 +295,14 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     }
 
   /* show progress ... */
-  if ( files_list_cnt % 123 == 0 )
+  if ( files_list_cnt % ( files_list_cnt > 1024 ? 373 : 73 ) == 0 )
     {
-    sprintf( ne, "Rescanning files... (%5d)  ", files_list_cnt );
+    VString files_list_cnt_str = files_list_cnt;
+    str_comma( files_list_cnt_str );
+    sprintf( ne, "Rescanning files... [%s] press ESC to interrupt", files_list_cnt_str.data() );
     say1( ne );
     }
+
   return 0;
 }
 
@@ -388,7 +386,7 @@ void vfu_read_external_files()
 
     while( str_word( tmp, " \t:;", tmp1 ) )
       {
-      if (access( tmp1, F_OK )) continue;
+      if ( access( tmp1, F_OK ) ) continue;
 
       struct stat st;
       stat( tmp1, &st );
@@ -397,7 +395,7 @@ void vfu_read_external_files()
 
       if ( vfu_add_file( tmp1, &st, file_is_link( tmp1 ) ) )
         {
-        pclose(f);
+        pclose( f );
         external_panelizer = ""; /* reset -- there's no reload on this */
         return;
         }
@@ -566,7 +564,14 @@ void vfu_sort_files()
 {
   if ( ! files_list_cnt ) return;
   VString str = files_list[FLI]->name();
+
+  VString ss = "Sorting... [";
+  str_add_ch( ss, opt.sort_order );
+  str_add_ch( ss, opt.sort_direction );
+  ss += "]";
+  say1( ss );
   __vfu_sort( 0, files_list_cnt - 1 );
+
   do_draw = 1;
   if ( str != "" )
     {
@@ -639,7 +644,6 @@ void vfu_arrange_files()
   opt.sort_order = _ord;
   opt.sort_direction = _rev;
 
-  say1("Sorting...");
   vfu_sort_files();
   say1("");
 }
