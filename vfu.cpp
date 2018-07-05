@@ -293,7 +293,7 @@ void TF::drop_view()
 
 const char* TF::view()
 {
-  if ( !_view ) refresh_view();
+  if ( ! _view ) refresh_view();
   ASSERT( _view );
   return (const char*)_view;
 }
@@ -306,12 +306,12 @@ void TF::refresh_view()
   ASSERT( _name_ext );
   ASSERT( _ext );
 
-  char stmode[16]  = ""; // 10 + 1sep
+  char stmode[16]     = ""; // 10 + 1sep
   char stowner[16+64] = ""; /* +64 just to keep safe (not too much anyway) */
   char stgroup[16+64] = ""; /* +64 just to keep safe (not too much anyway) */
-  char sttime[32]  = "";
-  char stsize[16]  = "";
-  char sttype[4]   = "";
+  char sttime[32]     = "";
+  char stsize[16]     = "";
+  char sttype[4]      = "";
 
   if ( !opt.long_name_view )
     {
@@ -325,9 +325,9 @@ void TF::refresh_view()
       {
       struct passwd* _pwd = getpwuid(_st.st_uid);
       if (_pwd)
-        sprintf( stowner, "%8s", _pwd->pw_name );
+        snprintf( stowner, sizeof(stowner), "%8s", _pwd->pw_name );
       else
-        sprintf( stowner, "%8d", _st.st_uid);
+        snprintf( stowner, sizeof(stowner), "%8d", _st.st_uid);
       stowner[8] = 0; /* safe */
       strcat( stowner, " " ); /* field separator */
       }
@@ -336,9 +336,9 @@ void TF::refresh_view()
       {
       struct group*  _grp = getgrgid(_st.st_gid);
       if (_grp)
-        sprintf( stgroup, "%8s", _grp->gr_name );
+        snprintf( stgroup, sizeof(stgroup), "%8s", _grp->gr_name );
       else
-        sprintf( stgroup, "%8d", _st.st_gid);
+        snprintf( stgroup, sizeof(stgroup), "%8d", _st.st_gid);
       stgroup[8] = 0; /* safe */
       strcat( stgroup, " " ); /* field separator */
       }
@@ -356,7 +356,7 @@ void TF::refresh_view()
         str = "[DIR]";
       else
         str = fsize_fmt( _size );
-      sprintf( stsize, "%14s", (const char*)(str) );
+      snprintf( stsize, sizeof(stsize), "%14s", (const char*)(str) );
       strcat( stsize, " " ); /* field separator */
       }
   } /* if ( !opt.LongNameView ) */
@@ -900,7 +900,7 @@ void vfu_run()
         clock_t t = clock();
         for(int z = 0; z < 1000; z++) vfu_redraw();
         t = clock() - t;
-        sprintf(s,"Draw speed: %f dps.",(1000.0/((double)t/CLOCKS_PER_SEC)));
+        snprintf(s, sizeof(s), "Draw speed: %f dps.",(1000.0/((double)t/CLOCKS_PER_SEC)));
         say1(s);
         break;
         }
@@ -2046,7 +2046,7 @@ void bookmark_goto( int n )
       {
       const char* ps = path_bookmarks.get( z-1 );
       if( !ps ) break;
-      sprintf(t, "%d %s", z%10, ps );
+      sprintf( t, "%d %s", z%10, ps );
       mb.push( str_dot_reduce( t, 60 ) );
       }
     n = vfu_menu_box( 5, 5, "Path bookmarks");

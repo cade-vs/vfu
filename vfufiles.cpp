@@ -268,23 +268,29 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     #endif
     }
 
-  int is_dir = !S_ISDIR( st->st_mode );
+  int is_dir = S_ISDIR( st->st_mode );
   if ( is_dir ) /* mask is not allowed for dirs */
     if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
 
   files_list_add( fi );
 
-  /* get dir sizes for directories, not symlinks */
-  if ( work_mode == WM_NORMAL && is_dir && is_link )
-    fi->set_size( size_cache_get( fi->full_name( 1 ) ) );
-  /* get dir sizes for directories, symlinks */
-  if ( work_mode == WM_NORMAL && is_dir && is_link )
+  /* get dir sizes for directories */
+  if ( work_mode == WM_NORMAL && is_dir )
     {
-    char t[MAX_PATH];
-    expand_path( fi->full_name( 1 ), t );
-    str_fix_path( t );
-    fi->set_size( size_cache_get( t ) );
+    if ( is_link )
+      {
+      /* symlinks */
+      char t[MAX_PATH];
+      expand_path( fi->full_name( 1 ), t );
+      str_fix_path( t );
+      fi->set_size( size_cache_get( t ) );
+      }
+    else
+      {
+      /* not symlinks */
+      fi->set_size( size_cache_get( fi->full_name( 1 ) ) );
+      }
     }
 
   /* show progress ... */
