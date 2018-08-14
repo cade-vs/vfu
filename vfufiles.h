@@ -13,6 +13,7 @@
 #include "vfu.h"
 
 int  files_list_count();
+int  files_list_is_empty( int pos );
 TF*  files_list_get( int pos );
 void files_list_set( int pos, TF* fp );
 void files_list_add( TF* fp );

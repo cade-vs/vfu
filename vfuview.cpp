@@ -222,18 +222,11 @@ void vfu_redraw() /* redraw file list and header */
   for ( z = 0; z < FPS; z++ )
     {
     ASSERT( FLP + z >= 0 );
-    if ( FLP + z >= files_list_count() )
+    if ( FLP + z >= files_list_count() || files_list_is_empty( FLP + z ) )
       {
-      con_out( 1, z+4, "~", cPLAIN );
+      con_out( 1, z + 4, "~", cPLAIN );
       con_ce( cPLAIN );
       }
-/*    
-    else if ( files_list[FLP+z] == NULL )  // FIXME: if NULL?!
-      {
-      con_out( 1, z+4, "~", cPLAIN );
-      con_ce( cPLAIN );
-      }
-*/      
     else
       vfu_draw( FLP + z );
     }

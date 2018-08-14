@@ -57,6 +57,12 @@ int  files_list_count()
   return files_list_cnt;
 }
 
+int  files_list_is_empty( int pos )
+{
+  ASSERT( pos >= 0 && pos < files_list_cnt );
+  return files_list[pos] == NULL ? 1 : 0;
+}
+
 TF* files_list_get( int pos )
 {
   ASSERT( pos >= 0 && pos < files_list_cnt );

@@ -393,7 +393,7 @@ int __vfu_file_move( const char* src, const char* dst, CopyInfo* copy_info )
 
   if ( device_is_same( src, dst ) == 0 )
     { /* same device */
-    if (!over_if_exist( src, dst, copy_info ))
+    if ( ! over_if_exist( src, dst, copy_info ) )
       {
       copy_info->skipped_count++;
       return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
@@ -770,7 +770,7 @@ int __vfu_symlink( const char* src, const char* dst, CopyInfo* copy_info )
 {
   errno = 0; /* clear error status */
 
-  if (!over_if_exist( src, dst, copy_info ))
+  if ( ! over_if_exist( src, dst, copy_info ) )
     {
     copy_info->skipped_count++;
     return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
