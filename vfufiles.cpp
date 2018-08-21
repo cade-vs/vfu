@@ -473,7 +473,6 @@ if( opt.sort_top_dirs )
   if (!f1->is_dir() &&  f2->is_dir()) return  1;
   }
 
-z = 0;
 if (opt.sort_order == 'U') return 0;
 switch (opt.sort_order)
  {
@@ -520,7 +519,7 @@ switch (opt.sort_order)
  default  : ASSERT( !"Non valid sort order (opt.sort_order)" ); break;
  }
 
-if (z == 0) z = pathcmp(f1->name(), f2->name());
+if ( z == 0 ) z = pathcmp( f1->name(), f2->name() );
 
 ASSERT( opt.sort_direction == 'A' || opt.sort_direction == 'D' );
 if (z)

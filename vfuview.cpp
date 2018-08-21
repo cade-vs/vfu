@@ -208,8 +208,8 @@ void vfu_redraw() /* redraw file list and header */
   tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
 
-  spos += sprintf( spos, "  #NAME    %s",
-                   opt.long_name_view ? "( long name view )" : "" );
+  /* spos += */ sprintf( spos, "  #NAME    %s",
+                         opt.long_name_view ? "( long name view )" : "" );
 
   str_pad( t, - con_max_x() );
   str_sleft( t, con_max_x() );
@@ -266,7 +266,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   if (fs_total == 0 || files_size > fs_total)
     tmp = " n/a%";
   else
-    sprintf(tmp,"%4.1f%%", (double)100 * ((double)files_size / (double)fs_total));
+    sprintf( 64, tmp,"%4.1f%%", (double)100 * ((double)files_size / (double)fs_total));
   s1 += " " + tmp;
 
   /* second line here */

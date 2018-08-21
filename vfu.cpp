@@ -886,7 +886,7 @@ void vfu_run()
       case '!' :
       case '?' : con_cs();
                  vfu_shell( shell_prog, 0 );
-                 do_draw = 1;
+                 do_draw = 3;
                  break;
 
       case 'u'        : vfu_user_menu(); break;

@@ -229,7 +229,7 @@
     char t[256];
     for( y = 0; y < rows; y++ )
       {
-      sprintf( t, opt->dec_pos ? "%10"FMT_OFF_T"d":"%010"FMT_OFF_T"X", fpos + rowsz * y );
+      sprintf( t, opt->dec_pos ? "%10" FMT_OFF_T "d" : "%010" FMT_OFF_T "X", fpos + rowsz * y );
       offset = t;
       ascii = "";
       hexdump = "";
@@ -263,7 +263,7 @@
       con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
       }
 
-    status( "%3.0f%% | Pos. %4"FMT_OFF_T"d of %4"FMT_OFF_T"d | Alt+H Help | %s",
+    status( "%3.0f%% | Pos. %4" FMT_OFF_T "d of %4" FMT_OFF_T "d | Alt+H Help | %s",
             fpos_percent(), fpos, fsize, fname.data() );
   }
 
@@ -334,7 +334,7 @@
       if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
       if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
       }
-    status( "%3.0f%% | Pos. %4"FMT_OFF_T"d | Line %4"FMT_OFF_T"d of %4"FMT_OFF_T"d%c|%4d+ | Alt+H Help | %s",
+    status( "%3.0f%% | Pos. %4" FMT_OFF_T "d | Line %4" FMT_OFF_T "d of %4" FMT_OFF_T "d%c|%4d+ | Alt+H Help | %s",
             fpos_percent(), fpos, line, last_line,
             end_reached?' ':'?', col+1, fname.data() );
   }
@@ -439,7 +439,7 @@
       if ( con_kbhit() && con_getch() == 27 ) return;
       down();
       if (line % 768 == 0)
-        status( " Going down.... line: %6"FMT_OFF_T"d (%3.0f%%) press ESCAPE to cancel ", line, fpos_percent() );
+        status( " Going down.... line: %6" FMT_OFF_T "d (%3.0f%%) press ESCAPE to cancel ", line, fpos_percent() );
       }
     end2();
   }
@@ -464,7 +464,7 @@
   VString sss;
   if(opt->hex_mode)
     {
-    sprintf( sss, "x%"FMT_OFF_T"X", fpos );
+    sprintf( sss, "x%" FMT_OFF_T "X", fpos );
     status( " Goto pos: " );
     if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
       {
@@ -491,7 +491,7 @@
       status( "Cannot determine line number..." );
       return;
       }
-    sprintf( sss, "%"FMT_OFF_T"d", line);
+    sprintf( sss, "%" FMT_OFF_T "d", line);
     status( " Goto line: " );
     if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
       {
@@ -521,7 +521,7 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         down();
         if ( line % 768 == 0)
-          status( " Going down.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
+          status( " Going down.... line: %6" FMT_OFF_T "d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
         }
     else
       while( new_line != line && fpos >  0 )
@@ -529,7 +529,7 @@
         if ( con_kbhit() && con_getch() == 27 ) return;
         up();
         if ( line % 768 == 0)
-          status( " Going up.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
+          status( " Going up.... line: %6" FMT_OFF_T "d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
         }
     draw();
     }
@@ -561,14 +561,14 @@
     {
     rev ? up() : down();
     if ( line % 768 == 0)
-      status( "Searching.... line: %6"FMT_OFF_T"d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
+      status( "Searching.... line: %6" FMT_OFF_T "d -- %3.0f%% (press ESCAPE to cancel) ", line, fpos_percent() );
     if ( re.m( buff ) )
       {
       off_t spos = re.sub_sp( 0 );
       if ( ! rev ) up();
       draw();
       spos += fpos;
-      status( "Pattern `%s' found at pos: %"FMT_OFF_T"d (0x%"FMT_OFF_T"X)", opt->last_search, spos, spos );
+      status( "Pattern `%s' found at pos: %" FMT_OFF_T "d (0x%" FMT_OFF_T "X)", opt->last_search, spos, spos );
       break;
       }
     if ( (! rev && fpos == fsize) || ( rev && fpos == 0 ) )
