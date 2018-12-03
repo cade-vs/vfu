@@ -40,11 +40,19 @@ CopyInfo clipboard_copy_info;
 **
 ****************************************************************************/
 
-fsize_t device_free_space( const char *target ) /* TODO: get bavail/bfree depending on current user */
+fsize_t device_free_space( const char *target )
 {
   struct statfs stafs;
   int res = statfs( str_file_path( target ), &stafs );
   if( res == 0 ) return ((fsize_t)(stafs.f_bsize)) * stafs.f_bfree;
+  return 0;
+}
+
+fsize_t device_avail_space( const char *target )
+{
+  struct statfs stafs;
+  int res = statfs( str_file_path( target ), &stafs );
+  if( res == 0 ) return ((fsize_t)(stafs.f_bsize)) * stafs.f_bavail;
   return 0;
 }
 
@@ -295,7 +303,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
   if ( !copy_info->no_free_check && !copy_info->no_info )
     {
-    fsize_t dev_free = device_free_space( dst );
+    fsize_t dev_free = device_avail_space( dst );
     if (size > dev_free )
       {
       char t[128];
@@ -896,7 +904,7 @@ void vfu_copy_files( int a_one, int a_mode )
 
   if ( !copy_info.no_free_check && !copy_info.no_info )
     {
-    fsize_t dev_free = device_free_space( target );
+    fsize_t dev_free = device_avail_space( target );
     if (copy_info.files_size > dev_free )
       {
       vfu_beep();
@@ -990,7 +998,7 @@ void vfu_copy_files( int a_one, int a_mode )
     str = copy_info.description;
     str += " DONE";
     }
-  say2( str + " Target free: " + size_str_compact( device_free_space( target ) ) );
+  say2( str + " Target free: " + size_str_compact( device_avail_space( target ) ) + " (" + size_str_compact( device_free_space( target ) ) + ")" );
 
   ignore_copy_errors = 0;
 }
