@@ -275,7 +275,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     }
 
   int is_dir = S_ISDIR( st->st_mode );
-  if ( is_dir ) /* mask is not allowed for dirs */
+  if ( ! is_dir ) /* mask is not allowed for dirs */
     if ( vfu_fmask_match( ne ) ) return 0; /* doesn't match the mask */
   TF *fi = new TF( fname, st, is_link );
 
