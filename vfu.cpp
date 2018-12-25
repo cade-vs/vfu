@@ -274,10 +274,10 @@ void TF::set_size( fsize_t a_new_size )
 
 /*-----------------------------------------------------------------------*/
 
-int TF::color()   
-{ 
-  if ( _color < 0 ) _color = get_item_color( this ); 
-  return _color;   
+int TF::color()
+{
+  if ( _color < 0 ) _color = get_item_color( this );
+  return _color;
 }
 
 /*-----------------------------------------------------------------------*/
@@ -418,7 +418,7 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
     _size = -1; /* FIXME: some auto thing here? */
   else
     _size = file_st_size( &_st );
-  
+
   _color = -1;
 
   drop_view();
@@ -525,7 +525,7 @@ void vfu_init()
   external_panelizer = "";
 
   files_list_clear();
-  
+
   files_size = 0;
   sel_count = 0;
   sel_size = 0;
@@ -2100,8 +2100,8 @@ void vfu_rename_file_in_place()
     say1( "No files" );
     return;
     }
-  
-  
+
+
   TF *fi = files_list_get(FLI);
 
   int y = (file_list_index.pos() - file_list_index.page()) + 4;
@@ -2180,9 +2180,9 @@ void vfu_directories_sizes( int n )
 {
   int z;
   char t[256];
-  
+
   int dir_size_mode = __vfu_dir_size_followsymlinks | __vfu_dir_size_samedevonly;
-  
+
   n = toupper( n );
   if ( n == 0 )
     {
@@ -2248,13 +2248,13 @@ void vfu_directories_sizes( int n )
     else
       say1("This is not directory...");
     } else
-  if( n == 'N' ) /* normal traverse mode */  
+  if( n == 'N' ) /* normal traverse mode */
     {
     __vfu_dir_size_followsymlinks = 0;
     __vfu_dir_size_samedevonly    = 0;
     say1( "Directory size calculation mode set to NORMAL (all dev/fs, no symlinks)" );
     } else
-  if( n == 'Y' ) /* follow symlinks */  
+  if( n == 'Y' ) /* follow symlinks */
     {
     __vfu_dir_size_followsymlinks = __vfu_dir_size_followsymlinks ? 0 : DIR_SIZE_FOLLOWSYMLINKS;
     if( __vfu_dir_size_followsymlinks )
@@ -2262,7 +2262,7 @@ void vfu_directories_sizes( int n )
     else
       say1( "Directory size calculation will NOT follow symlinks" );
     } else
-  if( n == 'V' ) /* traverse same device/filesystem only */  
+  if( n == 'V' ) /* traverse same device/filesystem only */
     {
     __vfu_dir_size_samedevonly = __vfu_dir_size_samedevonly ? 0 : DIR_SIZE_SAMEDEVONLY;
     if( __vfu_dir_size_samedevonly )
@@ -2270,8 +2270,8 @@ void vfu_directories_sizes( int n )
     else
       say1( "Directory size calculation will follow ALL devices/filesystems" );
     }
-    
-    
+
+
 
   do_draw = 1;
   update_status();
@@ -2545,7 +2545,7 @@ void vfu_jump_to_mountpoint( int all )
 #ifdef _TARGET_GO32_
   str = home_path;
   str += "_vfu.mtb";
-  if ( va.fload( str ) return;
+  if ( va.fload( str ) ) return;
   if (all)
     {
     va.ins( 0, "-  b:/" );
