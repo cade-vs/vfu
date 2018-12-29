@@ -22,9 +22,9 @@
 
 /* clipboard modes *********************************************************/
 
-#define CLIPBOARD_COPY      1
-#define CLIPBOARD_MOVE      2
-#define CLIPBOARD_SYMLINK   3
+#define CLIPBOARD_COPY      0
+#define CLIPBOARD_MOVE      1
+#define CLIPBOARD_SYMLINK   2
 
 /* overwrite modes *********************************************************/
 
