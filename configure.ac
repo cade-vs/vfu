@@ -27,5 +27,9 @@ AM_MAINTAINER_MODE
 
 AX_WITH_CURSES
 
+if test -f configure.ac; then
+    AC_MSG_ERROR([configure should be run in a separate build directory], [1])
+fi
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

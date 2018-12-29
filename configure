@@ -5119,6 +5119,10 @@ fi
     unset ax_saved_CPPFLAGS
 
 
+if test -f configure.ac; then
+    as_fn_error 1 "configure should be run in a separate build directory" "$LINENO" 5
+fi
+
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF
