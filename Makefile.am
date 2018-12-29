@@ -21,7 +21,7 @@ LIBS_COMMON = -lvslib -lpcre
 
 DEFS = -DHAVE_CONFIG_H
 vfu_LDFLAGS  = -L$(top_srcdir)/../vslib
-vfu_LDADD = -lvslib -lvscon -lpcre @CURSES_LIBS@
+vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
 
 vfu_yas_CXXFLAGS  = $(vfu_CXXFLAGS) -I$(top_srcdir)/../yascreen -DUSE_YASCREEN
 vfu_yas_SOURCES = $(vfu_SOURCES)

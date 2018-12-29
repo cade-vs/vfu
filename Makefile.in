@@ -114,7 +114,8 @@ am_vfu_OBJECTS = vfu-see.$(OBJEXT) vfu-vfu.$(OBJEXT) \
 	vfu-vfusys.$(OBJEXT) vfu-vfutools.$(OBJEXT) \
 	vfu-vfuuti.$(OBJEXT) vfu-vfuview.$(OBJEXT)
 vfu_OBJECTS = $(am_vfu_OBJECTS)
-vfu_DEPENDENCIES =
+am__DEPENDENCIES_1 =
+vfu_DEPENDENCIES = $(am__DEPENDENCIES_1)
 vfu_LINK = $(CXXLD) $(vfu_CXXFLAGS) $(CXXFLAGS) $(vfu_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__objects_1 = vfu_yas-see.$(OBJEXT) vfu_yas-vfu.$(OBJEXT) \
@@ -125,7 +126,6 @@ am__objects_1 = vfu_yas-see.$(OBJEXT) vfu_yas-vfu.$(OBJEXT) \
 	vfu_yas-vfuuti.$(OBJEXT) vfu_yas-vfuview.$(OBJEXT)
 am_vfu_yas_OBJECTS = $(am__objects_1)
 vfu_yas_OBJECTS = $(am_vfu_yas_OBJECTS)
-am__DEPENDENCIES_1 =
 vfu_yas_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(top_srcdir)/../yascreen/libyascreen.a
 vfu_yas_LINK = $(CXXLD) $(vfu_yas_CXXFLAGS) $(CXXFLAGS) \
@@ -322,7 +322,7 @@ vfu_SOURCES = \
 
 LIBS_COMMON = -lvslib -lpcre
 vfu_LDFLAGS = -L$(top_srcdir)/../vslib
-vfu_LDADD = -lvslib -lvscon -lpcre @CURSES_LIBS@
+vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
 vfu_yas_CXXFLAGS = $(vfu_CXXFLAGS) -I$(top_srcdir)/../yascreen -DUSE_YASCREEN
 vfu_yas_SOURCES = $(vfu_SOURCES)
 vfu_yas_LDFLAGS = $(vfu_LDFLAGS) -L$(top_srcdir)/../yascreen
