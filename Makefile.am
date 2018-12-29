@@ -19,7 +19,7 @@ vfu_SOURCES = \
 
 LIBS_COMMON = -lvslib -lpcre
 
-DEFS = -DHAVE_CONFIG_H
+DEFS = -DHAVE_CONFIG_H -DSYSCONFDIR=\"$(sysconfdir)\"
 vfu_LDFLAGS  = -L$(top_srcdir)/../vslib
 vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
 
