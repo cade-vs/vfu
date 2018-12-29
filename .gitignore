@@ -2,3 +2,7 @@
 vfu
 vfu-debug
 vfu.yas*
+
+autom4te.cache
+build
+*~
