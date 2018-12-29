@@ -20,12 +20,6 @@
 #define CM_MOVE  1 // move
 #define CM_LINK  2 // symlink
 
-/* clipboard modes *********************************************************/
-
-#define CLIPBOARD_COPY      0
-#define CLIPBOARD_MOVE      1
-#define CLIPBOARD_SYMLINK   2
-
 /* overwrite modes *********************************************************/
 
 #define OM_ASK      0 /* ask before overwrite */

@@ -22,16 +22,14 @@
 **
 ****************************************************************************/
 
-const char *CM_DESC[] = { "COPY", "MOVE", "LINK" };
+const char *CM_DESC[] = { "COPY", "MOVE", "SYMLINK" };
 char *copy_buff = NULL;
 
 int ignore_copy_errors = 0; /* actually it is used for copy/move/erase */
 
 /* clipboard ***************************************************************/
 
-const char *CB_DESC[] = { "COPY", "MOVE", "SYMLINK" };
-
-VTrie Clipboard;
+VTrie clipboard;
 CopyInfo clipboard_copy_info;
 
 /****************************************************************************
@@ -864,8 +862,7 @@ void vfu_copy_files( int a_one, int a_mode )
     target = work_path;
   else
     target = opt.last_copy_path[ a_mode ];
-  const char* cm_mode_str[] = { "COPY", "MOVE", "LINK" };
-  VString str = cm_mode_str[ a_mode ];
+  VString str = CM_DESC[ a_mode ];
   if ( a_one )
     str = str + " `" + files_list_get(FLI)->name_ext() + "' to:";
   else
@@ -920,7 +917,7 @@ void vfu_copy_files( int a_one, int a_mode )
     } /* free space check */
 
   copy_info.description = "FILE OPERATION: ";
-  copy_info.description += cm_mode_str[ a_mode ];
+  copy_info.description += CM_DESC[ a_mode ];
   copy_info.description += ": ";
   sprintf( t, "%.0f", copy_info.files_size );
   vfu_str_comma( t );
@@ -1108,7 +1105,7 @@ void clipboard_add()
     return;
     }
 
-  Clipboard.undef();
+  clipboard.undef();
   clipboard_copy_info.reset();
 
   VString keep = "1";
@@ -1118,7 +1115,7 @@ void clipboard_add()
     {
     TF *fi = files_list_get(z);
     if ( !fi->sel ) continue;
-    Clipboard[ fi->full_name() ] = keep;
+    clipboard[ fi->full_name() ] = keep;
     }
 
   __copy_calc_totals( clipboard_copy_info, 0 );
@@ -1134,11 +1131,11 @@ void clipboard_add()
 
 void clipboard_paste( int mode )
 {
-  VArray va = Clipboard.keys();
+  VArray va = clipboard.keys();
 
-  ASSERT(    mode == CLIPBOARD_COPY
-          || mode == CLIPBOARD_MOVE
-          || mode == CLIPBOARD_SYMLINK );
+  ASSERT(    mode == CM_COPY
+          || mode == CM_MOVE
+          || mode == CM_LINK );
 
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];
@@ -1156,11 +1153,11 @@ void clipboard_paste( int mode )
     VString dst = work_path + str_file_name_ext( ps );
 
     int r;
-    if ( mode == CLIPBOARD_SYMLINK )
+    if ( mode == CM_LINK )
       r = __vfu_symlink( ps, dst, &clipboard_copy_info );
-    else if ( mode == CLIPBOARD_MOVE )
+    else if ( mode == CM_MOVE )
       r = __vfu_move( ps, dst, &clipboard_copy_info );
-    else // if ( mode == CLIPBOARD_COPY )
+    else // if ( mode == CM_COPY )
       r = __vfu_copy( ps, dst, &clipboard_copy_info );
     if ( r == 0 ) clipboard_copy_info.ok_count++;
     if ( r != 0 && r != CR_SKIP && r != CR_ABORT )
@@ -1180,11 +1177,11 @@ void clipboard_paste( int mode )
 
   vfu_rescan_files( 0 );
   say( 1, cINFO, "CLIPBOARD: %s: %d of %d files processed ok",
-                 CB_DESC[ mode ],
+                 CM_DESC[ mode ],
                  clipboard_copy_info.ok_count,
                  clipboard_copy_info.files_count );
 
-  if ( mode == CLIPBOARD_MOVE ) clipboard_clear();
+  if ( mode == CM_MOVE ) clipboard_clear();
 }
 
 void clipboard_clear()
@@ -1193,13 +1190,13 @@ void clipboard_clear()
     say( 2, cINFO, "CLIPBOARD: %d files removed", clipboard_copy_info.files_count );
   else
     say( 2, cINFO, "CLIPBOARD: empty" );
-  Clipboard.undef();
+  clipboard.undef();
   clipboard_copy_info.reset();
 }
 
 void clipboard_view()
 {
-  mb = Clipboard.keys();
+  mb = clipboard.keys();
   if( mb.count() == 0 )
     {
     say2( "CLIPBOARD: empty" );
@@ -1233,9 +1230,9 @@ void clipboard_menu( int act )
   switch( act )
     {
     case 'A': clipboard_add(); break;
-    case 'P': clipboard_paste( CLIPBOARD_COPY ); break;
-    case 'O': clipboard_paste( CLIPBOARD_MOVE ); break;
-    case 'L': clipboard_paste( CLIPBOARD_SYMLINK ); break;
+    case 'P': clipboard_paste( CM_COPY ); break;
+    case 'O': clipboard_paste( CM_MOVE ); break;
+    case 'L': clipboard_paste( CM_LINK ); break;
     case 'E': clipboard_clear(); break;
     case 'V': clipboard_view(); break;
     }
