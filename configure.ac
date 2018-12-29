@@ -14,7 +14,6 @@ AC_CONFIG_HEADERS([config.h:config.in])
 # This will add debug and profiling options to ./configure
 AX_CHECK_ENABLE_DEBUG([yes])
 
-AC_PROG_CC
 AC_PROG_CXX
 AC_CONFIG_MACRO_DIRS([build-aux/m4])
 AC_PROG_INSTALL
