@@ -39,6 +39,11 @@
   #define FILENAME_FFR     "vfu.ffr"
 #endif
 
+// The SYSCONFDIR macro can be used here, which is defined when
+// ../configure --sysconfdir=nnnn is used. It no option is given, it
+// defaults to /usr/local/etc on most systems.
+// The macro has been added to Makefile.am
+//                                    -andy5995 2018-12-29
 #ifndef FILENAME_CONF_GLOBAL0
 #define FILENAME_CONF_GLOBAL0 "/etc/" FILENAME_CONF
 #endif

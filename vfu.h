@@ -34,6 +34,10 @@
 
   #include <vslib.h>
 
+  #ifdef HAVE_CONFIG_H
+  #  include "config.h"
+  #endif
+
   #if defined(_TARGET_NETBSD_) || (defined(BSD) && BSD >= 199306)
     //FIXME: is the one above correct? should _TARGET_BSD_ be used?
     #include <sys/mount.h>
