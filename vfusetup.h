@@ -18,7 +18,7 @@
  *
  */
 
-#define VFU_VERSION "4.17"
+#define VFU_VERSION "4.18"
 
 #define HEADER "VF/U v" VFU_VERSION " (" __DATE__ ") by (c) Vladi Belperchinov-Shabanski `Cade' 1996-2018"
 #define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
