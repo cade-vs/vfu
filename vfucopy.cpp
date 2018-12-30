@@ -133,6 +133,7 @@ int device_is_same( const char *src, const char *dst )
 
 void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
                     fsize_t a_fa, /* file under copy all size */
+                    long    a_et, /* elapsed time for current file copy */
                     CopyInfo *copy_info ) /* totals info */
 {
   char t[16];
@@ -142,15 +143,22 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
   fsize_t c2 = copy_info->current_size;
   fsize_t a2 = copy_info->files_size;
 
+  long t1  = a_et;
+  long t2  = copy_info->elapsed_time;
+  long eta = ((t1+t2)*a2)/(c1+c2) - (t1+t2);
+
+  int eta_m = eta / 60;
+  int eta_s = eta % 60;
+
   ASSERT( a1 >= 0 && a2 >= 0 );
 
   if ( a1 < 1 ) a1 = 1;
   if ( a2 < 1 ) a2 = 1;
   if ( c1 == a1 ) /* hack, every single 100% each is not meaningfull really */
-    sprintf( t, "     %%%5.1f", (100.0*(c1+c2))/a2);
+    sprintf( t, "     %%%5.1f @%4dm%02ds", (100.0*(c1+c2))/a2, eta_m, eta_s );
   else
-    sprintf( t, "%5.1f%%%5.1f", (100.0*c1)/a1, (100.0*(c1+c2))/a2);
-  con_out( con_max_x() - 12, con_max_y(), t, cSTATUS2 );
+    sprintf( t, "%5.1f%%%5.1f @%4dm%02ds", (100.0*c1)/a1, (100.0*(c1+c2))/a2, eta_m, eta_s );
+  con_out( con_max_x() - 21, con_max_y(), t, cSTATUS2 );
 }
 
 /*###########################################################################*/
@@ -191,14 +199,14 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     time_str_compact( stat_src.st_mtime, sttime);
     str = file_st_size( &stat_src );
     vfu_str_comma(str);
-    snprintf(t, sizeof(t), "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
-    say1(t);
+    snprintf( t, sizeof(t), "SRC: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, src );
+    say1( t );
 
     time_str_compact(stat_dst.st_mtime, sttime);
     str = file_st_size( &stat_dst );
     vfu_str_comma(str);
-    snprintf(t, sizeof(t), "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
-    say2(t);
+    snprintf( t, sizeof(t), "DST: %s%c %11s%c %s", sttime, s_t, str.data(), s_s, dst );
+    say2( t );
 
     vfu_beep();
     vfu_menu_box( "Overwrite", "Y Yes,N No,A Always overwrite,V Never overwrite,I If newer (MODIFY),W Always if newer (MODIFY),D View differences,  Abort (ESC)", -1 );
@@ -351,13 +359,21 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
   int aborted = 0;
 
+  
+  time_t timer_start   = time(NULL);
+  long   elapsed_time  = 0;
+  long   elapsed_break = 0;
+  
   do
     {
+    time_t timer_break = time(NULL);
     if ( vfu_break_op() )
       {
       aborted = 1;
       break;
       }
+    elapsed_break += time(NULL) - timer_break;
+      
     z = fread( copy_buff, 1, COPY_BUFFER_SIZE, f1 );
     if (z > 0) z = fwrite( copy_buff, 1, z, f2 );
     if (z == -1)
@@ -369,7 +385,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       }
     cp += z;
     ASSERT( cp <= size );
-    show_copy_pos( cp, size, copy_info );
+    elapsed_time = time(NULL) - timer_start - elapsed_break;
+    show_copy_pos( cp, size, elapsed_time, copy_info );
     }
   while ( z == COPY_BUFFER_SIZE );
 
@@ -387,7 +404,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   if ( vfu_copy_mode( src, dst ) ) return 1;
 
   copy_info->current_size += size;
-  show_copy_pos( 1, 1, copy_info );
+  copy_info->elapsed_time += elapsed_time;
+  show_copy_pos( 1, 1, 0, copy_info );
   return 0;
 }
 

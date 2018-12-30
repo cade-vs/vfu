@@ -44,6 +44,7 @@ struct CopyInfo
     no_info = files_count = current_count = ok_count = skipped_count =
     no_free_check = over_mode = abort = 0;
     files_size = current_size = 0;
+    elapsed_time = 0;
     };
   int no_info;
 
@@ -51,6 +52,8 @@ struct CopyInfo
   long    files_count; /* not used */
   fsize_t current_size;
   long    current_count; /* not used */
+  
+  long    elapsed_time;
 
   long    ok_count; /* files copied ok */
   long    skipped_count; /* files skipped */
@@ -78,6 +81,7 @@ int over_if_exist( const char* src, const char *dst,
 
 void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
                     fsize_t a_fa, /* file under copy all size */
+                    long    a_et, /* elapsed time for current file copy */
                     CopyInfo *copy_info ); /* totals info */
 
 int vfu_copy_mode( const char* src, const char* dst );
