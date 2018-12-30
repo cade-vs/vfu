@@ -31,7 +31,7 @@
   #include <pwd.h>
   #include <errno.h>
   #include <signal.h>
-
+  #include <menu.h>
   #include <vslib.h>
 
   #ifdef HAVE_CONFIG_H

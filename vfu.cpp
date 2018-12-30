@@ -6,7 +6,6 @@
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
  ****************************************************************************/
-
 #include <stdarg.h>
 
 #include "vfu.h"
@@ -684,14 +683,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  // signal( SIGWINCH, vfu_signal );
-  // this is for xterm resize refresh handle
-  // signal( SIGWINCH, VFUsignal );
-  // still doesn't work?...
-  // HELP: I tried (as it is said in the curses-intro doc)
-  // that I have to do endwin and wrefresh and all will be ok...
-  // but it is not... :(
-  //////////////////////////////////////////
+  signal( SIGWINCH, vfu_signal );
 
   srand( time( NULL ) );
   do_draw = 1;
@@ -1081,14 +1073,14 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
-  /* there is no simple solution... :/
+  /* there is no simple solution... */
   if ( sig == SIGWINCH )
     {
-    signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
-    do_draw = 3;
-    return;
+      refresh ();
+      vfu_reset_screen();
+      return;
     }
-  */
+
   vfu_done();
 
   con_beep();
