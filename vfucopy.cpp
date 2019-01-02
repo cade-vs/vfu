@@ -169,9 +169,9 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
     eta_c = 's';
     }  
   
-  int speed = 0;
-  if( t1 > 0 ) speed = ( c1 / ( 1024 * 1024 ) ) / t1; // current MiB/s
-  if( t1+t2 > 0 ) speed = ( (c1+c2) / ( 1024 * 1024 ) ) / (t1+t2); // current MiB/s
+  int speed = -1;
+  // if( t1 > 0 ) speed = ( c1 / ( 1024 * 1024 ) ) / t1; // current MiB/s
+  if( t1+t2 > 0 ) speed = ( (c1+c2) / ( 1024 * 1024 ) ) / (t1+t2); // total MiB/s
 
   ASSERT( a1 >= 0 && a2 >= 0 );
 
