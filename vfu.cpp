@@ -433,7 +433,7 @@ void vfu_help()
   mb.undef();
   mb.push( "*keypad -- navigation keys" );
   mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
-  mb.push( "BACKSPC -- chdir to prent directory ( `-' and ^H too )"         );
+  mb.push( "BACKSPC -- chdir to parent directory ( `-' and ^H too )"         );
   mb.push( "TAB     -- edit entry: filename, atrrib's/mode, owner, group");
   mb.push( "R.Arrow -- rename current file " );
   mb.push( "SPACE   -- select/deselect current list item"   );
@@ -464,12 +464,12 @@ void vfu_help()
   mb.push( "G       -- global select/deselect"                    );
   mb.push( "H       -- this help text"                            );
   mb.push( "I       -- edit file"                            );
-  mb.push( "Q       -- exit here ( to the current directory)");
+  mb.push( "Q       -- exit here (to the current directory)");
   mb.push( "R       -- reload directory/refresh file list"       );
   mb.push( "Ctrl+R  -- recursive reload... "                     );
   mb.push( "Alt+R   -- reload/tree menu" );
   mb.push( "J       -- jump to mountpoint"                       );
-  mb.push( "L       -- symlink selected/currnet file(s) into new directory" );
+  mb.push( "L       -- symlink selected/current file(s) into new directory" );
   mb.push( "Ctrl+L  -- refresh/redraw entire screen" );
   mb.push( "M       -- move selected (if selection) or current file(s)"             );
   mb.push( "Alt+M   -- move ONLY current file (regardless selection)"             );
