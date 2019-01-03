@@ -158,7 +158,7 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
     eta_v = eta_h;
     eta_c = 'h';
     }
-  else if( eta_m > 0 )
+  else if( eta > 99 && eta_m > 0 )
     {
     eta_v = eta_m;
     eta_c = 'm';
