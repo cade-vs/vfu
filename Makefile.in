@@ -87,11 +87,13 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = vfu$(EXEEXT) vfu.yas$(EXEEXT)
+bin_PROGRAMS = vfu$(EXEEXT)
+EXTRA_PROGRAMS = vfu.yas$(EXEEXT)
 subdir = vfu
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/build-aux/m4/ax_check_enable_debug.m4 \
+	$(top_srcdir)/build-aux/m4/ax_path_lib_pcre.m4 \
 	$(top_srcdir)/build-aux/m4/ax_require_defined.m4 \
 	$(top_srcdir)/build-aux/m4/ax_with_curses.m4 \
 	$(top_srcdir)/build-aux/m4/pkg.m4 $(top_srcdir)/configure.ac
@@ -230,6 +232,8 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PCRE_CFLAGS = @PCRE_CFLAGS@
+PCRE_LIBS = @PCRE_LIBS@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
@@ -279,7 +283,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-vfu_CXXFLAGS = -I$(top_srcdir)/vslib @CURSES_CFLAGS@
+vfu_CXXFLAGS = -I$(top_srcdir)/vslib @CURSES_CFLAGS@ @PCRE_CFLAGS@
 vfu_SOURCES = \
     see.cpp \
     vfu.cpp \
@@ -294,7 +298,7 @@ vfu_SOURCES = \
     vfuuti.cpp \
     vfuview.cpp
 
-LIBS_COMMON = -lvslib -lpcre
+LIBS_COMMON = -lvslib @PCRE_LIBS@
 vfu_LDFLAGS = -L$(top_srcdir)/vslib
 vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
 vfu_yas_CXXFLAGS = $(vfu_CXXFLAGS) -I$(top_srcdir)/yascreen -DUSE_YASCREEN
@@ -695,7 +699,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -763,21 +767,28 @@ uninstall-am: uninstall-binPROGRAMS
 .MAKE: all install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
-	distclean distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-binPROGRAMS clean-generic clean-local cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-hdr distclean-tags distdir dvi dvi-am html html-am \
+	info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
+
+# Must be indented with tabs not spaces
+clean-local:
+	file=@top_builddir@/vfu/vfu.yas; \
+	if test -f $$file; then \
+		rm $$file; \
+	fi
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

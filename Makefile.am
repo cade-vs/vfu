@@ -1,5 +1,6 @@
-bin_PROGRAMS = vfu vfu.yas
-vfu_CXXFLAGS = -I$(top_srcdir)/vslib @CURSES_CFLAGS@
+bin_PROGRAMS = vfu
+EXTRA_PROGRAMS = vfu.yas
+vfu_CXXFLAGS = -I$(top_srcdir)/vslib @CURSES_CFLAGS@ @PCRE_CFLAGS@
 
 vfu_SOURCES = \
     see.cpp \
@@ -15,7 +16,7 @@ vfu_SOURCES = \
     vfuuti.cpp \
     vfuview.cpp
 
-LIBS_COMMON = -lvslib -lpcre
+LIBS_COMMON = -lvslib @PCRE_LIBS@
 
 DEFS = -DHAVE_CONFIG_H -DSYSCONFDIR=\"$(sysconfdir)\"
 vfu_LDFLAGS  = -L$(top_srcdir)/vslib
@@ -42,3 +43,10 @@ noinst_HEADERS = \
     vfuopt.h    \
     vfusys.h    \
     vfuuti.h
+
+# Must be indented with tabs not spaces
+clean-local:
+	file=@top_builddir@/vfu/vfu.yas; \
+	if test -f $$file; then \
+		rm $$file; \
+	fi
