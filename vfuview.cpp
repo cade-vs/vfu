@@ -79,9 +79,20 @@ VString fsize_fmt( fsize_t fs ) /* return commified number */
   VString str;
   if( fs > 99999999999.0 ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
-    str.fi( int( fs / ( units_size * units_size ) ) );
-    vfu_str_comma( str );
-    str += opt.use_si_sizes ? " MB " : " MiB";
+    fsize_t ns = fs / ( units_size * units_size );
+    if( ns > 99999999.0 ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
+      {
+      ns = fs / ( units_size * units_size * units_size );
+      str.fi( int( ns ) );
+      vfu_str_comma( str );
+      str += opt.use_si_sizes ? " GB " : " GiB";
+      }
+    else
+      {  
+      str.fi( int( ns ) );
+      vfu_str_comma( str );
+      str += opt.use_si_sizes ? " MB " : " MiB";
+      }
     }
   else
     {
