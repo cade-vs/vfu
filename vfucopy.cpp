@@ -165,7 +165,7 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
     }
   else
     {
-    eta_v = eta_s;
+    eta_v = eta;
     eta_c = 's';
     }  
   
