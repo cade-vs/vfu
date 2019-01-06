@@ -430,8 +430,7 @@ void vfu_settings_load()
   if (opt.use_dir_colors) vfu_load_dir_colors();
 //  if (file_load_crc32( filename_size_cache, &size_cache, sizeof(size_cache)))
 //    memset( &size_cache, 0, sizeof(size_cache) );
-  size_cache.undef();
-  size_cache.fload( filename_size_cache );
+  size_cache_load();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -441,7 +440,7 @@ void vfu_settings_save()
   file_save_crc32( filename_opt, &opt, sizeof(opt));
 //  file_save_crc32( filename_size_cache, &size_cache, sizeof(size_cache));
   history.fsave( filename_history );
-  size_cache.fsave( filename_size_cache );
+  size_cache_save();
 }
 
 /*---------------------------------------------------------------------------*/

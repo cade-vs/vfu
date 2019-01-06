@@ -916,8 +916,22 @@ void tree_view()
 
 /*###########################################################################*/
 
-#define SIZE_CACHE_OFFSET 12
-#define SIZE_CACHE_OFFSET_CLEAN (12+8+1)
+#define SIZE_CACHE_OFFSET 15
+#define SIZE_CACHE_OFFSET_CLEAN (SIZE_CACHE_OFFSET+8+1)
+
+void size_cache_load()
+{
+  size_cache.undef();
+  size_cache.fload( filename_size_cache );
+  // removes old-style size cache entries
+  if( size_cache.count() > 0 && ( size_cache[0][SIZE_CACHE_OFFSET] != '|' || size_cache[0][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
+    size_cache.undef();
+}
+
+void size_cache_save()
+{
+  size_cache.fsave( filename_size_cache );
+}
 
 int size_cache_cmp( const char* s1, const char* s2 )
 {
@@ -934,7 +948,8 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   char s_adler[16];
   char s_size[32];
 
-  sprintf( s_size, "%012.0f", size ); //WARNING: THIS IS SIZE_CACHE_OFFSET
+  // MUST BE SIZE_CACHE_OFFSET!
+  sprintf( s_size, "%015.0f", size ); //WARNING: THIS IS SIZE_CACHE_OFFSET
   sprintf( s_adler, "%08X", (unsigned int)str_adler32( ps ) );
 
   VString str;
@@ -1003,13 +1018,14 @@ void size_cache_append( const char *s, fsize_t size )
 void size_cache_clean( const char *s )
 {
   VString str = size_cache_compose_key( s, 0 );
+  int qc = str_len( str );
   str_trim_left( str, SIZE_CACHE_OFFSET_CLEAN );
   int sl = str_len( str );
   int z = 0;
   while( z < size_cache.count() )
     {
     const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET_CLEAN;
-    if ( ( strncmp( ps, str, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0) )
+    if ( ( strlen( size_cache[z] ) >= qc && strncmp( ps, str, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0) )
          ||
          ( size_cache[z][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
       size_cache.del( z );
@@ -1175,7 +1191,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode )
 {
   char t[MAX_PATH];
   expand_path( s, t );
-  size_cache_clean( t );
+  //size_cache_clean( t );
   str_fix_path( t );
   size_cache_clean( t );
 

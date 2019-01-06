@@ -41,6 +41,8 @@ const char* tree_find( const char *s ); /* return full path by dirname */
 /* return count of found dirnames and stores them to sc */
 int tree_find( const char *s, VArray *va );
 
+void size_cache_load();
+void size_cache_save();
 VString size_cache_compose_key( const char *s, fsize_t size );
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );
