@@ -102,7 +102,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = config.h
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
@@ -126,8 +126,7 @@ am__objects_1 = vfu_yas-see.$(OBJEXT) vfu_yas-vfu.$(OBJEXT) \
 	vfu_yas-vfuuti.$(OBJEXT) vfu_yas-vfuview.$(OBJEXT)
 am_vfu_yas_OBJECTS = $(am__objects_1)
 vfu_yas_OBJECTS = $(am_vfu_yas_OBJECTS)
-vfu_yas_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_srcdir)/yascreen/libyascreen.a
+vfu_yas_DEPENDENCIES = $(am__DEPENDENCIES_1)
 vfu_yas_LINK = $(CXXLD) $(vfu_yas_CXXFLAGS) $(CXXFLAGS) \
 	$(vfu_yas_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -142,7 +141,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp =
 am__depfiles_maybe =
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -189,7 +188,7 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config.in
+am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -237,6 +236,7 @@ PCRE_LIBS = @PCRE_LIBS@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -283,7 +283,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-vfu_CXXFLAGS = -I$(top_srcdir)/vslib @CURSES_CFLAGS@ @PCRE_CFLAGS@
+vfu_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @CURSES_CFLAGS@ @PCRE_CFLAGS@
 vfu_SOURCES = \
     see.cpp \
     vfu.cpp \
@@ -299,12 +299,12 @@ vfu_SOURCES = \
     vfuview.cpp
 
 LIBS_COMMON = -lvslib @PCRE_LIBS@
-vfu_LDFLAGS = -L$(top_srcdir)/vslib
+vfu_LDFLAGS = -L$(top_builddir)/vslib
 vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
 vfu_yas_CXXFLAGS = $(vfu_CXXFLAGS) -I$(top_srcdir)/yascreen -DUSE_YASCREEN
 vfu_yas_SOURCES = $(vfu_SOURCES)
-vfu_yas_LDFLAGS = $(vfu_LDFLAGS) -L$(top_srcdir)/yascreen
-vfu_yas_LDADD = $(LIBS_COMMON) -lvscony -lrt $(top_srcdir)/yascreen/libyascreen.a
+vfu_yas_LDFLAGS = $(vfu_LDFLAGS) -L$(top_builddir)/yas-libs
+vfu_yas_LDADD = $(LIBS_COMMON) -lvscony -lrt -lyascreen
 
 # These get packaged when 'make dist' is run.
 noinst_HEADERS = \
@@ -322,8 +322,7 @@ noinst_HEADERS = \
     vfusys.h    \
     vfuuti.h
 
-all: config.h
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o .obj
@@ -356,21 +355,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-config.h: stamp-h1
-	@test -f $@ || rm -f stamp-h1
-	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
-
-stamp-h1: $(top_srcdir)/config.in $(top_builddir)/config.status
-	@rm -f stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status vfu/config.h
-$(top_srcdir)/config.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
-	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
-	rm -f stamp-h1
-	touch $@
-
-distclean-hdr:
-	-rm -f config.h stamp-h1
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -662,7 +646,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(HEADERS) config.h
+all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -704,7 +688,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-local mostlyclean-am
 distclean: distclean-am
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-tags
 
 dvi: dvi-am
 
@@ -764,18 +748,18 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: all install-am install-strip
+.MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
 	clean-binPROGRAMS clean-generic clean-local cscopelist-am \
 	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-tags distdir dvi dvi-am html html-am \
-	info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-binPROGRAMS
