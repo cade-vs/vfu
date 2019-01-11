@@ -1,5 +1,5 @@
 bin_PROGRAMS = vfu
-vfu_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @PCRE_CFLAGS@
+AM_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @PCRE_CFLAGS@
 
 vfu_SOURCES = \
     see.cpp \
@@ -15,7 +15,7 @@ vfu_SOURCES = \
     vfuuti.cpp \
     vfuview.cpp
 
-DEFS = -DHAVE_CONFIG_H -DSYSCONFDIR=\"$(sysconfdir)\"
+DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)\"
 LDFLAGS  = -L$(top_builddir)/vslib @LDFLAGS@
 LDADD = -lvscon -lvslib @PCRE_LIBS@
 

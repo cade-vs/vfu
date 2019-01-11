@@ -106,17 +106,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_vfu_OBJECTS = vfu-see.$(OBJEXT) vfu-vfu.$(OBJEXT) \
-	vfu-vfuarc.$(OBJEXT) vfu-vfucopy.$(OBJEXT) \
-	vfu-vfudir.$(OBJEXT) vfu-vfufiles.$(OBJEXT) \
-	vfu-vfumenu.$(OBJEXT) vfu-vfuopt.$(OBJEXT) \
-	vfu-vfusys.$(OBJEXT) vfu-vfutools.$(OBJEXT) \
-	vfu-vfuuti.$(OBJEXT) vfu-vfuview.$(OBJEXT)
+am_vfu_OBJECTS = see.$(OBJEXT) vfu.$(OBJEXT) vfuarc.$(OBJEXT) \
+	vfucopy.$(OBJEXT) vfudir.$(OBJEXT) vfufiles.$(OBJEXT) \
+	vfumenu.$(OBJEXT) vfuopt.$(OBJEXT) vfusys.$(OBJEXT) \
+	vfutools.$(OBJEXT) vfuuti.$(OBJEXT) vfuview.$(OBJEXT)
 vfu_OBJECTS = $(am_vfu_OBJECTS)
 vfu_LDADD = $(LDADD)
 vfu_DEPENDENCIES =
-vfu_LINK = $(CXXLD) $(vfu_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -132,10 +128,6 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp =
 am__depfiles_maybe =
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -193,7 +185,7 @@ CURSES_LIBS = @CURSES_LIBS@
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = -DHAVE_CONFIG_H -DSYSCONFDIR=\"$(sysconfdir)\"
+DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)\"
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
@@ -271,7 +263,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-vfu_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @PCRE_CFLAGS@
+AM_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @PCRE_CFLAGS@
 vfu_SOURCES = \
     see.cpp \
     vfu.cpp \
@@ -382,7 +374,7 @@ clean-binPROGRAMS:
 
 vfu$(EXEEXT): $(vfu_OBJECTS) $(vfu_DEPENDENCIES) $(EXTRA_vfu_DEPENDENCIES) 
 	@rm -f vfu$(EXEEXT)
-	$(AM_V_CXXLD)$(vfu_LINK) $(vfu_OBJECTS) $(vfu_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) $(vfu_OBJECTS) $(vfu_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -395,78 +387,6 @@ distclean-compile:
 
 .cpp.obj:
 	$(AM_V_CXX)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-vfu-see.o: see.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-see.o `test -f 'see.cpp' || echo '$(srcdir)/'`see.cpp
-
-vfu-see.obj: see.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-see.obj `if test -f 'see.cpp'; then $(CYGPATH_W) 'see.cpp'; else $(CYGPATH_W) '$(srcdir)/see.cpp'; fi`
-
-vfu-vfu.o: vfu.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfu.o `test -f 'vfu.cpp' || echo '$(srcdir)/'`vfu.cpp
-
-vfu-vfu.obj: vfu.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfu.obj `if test -f 'vfu.cpp'; then $(CYGPATH_W) 'vfu.cpp'; else $(CYGPATH_W) '$(srcdir)/vfu.cpp'; fi`
-
-vfu-vfuarc.o: vfuarc.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuarc.o `test -f 'vfuarc.cpp' || echo '$(srcdir)/'`vfuarc.cpp
-
-vfu-vfuarc.obj: vfuarc.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuarc.obj `if test -f 'vfuarc.cpp'; then $(CYGPATH_W) 'vfuarc.cpp'; else $(CYGPATH_W) '$(srcdir)/vfuarc.cpp'; fi`
-
-vfu-vfucopy.o: vfucopy.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfucopy.o `test -f 'vfucopy.cpp' || echo '$(srcdir)/'`vfucopy.cpp
-
-vfu-vfucopy.obj: vfucopy.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfucopy.obj `if test -f 'vfucopy.cpp'; then $(CYGPATH_W) 'vfucopy.cpp'; else $(CYGPATH_W) '$(srcdir)/vfucopy.cpp'; fi`
-
-vfu-vfudir.o: vfudir.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfudir.o `test -f 'vfudir.cpp' || echo '$(srcdir)/'`vfudir.cpp
-
-vfu-vfudir.obj: vfudir.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfudir.obj `if test -f 'vfudir.cpp'; then $(CYGPATH_W) 'vfudir.cpp'; else $(CYGPATH_W) '$(srcdir)/vfudir.cpp'; fi`
-
-vfu-vfufiles.o: vfufiles.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfufiles.o `test -f 'vfufiles.cpp' || echo '$(srcdir)/'`vfufiles.cpp
-
-vfu-vfufiles.obj: vfufiles.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfufiles.obj `if test -f 'vfufiles.cpp'; then $(CYGPATH_W) 'vfufiles.cpp'; else $(CYGPATH_W) '$(srcdir)/vfufiles.cpp'; fi`
-
-vfu-vfumenu.o: vfumenu.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfumenu.o `test -f 'vfumenu.cpp' || echo '$(srcdir)/'`vfumenu.cpp
-
-vfu-vfumenu.obj: vfumenu.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfumenu.obj `if test -f 'vfumenu.cpp'; then $(CYGPATH_W) 'vfumenu.cpp'; else $(CYGPATH_W) '$(srcdir)/vfumenu.cpp'; fi`
-
-vfu-vfuopt.o: vfuopt.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuopt.o `test -f 'vfuopt.cpp' || echo '$(srcdir)/'`vfuopt.cpp
-
-vfu-vfuopt.obj: vfuopt.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuopt.obj `if test -f 'vfuopt.cpp'; then $(CYGPATH_W) 'vfuopt.cpp'; else $(CYGPATH_W) '$(srcdir)/vfuopt.cpp'; fi`
-
-vfu-vfusys.o: vfusys.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfusys.o `test -f 'vfusys.cpp' || echo '$(srcdir)/'`vfusys.cpp
-
-vfu-vfusys.obj: vfusys.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfusys.obj `if test -f 'vfusys.cpp'; then $(CYGPATH_W) 'vfusys.cpp'; else $(CYGPATH_W) '$(srcdir)/vfusys.cpp'; fi`
-
-vfu-vfutools.o: vfutools.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfutools.o `test -f 'vfutools.cpp' || echo '$(srcdir)/'`vfutools.cpp
-
-vfu-vfutools.obj: vfutools.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfutools.obj `if test -f 'vfutools.cpp'; then $(CYGPATH_W) 'vfutools.cpp'; else $(CYGPATH_W) '$(srcdir)/vfutools.cpp'; fi`
-
-vfu-vfuuti.o: vfuuti.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuuti.o `test -f 'vfuuti.cpp' || echo '$(srcdir)/'`vfuuti.cpp
-
-vfu-vfuuti.obj: vfuuti.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuuti.obj `if test -f 'vfuuti.cpp'; then $(CYGPATH_W) 'vfuuti.cpp'; else $(CYGPATH_W) '$(srcdir)/vfuuti.cpp'; fi`
-
-vfu-vfuview.o: vfuview.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuview.o `test -f 'vfuview.cpp' || echo '$(srcdir)/'`vfuview.cpp
-
-vfu-vfuview.obj: vfuview.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vfu_CXXFLAGS) $(CXXFLAGS) -c -o vfu-vfuview.obj `if test -f 'vfuview.cpp'; then $(CYGPATH_W) 'vfuview.cpp'; else $(CYGPATH_W) '$(srcdir)/vfuview.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
