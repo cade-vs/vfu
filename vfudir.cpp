@@ -916,7 +916,8 @@ void tree_view()
 
 /*###########################################################################*/
 
-#define SIZE_CACHE_OFFSET 15
+#define SIZE_CACHE_OFFSET      15
+#define SIZE_CACHE_OFFSET_STR "15"
 #define SIZE_CACHE_OFFSET_CLEAN (SIZE_CACHE_OFFSET+8+1)
 
 void size_cache_load()
@@ -949,7 +950,7 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   char s_size[32];
 
   // MUST BE SIZE_CACHE_OFFSET!
-  sprintf( s_size, "%015.0f", size ); //WARNING: THIS IS SIZE_CACHE_OFFSET
+  sprintf( s_size, "%0" SIZE_CACHE_OFFSET_STR ".0f", size );
   sprintf( s_adler, "%08X", (unsigned int)str_adler32( ps ) );
 
   VString str;
