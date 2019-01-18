@@ -1,7 +1,5 @@
-ACLOCAL_AMFLAGS = --install -I build-aux/m4
-
-bin_PROGRAMS = vfu vfu.yas
-vfu_CXXFLAGS = -I$(top_srcdir)/../vslib @CURSES_CFLAGS@
+bin_PROGRAMS = vfu
+AM_CXXFLAGS = -Wall -I$(top_srcdir)/vslib -I$(top_builddir) @PCRE_CFLAGS@
 
 vfu_SOURCES = \
     see.cpp \
@@ -17,17 +15,9 @@ vfu_SOURCES = \
     vfuuti.cpp \
     vfuview.cpp
 
-LIBS_COMMON = -lvslib -lpcre
-
-DEFS = -DHAVE_CONFIG_H -DSYSCONFDIR=\"$(sysconfdir)\"
-vfu_LDFLAGS  = -L$(top_srcdir)/../vslib
-vfu_LDADD = $(LIBS_COMMON) -lvscon @CURSES_LIBS@
-
-vfu_yas_CXXFLAGS  = $(vfu_CXXFLAGS) -I$(top_srcdir)/../yascreen -DUSE_YASCREEN
-vfu_yas_SOURCES = $(vfu_SOURCES)
-
-vfu_yas_LDFLAGS  = $(vfu_LDFLAGS) -L$(top_srcdir)/../yascreen
-vfu_yas_LDADD = $(LIBS_COMMON) -lvscony -lrt $(top_srcdir)/../yascreen/libyascreen.a
+DEFS = @DEFS@ -DSYSCONFDIR=\"$(sysconfdir)\"
+LDFLAGS  = -L$(top_builddir)/vslib @LDFLAGS@
+LDADD = -lvscon -lvslib @PCRE_LIBS@
 
 # These get packaged when 'make dist' is run.
 noinst_HEADERS = \
