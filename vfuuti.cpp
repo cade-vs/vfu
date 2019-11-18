@@ -288,15 +288,20 @@ VString size_str_compact( const fsize_t siz )
     sprintf( buf, "%.0f", siz );
     size_str = " B  ";
     }
-  else if ( siz < units_size * units_size )
+  else if ( siz < 1.0 * units_size * units_size )
     {
     sprintf( buf, "%.0f", siz/units_size );
     size_str = opt.use_si_sizes ? " KB " : " KiB";
     }
-  else if ( siz < units_size * units_size * units_size )
+  else if ( siz < 1.0 * units_size * units_size * units_size )
     {
     sprintf( buf, "%.0f", siz/( units_size * units_size ) );
     size_str = opt.use_si_sizes ? " MB " : " MiB";
+    }
+  else if ( siz < 100.0 * units_size * units_size * units_size )
+    {
+    sprintf( buf, "%.3f", siz/( units_size * units_size * units_size ) );
+    size_str = opt.use_si_sizes ? " GB " : " GiB";
     }
   else
     {

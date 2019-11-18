@@ -2562,7 +2562,8 @@ void vfu_jump_to_mountpoint( int all )
     str_word( str, " \t", t ); /* get device name */
     str_cut( str, " \t");
     str_word( str, " \t", t ); /* get mount point */
-    va.set( z, t ); /* replace line with mount point only */
+    //va.set( z, t ); /* replace line with mount point only */
+    va[z] = t; /* replace line with mount point only */
 
     struct statfs stafs;
     statfs( t, &stafs );
@@ -2571,19 +2572,19 @@ void vfu_jump_to_mountpoint( int all )
     if (toupper(t[0]) >= 'A' && toupper(t[0]) <= 'Z' && toupper(t[1]) == ':')
       hk = toupper(t[0]);
     #endif
-    sprintf( str, "%c | %9s | %9s | %-20s ",
+    sprintf( str, "%c | %10s | %10s | %-30s ",
              hk,
              (const char*)size_str_compact( stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) ),
              (const char*)size_str_compact( stafs.f_bsize * stafs.f_blocks ),
              //stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) / (1024.0*1024.0),
              //stafs.f_bsize * stafs.f_blocks / (1024.0*1024.0),
-             t
+             (const char*)(str_dot_reduce( t, 30 ))
              );
 
     mb.push(str);
     }
   menu_box_info.ac = KEY_CTRL_U;
-  z = vfu_menu_box( 20, 5, "Jump to mount-point (free/total) Ctrl+U=umount" );
+  z = vfu_menu_box( 5, 5, "Jump to mount-point (free/total) Ctrl+U=umount" );
   if ( z == -1 )   return;
   if (menu_box_info.ac == -2)
     {

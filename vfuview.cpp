@@ -261,8 +261,9 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   str_pad(tmp,15);
   s1 += tmp;
 
-  s1 += "  Free: ";
+  s1 += "  Free:  ";
   tmp = size_str_compact( fs_free );
+  //tmp = fsize_fmt( fs_free );
   str_pad(tmp,10);
   s1 += tmp;
   if (fs_total == 0 || fs_free > fs_total)
@@ -270,7 +271,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   else
     sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
 
-  s1 += "  " + tmp + "  FSize:";
+  s1 += "  " + tmp + " FSize:";
   tmp = fsize_fmt( files_size );
   str_pad(tmp,15);
   s1 += tmp;
@@ -286,13 +287,14 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   tmp = fsize_fmt( sel_size );
   str_pad(tmp,15);
   s2 += tmp;
-  s2 += "  Total:";
+  s2 += "  Total: ";
   tmp = size_str_compact( fs_total );
+  //tmp = fsize_fmt( fs_total );
   str_pad(tmp,10);
   s2 += tmp;
 
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
-  sprintf( tmp,  "  %s.%s@%s ", 
+  sprintf( tmp,  " %s.%s@%s ", 
                  user_id_str.data(), 
                  group_id_str.data(),
                  host_name_str.data() );
