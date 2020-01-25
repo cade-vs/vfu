@@ -409,7 +409,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       return 1;
       }
     cp += z;
-    ASSERT( cp <= size );
+    //ASSERT( cp <= size );
     elapsed_time = time(NULL) - timer_start - elapsed_break;
     show_copy_pos( cp, size, elapsed_time, copy_info );
     }
@@ -424,7 +424,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
     if ( aborted ) return CR_ABORT;
     return 1;
     }
-  ASSERT( cp == size );
+  //ASSERT( cp == size );
 
   if ( vfu_copy_mode( src, dst ) ) return 1;
 
