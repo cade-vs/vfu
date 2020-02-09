@@ -36,8 +36,8 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: vfu ##############################################################
 
-CC_1       = g++
-LD_1       = g++
+CC_1       = $(CXX)
+LD_1       = $(CXX)
 AR_1       = ar rv
 RANLIB_1   = ranlib
 CCFLAGS_1  = -I../vslib -I/usr/include/ncurses -O2 $(CCDEF)  
@@ -137,8 +137,8 @@ link-vfu: .OBJ.vfu $(OBJ_1)
 
 ### TARGET 2: vfu.yas ##########################################################
 
-CC_2       = g++
-LD_2       = g++
+CC_2       = $(CXX)
+LD_2       = $(CXX)
 AR_2       = ar rv
 RANLIB_2   = ranlib
 CCFLAGS_2  = -I../vslib -I../yascreen -DUSE_YASCREEN -O2        $(CCDEF)  
