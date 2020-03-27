@@ -2572,10 +2572,16 @@ void vfu_jump_to_mountpoint( int all )
     if (toupper(t[0]) >= 'A' && toupper(t[0]) <= 'Z' && toupper(t[1]) == ':')
       hk = toupper(t[0]);
     #endif
+    
+    fsize_t fs_free   = stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree );
+    fsize_t fs_total  = stafs.f_bsize * stafs.f_blocks;
+    VString str_free  = opt.use_gib_usage ? fsize_fmt( fs_free,  1 ) : size_str_compact( fs_free  );
+    VString str_total = opt.use_gib_usage ? fsize_fmt( fs_total, 1 ) : size_str_compact( fs_total );
+    
     sprintf( str, "%c | %10s | %10s | %-30s ",
              hk,
-             (const char*)size_str_compact( stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) ),
-             (const char*)size_str_compact( stafs.f_bsize * stafs.f_blocks ),
+             (const char*)str_free,
+             (const char*)str_total,
              //stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree ) / (1024.0*1024.0),
              //stafs.f_bsize * stafs.f_blocks / (1024.0*1024.0),
              (const char*)(str_dot_reduce( t, 30 ))
