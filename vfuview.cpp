@@ -76,7 +76,7 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
 {
   int units_size = opt.use_si_sizes ? 1000 : 1024;
   
-  fsize_t th = use_gib ? 1024*1024*1024 : 999999999.0;
+  fsize_t th = use_gib ? 1024*1024*1024 : 99999999999.0;
   
   VString str;
   if( fs > th ) // 99_999_999_999 11 positions + 3 comma = 14 chars
@@ -263,20 +263,20 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   str_pad(tmp,15);
   s1 += tmp;
 
-  s1 += "  Free:  ";
+  s1 += "  Free: ";
   //tmp = size_str_compact( fs_free );
   tmp = fsize_fmt( fs_free, opt.use_gib_usage );
-  str_pad( tmp, 11 );
+  str_pad( tmp, 14 );
   s1 += tmp;
   if (fs_total == 0 || fs_free > fs_total)
     tmp = "  n/a%";
   else
-    sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
+    sprintf( 64, tmp, "%4.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
 
   s1 += "  " + tmp + " FSize:";
   //tmp = size_str_compact( files_size );
   tmp = fsize_fmt( files_size );
-  str_pad(tmp,15);
+  str_pad( tmp, 15 );
   s1 += tmp;
   if (fs_total == 0 || files_size > fs_total)
     tmp = " n/a%";
@@ -291,10 +291,10 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   str_pad(tmp,15);
   s2 += tmp;
   
-  s2 += "  Total: ";
+  s2 += "  Total:";
   //tmp = size_str_compact( fs_total );
   tmp = fsize_fmt( fs_total, opt.use_gib_usage );
-  str_pad( tmp, 11 );
+  str_pad( tmp, 14 );
   s2 += tmp;
 
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
