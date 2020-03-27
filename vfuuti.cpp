@@ -286,7 +286,7 @@ VString size_str_compact( const fsize_t siz )
   if ( siz < units_size )
     {
     sprintf( buf, "%.0f", siz );
-    size_str = " B  ";
+    size_str = "   B";
     }
   else if ( siz < 1.0 * units_size * units_size )
     {

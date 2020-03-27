@@ -72,15 +72,17 @@ int get_item_color( TF *fi )
 
 /*-----------------------------------------------------------------------*/
 
-VString fsize_fmt( fsize_t fs ) /* return commified number */
+VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
 {
   int units_size = opt.use_si_sizes ? 1000 : 1024;
   
+  fsize_t th = use_gib ? 1024*1024*1024 : 999999999.0;
+  
   VString str;
-  if( fs > 99999999999.0 ) // 99_999_999_999 11 positions + 3 comma = 14 chars
+  if( fs > th ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
     fsize_t ns = fs / ( units_size * units_size );
-    if( ns > 99999999.0 ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
+    if( ns > 99999999.0 || use_gib ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
       {
       ns = fs / ( units_size * units_size * units_size );
       str.fi( int( ns ) );
@@ -262,9 +264,9 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   s1 += tmp;
 
   s1 += "  Free:  ";
-  tmp = size_str_compact( fs_free );
-  //tmp = fsize_fmt( fs_free );
-  str_pad(tmp,10);
+  //tmp = size_str_compact( fs_free );
+  tmp = fsize_fmt( fs_free, opt.use_gib_usage );
+  str_pad( tmp, 11 );
   s1 += tmp;
   if (fs_total == 0 || fs_free > fs_total)
     tmp = "  n/a%";
@@ -272,6 +274,7 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
     sprintf( 64, tmp, "%5.1f%%", (double)100 * ((double)fs_free / (double)fs_total));
 
   s1 += "  " + tmp + " FSize:";
+  //tmp = size_str_compact( files_size );
   tmp = fsize_fmt( files_size );
   str_pad(tmp,15);
   s1 += tmp;
@@ -283,14 +286,15 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
 
   /* second line here */
   s2  = "S.Size:";
-
+  //tmp = size_str_compact( sel_size );
   tmp = fsize_fmt( sel_size );
   str_pad(tmp,15);
   s2 += tmp;
+  
   s2 += "  Total: ";
-  tmp = size_str_compact( fs_total );
-  //tmp = fsize_fmt( fs_total );
-  str_pad(tmp,10);
+  //tmp = size_str_compact( fs_total );
+  tmp = fsize_fmt( fs_total, opt.use_gib_usage );
+  str_pad( tmp, 11 );
   s2 += tmp;
 
   tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";

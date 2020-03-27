@@ -16,7 +16,7 @@ extern int tag_mark_pos;
 extern int sel_mark_pos;
 
 int get_item_color( TF* fi );
-VString fsize_fmt( fsize_t fs ); /* return commified number */
+VString fsize_fmt( fsize_t fs, int use_gib = 0 ); /* return commified number */
 
 void show_pos( int curr, int all );
 

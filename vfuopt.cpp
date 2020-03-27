@@ -70,6 +70,7 @@ ToggleEntry Toggles[] =
   { ' ', "Show user's free space", &(opt.show_user_free), NOYES },
   { ' ', "Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
   { ' ', "Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
+  { ' ', "Prefer GiB in disk usage status", &(opt.use_gib_usage), NOYES },
   { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
   { ' ', "1000s separator type", &(opt.comma_type), COMMA_TYPES },
   {  -1, "---", NULL }

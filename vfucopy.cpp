@@ -959,7 +959,7 @@ void vfu_copy_files( int a_one, int a_mode )
       }
     } /* free space check */
 
-  copy_info.description = "FILE OPERATION: ";
+  copy_info.description = "FILE ";
   copy_info.description += CM_DESC[ a_mode ];
   copy_info.description += ": ";
   sprintf( t, "%.0f", copy_info.files_size );

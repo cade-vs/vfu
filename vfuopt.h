@@ -78,6 +78,7 @@
     int smart_home_end; /* toggle between first/last entry and first/last file/directory in the list */
 
     int use_si_sizes;
+    int use_gib_usage;
 
     int comma_type;
     
