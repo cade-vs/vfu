@@ -85,13 +85,19 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
     if( ns > 99999999.0 || use_gib ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
       {
       ns = fs / ( units_size * units_size * units_size );
-      str.fi( int( ns ) );
+      if( ns > 99999 )
+        str.fi( int( ns ) );
+      else
+        sprintf( str, "%.3f", ns );  
       vfu_str_comma( str );
       str += opt.use_si_sizes ? " GB " : " GiB";
       }
     else
       {  
-      str.fi( int( ns ) );
+      if( ns > 99999 )
+        str.fi( int( ns ) );
+      else
+        sprintf( str, "%.3f", ns );  
       vfu_str_comma( str );
       str += opt.use_si_sizes ? " MB " : " MiB";
       }
