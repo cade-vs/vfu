@@ -19,11 +19,12 @@ VArray size_cache;
 
 /*###########################################################################*/
 
-  void __glob_gdn( const char* a_path, const char* a_fnpattern,
-                   VArray &a_va ) // glob getdirname
+  void __glob_gdn( const char* a_path, const char* a_fnpattern, VArray &a_va, int type = 'D' ) // glob getdirname, type = 'F'ile, 'D'ir, 'A'ny
   {
     VString pat = a_fnpattern;
     pat += "*";
+
+    ASSERT( type == 'F' || type == 'D' || type == 'A' );
 
     a_va.undef();
     DIR *dir;
@@ -47,11 +48,17 @@ VArray size_cache;
           {
           VString str; // = a_path;
           str += de->d_name;
-          if ( file_is_dir( a_path + str ) )
+          if( file_is_dir( a_path + str ) )
             {
             str += "/";
-            a_va.push(str);
+            if( type != 'F' )
+              a_va.push(str);
             }
+          else
+            {
+            if( type != 'D' )
+              a_va.push(str);
+            }  
           }
         }
       closedir(dir);
@@ -62,7 +69,7 @@ VArray size_cache;
   FIXME: must call sayX() at the end to clear...
 */
 
-int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
+int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int type )
 {
   int res = -1;
   /*
@@ -160,7 +167,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
         }
       */
 
-      __glob_gdn( dmain, dtail, dir_list );
+      __glob_gdn( dmain, dtail, dir_list, type );
 
       z = dir_list.count()-1;
       if (dir_list.count())
@@ -340,7 +347,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
   leaveok(stdscr, TRUE);
   #endif
   */
-  if ( res == 1 && str_len( target ) > 0 && should_exist && !dir_exist( target ))
+  if ( res == 1 && str_len( target ) > 0 && should_exist && type == 'D' && !dir_exist( target ))
     {
     vfu_beep();
     int ch = tolower( vfu_ask( "Directory does not exist! Create? "
@@ -369,7 +376,8 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist )
   say2(" ");
   if ( str_len( target ) > 0)
     {
-    str_fix_path( target );
+    if( file_is_dir( target ) )
+      str_fix_path( target );
     vfu_hist_add( HID_GETDIR, target );
     }
 

@@ -16,7 +16,7 @@ extern VArray size_cache;
 
 /*###########################################################################*/
 
-int vfu_get_dir_name( const char *prompt, VString &target, int should_exist = 1 );
+int vfu_get_dir_name( const char *prompt, VString &target, int should_exist = 1, int type = 'D' );
 void vfu_chdir( const char *a_new_dir );
 void vfu_chdir_history();
 

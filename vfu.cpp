@@ -2494,13 +2494,13 @@ void vfu_edit_entry( )
       #ifdef _TARGET_GO32_
       say1( "Edit SymLink reference is not supported under DOS filesystem" );
       #else
-      if (!one)
+      if ( ! one )
         {
         say1( "Cannot edit symlink reference for selection..." );
         break;
         }
       TF* fi = files_list_get(FLI);
-      if ( !fi->is_link() )
+      if ( ! fi->is_link() )
         {
         say1( "This is not a symlink..." );
         break;
@@ -2508,7 +2508,8 @@ void vfu_edit_entry( )
       char t[MAX_PATH] = "";
       t[ readlink( fi->name(), t, MAX_PATH-1 ) ] = 0;
       VString str = t;
-      if ( vfu_get_str( "", str, 0 ) )
+      //if ( vfu_get_str( "", str, 0 ) )
+      if ( vfu_get_dir_name( "SymLink Target:", str, 1, 'A' ) )
         {
         fi->drop_view();
         do_draw = 1;
