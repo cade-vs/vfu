@@ -1,0 +1,106 @@
+#!/usr/bin/perl
+#############################################################################
+#
+# rx_* dispatcher and handlers for VFU File Manager
+# (c) Vladi Belperchinov-Shabanski "Cade" 2002
+# <cade@biscom.net> <cade.datamax.bg> http://cade.webbg.com
+# $Id: rx_deb,v 1.4 2002/11/07 23:22:21 cade Exp $
+#
+# usage:
+#   rx_* l archive directory   # list archive directory
+#   rx_* v archive             # list entire archive
+#   rx_* x archive files...    # extract one file
+#   rx_* x archive @listfile   # extract list of files
+#
+#############################################################################
+use strict;
+
+my $cmd = lc shift @ARGV;
+my $archive = shift @ARGV;
+my $ac=`ar t "$archive"`;
+my $at='gz';
+if( index( $ac, 'data.tar.xz' ) != -1 )
+  {
+  $at='xz';
+  }
+my $cache = "$archive.data.tar.$at.rx.cache";
+$cache =~ s/^(.+)\/([^\/]+)$/$2/;
+
+if( $cmd eq "l" || $cmd eq "v" || $cmd eq "x" )
+   {
+   if( ! -e "/tmp/$cache" )
+     {
+     # cache not found--fill it
+     system( qq[ umask 0077 ; ar p "$archive" data.tar.$at > "/tmp/$cache\" ] );
+     }
+   else
+     {
+     utime time(), time(), "/tmp/$cache"; # update last modification time of the cache
+     }
+  chdir( "/tmp" );
+  system( "/usr/libexec/vfu/rx_tar", $cmd, $cache, @ARGV );
+  }
+else
+  {
+  die $0 . ": wrong command.\n";
+  }
+
+=pod
+if ( $command eq "v" )
+   {
+   $dir = shift @ARGV;
+   if ( $dir ) { $dir .= "/" unless $dir =~ /\/$/; }
+
+   if ( $dir eq "DATA/" )
+     {
+     open( i, "ar p $archive data.tar.gz | gzip -dc | tar tvf - |");
+     while(<i>)
+       {
+       chop;
+       s/\s+->\s+\S+$//;
+       if (/^(.[\-rwxsStT]{9})\s+\S+\s+(\d+)\s+(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d)(:\d\d)?\s+(\S+[^\/])$/)
+         {
+         print "NAME:$9\nSIZE:$2\nMODE:$1\nTIME:$3$4$5$6$7\n\n";
+         }
+       }
+     close( i );
+     }
+   else
+     {
+     # these are standard ones
+     print "NAME:control\n\nNAME:debian-binary\n\nNAME:DATA/\n\n";
+     # FIXME: here should take ar list and get files' sizes etc...
+     }
+   } # view command ends here
+elsif ( $command eq "x" )
+   {
+   if ( $ARGV[0] eq "control" )
+      {
+      system( "ar p $archive control.tar.gz | gzip -d | tar xvf - control" );
+      }
+    elsif ( $ARGV[0] eq "debian-binary" )
+      {
+      system( "ar p $archive debian-binary > debian-binary" );
+      }
+    else
+      {
+      if ( $ARGV[0] =~ /^\@(.+)$/ )
+        {
+        $listfile = $1;
+        }
+      else
+        {
+        $listfile = "/tmp/rx_tar.list." . $$;
+        open( o, ">$listfile" );
+        while( $_ = shift @ARGV )
+          {
+          s/^DATA\///;
+          print o "$_\n";
+          }
+        close( o );
+        }
+      system( "mkdir -p DATA; cd DATA; ar p $archive data.tar.gz | gzip -d | tar xvf - -T $listfile" );
+      unlink $listfile;
+      }
+   }
+=cut
