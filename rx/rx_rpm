@@ -1,0 +1,84 @@
+#!/usr/bin/perl
+#############################################################################
+#
+# rx_rpm handler for VFU File Manager
+# (c) Ralph Muller <rmue@gmx.de> 2005
+# $Id: rx_rpm,v 1.2 2005/06/16 00:07:38 cade Exp $
+#
+# usage:
+#   rx_* l archive directory   # list archive directory 
+#   rx_* v archive             # list entire archive
+#   rx_* x archive files...    # extract one file
+#   rx_* x archive @listfile   # extract list of files
+#
+#############################################################################
+use strict;
+
+my $cmd = lc shift @ARGV;
+my $archive = shift @ARGV;
+my $cache = "/tmp/$archive.rx.cache";
+$cache =~ s/^(\/tmp\/)(.+)\/([^\/]+)$/$1$3/;
+
+if ( $cmd eq "l" || $cmd eq "v" )
+   {
+   my $dir = shift @ARGV;
+   if ( $dir ) { $dir .= "/" unless $dir =~ /\/$/; }
+ 
+   
+   if( ! -e $cache )
+     {
+     # cache not found--fill it
+     system( "rpm2cpio \"$archive\" | cpio -tv --quiet > \"$cache\"" );
+     chmod oct(600), $cache; # a bit late but still... :)
+     }
+   else
+     {
+     utime time(), time(), $cache; # update last modification time of the cache
+     }  
+   my $in = 0;
+   open( my $i, $cache );
+   while(<$i>)
+      {
+#      $in = ! $in and next if/^[\- ]{16,}$/;           # FixMe
+#      next unless $in;
+      chomp;
+      s/\s+->\s+\S+$//; # no symlinks support?
+      my @D = split /\s+/; 
+      my $N = $D[8]; # name
+#      if ( $cmd eq "l" )
+#        {
+#        next unless $N =~ s/^$dir([^\/]+\/?)$//;      # FixMe
+#        $N = $1;
+#        }
+      my $S = $D[4];
+#      my $T = $D[5] . " " . $D[6] . " " . $D[7];             # FixMe
+#      $T =~ s/(\d\d)-(\d\d)-(\d\d)(\d\d):(\d\d)/$3$2$1$4$5/;
+#      $T = ( $3 < 70 ? '20' : '19' ) . $T;
+#      print "NAME:$N\nSIZE:$S\nTIME:$T\n\n";
+      print "NAME:$N\nSIZE:$S\n\n";
+      }
+   close( $i );
+   }
+elsif ( $cmd eq "x" )
+  {
+  my $list;
+  if ( $ARGV[0] =~ /^\@(.+)$/ )
+    {
+    $list = $1;
+    }
+  else
+    {
+    $list = "/tmp/$$.rx.list";
+    open( o, ">$list" );
+    chmod oct(600), $list;
+    print o "$_\n" for @ARGV;
+    close( o );
+    }
+  system( "rpm2cpio $archive | cpio -iumd --quiet `cat $list`" );
+  unlink $list;
+  }
+else
+  {
+  die $0 . ": wrong command.\n";
+  }
+

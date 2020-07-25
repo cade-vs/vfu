@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+#############################################################################
+#
+# rx_* dispatcher and handlers for VFU File Manager
+# (c) Vladi Belperchinov-Shabanski "Cade" 2002
+# <cade@biscom.net> <cade.datamax.bg> http://cade.webbg.com
+# $Id: rx_zip,v 1.3 2002/11/07 23:22:21 cade Exp $
+#
+# usage:
+#   rx_* l archive directory   # list archive directory
+#   rx_* v archive             # list entire archive
+#   rx_* x archive files...    # extract one file
+#   rx_* x archive @listfile   # extract list of files
+#
+#############################################################################
+use strict;
+
+my $cmd = lc shift @ARGV;
+my $archive = shift @ARGV;
+my $cache = "/tmp/$archive.rx.cache";
+$cache =~ s/^(\/tmp\/)(.+)\/([^\/]+)$/$1$3/;
+
+if ( $cmd eq "l" || $cmd eq "v" )
+   {
+   my $dir = shift @ARGV;
+   if ( $dir ) { $dir .= "/" unless $dir =~ /\/$/; }
+   if( ! -e $cache )
+     {
+     # cache not found--fill it
+     system( "unzip -l '$archive' > '$cache'" );
+     chmod oct(600), $cache; # a bit late but still... :)
+     }
+   else
+     {
+     utime time(), time(), $cache; # update last modification time of the cache
+     }
+   my $in = 0;
+   open( i, $cache );
+   while(<i>)
+      {
+      $in = ! $in and next if/^[\- ]{16,}$/;
+      next unless $in;
+      chop;
+      s/\s+->\s+\S+$//; # no symlinks support?
+      my @D = split /\s+/, $_, 5;
+      my $N = $D[4]; # name
+      if ( $cmd eq "l" )
+        {
+        next unless $N =~ s/^$dir([^\/]+\/?)$//;
+        $N = $1;
+        }
+      my $S = $D[1];
+      my $T = $D[2] . $D[3];
+      $T =~ s/(\d\d)-(\d\d)-(\d\d)(\d\d):(\d\d)/$3$2$1$4$5/;
+      $T = ( $3 < 70 ? '20' : '19' ) . $T;
+      print "NAME:$N\nSIZE:$S\nTIME:$T\n\n";
+      }
+   close( i );
+   }
+elsif ( $cmd eq "x" )
+  {
+  my $list;
+  if ( $ARGV[0] =~ /^\@(.+)$/ )
+    {
+    $list = $1;
+    }
+  else
+    {
+    $list = "/tmp/$$.rx.list";
+    open( o, ">$list" );
+    chmod oct(600), $list;
+    print o "'$_'\n" for @ARGV;
+    close( o );
+    }
+  system( "unzip $archive `cat $list` 1> /dev/null 2> /dev/null" );
+  unlink $list;
+  }
+else
+  {
+  die $0 . ": wrong command.\n";
+  }
+
