@@ -1582,7 +1582,8 @@ for (z = 0; z < files_list_count(); z++)
     case GSAME_EXT   : sel = (pathcmp(same_str, fi->ext()) == 0);
                        break;
     case GSAME_SIZE  : sel = (same_fsize == fi->size());
-                       if ( fi->is_dir() ) sel = 0; break;
+                       if ( fi->is_dir() ) sel = 0; 
+                       break;
     case GSAME_DATETIME  :
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st()));
                        break;
@@ -1598,10 +1599,14 @@ for (z = 0; z < files_list_count(); z++)
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
                                       TIMECMP_T1 );
                        break;
-    case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid); break;
-    case GSAME_GROUP : sel = ((unsigned int)same_int == fi->st()->st_gid); break;
-    case GSAME_MODE  : sel = ((unsigned int)same_int == fi->st()->st_mode); break;
-    case GSAME_TYPE  : sel = ( same_str == fi->type_str()); break;
+    case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid); 
+                       break;
+    case GSAME_GROUP : sel = ((unsigned int)same_int == fi->st()->st_gid); 
+                       break;
+    case GSAME_MODE  : sel = ((unsigned int)same_int == fi->st()->st_mode); 
+                       break;
+    case GSAME_TYPE  : sel = ( same_str == fi->type_str()); 
+                       break;
     }
   fi->sel = sel;
   }

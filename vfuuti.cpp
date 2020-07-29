@@ -50,6 +50,7 @@ int full = 0;
 #endif
 
 while( a_line[i] )
+  {
   if ( a_line[i] == '%' )
     {
     switch( a_line[i+1] )
@@ -177,6 +178,7 @@ while( a_line[i] )
     str_add_ch( out, a_line[i] );
     i++;
     }
+  }  
 
   a_line = out;
   return 0;

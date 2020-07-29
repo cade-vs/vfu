@@ -1027,7 +1027,7 @@ void size_cache_append( const char *s, fsize_t size )
 void size_cache_clean( const char *s )
 {
   VString str = size_cache_compose_key( s, 0 );
-  int qc = str_len( str );
+  size_t qc = str_len( str );
   str_trim_left( str, SIZE_CACHE_OFFSET_CLEAN );
   int sl = str_len( str );
   int z = 0;
@@ -1139,7 +1139,7 @@ int tree_find( const char *s, VArray *va )
 
 /*###########################################################################*/
 
-fsize_t __dir_size_process( const char* path, int mode, int src_dev = 0 )
+fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
 {
   if ( vfu_break_op() )
     return -1;

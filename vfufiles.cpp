@@ -210,8 +210,6 @@ void vfu_read_files( int a_recursive )
 {
   say1( "Rescanning files... press ESC to interrupt" );
 
-  int z;
-
   /* clear files list -- delete all found entries */
   files_list_clear();
 
