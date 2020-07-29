@@ -1012,7 +1012,6 @@ void vfu_help_cli()
     "  3. example: vfu -d c:/ -r -d d:/ -r -d e:/ -r\n"
     "compile information:\n"
     "  target description: " _TARGET_DESCRIPTION_ "\n"
-    "  compile date: " __DATE__ "\n"
     );
 }
 

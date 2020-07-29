@@ -38,8 +38,12 @@
   #  include "config.h"
   #endif
 
-  #if defined(_TARGET_NETBSD_) || (defined(BSD) && BSD >= 199306)
-    //FIXME: is the one above correct? should _TARGET_BSD_ be used?
+  #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+    #if defined(__OpenBSD__)
+      #include <sys/types.h>
+    #else
+      #include <sys/param.h>
+    #endif
     #include <sys/mount.h>
   #else
     #include <sys/vfs.h>
