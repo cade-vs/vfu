@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Apr  3 02:00:56 2020 #########################
+### Created by makemake.pl on Thu Jul 30 22:12:16 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -25,8 +25,8 @@ link: mm_update link-vfu link-vfu.yas link-vfu-debug link-vfu.yas-debug
 
 
 AR = ar rv
-CC = gcc
-LD = gcc
+CC = g++
+LD = g++
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,10 +36,10 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: vfu ##############################################################
 
-CC_1       = $(CXX)
-LD_1       = $(CXX)
-AR_1       = ar rv
-RANLIB_1   = ranlib
+CC_1       = $(CC)
+LD_1       = $(LD)
+AR_1       = $(AR)
+RANLIB_1   = $(RANLIB)
 CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O2 $(CCDEF)  
 LDFLAGS_1  = -L../vstring -L../vslib -lvstring -lvslib -lvscon -lpcre -lncurses $(LDDEF) 
 DEPFLAGS_1 = 
@@ -137,10 +137,10 @@ link-vfu: .OBJ.vfu $(OBJ_1)
 
 ### TARGET 2: vfu.yas ##########################################################
 
-CC_2       = $(CXX)
-LD_2       = $(CXX)
-AR_2       = ar rv
-RANLIB_2   = ranlib
+CC_2       = $(CC)
+LD_2       = $(LD)
+AR_2       = $(AR)
+RANLIB_2   = $(RANLIB)
 CCFLAGS_2  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O2        $(CCDEF)  
 LDFLAGS_2  = -L../vstring -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre ../yascreen/libyascreen.a -lrt $(LDDEF) 
 DEPFLAGS_2 = 
@@ -238,10 +238,10 @@ link-vfu.yas: .OBJ.vfu.yas $(OBJ_2)
 
 ### TARGET 3: vfu-debug ########################################################
 
-CC_3       = g++
-LD_3       = g++
-AR_3       = ar rv
-RANLIB_3   = ranlib
+CC_3       = $(CC)
+LD_3       = $(LD)
+AR_3       = $(AR)
+RANLIB_3   = $(RANLIB)
 CCFLAGS_3  = -I../vstring -I../vslib -I/usr/include/ncurses -O0 -g $(CCDEF)  
 LDFLAGS_3  = -L../vstring -L../vslib -lvstring -lvslib -lvscon -lpcre -lncurses -g $(LDDEF) 
 DEPFLAGS_3 = 
@@ -339,10 +339,10 @@ link-vfu-debug: .OBJ.vfu-debug $(OBJ_3)
 
 ### TARGET 4: vfu.yas-debug ####################################################
 
-CC_4       = g++
-LD_4       = g++
-AR_4       = ar rv
-RANLIB_4   = ranlib
+CC_4       = $(CC)
+LD_4       = $(LD)
+AR_4       = $(AR)
+RANLIB_4   = $(RANLIB)
 CCFLAGS_4  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O0 -g $(CCDEF)  
 LDFLAGS_4  = -L../vstring -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre ../yascreen/libyascreen.a -lrt -g $(LDDEF) 
 DEPFLAGS_4 = 
