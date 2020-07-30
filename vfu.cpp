@@ -813,7 +813,7 @@ void vfu_run()
       case 's'       : vfu_inc_search( 0 ); break;
       case KEY_ALT_S : vfu_inc_search( 1 ); break;
 
-      case KEY_CTRL_L: do_draw = 2; break;
+      case KEY_CTRL_L: do_draw = 3; break;
 
       case 'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
 

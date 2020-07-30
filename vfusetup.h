@@ -53,7 +53,7 @@
 #endif
 
 #ifndef FILENAME_CONF_GLOBAL2
-#define FILENAME_CONF_GLOBAL2 "/usr/lib/vfu/" FILENAME_CONF
+#define FILENAME_CONF_GLOBAL2 "/usr/libexec/vfu/" FILENAME_CONF
 #endif
 
 #define RX_TEMP_LIST "RX_TEMP_LIST"
