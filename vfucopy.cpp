@@ -136,7 +136,7 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
                     long    a_et, /* elapsed time for current file copy */
                     CopyInfo *copy_info ) /* totals info */
 {
-  char t[16];
+  char t[128];
 
   fsize_t c1 = a_fc;
   fsize_t a1 = a_fa;
