@@ -2364,7 +2364,9 @@ void vfu_edit_entry( )
           int z = vfu_get_str( "", str, HID_OMODE );
           str_cut_spc( str );
           mode_t m;
-          sscanf( str, "%o", &m );
+          int im;
+          sscanf( str, "%o", &im );
+          m = im;
           file_get_mode_str( m, new_mode );
           ok = (z && str_len(str) > 0);
           }

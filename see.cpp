@@ -229,7 +229,7 @@
     char t[256];
     for( y = 0; y < rows; y++ )
       {
-      sprintf( t, opt->dec_pos ? "%10" FMT_OFF_T "d" : "%010" FMT_OFF_T "X", fpos + rowsz * y );
+      sprintf( t, opt->dec_pos ? "%10" PRId64 : "%010" PRIX64, (int64_t)(fpos + rowsz * y) );
       offset = t;
       ascii = "";
       hexdump = "";
