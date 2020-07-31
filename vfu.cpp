@@ -2920,7 +2920,7 @@ void vfu_read_files_menu()
     case 'T' : tree_rebuild(); break;
     case 'F' : vfu_read_files( 0 ); break;
     case 'R' : vfu_read_files( 1 ); break;
-    case 'L' : con_cs(); vfu_drop_all_views(); do_draw = 2; break;
+    case 'L' : vfu_reset_screen(); break;
     }
 }
 
