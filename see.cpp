@@ -10,6 +10,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <inttypes.h>
 
 #include "see.h"
 
