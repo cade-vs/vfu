@@ -433,7 +433,8 @@ void vfu_help()
   mb.undef();
   mb.push( "*keypad -- navigation keys" );
   mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
-  mb.push( "BACKSPC -- chdir to parent directory ( `-' and ^H too )"         );
+  mb.push( "BACKSPC -- (BS) chdir to parent directory ( `-' and ^H too )"         );
+  mb.push( "Alt + - -- exit current archive ( Alt + BACKSPACE too )"     );
   mb.push( "TAB     -- edit entry: filename, atrrib's/mode, owner, group");
   mb.push( "R.Arrow -- rename current file " );
   mb.push( "SPACE   -- select/deselect current list item"   );
@@ -854,6 +855,10 @@ void vfu_run()
       case 8   :
       case '-' : vfu_action_minus(); break;
 
+      case KEY_ALT_BACKSPACE :
+      case KEY_ALT_MINUS :
+                 vfu_action_minus( 2 ); break;
+
       case 13  :
       case '+' :
       case '=' : vfu_action_plus( ch ); break;
@@ -1076,6 +1081,9 @@ void vfu_reset_screen()
   vfu_drop_all_views();
   vfu_redraw();
   vfu_redraw_status();
+
+  say1( "" );
+  say2( "" );
 }
 
 void vfu_signal( int sig )
@@ -1413,7 +1421,7 @@ void vfu_action_plus( int key )
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_action_minus()
+void vfu_action_minus( int mode )
 {
   VString o = work_path; /* save old path i.e. current */
 
@@ -1430,6 +1438,8 @@ void vfu_action_minus()
     } else
   if ( work_mode == WM_ARCHIVE )
     {
+    if( mode == 2 ) archive_path = "";
+    
     if ( str_len( archive_path ) > 0 )
       {
       str_cut_right( archive_path, "/" );

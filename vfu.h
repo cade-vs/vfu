@@ -339,7 +339,7 @@ void vfu_browse_selected_files();
 void vfu_edit( const char* a_fname );
 
 void vfu_action_plus( int );
-void vfu_action_minus();
+void vfu_action_minus( int mode = 0 );
 void vfu_global_select();
 void vfu_sort_menu();
 
