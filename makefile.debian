@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Thu Aug  6 02:36:41 2020 #########################
+### Created by makemake.pl on Thu Aug  6 02:34:45 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -24,7 +24,7 @@ link: mm_update link-vfu
 ### GLOBAL (AND USER) DEFS #####################################################
 
 
-AR ?= ar
+AR = ar
 LD = $(CXX)
 MKDIR = mkdir -p
 RANLIB ?= ranlib
