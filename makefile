@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Thu Aug  6 02:36:41 2020 #########################
+### Created by makemake.pl on Thu Aug  6 03:46:08 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -39,7 +39,7 @@ CC_1       = $(CXX)
 LD_1       = $(LD)
 AR_1       = $(AR) rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O2 $(CFLAGS) $(CCDEF)  
+CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = -L../vstring -L../vslib -lvstring -lvslib -lvscon -lpcre -lncurses $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
