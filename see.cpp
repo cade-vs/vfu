@@ -96,7 +96,7 @@
   SeeViewer::~SeeViewer()
   {
     close();
-    if ( buff ) delete buff;
+    if ( buff ) delete [] buff;
     buff = NULL;
   }
 
@@ -629,7 +629,7 @@
   editbs = fread( editb, 1, editbs, f );
   if ( editbs == 0 )
     {
-    delete editb;
+    delete [] editb;
     status( "Nothing to edit or read error..." );
     return;
     }
@@ -735,7 +735,7 @@
       key = 0;
     }
   con_chide();
-  delete editb;
+  delete [] editb;
   draw();
   }
 

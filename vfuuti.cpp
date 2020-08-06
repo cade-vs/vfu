@@ -266,14 +266,19 @@ char* time_str_compact( const time_t tim, char* buf )
 {
   ASSERT( buf );
   time_t timenow = time( NULL );
+  tm     tim_tm;
+  localtime_r( &tim, &tim_tm );
   strcpy(buf, ctime(&tim));
   if (timenow > tim + 6L * 30L * 24L * 60L * 60L /* old */
       ||
       timenow < tim - 60L * 60L) /* in the future */
-      strcpy (buf + 11, buf + 19);
-  buf[16] = 0;
-  strcpy(buf, buf+4);
-  if (buf[4] == ' ') buf[4] = '0';
+      {
+      strftime( buf, 16, "%b %d  %Y", &tim_tm );
+      }
+    else
+      {
+      strftime( buf, 16, "%b %d %H:%M", &tim_tm );
+      }  
   return buf;
 }
 
