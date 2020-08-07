@@ -685,7 +685,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  //signal( SIGWINCH, vfu_signal );
+  signal( SIGWINCH, vfu_signal );
   //////////////////////////////////////////
 
   srand( time( NULL ) );
@@ -782,9 +782,15 @@ void vfu_run()
     show_pos( FLI+1, files_list_count() ); /* FIXME: should this be in vfu_redraw()? */
 
     ch = con_getch();
+
+    /*
+    FILE *zf = fopen( "/tmp/getch.txt", "awt" );
+    fprintf( zf, "%d\n", ch );
+    fclose(zf);
+    */
+    
     if( ch == 0 ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
-    say1( VString( ch ) );
     say1( "" );
     if ( user_id_str == "root" )
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
@@ -1062,12 +1068,8 @@ void vfu_done()
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_reset_screen()
+void vfu_soft_reset_screen()
 {
-  con_done();
-  con_init();
-  con_chide();
-
   /* update scroll parameters */
   file_list_index.set_min_max( 0, files_list_count() - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
@@ -1081,14 +1083,22 @@ void vfu_reset_screen()
   say2( "" );
 }
 
+void vfu_reset_screen()
+{
+  con_done();
+  con_init();
+  con_chide();
+
+  vfu_soft_reset_screen();
+}
+
 void vfu_signal( int sig )
 {
   if ( sig == SIGWINCH )
     {
     signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
-    vfu_reset_screen();
-    vfu_redraw();
-    vfu_redraw_status();
+    con_reset_screen_size();
+    do_draw = 3;
     return;
     }
   vfu_done();
