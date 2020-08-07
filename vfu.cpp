@@ -685,7 +685,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  // signal( SIGWINCH, vfu_signal );
+  //signal( SIGWINCH, vfu_signal );
   // this is for xterm resize refresh handle
   // signal( SIGWINCH, VFUsignal );
   // still doesn't work?...
@@ -790,6 +790,7 @@ void vfu_run()
     ch = con_getch();
     if( ch == 0 ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
+    //say1( VString( ch ) );
     say1( "" );
     if ( user_id_str == "root" )
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
@@ -1088,14 +1089,14 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
-  /* there is no simple solution... :/
   if ( sig == SIGWINCH )
     {
     signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
-    do_draw = 3;
+    vfu_reset_screen();
+    vfu_redraw();
+    vfu_redraw_status();
     return;
     }
-  */
   vfu_done();
 
   con_beep();
@@ -1629,30 +1630,30 @@ void vfu_global_select()
   mb.undef();
   mb.push( "S All" );
   mb.push( "A All (+Dirs)" );
-  mb.push( "R Reverse" );
-  mb.push( "C Clear" );
-  mb.push( "P Pack" );
-  mb.push( "H Hide" );
+  mb.push( "R Reverse selection" );
+  mb.push( "C Clear selection" );
+  mb.push( "P Pack (list selected only)" );
+  mb.push( "H Hide selected" );
   mb.push( "D Different" );
   mb.push( ". Hide dirs" );
   mb.push( ", Hide dotfiles" );
-  mb.push( "= Mask add (+dirs)" );
-  mb.push( "+ Mask add (-dirs)" );
-  mb.push( "- Mask sub        " );
-  mb.push( "L Same..." );
-  mb.push( "X EXtended select..." );
-  if ( vfu_menu_box( 50, 5, "Global Select" ) == -1 ) return;
+  mb.push( "= Select by mask (with directories)" );
+  mb.push( "+ Select by mask (w/o  directories)" );
+  mb.push( "- Deselect by mask" );
+  mb.push( "L Select Same..." );
+  mb.push( "X Extended Select..." );
+  if ( vfu_menu_box( 30, 5, "Select Files and Directories" ) == -1 ) return;
   ch = menu_box_info.ec;
   if (ch == 'X')
     {
     if ( work_mode != WM_NORMAL )
       {
-      say1( "GlobalSelect/Extended not available in this mode." );
+      say1( "Extended Select is not available in this mode." );
       return;
       }
     mb.undef();
-    mb.push( "A Select to begin" );
-    mb.push( "E Select to end" );
+    mb.push( "A Select to the begin of the list" );
+    mb.push( "E Select to the end of the list" );
     mb.push( "--searching--" );
     mb.push( "F Find string (no case)" );
     mb.push( "S Scan string (case sense)" );
@@ -1661,7 +1662,7 @@ void vfu_global_select()
     mb.push( "\\ Reg.exp (no case)" );
 //    mb.push( "--other--" );
 //    mb.push( "M Mode/Attributes" );
-    if ( vfu_menu_box( 50, 5, "Extended G.Select" ) == -1 ) return;
+    if ( vfu_menu_box( 32, 6, "Extended Select" ) == -1 ) return;
     ch = menu_box_info.ec;
     if (ch == 'S') ch = 'B'; /* 'B' trans scan */
     if (ch == 'H') ch = 'E'; /* 'E' trans hex  */
@@ -1861,7 +1862,7 @@ void vfu_global_select()
               #endif
               mb.push( "Y Type (TP)" );
 
-              vfu_menu_box( 50, 5, "Select Same..." );
+              vfu_menu_box( 32, 6, "Select Same..." );
               ch = menu_box_info.ec;
               switch ( ch )
                 {
@@ -1984,7 +1985,7 @@ void vfu_tools()
   mb.push( "P Path bookmarks" );
   mb.push( "A Rename tools..." );
   mb.push( "C Classify files" );
-  if ( vfu_menu_box( 50, 5, "Tools" ) == -1 ) return;
+  if ( vfu_menu_box( 30, 5, "Tools" ) == -1 ) return;
   switch( menu_box_info.ec )
     {
     case 'R' : {

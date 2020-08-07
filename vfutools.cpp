@@ -48,9 +48,9 @@ void vfu_tool_classify()
     }
 
   mb.undef();
-  mb.push( "N Name"            );
+  mb.push( "N Name           ");
   mb.push( "E Ext"             );
-  mb.push( "1 First 1 letter"  );
+  mb.push( "1 First 1 letter "  );
   mb.push( "2 First 2 letters" );
   mb.push( "3 First 3 letters" );
   mb.push( "4 First 4 letters" );
@@ -59,7 +59,7 @@ void vfu_tool_classify()
   mb.push( "7 First 7 letters" );
   mb.push( "8 First 8 letters" );
   mb.push( "9 First 9 letter"  );
-  if ( vfu_menu_box( 50, 5, "Classify files by") == -1 ) return;
+  if ( vfu_menu_box( 32, 6, "Classify files by") == -1 ) return;
   char ch = menu_box_info.ec;
 
   mb.undef();
@@ -133,11 +133,11 @@ void vfu_tool_rename()
   mb.push( "_ Replace spaces with _"       );
   mb.push( "Y Simplify name (RTFM)"        );
   mb.push( "S Sequential rename"           );
-  mb.push( "T Prefix w. current date+time" );
-  mb.push( "D Prefix w. current date"      );
-  mb.push( "W Swap SymLink w.Original"     );
-  mb.push( "R Replace S.Link w.Original"   );
-  if (vfu_menu_box( 50, 5, "Rename Tools" ) == -1) return;
+  mb.push( "T Prefix with current date+time" );
+  mb.push( "D Prefix with current date"      );
+  mb.push( "W Swap SymLink with Original"     );
+  mb.push( "R Replace SymLink with Original"   );
+  if (vfu_menu_box( 32, 6, "Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {
     case 'S' : vfu_tool_seq_rename(); break;

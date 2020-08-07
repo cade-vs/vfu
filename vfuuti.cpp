@@ -268,17 +268,18 @@ char* time_str_compact( const time_t tim, char* buf )
   time_t timenow = time( NULL );
   tm     tim_tm;
   localtime_r( &tim, &tim_tm );
-  strcpy(buf, ctime(&tim));
+  const char* tfm;
   if (timenow > tim + 6L * 30L * 24L * 60L * 60L /* old */
       ||
       timenow < tim - 60L * 60L) /* in the future */
       {
-      strftime( buf, 16, "%b %d  %Y", &tim_tm );
+      tfm = "%b %d  %Y";
       }
     else
       {
-      strftime( buf, 16, "%b %d %H:%M", &tim_tm );
+      tfm = "%b %d %H:%M";
       }  
+  strftime( buf, 16, tfm, &tim_tm );
   return buf;
 }
 
