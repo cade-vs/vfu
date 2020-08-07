@@ -686,12 +686,6 @@ void vfu_init()
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
   //signal( SIGWINCH, vfu_signal );
-  // this is for xterm resize refresh handle
-  // signal( SIGWINCH, VFUsignal );
-  // still doesn't work?...
-  // HELP: I tried (as it is said in the curses-intro doc)
-  // that I have to do endwin and wrefresh and all will be ok...
-  // but it is not... :(
   //////////////////////////////////////////
 
   srand( time( NULL ) );
@@ -790,7 +784,7 @@ void vfu_run()
     ch = con_getch();
     if( ch == 0 ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
-    //say1( VString( ch ) );
+    say1( VString( ch ) );
     say1( "" );
     if ( user_id_str == "root" )
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
