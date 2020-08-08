@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) Vladi Belperchinov-Shabanski "Cade" 1996-2020
+ * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -20,7 +20,7 @@
 
 #define VFU_VERSION "4.21"
 
-#define HEADER "VF/U v" VFU_VERSION " 1996-2020 (c) Vladi Belperchinov-Shabanski `Cade'"
+#define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski 'Cade'"
 #define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
 
 #ifdef _TARGET_GO32_
