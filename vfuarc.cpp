@@ -136,10 +136,10 @@ void vfu_browse_archive_file()
 
   vfu_shell( s, "" );
 
-  if (chdir( tmpdir )); /* FIXME: a little hack -- vfu_shell() changes current path */
+  chdir( tmpdir ); /* FIXME: a little hack -- vfu_shell() changes current path */
   vfu_browse( fn );
 
-  if (chdir( work_path ));
+  chdir( work_path );
   __vfu_dir_erase( tmpdir );
   say1( "" );
 }

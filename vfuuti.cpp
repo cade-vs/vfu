@@ -483,13 +483,12 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 
 /*---------------------------------------------------------------------------*/
 
-/* to fool gcc warning that mktemp() is not safe, I don't really care :/
-   still there is no mkstemp for directories :)) */
+// FIXME: TODO: enew function for tmp dir name etc.
 char vfu_temp_filename[MAX_PATH];
 const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
-    if (mkstemp( vfu_temp_filename ));
+    mkstemp( vfu_temp_filename );
     unlink( vfu_temp_filename );
     return vfu_temp_filename;
 }

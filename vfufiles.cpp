@@ -152,7 +152,7 @@ const char* file_type_str( mode_t mode, int is_link )
   if (S_ISDIR (mode)) strcpy(__file_stat_type_buf, "[]"); else // box
   if ((mode & S_IXOTH)||(mode & S_IXGRP)||(mode & S_IXUSR))
                       strcpy(__file_stat_type_buf, "**"); else // * marks executables
-  ;
+  {};
   return __file_stat_type_buf;
 }
 
@@ -337,7 +337,7 @@ void vfu_read_local_files( int a_recursive )
    tmp_file_name += user_id_str;
 
    VString str = work_path;
-   if (chdir( "/" ));
+   chdir( "/" );
    str = "mount " + str + " 2> " + tmp_file_name;
    say1( "AutoMount point detected, executing:" );
    say2( str );
@@ -350,7 +350,7 @@ void vfu_read_local_files( int a_recursive )
      sel_size = 0;
      files_size = 0;
      //---------------
-     if (chdir( work_path ));
+     chdir( work_path );
      ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
      }
    else
@@ -358,7 +358,7 @@ void vfu_read_local_files( int a_recursive )
      char t[128];
      FILE *f = fopen( tmp_file_name, "r" );
      t[0] = 0;
-     if (fgets( t, 100, f ));
+     fgets( t, sizeof(t), f );
      fclose(f);
      str_tr( t, "\n\r", "  " );
      say1( "AutoMount failed! ( press ESC ) reason:" );

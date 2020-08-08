@@ -241,7 +241,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
       VString diff = vfu_temp();
       VString cmd;
       cmd = shell_diff + " '" + dst + "' '" + src + "' > " + diff;
-      if (system( cmd ));
+      system( cmd );
       vfu_browse( diff );
       unlink( diff );
       continue;
@@ -284,7 +284,8 @@ int vfu_copy_mode( const char* src, const char* dst )
 
   /* copy owner/group */
   if (opt.copy_keep_mode)
-    if (chown( dst, st.st_uid, st.st_gid ));
+    if (chown( dst, st.st_uid, st.st_gid ))
+      say1( "Cannot change file mode" );
 
   return 0;
 }

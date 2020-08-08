@@ -73,7 +73,7 @@ ToggleEntry Toggles[] =
   { ' ', "Prefer GiB in disk usage status", &(opt.use_gib_usage), NOYES },
   { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
   { ' ', "1000s separator type", &(opt.comma_type), COMMA_TYPES },
-  {  -1, "---", NULL }
+  {  -1, "---", NULL, NULL }
 };
 
 /*---------------------------------------------------------------------------*/
@@ -130,7 +130,7 @@ void vfu_load_dir_colors()
     if ( str_find( str, "35" ) != -1 ) pos = cMAGENTA; else
     if ( str_find( str, "36" ) != -1 ) pos = cCYAN; else
     if ( str_find( str, "37" ) != -1 ) pos = cWHITE; else
-    ;
+    {};
 
     int spc = str_find( str, ' ' );
     if ( spc == -1 || pos == -1 ) continue;

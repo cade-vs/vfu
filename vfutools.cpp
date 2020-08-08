@@ -328,11 +328,11 @@ void vfu_tool_replace_sym_org( int swap )
     VString org = vfu_readlink( sym );
 
     if (access( org, F_OK )) { err++; continue; }
-    if (unlink( sym ))       { err++; continue; }
+    if (unlink( sym ))       { err++; continue; } // FIXME: TODO: correct?
     if (rename( org, sym ))  { err++; continue; }
     if (swap)
       {
-      if (symlink( sym, org ));
+      symlink( sym, org );
       }
     fi->update_stat();
     do_draw = 2; /* FIXME: this should be optimized? */

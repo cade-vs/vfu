@@ -1197,7 +1197,7 @@ void vfu_shell( const char* a_command, const char* a_options )
     con_cs();
     }
 
-  if (chdir( work_path )); /* in case SHELL changed directory... (DOS only :)) */
+  chdir( work_path ); /* in case SHELL changed directory... (DOS only :)) */
 
   if ( str_find( o, 'r' ) != -1 ) vfu_rescan_files();
 
@@ -2553,8 +2553,7 @@ void vfu_edit_entry( )
         }
       #endif
       break;
-      } else
-    ;
+      }
     }
   return;
 }
@@ -2847,7 +2846,7 @@ void vfu_file_find( int menu )
     if (ch == 'E' ) __ff_opt = "h "; else
     if (ch == '/' ) __ff_opt = "r "; else
     if (ch == '\\') __ff_opt = "ri"; else
-    ;
+    {};
     }
 
   str = vfu_hist_get( HID_FFMASK, 0 );
