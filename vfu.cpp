@@ -513,10 +513,12 @@ void vfu_init()
 {
   char t[MAX_PATH];
 
-  if( expand_path( "." ) == "" ) if (chdir( "/" ));
+  if( expand_path( "." ) == "" ) 
+    chdir( "/" );
 
   work_mode = WM_NORMAL;
-  if (getcwd( t, MAX_PATH-1 ));
+  if( ! getcwd( t, sizeof(t) ) )
+    t[0] = 0;
   str_fix_path( t );
   work_path = t;
 
@@ -698,10 +700,10 @@ void vfu_init()
 
 void vfu_exit_path( const char *a_path )
 {
-  if (chdir( a_path ));
+  chdir( a_path );
 
   #ifdef _TARGET_GO32_
-  return; // this is meaningless under DOS
+  return; // this is enough under DOS
   #else
 
   VString str;
@@ -715,11 +717,15 @@ void vfu_exit_path( const char *a_path )
     str += user_id_str;
     }
 
+  unlink( str );
+  int fdx = open( str, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR );
+  if( fdx == -1 )
+    return;
+  close( fdx );  
   FILE *f = fopen( str, "wt" );
-  file_set_mode_str( str, "-rw-------" );
-  if (!f) return;
+  if ( ! f ) return;
   fputs( a_path, f);
-  fclose(f);
+  fclose( f );
   #endif
 }
 
