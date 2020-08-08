@@ -687,7 +687,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  signal( SIGWINCH, vfu_signal );
+  // signal( SIGWINCH, vfu_signal ); // already set in unicon/vslib
   //////////////////////////////////////////
 
   srand( time( NULL ) );
@@ -795,7 +795,7 @@ void vfu_run()
     fclose(zf);
     */
     
-    if( ch == 0 ) ch = KEY_CTRL_L;
+    if( ch == 0 || ch == KEY_RESIZE ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
     say1( "" );
     if ( user_id_str == "root" )
@@ -1100,13 +1100,6 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
-  if ( sig == SIGWINCH )
-    {
-    signal( SIGWINCH, vfu_signal ); // (re)setup signal handler
-    con_reset_screen_size();
-    do_draw = 3;
-    return;
-    }
   vfu_done();
 
   con_beep();
