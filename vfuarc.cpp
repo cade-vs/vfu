@@ -116,13 +116,12 @@ void vfu_read_archive_files( int a_recursive )
 void vfu_browse_archive_file()
 {
   VString tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
+  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ) || chdir( tmpdir ) )
     {
     say1( "error: cannot create temp directory" );
     say2( tmpdir );
     return;
     }
-  chdir( tmpdir );
 
   VString fn = files_list_get(FLI)->full_name();
 
@@ -149,13 +148,12 @@ void vfu_browse_archive_file()
 void vfu_user_external_archive_exec( VString &shell_line  )
 {
   VString tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ))
+  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ) || chdir( tmpdir ))
     {
     say1( "error: cannot create temp directory" );
     say2( tmpdir );
     return;
     }
-  chdir( tmpdir );
 
   VString fn = files_list_get(FLI)->full_name();
 

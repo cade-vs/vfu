@@ -601,7 +601,7 @@ void vfu_arrange_files()
   mb.push( "T Modify Time" );
   mb.push( "H Change Time" );
   mb.push( "C Access Time" );
-  mb.push( "A Attr/mode" );
+  mb.push( "D Attr/mode" );
   mb.push( "O Owner" );
   mb.push( "G Group" );
   mb.push( "Y Type (TP)" );
@@ -610,10 +610,18 @@ void vfu_arrange_files()
   mb.push( "R Randomize" );
   mb.push( "V Move Entry" );
   mb.push( "---" );
-  mb.push( "D Modify Time (compat)" );
+  mb.push( "A Quick swap NAME/CHANGE" );
   if ( vfu_menu_box( 50, 5, "Arrange" ) == -1 ) return;
   _ord = menu_box_info.ec;
-  if ( _ord == 'D' ) _ord = 'T';
+
+  if ( _ord == 'A' )
+    {
+    opt.sort_direction = 'A';
+    opt.sort_order = opt.sort_order == 'N' ? 'H' : 'N';
+    vfu_sort_files();
+    say1( VString( "File list is now arranged by " ) + ( opt.sort_order == 'N' ? "NAME (ASCENDING)" : "CHANGE TIME (ASCENDING)" ) );
+    return;
+    }
 
   if (_ord == 'V' )
     {
@@ -637,13 +645,20 @@ void vfu_arrange_files()
     return;
     }
 
+  opt.sort_order = _ord;
+  
+  if( opt.sort_order == 'U' ) 
+    {
+    say1( "Next directory rescan will be unsorted." );
+    return;
+    }
+
   mb.undef();
   mb.push( "A Ascending");
   mb.push( "D Descending" );
   if ( vfu_menu_box( 50, 5, "Order" ) == -1 ) return;
   _rev = menu_box_info.ec;
 
-  opt.sort_order = _ord;
   opt.sort_direction = _rev;
 
   vfu_sort_files();
