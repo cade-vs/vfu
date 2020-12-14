@@ -2598,7 +2598,7 @@ void vfu_jump_to_mountpoint( int all )
     VString str_free  = opt.use_gib_usage ? fsize_fmt( fs_free,  1 ) : size_str_compact( fs_free  );
     VString str_total = opt.use_gib_usage ? fsize_fmt( fs_total, 1 ) : size_str_compact( fs_total );
     
-    sprintf( str, "%c | %10s | %10s | %-30s ",
+    sprintf( str, "%c | %15s | %15s | %-30s ",
              hk,
              (const char*)str_free,
              (const char*)str_total,
