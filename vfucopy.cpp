@@ -3,7 +3,7 @@
  * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
  * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *
- * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+ * SEE 'README','LICENSE' OR 'COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
  ****************************************************************************/
 
@@ -908,7 +908,7 @@ void vfu_copy_files( int a_one, int a_mode )
     target = opt.last_copy_path[ a_mode ];
   VString str = CM_DESC[ a_mode ];
   if ( a_one )
-    str = str + " `" + files_list_get(FLI)->name_ext() + "' to:";
+    str = str + " '" + files_list_get(FLI)->name_ext() + "' to:";
   else
     str += " SELECTED FILES/DIRS to:";
   if ( !vfu_get_dir_name( str, target ) ) return;
@@ -943,9 +943,12 @@ void vfu_copy_files( int a_one, int a_mode )
   copy_info.over_mode = OM_ASK; /* 0 */
   copy_info.abort = 0;
 
+  VString dev_free_str;
   if ( !copy_info.no_free_check && !copy_info.no_info )
     {
     fsize_t dev_free = device_avail_space( target );
+    dev_free_str = size_str_compact( dev_free );
+    dev_free_str = " | TARGET FREE: " + dev_free_str;
     if (copy_info.files_size > dev_free )
       {
       vfu_beep();
@@ -967,6 +970,7 @@ void vfu_copy_files( int a_one, int a_mode )
   vfu_str_comma( t );
   copy_info.description += t;
   copy_info.description += " bytes.";
+  copy_info.description += dev_free_str;
 
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];
