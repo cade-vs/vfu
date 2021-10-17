@@ -223,11 +223,13 @@ void vfu_read_files( int a_recursive )
     {
     ASSERT( work_mode == WM_NORMAL );
     vfu_read_external_files();
+    opt.sort_order = 'U';
     } else
   if ( list_panelizer.count()  )
     {
     ASSERT( work_mode == WM_NORMAL );
     vfu_read_pszlist_files();
+    opt.sort_order = 'U';
     }
   else
     {
@@ -552,6 +554,7 @@ void __vfu_sort( int l, int r )
 void vfu_sort_files()
 {
   if ( ! files_list_cnt ) return;
+  if ( opt.sort_order == 'U' ) return;
   VString str = files_list[FLI]->name();
 
   VString ss = "Sorting... [";
