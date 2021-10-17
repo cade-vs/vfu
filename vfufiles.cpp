@@ -374,35 +374,22 @@ void vfu_read_local_files( int a_recursive )
 
 void vfu_read_external_files()
 {
-  /* FIXME: this is not completely correct: lines read are in most
-     cases far less in length that MAX_PATH which is about 2-4K so
-     in general case this will work fine... */
-  char tmp[MAX_PATH];
-  char tmp1[MAX_PATH];
+  char fn_line[MAX_PATH];
 
   if ( external_panelizer == "" ) return;
   say1( "Rescanning files...(external panelizer)" );
   FILE *f = popen( external_panelizer, "r" );
-  while( fgets( tmp, MAX_PATH-1, f ) )
+  while( fgets( fn_line, MAX_PATH-1, f ) )
     {
-    str_cut( tmp, " \t\n\r" );
+    str_cut( fn_line, " \t\n\r" );
+    if ( access( fn_line, F_OK ) ) continue;
 
-    while( str_word( tmp, " \t:;", tmp1 ) )
-      {
-      if ( access( tmp1, F_OK ) ) continue;
+    struct stat st;
+    stat( fn_line, &st );
 
-      struct stat st;
-      stat( tmp1, &st );
+    say2( fn_line );
 
-      say2( tmp1 );
-
-      if ( vfu_add_file( tmp1, &st, file_is_link( tmp1 ) ) )
-        {
-        pclose( f );
-        external_panelizer = ""; /* reset -- there's no reload on this */
-        return;
-        }
-      }
+    vfu_add_file( fn_line, &st, file_is_link( fn_line ) );
     }
   pclose( f );
   external_panelizer = ""; /* reset -- there's no reload on this */

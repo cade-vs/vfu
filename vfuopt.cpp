@@ -416,7 +416,7 @@ void vfu_settings_load()
       if( re_pan.m( line ) )
         {
         str = "";
-        panelizers.push( str + re_see[1] + "," + re_see[2] );
+        panelizers.push( str + re_pan[1] + "," + re_pan[2] );
         continue;
         }
       }
