@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -40,7 +40,7 @@ void __get_classify_str( const char *fname, char ch, char *tmp )
 void vfu_tool_classify()
 {
   /* FIXME: how this will handle files with path in the list? */
-  char tmp[MAX_PATH];
+  fname_t tmp;
   if ( sel_count == 0 )
     {
     say1( "Classify function works only on already selected files..." );
@@ -82,7 +82,7 @@ void vfu_tool_classify()
     int res = make_path( mb[i] );
     if ( res )
       {
-      char t[MAX_PATH];
+      fname_t t;
       sprintf( t, "Cannot create directory: %s, (press a key for cancel)", mb.get(i) );
       say1( t );
       say2errno();

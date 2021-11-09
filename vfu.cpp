@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -1157,7 +1157,7 @@ void vfu_shell( const char* a_command, const char* a_options )
     // review shell_line
     say1( "Review shell line to be executed:" );
     VString sl = shell_line;
-    sl = str_dot_reduce( sl, con_max_x()-1 );
+    sl = str_dot_reduce( sl, con_max_x() - 1 );
     say2( sl );
     con_getch();
     }
@@ -1312,10 +1312,11 @@ void vfu_browse( const char *fname, int no_filters )
   VString new_name = fname;
   VString tmp_name;
 
-  if ( !no_filters && see_filters.count() > 0 )
+  char full_fname[MAX_PATH];
+  expand_path( fname, full_fname );
+
+  if ( ! no_filters && see_filters.count() > 0 )
     {
-    char full_fname[MAX_PATH];
-    expand_path( fname, full_fname );
     int z;
     for ( z = 0; z < see_filters.count(); z++ )
       {
@@ -1354,8 +1355,8 @@ void vfu_browse( const char *fname, int no_filters )
     VString str = shell_browser;
     if ( fname )
       {
-      str_replace( str, "%f", fname );
-      str_replace( str, "%F", fname );
+      str_replace( str, "%f", fname      );
+      str_replace( str, "%F", full_fname );
       }
     vfu_shell( str, "" );
     }
@@ -1492,8 +1493,8 @@ void vfu_action_minus( int mode )
 // returns 0 for ok
 int vfu_cmp_files_crc32( const char* src, const char* dst, const char* name )
 {
-  char fn1[MAX_PATH];
-  char fn2[MAX_PATH];
+  fname_t fn1;
+  fname_t fn2;
   struct stat stat_src;
   struct stat stat_dst;
   strcpy( fn1, src ); strcat( fn1, name );
@@ -1992,7 +1993,7 @@ void vfu_tools()
   switch( menu_box_info.ec )
     {
     case 'R' : {
-               char s[MAX_PATH];
+               fname_t s;
                expand_path(files_list_get(FLI)->name(), s);
                say1( s );
                break;
@@ -2525,8 +2526,8 @@ void vfu_edit_entry( )
         say1( "This is not a symlink..." );
         break;
         }
-      char t[MAX_PATH] = "";
-      t[ readlink( fi->name(), t, MAX_PATH-1 ) ] = 0;
+      fname_t t = "";
+      t[ readlink( fi->name(), t, MAX_PATH - 1 ) ] = 0;
       VString str = t;
       //if ( vfu_get_str( "", str, 0 ) )
       if ( vfu_get_dir_name( "SymLink Target:", str, 1, 'A' ) )

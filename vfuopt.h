@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -23,9 +23,9 @@
     int sort_direction;
     int sort_top_dirs;
 
-    max_path_str_t last_copy_path[3];
+    fname_t last_copy_path[3];
 
-    max_path_str_t path_bookmarks[10];
+    fname_t path_bookmarks[10];
 
     int f_size;
     int f_time;

@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -287,7 +287,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
     if ( is_link )
       {
       /* symlinks */
-      char t[MAX_PATH];
+      fname_t t;
       expand_path( fi->full_name( 1 ), t );
       str_fix_path( t );
       fi->set_size( size_cache_get( t ) );
@@ -376,12 +376,12 @@ void vfu_read_local_files( int a_recursive )
 
 void vfu_read_external_files()
 {
-  char fn_line[MAX_PATH];
+  fname_t fn_line;
 
   if ( external_panelizer == "" ) return;
   say1( "Rescanning files...(external panelizer)" );
   FILE *f = popen( external_panelizer, "r" );
-  while( fgets( fn_line, MAX_PATH-1, f ) )
+  while( fgets( fn_line, MAX_PATH - 1, f ) )
     {
     str_cut( fn_line, " \t\n\r" );
     if ( access( fn_line, F_OK ) ) continue;

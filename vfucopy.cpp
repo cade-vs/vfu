@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE 'README','LICENSE' OR 'COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -60,12 +60,12 @@ fsize_t device_avail_space( const char *target )
 int file_is_same( const char *src, const char *dst )
 {
   #ifdef _TARGET_GO32_
-    char _f1[MAX_PATH];
-    char _f2[MAX_PATH];
+    fname_t _f1;
+    fname_t _f2;
     _fixpath( src, _f1 );
     _fixpath( dst, _f2 );
     ASSERT( _f1[1] == ':' && _f2[1] == ':' );
-    return (strcasecmp( _f1, _f2 ) != 0);
+    return ( strcasecmp( _f1, _f2 ) != 0 );
   #else
     struct stat st1;
     struct stat st2;
@@ -82,8 +82,8 @@ int file_is_same( const char *src, const char *dst )
 int device_is_same( const char *src, const char *dst )
 {
   #ifdef _TARGET_GO32_
-    char _f1[MAX_PATH];
-    char _f2[MAX_PATH];
+    fname_t _f1;
+    fname_t _f2;
     _fixpath( src, _f1 );
     _fixpath( dst, _f2 );
     ASSERT( _f1[1] == ':' && _f2[1] == ':' );
@@ -92,8 +92,8 @@ int device_is_same( const char *src, const char *dst )
     char *ch;
     struct stat st1;
     struct stat st2;
-    char _f1[MAX_PATH];
-    char _f2[MAX_PATH];
+    fname_t _f1;
+    fname_t _f2;
     strcpy( _f1, src );
     ch = strrchr( _f1, '/' );
     if (ch == NULL) _f1[0] = 0; else ch[1] = 0;
@@ -217,7 +217,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     char s_t = (stat_src.st_mtime == stat_dst.st_mtime)?'*':' '; // same time
     char s_s = (stat_src.st_size  == stat_dst.st_size)?'*':' '; // same size
 
-    char t[MAX_PATH];
+    fname_t t;
 
     time_str_compact( stat_src.st_mtime, sttime);
     str = file_st_size( &stat_src );
@@ -633,7 +633,7 @@ int __vfu_link_copy( const char* src, const char* dst, CopyInfo* copy_info )
       __vfu_file_erase( dst ); /* overwrite! */
       }
 
-    char t[MAX_PATH];
+    fname_t t;
     int z = readlink( src, t, sizeof(t)-1);
     if (z < 1) return 1;
     t[z] = 0;
@@ -884,7 +884,7 @@ void vfu_copy_files( int a_one, int a_mode )
     return;
     }
 
-  char t[MAX_PATH];
+  fname_t t;
 
   ASSERT( a_mode == CM_COPY || a_mode == CM_MOVE || a_mode == CM_LINK );
 

@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -183,8 +183,8 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
 
 int file_get_sfn( const char *in, char *out )
 {
-  char src[MAX_PATH+32]; // jtbs
-  char dst[MAX_PATH+32]; // jtbs
+  fname_t src;
+  fname_t dst;
 
   strcpy( src, in );
 
@@ -207,8 +207,8 @@ int file_get_sfn( const char *in, char *out )
 
 int file_get_lfn( const char *in, char *out )
 {
-  char src[MAX_PATH+32]; // jtbs
-  char dst[MAX_PATH+32]; // jtbs
+  fname_t src;
+  fname_t dst;
 
   strcpy( src, in );
 

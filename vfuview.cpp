@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -166,7 +166,7 @@ void vfu_draw( int n )
 extern const char *FTIMETYPE[]; /* in vfuopt.cpp */
 void vfu_redraw() /* redraw file list and header */
 {
-  char t[MAX_PATH];
+  fname_t t;
   VString str;
 
   str  = "Mask: ";
@@ -181,15 +181,10 @@ void vfu_redraw() /* redraw file list and header */
   str = "Path: ";
   str += work_path;
   if ( work_mode == WM_ARCHIVE )
-    {
-    str += "[";
-    str += archive_name;
-    str += "]/"; /* NOTE: to simulate root dir visually */
-    str += archive_path;
-    }
+    str += "[" + archive_name + "]/" + archive_path; /* NOTE: to simulate root dir visually */
   str = str_dot_reduce( str, con_max_x()-1 );
-  con_out(1,2,str,cINFO);
-  con_ce(cINFO);
+  con_out( 1, 2, str, cINFO );
+  con_ce( cINFO );
 
   str = "";
 
@@ -215,15 +210,16 @@ void vfu_redraw() /* redraw file list and header */
   if (opt.sort_order == 'D') opt.sort_order = 'T'; /* hack anyway */
   if (!opt.long_name_view)
     {
-    if (opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
-    if (opt.f_owner ) spos += sprintf( spos, "   OWNER " );
-    if (opt.f_group ) spos += sprintf( spos, "   GROUP " );
-    if (opt.f_time  ) spos += sprintf( spos, "%s  TiME ", FTIMETYPE[opt.f_time_type] );
-    if (opt.f_size  ) spos += sprintf( spos, "          SiZE " );
+    if ( opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
+    if ( opt.f_owner ) spos += sprintf( spos, "   OWNER " );
+    if ( opt.f_group ) spos += sprintf( spos, "   GROUP " );
+    if ( opt.f_time  ) spos += sprintf( spos, "%s  TiME ", FTIMETYPE[opt.f_time_type] );
+    if ( opt.f_size  ) spos += sprintf( spos, "          SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
-  if (opt.f_type || opt.long_name_view) spos += sprintf( spos, "TP" );
+  if ( opt.f_type || opt.long_name_view ) 
+    spos += sprintf( spos, "TP" );
   tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
 

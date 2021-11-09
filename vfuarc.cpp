@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -182,7 +182,7 @@ void vfu_user_external_archive_exec( VString &shell_line  )
 void vfu_extract_files( int one )
 {
   if ( sel_count == 0 && one == 0 ) one = 1;
-  char t[MAX_PATH];
+  fname_t t;
   VString target;
 
   if ( one == 0 )

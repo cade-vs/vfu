@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -265,7 +265,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
     else
     if (ch == KEY_CTRL_X)
       {
-        char t[MAX_PATH];
+        fname_t t;
         if ( target[0] == '~' )
           target = tilde_expand( target );
         expand_path( target, t );
@@ -391,7 +391,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
 
 void vfu_chdir( const char *a_new_dir )
 {
-  char t[MAX_PATH];
+  fname_t t;
   VString target;
   if ( a_new_dir && a_new_dir[0] )
     {
@@ -570,7 +570,7 @@ fsize_t __tree_rebuild_process( const char* path )
   dirent* de;
   struct stat st;
   fsize_t size = 0;
-  char new_name[MAX_PATH];
+  fname_t new_name;
 
   dir = opendir( path );
   if ( !dir ) return 0;
@@ -950,7 +950,7 @@ int size_cache_cmp( const char* s1, const char* s2 )
 VString size_cache_compose_key( const char *s, fsize_t size )
 {
   const char *ps;
-  char ss[MAX_PATH];
+  fname_t ss;
   expand_path( s, ss );
   ps = ss;
 
@@ -1148,7 +1148,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
   dirent* de;
   struct stat st;
   fsize_t size = 0;
-  char new_name[MAX_PATH];
+  fname_t new_name;
 
   dir = opendir( path );
   if ( !dir ) return 0;
@@ -1198,7 +1198,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
 
 fsize_t vfu_dir_size( const char *s, int sort, int mode )
 {
-  char t[MAX_PATH];
+  fname_t t;
   expand_path( s, t );
   //size_cache_clean( t );
   str_fix_path( t );

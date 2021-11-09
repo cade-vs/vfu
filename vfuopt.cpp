@@ -123,25 +123,25 @@ void vfu_load_dir_colors()
     if ( strncmp( str, "OPTIONS ", 8 ) == 0 ) continue;
 
     int pos = -1;
-    if ( str_find( str, "31" ) != -1 ) pos = cRED; else
-    if ( str_find( str, "32" ) != -1 ) pos = cGREEN; else
-    if ( str_find( str, "33" ) != -1 ) pos = cYELLOW; else
-    if ( str_find( str, "34" ) != -1 ) pos = cBLUE; else
+    if ( str_find( str, "31" ) != -1 ) pos = cRED;     else
+    if ( str_find( str, "32" ) != -1 ) pos = cGREEN;   else
+    if ( str_find( str, "33" ) != -1 ) pos = cYELLOW;  else
+    if ( str_find( str, "34" ) != -1 ) pos = cBLUE;    else
     if ( str_find( str, "35" ) != -1 ) pos = cMAGENTA; else
-    if ( str_find( str, "36" ) != -1 ) pos = cCYAN; else
-    if ( str_find( str, "37" ) != -1 ) pos = cWHITE; else
+    if ( str_find( str, "36" ) != -1 ) pos = cCYAN;    else
+    if ( str_find( str, "37" ) != -1 ) pos = cWHITE;   else
     {};
 
     int spc = str_find( str, ' ' );
     if ( spc == -1 || pos == -1 ) continue;
     str_sleft( str, spc );
 
-    str_replace( str, "DIR", ".[].<>" );
+    str_replace( str, "DIR",  ".[].<>" );
     str_replace( str, "LINK", ".->" );
     str_replace( str, "FIFO", ".()" );
     str_replace( str, "SOCK", ".##" );
-    str_replace( str, "BLK", ".==" );
-    str_replace( str, "CHR", ".++" );
+    str_replace( str, "BLK",  ".==" );
+    str_replace( str, "CHR",  ".++" );
     str_replace( str, "EXEC", ".**" );
 
     str_ins( ext_colors[pos], 0, str );
@@ -207,11 +207,11 @@ int set_splitter( const char *line, const char *keyword, VArray &splitter )
 
 int key_by_name( const char* key_name )
 {
-  if (strcmp (key_name, "IC"    ) == 0) return KEY_IC;
-  if (strcmp (key_name, "INS"   ) == 0) return KEY_IC;
-  if (strcmp (key_name, "INSERT") == 0) return KEY_IC;
-  if (strcmp (key_name, "ENTER" ) == 0) return KEY_ENTER;
-  if (strcmp (key_name, "RETURN") == 0) return KEY_ENTER;
+  if ( strcmp( key_name, "IC"     ) == 0 ) return KEY_IC;
+  if ( strcmp( key_name, "INS"    ) == 0 ) return KEY_IC;
+  if ( strcmp( key_name, "INSERT" ) == 0 ) return KEY_IC;
+  if ( strcmp( key_name, "ENTER"  ) == 0 ) return KEY_ENTER;
+  if ( strcmp( key_name, "RETURN" ) == 0 ) return KEY_ENTER;
   /*
   if (strcmp (key_name, "MENU"  ) == 0) ux.key = - menucount;
   */
@@ -317,22 +317,22 @@ void vfu_settings_load()
 
   history.fload( filename_history );
 
-  if (getenv("EDITOR"))
+  if ( getenv("EDITOR"))
     {
     shell_editor  = getenv("EDITOR");
     shell_editor += " %f";
     }
-  if (getenv("PAGER") )
+  if ( getenv("PAGER") )
     {
     shell_browser  = getenv("PAGER");
     shell_browser += " %f";
     } else
-  if (getenv("BROWSER") )
+  if ( getenv("BROWSER") )
     {
     shell_browser  = getenv("BROWSER");
     shell_browser += " %f";
     } else
-  if (getenv("VIEWER") )
+  if ( getenv("VIEWER") )
     {
     shell_browser  = getenv("VIEWER");
     shell_browser  += " %f";
@@ -362,18 +362,6 @@ void vfu_settings_load()
       if(set_str( line, "diff",   shell_diff))continue;
 
       if(set_arr( line, "bookmark",  path_bookmarks))continue;
-      // follow 10 are deprecated
-      /*
-      if(set_arr( line, "bookmark1", path_bookmarks))continue;
-      if(set_arr( line, "bookmark2", path_bookmarks))continue;
-      if(set_arr( line, "bookmark3", path_bookmarks))continue;
-      if(set_arr( line, "bookmark4", path_bookmarks))continue;
-      if(set_arr( line, "bookmark5", path_bookmarks))continue;
-      if(set_arr( line, "bookmark6", path_bookmarks))continue;
-      if(set_arr( line, "bookmark7", path_bookmarks))continue;
-      if(set_arr( line, "bookmark8", path_bookmarks))continue;
-      if(set_arr( line, "bookmark9", path_bookmarks))continue;
-      */
 
    /* if(set_str( line, "cblack"   , ext_colors[0]); */
       if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;

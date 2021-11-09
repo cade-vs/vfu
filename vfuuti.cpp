@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
+ * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -25,10 +25,10 @@ fsize_t file_st_size( struct stat* st )
 
 VString vfu_readlink( const char* fname )
 {
-  char t[MAX_PATH+1];
+  fname_t t;
   t[0] = 0;
-  int l = readlink( fname, t, MAX_PATH );
-  if (l != -1) t[l] = 0;
+  int l = readlink( fname, t, MAX_PATH - 1 );
+  if ( l != -1 ) t[l] = 0;
   VString res = t;
   return res;
 }
@@ -484,7 +484,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 /*---------------------------------------------------------------------------*/
 
 // FIXME: TODO: enew function for tmp dir name etc.
-char vfu_temp_filename[MAX_PATH];
+fname_t vfu_temp_filename;
 const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
