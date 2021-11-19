@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Aug  7 23:55:14 2020 #########################
+### Created by makemake.pl on Fri Nov 19 02:22:15 2021 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -39,8 +39,8 @@ CC_1       = $(CXX)
 LD_1       = $(LD)
 AR_1       = $(AR) rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_1  = -L../vstring -L../vslib -lvstring -lvslib -lvscon -lpcre -lncurses $(LDFLAGS) $(LDDEF) 
+CCFLAGS_1  = -I../vstring                    -I../vslib -I/usr/include/ncurses -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_1  = -L../vstring -L../vstring/pcre2 -L../vslib -lvstring -lvslib -lvscon -lpcre2 -lncurses $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = vfu
@@ -132,8 +132,8 @@ CC_2       = $(CXX)
 LD_2       = $(LD)
 AR_2       = $(AR) rv
 RANLIB_2   = $(RANLIB)
-CCFLAGS_2  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_2  = -L../vstring -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre ../yascreen/libyascreen.a -lrt $(LDFLAGS) $(LDDEF) 
+CCFLAGS_2  = -I../vstring                    -I../vslib -I../yascreen -DUSE_YASCREEN -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_2  = -L../vstring -L../vstring/pcre2 -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre2 ../yascreen/libyascreen.a -lrt $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
 TARGET_2   = vfu.yas
@@ -225,8 +225,8 @@ CC_3       = $(CXX)
 LD_3       = $(LD)
 AR_3       = $(AR) rv
 RANLIB_3   = $(RANLIB)
-CCFLAGS_3  = -I../vstring -I../vslib -I/usr/include/ncurses -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_3  = -L../vstring -L../vslib -lvstring -lvslib -lvscon -lpcre -lncurses -g $(LDFLAGS) $(LDDEF) 
+CCFLAGS_3  = -I../vstring                     -I../vslib -I/usr/include/ncurses -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_3  = -L../vstring -L../vstring/pcre2  -L../vslib -lvstring -lvslib -lvscon -lpcre2 -lncurses -g $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_3 = 
 ARFLAGS_3  = 
 TARGET_3   = vfu-debug
@@ -318,8 +318,8 @@ CC_4       = $(CXX)
 LD_4       = $(LD)
 AR_4       = $(AR) rv
 RANLIB_4   = $(RANLIB)
-CCFLAGS_4  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_4  = -L../vstring -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre ../yascreen/libyascreen.a -lrt -g $(LDFLAGS) $(LDDEF) 
+CCFLAGS_4  = -I../vstring                    -I../vslib -I../yascreen -DUSE_YASCREEN -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_4  = -L../vstring -L../vstring/pcre2 -L../vslib -L../yascreen -lvstring -lvslib -lvscony -lpcre2 ../yascreen/libyascreen.a -lrt -g $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_4 = 
 ARFLAGS_4  = 
 TARGET_4   = vfu.yas-debug
