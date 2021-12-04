@@ -2234,7 +2234,7 @@ void vfu_directories_sizes( int n )
     vfu_str_comma( dir_size_str );
     snprintf( t, sizeof(t), "Dir size of: %s", target.data() );
     say1( t );
-    snprintf( t, sizeof(t), "Size: %s bytes", dir_size_str.data() );
+    snprintf( t, sizeof(t), "Size: %s bytes ( %s )", dir_size_str.data(), fsize_fmt( dir_size, opt.use_gib_usage ).data() );
     say2( t );
     } else
   if ( n == 'A' || n == 'S' ) /* all or selected  */
