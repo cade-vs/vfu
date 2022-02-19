@@ -135,7 +135,7 @@ void show_pos( int curr, int all )
   int s1 = vss * curr / all; 
   int s2 = s1 + ss;
 
-fprintf( stderr, "y %d, ss %d, vss %d, s1 %d, s2 %d\n", y, ss, vss, s1, s2 );
+  // fprintf( stderr, "y %d, ss %d, vss %d, s1 %d, s2 %d\n", y, ss, vss, s1, s2 );
 
   for( int z = 0; z < y; z++ )
     {
