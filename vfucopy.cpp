@@ -739,7 +739,13 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
     VString t;
     t.fi( *bytes_freed );
     vfu_str_comma( t );
-    t = "ERASE: " + t + " bytes freed.";
+    VString tt;
+    if( *bytes_freed > 1024*1024 )
+      {
+      tt = fsize_fmt( *bytes_freed, opt.use_gib_usage ).data();
+      tt = "( " + tt + " ) ";
+      }
+    t = "ERASE: " + t + " bytes " + tt + "freed.";
     say2(t);
     }
   say1( target );
