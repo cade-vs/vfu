@@ -65,10 +65,6 @@ VArray size_cache;
       }
   }
 
-/*
-  FIXME: must call sayX() at the end to clear...
-*/
-
 int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int type )
 {
   int res = -1;
@@ -328,20 +324,6 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
     target = tilde_expand( target );
     str_fix_path( target );
     }
-/*
-  if ( target.len() > 0 )
-    {
-    // well this tmp is kind of s... ama k'vo da pravi chovek :)
-    // FIXME: dos version?
-    if ( __ExpandGetDirName && target[0] != '/'
-       #ifdef _TARGET_GO32_
-       && !( target[1] == ':' && target[2] == '/' )
-       #endif
-       )
-      target = CPath + target;
-    StrFixPath( target ); // add trailing slash if not exist
-    }
-*/
   /*
   #ifdef _TARGET_UNIX_
   leaveok(stdscr, TRUE);

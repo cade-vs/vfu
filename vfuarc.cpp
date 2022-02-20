@@ -52,7 +52,6 @@ void vfu_read_archive_files( int a_recursive )
         str_trim_right( s, 1 );
         st.st_mode |= S_IFDIR;
         }
-        /* FIXME: my man page for stat() says S_IFDIR is not POSIX?! */
       } else
     if ( strncmp( line, "MODE:", 5 ) == 0 )
       {
@@ -60,7 +59,6 @@ void vfu_read_archive_files( int a_recursive )
       if( ms[0] == 'd' )
         st.st_mode |= S_IFDIR;
 
-      // FIXME: move this modeline parse to function and port back to vfufiles?
       if (ms[1] == 'r') st.st_mode |= S_IRUSR;
       if (ms[2] == 'w') st.st_mode |= S_IWUSR;
       if (ms[3] == 'x') st.st_mode |= S_IXUSR;

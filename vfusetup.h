@@ -18,9 +18,9 @@
  *
  */
 
-#define VFU_VERSION "4.22"
+#define VFU_VERSION "4.23"
 
-#define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski 'Cade'"
+#define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski 'Cade'"
 #define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
 
 #ifdef _TARGET_GO32_
@@ -57,8 +57,6 @@
 #endif
 
 #define RX_TEMP_LIST "RX_TEMP_LIST"
-
-#define MAX_FILES  8388608 // 8 Mi, with 8-byte pointer this acquires 64MiB
 
 /* colors */
 

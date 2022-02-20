@@ -213,7 +213,6 @@ void vfu_read_files( int a_recursive )
   /* clear files list -- delete all found entries */
   files_list_clear();
 
-  /* FIXME: perhaps we could check work_mode here? ... anyway will ASSERT it */
   if ( archive_name != "" )
     {
     ASSERT( work_mode == WM_ARCHIVE );

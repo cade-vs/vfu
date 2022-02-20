@@ -39,7 +39,6 @@ void __get_classify_str( const char *fname, char ch, char *tmp )
 
 void vfu_tool_classify()
 {
-  /* FIXME: how this will handle files with path in the list? */
   fname_t tmp;
   if ( sel_count == 0 )
     {
@@ -196,10 +195,10 @@ void vfu_tool_rename()
 
                  if ( !file_exist( new_name) )
                    {
-                   if (rename( fi->name(), new_name ) == 0) /* FIXME: full name ? */
+                   if (rename( fi->name(), new_name ) == 0)
                      {
                      fi->set_name( new_name );
-                     do_draw = 2; /* FIXME: this should be optimized? */
+                     do_draw = 2;
                      }
                    else
                      err++;
@@ -230,17 +229,16 @@ void vfu_tool_rename()
                  {
                  TF* fi = files_list_get(z);
 
-                 // if ( fi->is_dir() ) continue; // why not? ;)
                  if ( !fi->sel ) continue;
                  path = str_file_path( fi->name() );
                  new_name = path + time_prefix + str_file_name_ext( fi->name() );
 
                  if ( ! file_exist( new_name) )
                    {
-                   if ( rename( fi->name(), new_name ) == 0) /* FIXME: full name ? */
+                   if ( rename( fi->name(), new_name ) == 0)
                      {
                      fi->set_name( new_name );
-                     do_draw = 2; /* FIXME: this should be optimized? */
+                     do_draw = 2;
                      }
                    else
                      err++;
@@ -298,7 +296,7 @@ void vfu_tool_seq_rename()
     if (access( new_name, F_OK ) == 0) { err++; continue; }
     if (rename( fi->name(), new_name )) { err++; continue; }
     fi->set_name( new_name );
-    do_draw = 2; /* FIXME: this should be optimized? */
+    do_draw = 2;
     start++;
 
     }
@@ -320,8 +318,8 @@ void vfu_tool_replace_sym_org( int swap )
     {
     TF* fi = files_list_get(z);
 
-    if ( fi->is_dir() ) continue; // FIXME: dali?
-    if ( !fi->sel ) continue;
+    if ( fi->is_dir()   ) continue;
+    if ( !fi->sel       ) continue;
     if ( !fi->is_link() ) continue;
 
     VString sym = fi->full_name();
@@ -335,7 +333,7 @@ void vfu_tool_replace_sym_org( int swap )
       symlink( sym, org );
       }
     fi->update_stat();
-    do_draw = 2; /* FIXME: this should be optimized? */
+    do_draw = 2;
     }
   char t[256];
   sprintf( t, "Replace complete (errors: %d)", err );

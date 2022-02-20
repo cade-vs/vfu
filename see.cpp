@@ -62,7 +62,7 @@
     cols = opt->xmax - opt->xmin + 1;
 
     //FIXME: fix bsize! +32?
-    buff = new char[opt->bsize + 32]; /* +32 for tab expansion */
+    buff = new char[ opt->bsize * 2 ]; /* extra for tab expansion */
 
     help_str =
     "+-----------------------------------------------------------------------------+\n"
@@ -947,27 +947,30 @@
     if ( cpos >= fsize ) break;
     ch = fgetc( f );
     cpos++;
-    if (opt->handle_bs && ch == 8)
+    if( opt->handle_bs && ch == 8 )
       {
-      if (z > 0) z--;
+      if( z > 0 ) z--;
       continue;
       }
-    if (opt->handle_tab && ch == 9)
+    if( opt->handle_tab && ch == 9 )
       {
       ASSERT( opt->tabsize > 0 );
-      int i = ((z/opt->tabsize)+1) * opt->tabsize - z;
+      int i = ( ( z / opt->tabsize ) + 1 ) * opt->tabsize - z;
       while( z < opt->wrap && i > 0 )
         {
         buff[z] = ' ';
         z++;
+        if( z == SEE_MAX_LINE_LENGTH ) break;
         i--;
         }
       continue;
       }
     buff[z] = ch;
     z++;
+    if( z == SEE_MAX_LINE_LENGTH ) break;
     if ( ch == '\n' ) break;
     }
+  buff[z] = 0;  
   return z;
   }
 

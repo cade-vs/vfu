@@ -18,7 +18,7 @@
 #define MAX_PIPE_LEN  128
 #define MAX_ESCAPE_KEYS  64
 
-#define BUFF_SIZE (16*1024)
+#define SEE_MAX_LINE_LENGTH (32*1024)
 
 struct SeeViewerOptions
 {
@@ -31,7 +31,7 @@ struct SeeViewerOptions
     ch = CONCOLOR( cWHITE, cBLUE  );
     cs = CONCOLOR( cBLACK, cWHITE );
     status = 1;
-    bsize = BUFF_SIZE;
+    bsize = SEE_MAX_LINE_LENGTH;
     tabsize = 8;
     wrap = bsize;
     handle_bs = 1;

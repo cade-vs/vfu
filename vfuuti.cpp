@@ -483,7 +483,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 
 /*---------------------------------------------------------------------------*/
 
-// FIXME: TODO: enew function for tmp dir name etc.
+// FIXME: TODO: new function for tmp dir name etc.
 fname_t vfu_temp_filename;
 const char* vfu_temp()
 {

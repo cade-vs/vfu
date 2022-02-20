@@ -600,8 +600,8 @@ void vfu_init()
   #endif
 
   /*
-     FIXME: this should something relevant to the home_path
-     from above if $HOME does not exist(?) well still can
+   FIXME: this should something relevant to the home_path
+   from above if $HOME does not exist(?) well still can
    accept /tmp/ as it is default now
   */
 
@@ -789,12 +789,6 @@ void vfu_run()
 
     ch = con_getch();
 
-    /*
-    FILE *zf = fopen( "/tmp/getch.txt", "awt" );
-    fprintf( zf, "%d\n", ch );
-    fclose(zf);
-    */
-    
     if( ch == 0 || ch == KEY_RESIZE ) ch = KEY_CTRL_L;
     if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
     say1( "" );
@@ -2072,7 +2066,6 @@ void bookmark_goto( int n )
     if ( n == -1 ) return;
     n = menu_box_info.ec;
     }
-  // FIXME: neshto ne raboti :/
   switch( n )
     {
     case '`' : vfu_chdir( NULL ); return;
