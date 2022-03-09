@@ -792,6 +792,7 @@ void tree_view()
   ScrollPos scroll;
   scroll.set_min_max( 0, dir_tree.count()-1 );
   scroll.set_pagesize( FPS + 2 );
+  scroll.set_pagestep( OPT_SCROLL_PAGESTEP(opt.scroll_pagestep) );
   scroll.go( new_pos );
 
   int key = 0;

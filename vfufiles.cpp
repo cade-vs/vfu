@@ -239,6 +239,7 @@ void vfu_read_files( int a_recursive )
   /* update scroll parameters */
   file_list_index.set_min_max( 0, files_list_cnt - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
+  file_list_index.set_pagestep( OPT_SCROLL_PAGESTEP(opt.scroll_pagestep) );
 
   update_status();
   vfu_nav_update_pos();

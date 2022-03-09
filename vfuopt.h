@@ -13,6 +13,8 @@
 #include "see.h"
 #include "vfuuti.h"
 
+  #define OPT_SCROLL_PAGESTEP(s)  ( (s) == 1 ? 0.3 : (s) == 2 ? 0.5 : 1 )
+
   extern const char *NOYES[];
   extern const char *FTIMETYPE[];
   extern const char *TAGMARKS[];
@@ -81,6 +83,8 @@
     int use_gib_usage;
 
     int comma_type;
+
+    int scroll_pagestep;
     
     SeeViewerOptions svo;
     SeeEditorOptions seo;

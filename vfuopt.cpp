@@ -26,6 +26,7 @@ const char *TAGMARKS[] = { ">>", "=>", "->", NULL };
 #endif
 const char *SIIEC[] = { "IEC", "SI ", NULL };
 const char *COMMA_TYPES[] = { "'", "`", ",", " ", "_", NULL };
+const char *PAGE_STEPS[] = { "1 LINE", "30% PG", "50% PG", NULL };
 
 ToggleEntry Toggles[] =
 {
@@ -73,6 +74,7 @@ ToggleEntry Toggles[] =
   { ' ', "Prefer GiB in disk usage status", &(opt.use_gib_usage), NOYES },
   { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
   { ' ', "1000s separator type", &(opt.comma_type), COMMA_TYPES },
+  { ' ', "Scrolling page step", &(opt.scroll_pagestep), PAGE_STEPS },
   {  -1, "---", NULL, NULL }
 };
 
@@ -304,6 +306,7 @@ void vfu_settings_load()
 
   opt.smart_home_end = 1;
 
+  opt.scroll_pagestep = 1;
   /***** LOAD DEFAULTS END ***/
 
   FILE *fsett;
@@ -316,6 +319,7 @@ void vfu_settings_load()
     say1( "warning: bad vfu.options file, loading defaults..." );
 
   history.fload( filename_history );
+  file_list_index.set_pagestep( OPT_SCROLL_PAGESTEP(opt.scroll_pagestep) );
 
   if ( getenv("EDITOR"))
     {

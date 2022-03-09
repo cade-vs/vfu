@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
  * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -382,7 +382,7 @@ void TF::refresh_view()
   VString view;
   view = view + stmode + stowner + stgroup + sttime + stsize + sttype + "   " + name_view;
 
-  int x = con_max_x();
+  int x = con_max_x() - 1; // 1 char for scroller, FIXME: TODO: should be optional
   if ( str_len( view ) > x )
     str_sleft( view, x );
   else
@@ -394,7 +394,6 @@ void TF::refresh_view()
   strcpy( _view, view );
 
   ASSERT( _view );
-  ASSERT( strlen( _view ) == (size_t)con_max_x() );
 }
 
 /*-----------------------------------------------------------------------*/
