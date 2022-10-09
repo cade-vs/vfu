@@ -140,6 +140,7 @@ void show_pos( int curr, int all )
   for( int z = 0; z < y; z++ )
     {
     con_out( x, y1 + z, " ", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cNORMAL );
+    //con_out( x, y1 + z, ( s1 <= z and z <= s2 ) ? " " : ".", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cCYAN );
     }
 }
 

@@ -46,7 +46,12 @@
     #endif
     #include <sys/mount.h>
   #else
-    #include <sys/vfs.h>
+    #if defined(__APPLE__)
+      #include <sys/param.h>
+      #include <sys/mount.h>
+    #else
+      #include <sys/vfs.h>
+    #endif  
   #endif
 
   #include "vfusetup.h"

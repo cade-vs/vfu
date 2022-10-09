@@ -18,7 +18,7 @@
  *
  */
 
-#define VFU_VERSION "4.23"
+#define VFU_VERSION "4.24"
 
 #define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski 'Cade'"
 #define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
