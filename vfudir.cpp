@@ -1122,7 +1122,27 @@ int tree_find( const char *s, VArray *va )
 
 /*###########################################################################*/
 
-fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
+VString DirSizeInfo::str()
+{
+  VString str;
+
+  VString ds; // dirs  count
+  VString fs; // files count
+  VString ts; // files count
+
+  ds.i( dirs_count );
+  fs.i( files_count );
+  ts.fi( size );
+  vfu_str_comma( ds );
+  vfu_str_comma( fs );
+  vfu_str_comma( ts );
+  
+  sprintf( str, "Dirs: %s | Files: %s | Total size: %s ( %s bytes )", ds.data(), fs.data(), fsize_fmt( size, opt.use_gib_usage ).data(), ts.data() );
+  
+  return str;
+};
+
+fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSizeInfo* size_info = NULL )
 {
   if ( vfu_break_op() )
     return -1;
@@ -1154,9 +1174,10 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
     if ( is_link && ! ( mode & DIR_SIZE_FOLLOWSYMLINKS ) ) continue; /* skip links */
     if ( is_dir  )
       {
+      if ( size_info ) size_info->dirs_count++;
       if ( src_dev && src_dev != st.st_dev ) continue;
       strcat( new_name, "/" );
-      fsize_t dir_size = __dir_size_process( new_name, mode );
+      fsize_t dir_size = __dir_size_process( new_name, mode, src_dev, size_info );
       if ( dir_size == -1 )
         {
         closedir(dir);
@@ -1169,7 +1190,15 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
         }
       }
     else
-      size += file_st_size( &st );
+      {
+      fsize_t fs = file_st_size( &st );
+      if ( size_info ) 
+        {
+        size_info->files_count++;
+        size_info->size += fs;
+        }
+      size += fs;
+      }
 
     }
   closedir(dir);
@@ -1179,7 +1208,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0 )
   return size;
 }
 
-fsize_t vfu_dir_size( const char *s, int sort, int mode )
+fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info )
 {
   fname_t t;
   expand_path( s, t );
@@ -1194,7 +1223,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode )
     stat( s, &st);
     src_dev = st.st_dev;
     }
-  fsize_t size = __dir_size_process( t, mode, src_dev );
+  fsize_t size = __dir_size_process( t, mode, src_dev, size_info );
   size_cache_set( t, size, sort );
   return size;
 }

@@ -57,7 +57,22 @@ void size_cache_sort();
 #define DIR_SIZE_FOLLOWSYMLINKS 2
 #define DIR_SIZE_SAMEDEVONLY    4
 
-fsize_t vfu_dir_size( const char *s, int sort = 1, int mode = DIR_SIZE_NORMAL );
+struct DirSizeInfo
+  {
+  DirSizeInfo() { reset(); };
+  void reset()  
+    {
+    dirs_count  = 0;
+    files_count = 0;
+    size = 0;
+    };
+  int dirs_count;
+  int files_count;
+  fsize_t size;
+  VString str();
+  };
+
+fsize_t vfu_dir_size( const char *s, int sort = 1, int mode = DIR_SIZE_NORMAL, DirSizeInfo* size_info = NULL );
 
 #endif //_VFUDRI_H_
 

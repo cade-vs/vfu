@@ -2211,6 +2211,7 @@ void vfu_directories_sizes( int n )
     n = menu_box_info.ec;
     }
 
+  DirSizeInfo size_info;
   say1( "Calculating files size. Press ESCAPE to cancel calculation." );
   if ( n == 'E' || n == '.' ) /* specific directory */
     {
@@ -2219,15 +2220,10 @@ void vfu_directories_sizes( int n )
       target = work_path;
     else
       if ( !vfu_get_dir_name( "Calculate size of directory: ", target ) ) return;
-    fsize_t dir_size = vfu_dir_size( target, 1, dir_size_mode );
+    fsize_t dir_size = vfu_dir_size( target, 1, dir_size_mode, &size_info );
     if ( dir_size == -1 ) return;
-    VString dir_size_str;
-    dir_size_str.fi( dir_size );
-    vfu_str_comma( dir_size_str );
-    snprintf( t, sizeof(t), "Dir size of: %s", target.data() );
-    say1( t );
-    snprintf( t, sizeof(t), "Size: %s bytes ( %s )", dir_size_str.data(), fsize_fmt( dir_size, opt.use_gib_usage ).data() );
-    say2( t );
+    say1( "Path: " + target );
+    say2( size_info.str() );
     } else
   if ( n == 'A' || n == 'S' ) /* all or selected  */
     {
@@ -2238,23 +2234,23 @@ void vfu_directories_sizes( int n )
         {
         if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
         /* if ( n == 'A' ) continue; // all */
-        fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode );
+        fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
         if ( dir_size == -1 )
           break;
         fi->set_size( dir_size );
         }
       }
     size_cache_sort();
-    say1("");
-    say2("");
+    say1( n == 'S' ? "Path: *** selected dirs in the list ***" : "Path: *** all dirs in the list ***" );
+    say2( size_info.str() );
     }  else
   if ( n == 'Z' ) /* single one, under cursor  */
     {
     if ( files_list_get(FLI)->is_dir() )
       {
-      files_list_get(FLI)->set_size( vfu_dir_size( files_list_get(FLI)->name(), 1, dir_size_mode ) );
-      say1("");
-      say2("");
+      files_list_get(FLI)->set_size( vfu_dir_size( files_list_get(FLI)->name(), 1, dir_size_mode, &size_info ) );
+      say1( "Path: " + VString( files_list_get(FLI)->name() ) );
+      say2( size_info.str() );
       }
     else
       say1("This is not directory...");
