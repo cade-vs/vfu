@@ -1007,6 +1007,7 @@ void size_cache_append( const char *s, fsize_t size )
   size_cache.push( size_cache_compose_key( s, size ) );
 }
 
+/* deletes all *s's subdir sizes */
 void size_cache_clean( const char *s )
 {
   VString str = size_cache_compose_key( s, 0 );
@@ -1128,16 +1129,19 @@ VString DirSizeInfo::str()
 
   VString ds; // dirs  count
   VString fs; // files count
+  VString ls; // links count
   VString ts; // files count
 
   ds.i( dirs_count );
   fs.i( files_count );
+  ls.i( links_count );
   ts.fi( size );
   vfu_str_comma( ds );
   vfu_str_comma( fs );
+  vfu_str_comma( ls );
   vfu_str_comma( ts );
   
-  sprintf( str, "Dirs: %s | Files: %s | Total size: %s ( %s bytes )", ds.data(), fs.data(), fsize_fmt( size, opt.use_gib_usage ).data(), ts.data() );
+  sprintf( str, "Dirs: %s | Files: %s | Links: %s | Size: %s ( %s )", ds.data(), fs.data(), ls.data(), fsize_fmt( size, opt.use_gib_usage ).data(), ts.data() );
   
   return str;
 };
@@ -1171,7 +1175,11 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
     #endif
     int is_dir = int(S_ISDIR(st.st_mode));
 
-    if ( is_link && ! ( mode & DIR_SIZE_FOLLOWSYMLINKS ) ) continue; /* skip links */
+    if ( is_link )
+      {
+      if ( size_info ) size_info->links_count++;
+      if ( ! ( mode & DIR_SIZE_FOLLOWSYMLINKS ) ) continue; /* skip links */
+      } 
     if ( is_dir  )
       {
       if ( size_info ) size_info->dirs_count++;

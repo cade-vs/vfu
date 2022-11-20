@@ -2249,7 +2249,7 @@ void vfu_directories_sizes( int n )
     if ( files_list_get(FLI)->is_dir() )
       {
       files_list_get(FLI)->set_size( vfu_dir_size( files_list_get(FLI)->name(), 1, dir_size_mode, &size_info ) );
-      say1( "Path: " + VString( files_list_get(FLI)->name() ) );
+      say1( "Path: " + work_path + VString( files_list_get(FLI)->name() ) );
       say2( size_info.str() );
       }
     else

@@ -333,15 +333,15 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   con_out( 1, con_max_y(), copy_info->description, cMESSAGE );
 
 
-  if ( !copy_info->no_free_check && !copy_info->no_info )
+  if ( ! copy_info->no_free_check && ! copy_info->no_info )
     {
     fsize_t dev_free = device_avail_space( dst );
     if (size > dev_free )
       {
       char t[128];
       vfu_beep();
-      sprintf(t, "Insufficient disk space! Free: %.0f, Required: %.0f",
-                  dev_free, size );
+      sprintf(t, "Insufficient disk space! Free: %s, Required: %s",
+                  vfu_str_comma( dev_free ).data(), vfu_str_comma( size ).data() );
       say1( t );
       say2( dst );
 
@@ -958,9 +958,7 @@ void vfu_copy_files( int a_one, int a_mode )
     if (copy_info.files_size > dev_free )
       {
       vfu_beep();
-      sprintf(t, "Insufficient disk space! Free: %.0f, Required: %.0f",
-                 dev_free, copy_info.files_size );
-      say1( t );
+      say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
       say2( target );
 
       vfu_menu_box( "Error prompt",

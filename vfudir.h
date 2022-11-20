@@ -64,10 +64,12 @@ struct DirSizeInfo
     {
     dirs_count  = 0;
     files_count = 0;
+    links_count = 0;
     size = 0;
     };
   int dirs_count;
   int files_count;
+  int links_count;
   fsize_t size;
   VString str();
   };

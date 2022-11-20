@@ -60,53 +60,46 @@ while( a_line[i] )
       #endif
 
       case 'r' : /* rescan files after */
-      case 'R' : a_options += "r"; break; // refresh all files after (readdir)
+      case 'R' : a_options += "r"; 
+                 break; 
+
       case 'f' : /* file name */
-      case 'F' :
-      case 'g' :
-      case 'G' : one = 0;
-                 if ( a_line[i+1] == 'f' ) one = 1;
-                 if ( a_line[i+1] == 'F' ) one = 1;
-                 full = 0;
-                 if ( a_line[i+1] == 'F' ) full = 1;
-                 if ( a_line[i+1] == 'G' ) full = 1;
-                 // FIXME: 'one' is used to merge F and G options in the future
-                 int z;
+      case 'F' : if( work_mode == WM_ARCHIVE )
+                   {
+                   s = files_list_get(FLI)->name();
+                   }
+                 else if( full )
+                   {
+                   s = files_list_get(FLI)->full_name();
+                   }
+                 else
+                   {
+                   s = files_list_get(FLI)->name();
+                   }
+                 shell_escape( s );
+                 out += s;
+                 break;
+
+      case 'g' : /* list selected filenames */
+      case 'G' : int z;
                  for( z = 0; z < files_list_count(); z++ )
                    {
                    TF *fi = files_list_get(z);
-                   if (  one && z != FLI ) continue; /* if one and not current -- skip */
-                   if ( !one && !fi->sel ) continue; /* if not one and not selected -- skip */
+                   if ( ! fi->sel ) continue; /* if not one and not selected -- skip */
                    if( work_mode == WM_ARCHIVE )
                      {
                      s = files_list_get(z)->name();
                      }
                    else if( full )
                      {
-                     files_list_get(z)->full_name();
+                     s = files_list_get(z)->full_name();
                      }
                    else
                      {
                      s = files_list_get(z)->name();
                      }
-                   if( !one )
-                     {
-                     // need to list files, quote them...
-                     // FIXME: this should be optional for all one and !one
-                     if ( str_find( s, "'" ) == -1 )
-                       {
-                       s = "'" + s +"' ";
-                       }
-                     else if ( str_find( s, "\"" ) == -1 )
-                       {
-                       s = "\"" + s +"\" ";
-                       }
-                     else
-                       {
-                       s = "";
-                       }
-                     }
-                   out += s;
+                   shell_escape( s );
+                   out += s + " ";
                    }
                  break;
 
@@ -118,16 +111,19 @@ while( a_line[i] )
                    s = files_list_get(FLI)->ext();
                  out += s;
                  break;
+
       case 's' : /* current file size */
                  sprintf( s, "%.0f", files_list_get(FLI)->size() );
                  out += s;
                  break;
+
       case '?' : /* prompt user for argument */
                  if (vfu_get_str( "Enter parameter:", s, HID_SHELL_PAR ))
                    out += s;
                  else
                    return 3;
                  break;
+
       case 'd' : /* prompt user for directory */
                  s = "";
                  if (vfu_get_dir_name( "Enter directory:", s, 0 ))
@@ -135,6 +131,7 @@ while( a_line[i] )
                  else
                    return 3;
                  break;
+
       case 'c' : /* current path */
                  s = work_path;
                  #ifdef _TARGET_GO32_
@@ -154,6 +151,7 @@ while( a_line[i] )
       case 'a' : /* Archive name */
                  out += archive_name;
                  break;
+
       case 'A' : /* Archive path */
                  s = archive_path;
                  #ifdef _TARGET_GO32_
@@ -503,6 +501,13 @@ char* vfu_str_comma( char* target )
 VString& vfu_str_comma( VString& target )
 {
   return str_comma( target, COMMA_TYPES[opt.comma_type][0] );
+}
+
+VString vfu_str_comma( fsize_t size )
+{
+  VString str;
+  str.fi( size );
+  return str_comma( str, COMMA_TYPES[opt.comma_type][0] );
 }
 
 /*###########################################################################*/

@@ -33,6 +33,7 @@ VString size_str_compact( const fsize_t siz );
 
 char* vfu_str_comma( char* target );
 VString& vfu_str_comma( VString& target );
+VString vfu_str_comma( fsize_t size );
 
 /*###########################################################################*/
 
