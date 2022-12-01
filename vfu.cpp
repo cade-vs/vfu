@@ -3047,7 +3047,7 @@ int main( int argc, char* argv[] )
 
   if( print_help_on_exit ) vfu_help_cli();
   /*
-  printf("%s\n<cade@biscom.net> [http://soul.datamax.bg/~cade/vfu]\nThank You for using VFU!\n\n", HEADER );
+  printf("%s\n<cade@noxrun.com> [http://cade.noxrun.com/]\nThank You for using VFU!\n\n", HEADER );
   */
   return 0;
 }

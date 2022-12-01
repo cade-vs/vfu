@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
+ * Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
  * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  *
  * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -21,7 +21,7 @@
 #define VFU_VERSION "4.24"
 
 #define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski 'Cade'"
-#define CONTACT "<cade@biscom.net> <cade@datamax.bg> [http://cade.datamax.bg]"
+#define CONTACT "<cade@noxrun.com> <cade@bis.bg> [http://cade.noxrun.com]"
 
 #ifdef _TARGET_GO32_
   #define FILENAME_OPT     "vfu.opt"
