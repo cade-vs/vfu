@@ -338,11 +338,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
     fsize_t dev_free = device_avail_space( dst );
     if (size > dev_free )
       {
-      char t[128];
       vfu_beep();
-      sprintf(t, "Insufficient disk space! Free: %s, Required: %s",
-                  vfu_str_comma( dev_free ).data(), vfu_str_comma( size ).data() );
-      say1( t );
+      say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( size ) );
       say2( dst );
 
       vfu_menu_box( "Error prompt", "C Continue anyway,S Skip file,N No free space check,  Abort (ESC)", -1 );
@@ -974,7 +971,7 @@ void vfu_copy_files( int a_one, int a_mode )
   vfu_str_comma( t );
   copy_info.description += t;
   copy_info.description += " bytes.";
-  copy_info.description += dev_free_str;
+//  copy_info.description += dev_free_str;
 
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];
@@ -1037,17 +1034,16 @@ void vfu_copy_files( int a_one, int a_mode )
   say1( "" );
   /* show bytes copied */
   if ( copy_info.current_size > 0 )
-    { /* i.e. only if there *are* some bytes copied :) */
-    str.fi( copy_info.current_size );
-    vfu_str_comma( str );
-    str = copy_info.description + " DONE: " + str + " bytes.";
+    { 
+    /* i.e. only if there *are* some bytes copied :) */
+    str = copy_info.description + " DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
     }
   else
     {
     str = copy_info.description;
     str += " DONE";
     }
-  say2( str + " Target free: " + size_str_compact( device_avail_space( target ) ) + " (" + size_str_compact( device_free_space( target ) ) + ")" );
+  say2( str + " TARGET AVAIL: " + size_str_compact( device_avail_space( target ) ) + " (FREE: " + size_str_compact( device_free_space( target ) ) + ")" );
 
   ignore_copy_errors = 0;
 }
