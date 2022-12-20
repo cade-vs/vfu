@@ -120,21 +120,22 @@
   /* file class type */
   class TF
     {
-      char*         _name;  /* name with extension ( ref. _fname ) */
-      char*         _name_ext;   /* extension ( ref. _fname ) */
-      char*         _ext;   /* extension ( ref. _fname ) */
+      VString       _name;  /* name with extension ( ref. _fname ) */
+      VString       _name_ext;   /* extension ( ref. _fname ) */
+      VString       _ext;   /* extension ( ref. _fname ) */
       struct stat   _st;
       char          _type_str[3];
       int           _is_link;
       int           _is_dir;
       mode_str_t    _mode_str;
       fsize_t       _size;
-      char*         _view; /* up to screen width */
+
+      VString       _view; /* up to screen width */
       int           _color; /* view colors */
 
       /* !!! this is used when full name required */
       /* and this is not thread-safe :) */
-      static char   _full_name[MAX_PATH];
+      VString       _full_name;
 
       void          reset(); /* reset -- NULL all fields */
       void          refresh_view(); /* this is called by view() only! */
@@ -302,7 +303,7 @@ int vfu_exit( const char* a_path );
 
 void vfu_options();
 
-void vfu_toggle_view_fields( int ch );
+void vfu_toggle_view_fields( wchar_t wch );
 /*
   Support op's
 */
@@ -324,8 +325,8 @@ void bookmark_hookup();
 
 void update_status();
 
-int vfu_user_external_find( int key, const char* ext, const char* type, VString *shell_line );
-void vfu_user_external_exec( int a_key );
+int vfu_user_external_find( wchar_t key, const char* ext, const char* type, VString *shell_line );
+void vfu_user_external_exec( wchar_t key );
 void vfu_user_menu();
 
 void vfu_inc_search( int use_last_one = 0 );
@@ -343,7 +344,7 @@ void vfu_browse( const char* a_fname, int no_filters = 0 );
 void vfu_browse_selected_files();
 void vfu_edit( const char* a_fname );
 
-void vfu_action_plus( int );
+void vfu_action_plus( wchar_t );
 void vfu_action_minus( int mode = 0 );
 void vfu_global_select();
 void vfu_sort_menu();

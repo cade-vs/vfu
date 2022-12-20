@@ -420,8 +420,8 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
   VString str;
 
   mb.undef();
-  int z;
-  int cnt = vfu_hist_count( hist_id );
+  size_t z;
+  size_t cnt = vfu_hist_count( hist_id );
   if ( cnt < 1 ) return -1;
   if ( cnt > con_max_y() - 9 ) cnt = con_max_y() - 9; // limit to visible space
   for ( z = 0; z < cnt; z++ )
@@ -438,7 +438,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
 /*---------------------------------------------------------------------------*/
 
 int __vfu_get_str_hist_id; /* used to keep history id passed here... */
-void vfu_get_str_history( int key, VString &s, int &pos )
+void vfu_get_str_history( int key, WString &w, int &pos )
 {
   if ( __vfu_get_str_hist_id <= 0 ) return;
   if ( key != KEY_NPAGE && key != KEY_PPAGE ) return;
@@ -448,9 +448,9 @@ void vfu_get_str_history( int key, VString &s, int &pos )
 
   con_cshow();
   if ( z == -1 ) return;
-  s = mb.get(z) + 2;
-  str_cut_spc( s );
-  pos = str_len( s );
+  w = WString( mb.get(z) + 2 );
+  str_cut_spc( w );
+  pos = str_len( w );
 }
 
 int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y )
@@ -467,10 +467,11 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
   __vfu_get_str_hist_id = hist_id;
   if ( strcmp( target, "" ) == 0 && vfu_hist_get( hist_id, 0 ) )
     target = vfu_hist_get( hist_id, 0 );
-  char t[1024]; /* FIXME: can be overflowed? */
-  strcpy( t, target );
-  int r = TextInput( x, y, "", len, len, t, vfu_get_str_history );
-  target = t;
+  
+  WString www = target;
+  int r = TextInput( x, y, "", len, len, www, vfu_get_str_history );
+  target = www;
+
   say1( "" );
   say2( "" );
   __vfu_get_str_hist_id = 0;

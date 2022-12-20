@@ -65,7 +65,7 @@ VArray size_cache;
       }
   }
 
-int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int type )
+int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, int type )
 {
   int res = -1;
   /*
@@ -75,26 +75,27 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
   */
   VArray dir_list;
 
-  say1(prompt);
-  say2("");
+  say1( prompt );
+  say2( ""     );
 
-  int pos = 0;
+  int pos  = 0;
   int page = 0;
-  int ch = 0;
+  int wch  = 0;
 
   int insert = 1;
   int firsthit = 1;
 
+  WString target = target_in;
   pos = str_len( target );
 
   //------------------------------------------------------------------
-
+int cc = 0;
   con_cshow();
-  say2( target, firsthit ? cINPUT2 : cINPUT );
+  // say2( target, firsthit ? cINPUT2 : cINPUT );
   while(1)
     {
     int mx = con_max_x() - 1;
-    VString target_out = target;
+    WString target_out = target;
     if ( (pos < page) || (pos+1 > page + mx) || (page > 0 && pos == page) )
       page = pos - mx / 2;
     if ( page < 0 ) page = 0;
@@ -103,49 +104,48 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
     str_sleft( target_out, mx );
     str_pad( target_out, -mx );
     if ( page > 0 )
-      str_set_ch( target_out, 0, '<' );
+      str_set_ch( target_out, 0, L'<' );
     if ( str_len( target ) - page > mx )
-      str_set_ch( target_out, mx-1, '>' );
+      str_set_ch( target_out, mx-1, L'>' );
 
-    say2( target_out, firsthit ? cINPUT2 : cINPUT );
+    say1(VString(cc++));
+    say2( VString( target_out ).data(), firsthit ? cINPUT2 : cINPUT );
     con_xy( pos-page+1, con_max_y() );
-
-
-    if (ch == 0) ch = con_getch();
-    if (ch == '\\') ch = '/'; /* dos hack :)) */
-    if ( ch == '/' && str_find( target, '/' ) == -1 && target[0] == '~' )
+    if (wch == 0) wch = con_getwch();
+    if ( wch == L'\\') wch = L'/'; /* dos hack :)) */
+    if ( wch == L'/' && str_find( target, L'/' ) == -1 && target[0] == L'~' )
       {
-      target = tilde_expand( target );
+      target.set( tilde_expand( VString( target ) ) );
       str_fix_path( target );
       pos = str_len( target );
-      ch = 0;
+      wch = 0;
       }
 
-    if ( ( ch == 8 || ch == KEY_BACKSPACE ) && pos > 0 )
+    if ( ( wch == 8 || wch == KEY_BACKSPACE ) && pos > 0 )
       {
       pos--;
       str_del( target, pos, 1 );
       }
     else
-    if (ch == KEY_CTRL_A && str_len( target ) > 0)
+    if ( wch == KEY_CTRL_A && str_len( target ) > 0)
       {
       int z = str_len( target )-1;
-      if ( str_get_ch(target, z) == '/' ) z--;
-      while ( z > 0 && str_get_ch(target,z) != '/' ) z--;
+      if ( str_get_ch(target, z) == L'/' ) z--;
+      while ( z > 0 && str_get_ch(target,z) != L'/' ) z--;
       z++;
       str_sleft(target,z);
       pos = z;
       }
     else
-    if ( ch == 9 && str_len( target ) > 0 )
+    if ( wch == 9 && str_len( target ) > 0 )
       {
-      int z;
+      int z = -1;
       dir_list.undef();
       VString dmain; /* main/base path */
       VString dtail; /* item that should be expanded/glob */
 
-      dmain = str_file_path( target );
-      dtail = str_file_name_ext( target );
+      dmain.set( str_file_path( target ) );
+      dtail.set( str_file_name_ext( target ) );
 
       /*
       int lastslash = str_rfind(target, '/');
@@ -163,29 +163,30 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
         }
       */
 
+      int dtlen = str_len( dtail );
+      
       __glob_gdn( dmain, dtail, dir_list, type );
 
-      z = dir_list.count()-1;
       if (dir_list.count())
         {
         if ( dir_list.count() > 1)
           {
-          int li = 0; /* counter */
-          int ll = 0; /* longest directory entry */
-          int xm = 0; /* exact match entry  */
+          int li = 0; // counter 
+//          int ll = 0; // longest directory entry 
+          int xm = 0; // exact match entry  
           for ( li = 0; li < dir_list.count(); li++ )
             {
-            int len = strlen( dir_list[li] );
-            if( len > ll )
-              ll = len;
-            VString tmp1;
-            if( dtail != str_copy( tmp1, dir_list[li], 0, str_len( dtail ) ) )
+//            int len = strlen( dir_list[li] );
+//            if( len > ll )
+//              ll = len;
+            VString current_dtail;
+            if( dtail != str_copy( current_dtail, dir_list[li], 0, dtlen ) )
               continue;
             xm = li;
             break;
             }
-          int mc = 0; /* match count        */
-          int mi = 0; /* match letter index */
+          int mc = 0; // match count        
+          int mi = 0; // match letter index 
           while(4)
             {
             mc = 0;
@@ -204,36 +205,46 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
             if ( mc != dir_list.count() )
               break;
             mi++;
-            if( mi >= ll )
-              break;
+//            if( mi >= ll )
+//              break;
             }
-          target.setn( dmain + dir_list[xm], str_len( dmain ) + mi );
+          
+          VString exact_dtail_max;
+          str_copy( exact_dtail_max, dir_list[xm], 0, mi );
+          
+          WString dmain_dir = dmain + exact_dtail_max;
           pos = str_len( target );
-          say2( target, cINPUT );
+          say2( VString( target ), cINPUT );
           con_xy( pos+1, con_max_y() );
 
           vfu_beep();
-          ch = con_getch();
-          if ( ch != 9 ) { dir_list.undef(); continue; }
+          wch = con_getwch();
+          if ( wch != 9 ) { dir_list.undef(); continue; }
           dir_list.sort();
           con_chide();
           z = vfu_menu_box( 10, 5, "Complete...", &dir_list );
           con_cshow();
-          ch = 0;
+          wch = 0;
           }
         else
-          ch = 0;
-        if ( z != -1 )
           {
-          while( str_len( target ) > 0 && target[-1] != '/' )
-            str_chop( target );
+          z = 0;
+          wch = 0;
+          }
+        if ( z >= 0 )
+          {
+          int sp = str_rfind( target, L'/' );
+          if( sp < 0 ) 
+            target.undef();
+          else
+            str_copy( target, target, 0, sp + 1 );  
           target += dir_list[z];
           }
 
         pos = str_len( target );
 
         dir_list.undef();
-        if (ch != 0) continue;
+        if ( wch != 0 ) continue;
         }
       else
         { /* no match found -- cannot complete */
@@ -241,70 +252,68 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
         }
       }
     else
-    if (ch == 13)
+    if ( wch == 13 )
       {
       res = 1;
       break;
       }
     else
-    if (ch == 27)
+    if ( wch == 27 )
       {
-      target = "";
+      target.undef();
       res = 0;
       break;
       }
-    if (ch == KEY_CTRL_U)
+    if ( wch == KEY_CTRL_U )
       {
-      target = "";
+      target.undef();
       pos = 0;
       }
     else
-    if (ch == KEY_CTRL_X)
+    if ( wch == KEY_CTRL_X )
       {
-        fname_t t;
-        if ( target[0] == '~' )
-          target = tilde_expand( target );
-        expand_path( target, t );
-        str_fix_path( t );
-        target = t;
+        if ( target[0] == L'~' )
+          target.set( tilde_expand( VString( target ) ) );
+
+        target.set( expand_path( VString( target ) ) );
+        str_fix_path( target );
         pos = str_len( target );
       }
     else
-    if ( ch >= 32 && ch <= 255 && ch != KEY_BACKSPACE ) // && pos < 70)
+    if ( wch >= 32 && wch != 8 && wch != KEY_BACKSPACE && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
       {
-      if (firsthit)
+      if( firsthit )
         {
-        target = "";
+        target.undef();
         pos = 0;
         }
-      if (!insert) str_del( target, pos, 1 );
-      str_ins_ch( target, pos, ch );
+      if ( ! insert ) str_del( target, pos, 1 );
+      str_ins_ch( target, pos, wch );
       pos++;
       } else
-    if( ch == KEY_LEFT  )
+    if( wch == KEY_WIDE(KEY_LEFT)  )
       {
       if (pos > 0)
         pos--;
       } else
-    if( ch == KEY_RIGHT )
+    if( wch == KEY_WIDE(KEY_RIGHT) )
       {
       if (pos < str_len( target ))
         pos++;
       } else
-    if ( ch == KEY_IC   ) insert = !insert; else
-    if ( ch == KEY_HOME ) pos = 0; else
-    if ( ch == KEY_END  ) pos = str_len(target); else
-    if ( ch == KEY_DC  && pos < str_len(target) )
-       str_del( target, pos, 1 ); else
-    if ( ch == KEY_NPAGE || ch == KEY_PPAGE )
+    if ( wch == KEY_WIDE(KEY_IC)   ) insert = !insert; else
+    if ( wch == KEY_WIDE(KEY_HOME) ) pos = 0; else
+    if ( wch == KEY_WIDE(KEY_END)  ) pos = str_len(target); else
+    if ( wch == KEY_WIDE(KEY_DC)  && pos < str_len(target) ) str_del( target, pos, 1 ); else
+    if ( wch == KEY_WIDE(KEY_NPAGE) || wch == KEY_WIDE(KEY_PPAGE) )
       {
       con_chide();
-      int zz = vfu_hist_menu( 5, 5, ( ch == KEY_PPAGE ) ? "Dir Entry History" : "ChDir History",
-                                    ( ch == KEY_PPAGE ) ? HID_GETDIR : HID_CHDIR );
+      int zz = vfu_hist_menu( 5, 5, ( wch == KEY_WIDE(KEY_PPAGE) ) ? "Dir Entry History" : "ChDir History",
+                                    ( wch == KEY_WIDE(KEY_PPAGE) ) ? HID_GETDIR : HID_CHDIR );
       con_cshow();
       if (zz != -1)
         {
-        const char* pc = vfu_hist_get( ( ch == KEY_PPAGE ) ? HID_GETDIR : HID_CHDIR, zz );
+        const char* pc = vfu_hist_get( ( wch == KEY_WIDE(KEY_PPAGE) ) ? HID_GETDIR : HID_CHDIR, zz );
         if ( pc )
           {
           target = pc;
@@ -312,16 +321,16 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
           }
         }
       }
-    ch = 0;
+    wch = 0;
     firsthit = 0;
     }
   con_chide();
 
   //------------------------------------------------------------------
   str_cut_spc( target );
-  if ( res == 1 && target[0] == '~' )
+  if ( res == 1 && target[0] == L'~' )
     {
-    target = tilde_expand( target );
+    target.set( tilde_expand( VString( target ) ) );
     str_fix_path( target );
     }
   /*
@@ -329,7 +338,7 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
   leaveok(stdscr, TRUE);
   #endif
   */
-  if ( res == 1 && str_len( target ) > 0 && should_exist && type == 'D' && !dir_exist( target ))
+  if ( res == 1 && str_len( target ) > 0 && should_exist && type == 'D' && !dir_exist( VString( target ) ))
     {
     vfu_beep();
     int ch = tolower( vfu_ask( "Directory does not exist! Create? "
@@ -342,28 +351,31 @@ int vfu_get_dir_name( const char *prompt, VString &target, int should_exist, int
       }
     else
     if ( ch == 13 )
-       if (make_path( target ))
+       if ( make_path( VString( target ) ))
          {
          if(tolower(
             vfu_ask( "Cannot create path! ( ESC=cancel, C=continue-anyway )",
             "\033Cc" )) == 27)
             {
             res = 0;
-            target = "";
+            target.undef();
             }
          }
     }
 
   say1(" ");
   say2(" ");
-  if ( str_len( target ) > 0)
-    {
-    if( file_is_dir( target ) )
-      str_fix_path( target );
-    vfu_hist_add( HID_GETDIR, target );
-    }
 
   str_cut_spc( target );
+
+  if ( str_len( target ) > 0 )
+    {
+    if( file_is_dir( VString( target ) ) )
+      str_fix_path( target );
+    vfu_hist_add( HID_GETDIR, VString( target ) );
+    }
+
+  target_in = target;
 
   ASSERT( res == 0 || res == 1 );
   return res;
@@ -782,12 +794,11 @@ void tree_view()
   if ( new_pos == -1 )
     new_pos = 0;
 
-  BSet set; /* used for searching */
-  set.set_range1( 'a', 'z' );
-  set.set_range1( 'A', 'Z' );
-  set.set_range1( '0', '9' );
-  set.set_str1( "._-~" );
-  set.set_str1( "?*>[]" );
+  VString search_set;
+  str_add_ch_range( search_set, 'a', 'z' );
+  str_add_ch_range( search_set, 'A', 'Z' );
+  str_add_ch_range( search_set, '0', '9' );
+  search_set.cat( "._-~?*>[]" );
 
   ScrollPos scroll;
   scroll.set_min_max( 0, dir_tree.count()-1 );
@@ -807,7 +818,7 @@ void tree_view()
         str = "";
         say1( "Enter search pattern: ( use TAB to advance )" );
         key = con_getch();
-        while( set.in( key ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
+        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_BACKSPACE || key == 9 )
           {
           if ( key == 8 || key == KEY_BACKSPACE )
             str_trim_right( str, 1 );
@@ -1144,7 +1155,7 @@ VString DirSizeInfo::str()
   sprintf( str, "Dirs: %s | Files: %s | Links: %s | Size: %s ( %s )", ds.data(), fs.data(), ls.data(), fsize_fmt( size, opt.use_gib_usage ).data(), ts.data() );
   
   return str;
-};
+}
 
 fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSizeInfo* size_info = NULL )
 {

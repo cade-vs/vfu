@@ -106,8 +106,6 @@
   VString filename_size_cache;
   VString filename_ffr; /* file find results */
 
-  char TF::_full_name[MAX_PATH];
-
 /*######################################################################*/
 
   int do_draw;
@@ -116,20 +114,22 @@
 /*######################################################################*/
 
 /*
-  Message issues
+   messages printing
 */
 
-char say_buf[1024];
-VString say_str;
 void say( int line, int attr, const char* format, ... )
 {
+  char say_buf[4096];
   ASSERT( line == 1 || line == 2 );
+  
   va_list vlist;
   va_start( vlist, format );
   vsnprintf( say_buf, sizeof(say_buf), format, vlist );
   va_end( vlist );
-  say_str = str_dot_reduce( say_buf, con_max_x()-1 );
-  con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), say_str, attr );
+
+  WString ws = say_buf;
+  VString os = str_dot_reduce( ws, con_max_x()-1 );
+  con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), os, attr );
   con_ce( attr );
 }
 
@@ -178,14 +178,16 @@ void say2center(const char *a_str, int attr )
 
 void TF::reset() /* reset -- NULL all fields */
 {
-  _name = _name_ext = _ext = NULL;
+  _name.undef();
+  _name_ext.undef();
+  _ext.undef();;
   memset( &_st, 0, sizeof(_st) );
   _type_str[0] = 0;
   _is_link = 0;
   _is_dir = 0;
   strcpy( _mode_str, MODE_OFF );
   _size = -1; /* unknown -- get from stat? */
-  _view = NULL;
+  _view.undef();
   _color = cPLAIN;
   sel = 0;
 }
@@ -210,8 +212,6 @@ TF::TF( const char* a_name, const struct stat* a_stat, int a_is_link )
 
 TF::~TF()
 {
-  if ( _name ) delete [] _name;
-  if ( _view ) delete [] _view;
   reset();
 }
 
@@ -222,44 +222,35 @@ const char* TF::full_name( int fix )
   ASSERT( _name );
 
   if ( _name[0] == '/' )
-    {
-    strcpy( _full_name, _name );
-    }
+    _full_name = _name;
   else
-    {
     if ( work_mode == WM_ARCHIVE )
-      strcpy( _full_name, archive_path );
+      _full_name = archive_path;
     else
-      strcpy( _full_name, work_path );
-    strcat( _full_name, _name );
-    }
+      _full_name = work_path;
+    _full_name += _name;
   if ( fix && _is_dir )
-    strcat( _full_name, "/" ); /* i.e. str_fix_path() */
-  return _full_name;
+    _full_name += "/"; /* i.e. str_fix_path() */
+  return _full_name.data();
 }
 
 /*-----------------------------------------------------------------------*/
 
 void TF::set_name( const char* a_new_name )
 {
-  if ( _name ) delete [] _name;
-  _name = new char[ strlen(a_new_name) + 1 ];
-  ASSERT( _name ); /* this is run-time err but for now will be asserted */
-  strcpy( _name, a_new_name );
+  _name = a_new_name;
 
   int last_slash = str_rfind( _name, '/' );
   if ( last_slash == -1 )
     _name_ext = _name;
   else
-    _name_ext = _name + last_slash + 1;
+    str_copy( _name_ext, _name, last_slash + 1 );
 
   int last_dot = str_rfind( _name, '.' );
-  if ( last_dot == -1 || last_dot == 0 ) /* no dot or dot-file (hidden) */
-    _ext = _name + strlen( _name );
+  if ( last_dot == -1 || last_dot == 0 )
+    _ext = ""; /* no dot or dot-file (hidden) */
   else
-    _ext = _name + last_dot;
-
-  //_color = get_item_color( this ); /* this is duplicated here and in update_stat() */
+    str_copy( _ext, _name, last_dot ); /* including leading dot */
 
   drop_view();
 }
@@ -284,18 +275,15 @@ int TF::color()
 
 void TF::drop_view()
 {
-  if ( ! _view ) return;
-  delete [] _view;
-  _view = NULL;
+  _view.undef();
 }
 
 /*-----------------------------------------------------------------------*/
 
 const char* TF::view()
 {
-  if ( ! _view ) refresh_view();
-  ASSERT( _view );
-  return (const char*)_view;
+  if ( str_len( _view ) == 0 ) refresh_view();
+  return _view.data();
 }
 
 /*-----------------------------------------------------------------------*/
@@ -379,30 +367,28 @@ void TF::refresh_view()
   #endif
 
   /* the three space separator below is for the tag and selection marks `>>#' */
-  VString view;
+  VString  view;
   view = view + stmode + stowner + stgroup + sttime + stsize + sttype + "   " + name_view;
 
+  WString wview;
+  wview.set_failsafe( view );
+
   int x = con_max_x() - 1; // 1 char for scroller, FIXME: TODO: should be optional
-  if ( str_len( view ) > x )
-    str_sleft( view, x );
+  if ( str_len( wview ) > x )
+    {
+    str_sleft( wview, x -1 );
+    wview += L">";
+    }
   else
-    str_pad( view, - x );
-
-  if ( _view ) delete [] _view;
-  _view = new char[ con_max_x() + 1 ]; /* +1 for the zero :) */
-
-  strcpy( _view, view );
-
-  ASSERT( _view );
+    str_pad( wview, - x ); // +1 for the scroller
+  
+  _view = wview;
 }
 
 /*-----------------------------------------------------------------------*/
 
 void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
 {
-  ASSERT( _name );
-  ASSERT( _name_ext );
-  ASSERT( _ext );
   if ( a_new_stat )
     memcpy( &_st, a_new_stat, sizeof(_st) );
   else
@@ -513,7 +499,11 @@ void vfu_init()
   char t[MAX_PATH];
 
   if( expand_path( "." ) == "" ) 
-    chdir( "/" );
+    if( chdir( "/" ) )
+      {
+      say1( "Cannot chdir to: /" );
+      say2errno();
+      }
 
   work_mode = WM_NORMAL;
   if( ! getcwd( t, sizeof(t) ) )
@@ -699,7 +689,11 @@ void vfu_init()
 
 void vfu_exit_path( const char *a_path )
 {
-  chdir( a_path );
+  if( chdir( a_path ) )
+    {
+    say1( VString( "Cannot chdir to: " ) + a_path );
+    say2errno();
+    }
 
   #ifdef _TARGET_GO32_
   return; // this is enough under DOS
@@ -760,7 +754,6 @@ void vfu_run()
   say2center( CONTACT );
 
   /* int oldFLI = -1; // quick view */
-  int ch = 0;
   while (4)
     {
     if (do_draw)
@@ -786,115 +779,116 @@ void vfu_run()
     */
     show_pos( FLI+1, files_list_count() ); /* FIXME: should this be in vfu_redraw()? */
 
-    ch = con_getch();
+    wchar_t wch = con_getwch();
 
-    if( ch == 0 || ch == KEY_RESIZE ) ch = KEY_CTRL_L;
-    if ( ch >= 'A' && ch <= 'Z' ) ch = tolower( ch );
+    if( wch == 0 || wch == KEY_WIDE(KEY_RESIZE) ) wch = KEY_CTRL_L;
+    if ( wch >= 'A' && wch <= 'Z' ) wch = towlower( wch );
     say1( "" );
     if ( user_id_str == "root" )
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
     else
       say2( "" );
+    say( 1, cMESSAGE, "key/wch: %lX", wch );
 
-    if ( work_mode == WM_NORMAL || work_mode == WM_ARCHIVE ) switch (ch)
+    if ( work_mode == WM_NORMAL || work_mode == WM_ARCHIVE ) switch (wch)
       { /* actually this is ANY work_mode (since there are two modes only) */
-      case '1'       :
-      case '2'       :
-      case '3'       :
-      case '4'       :
-      case '5'       :
-      case '6'       :
-      case '7'       :
-      case '8'       :
-      case '0'       : vfu_toggle_view_fields( ch ); break;
+      case L'1'       :
+      case L'2'       :
+      case L'3'       :
+      case L'4'       :
+      case L'5'       :
+      case L'6'       :
+      case L'7'       :
+      case L'8'       :
+      case L'0'       : vfu_toggle_view_fields( wch ); break;
 
-      case '.'       : vfu_toggle_view_fields( ch );
-                       vfu_rescan_files( 0 ); break;
+      case L'.'       : vfu_toggle_view_fields( wch );
+                        vfu_rescan_files( 0 ); break;
 
-      case 's'       : vfu_inc_search( 0 ); break;
-      case KEY_ALT_S : vfu_inc_search( 1 ); break;
+      case L's'       : vfu_inc_search( 0 ); break;
+      case KEY_WIDE(KEY_ALT_S) : vfu_inc_search( 1 ); break;
 
-      case KEY_CTRL_L: do_draw = 3; break;
+      case KEY_CTRL_L : do_draw = 3; break;
 
-      case 'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
+      case L'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
 
-      case KEY_ALT_X :
-      case 'x'       : if( vfu_exit( startup_path ) == 0 ) return; break;
+      case KEY_WIDE(KEY_ALT_X) :
+      case L'x'       : if( vfu_exit( startup_path ) == 0 ) return; break;
 
       case 27        : if( vfu_exit( NULL ) == 0 ) return; break;
 
-      case KEY_UP    : vfu_nav_up(); break;
-      case KEY_DOWN  : vfu_nav_down(); break;
-      case KEY_PPAGE : vfu_nav_ppage(); break;
-      case KEY_NPAGE : vfu_nav_npage(); break;
+      case KEY_WIDE(KEY_UP)    : vfu_nav_up(); break;
+      case KEY_WIDE(KEY_DOWN)  : vfu_nav_down(); break;
+      case KEY_WIDE(KEY_PPAGE) : vfu_nav_ppage(); break;
+      case KEY_WIDE(KEY_NPAGE) : vfu_nav_npage(); break;
 
-      case KEY_CTRL_A    :
-      case KEY_HOME  : vfu_nav_home(); break;
-      case KEY_CTRL_E    :
-      case KEY_END   : vfu_nav_end(); break;
+      case KEY_CTRL_A          :
+      case KEY_WIDE(KEY_HOME)  : vfu_nav_home(); break;
+      case KEY_CTRL_E          :
+      case KEY_WIDE(KEY_END)   : vfu_nav_end(); break;
 
-      case 'h' : vfu_help(); break;
+      case L'h' : vfu_help(); break;
 
-      case 'f'        : vfu_change_file_mask( NULL ); break;
+      case L'f'        : vfu_change_file_mask( NULL ); break;
       case KEY_CTRL_F : vfu_change_file_mask( "*" ); break;
 
       case KEY_CTRL_D : tree_view(); break;
-      case KEY_ALT_R  : vfu_read_files_menu(); break;
+      case KEY_WIDE(KEY_ALT_R)  : vfu_read_files_menu(); break;
 
       /* this will be in alt+r menu
       case 'R' : con_cs(); vfu_refresh_all_views(); do_draw = 1; break;
       */
       case KEY_CTRL_R : vfu_rescan_files( 1 ); break;
-      case 'r'        : vfu_rescan_files( 0 ); break;
+      case L'r'        : vfu_rescan_files( 0 ); break;
 
-      case ' ' : vfu_nav_select(); break;
+      case L' ' : vfu_nav_select(); break;
 
   #ifdef _TARGET_UNIX_
       case KEY_BACKSPACE :
   #endif
       case 8   :
-      case '-' : vfu_action_minus(); break;
+      case L'-' : vfu_action_minus(); break;
 
-      case KEY_ALT_BACKSPACE :
-      case KEY_ALT_MINUS :
+      case KEY_WIDE(KEY_ALT_BACKSPACE) :
+      case KEY_WIDE(KEY_ALT_MINUS) :
                  vfu_action_minus( 2 ); break;
 
       case 13  :
-      case '+' :
-      case '=' : vfu_action_plus( ch ); break;
+      case L'+' :
+      case L'=' : vfu_action_plus( wch ); break;
 
-      case KEY_LEFT  : if (opt.lynx_navigation) vfu_action_minus(); break;
-      case KEY_RIGHT : if (opt.lynx_navigation)
-                         vfu_action_plus( '+' );
+      case KEY_WIDE(KEY_LEFT)  : if (opt.lynx_navigation) vfu_action_minus(); break;
+      case KEY_WIDE(KEY_RIGHT) : if (opt.lynx_navigation)
+                         vfu_action_plus( L'+' );
                        else
                          if ( work_mode == WM_NORMAL )
                            vfu_rename_file_in_place();
                        break;
 
-      case 'd' : vfu_chdir( NULL ); break;
-      case KEY_ALT_D : vfu_chdir_history(); break;
+      case L'd' : vfu_chdir( NULL ); break;
+      case KEY_WIDE(KEY_ALT_D) : vfu_chdir_history(); break;
 
-      case KEY_ALT_EQ :
-      case '>' : opt.long_name_view = !opt.long_name_view;
+      case KEY_WIDE(KEY_ALT_EQ) :
+      case L'>' : opt.long_name_view = !opt.long_name_view;
                  vfu_drop_all_views();
                  do_draw = 1;
                  break;
 
-      case 'a' : vfu_arrange_files(); break;
+      case L'a' : vfu_arrange_files(); break;
 
-      case 'g' : vfu_global_select(); break;
+      case L'g' : vfu_global_select(); break;
 
-      case 'o' : vfu_options(); break;
+      case L'o' : vfu_options(); break;
 
-      case 'v' : vfu_edit_conf_file(); break;
+      case L'v' : vfu_edit_conf_file(); break;
 
-      case '!' :
-      case '?' : con_cs();
+      case L'!' :
+      case L'?' : con_cs();
                  vfu_shell( shell_prog, 0 );
                  do_draw = 3;
                  break;
 
-      case 'u'        : vfu_user_menu(); break;
+      case L'u'        : vfu_user_menu(); break;
 
 
       /* not documented unless here :) */
@@ -910,39 +904,39 @@ void vfu_run()
         break;
         }
 
-      case '*' : FGO( rand() % files_list_count() );
+      case L'*' : FGO( rand() % files_list_count() );
                  do_draw = 1;
                  break;
 
-      case 'z'        : vfu_directories_sizes(  0  ); break;
-      case KEY_ALT_Z  : vfu_directories_sizes( 'A' ); break;
+      case L'z'        : vfu_directories_sizes(  0  ); break;
+      case KEY_WIDE(KEY_ALT_Z)  : vfu_directories_sizes( 'A' ); break;
       case KEY_CTRL_Z : vfu_directories_sizes( 'Z' ); break;
       }
-    if ( work_mode == WM_ARCHIVE ) switch (ch)
+    if ( work_mode == WM_ARCHIVE ) switch (wch)
       {
-      case 'c' : vfu_extract_files( 0 ); break;
-      case KEY_ALT_C : vfu_extract_files( 1 ); break;
+      case L'c' : vfu_extract_files( 0 ); break;
+      case KEY_WIDE(KEY_ALT_C) : vfu_extract_files( 1 ); break;
       }
-    if ( work_mode == WM_NORMAL ) switch (ch)
+    if ( work_mode == WM_NORMAL ) switch (wch)
       {
-      case 'b' :
-      case KEY_ALT_B : if ( ch == 'b' && sel_count > 0 )
+      case L'b' :
+      case KEY_WIDE(KEY_ALT_B) : if ( wch == L'b' && sel_count > 0 )
                          vfu_browse_selected_files();
                        else
                          {
                          if ( files_list_count() > 0 )
-                           vfu_browse( files_list_get(FLI)->name(), ch == KEY_ALT_B );
+                           vfu_browse( files_list_get(FLI)->name(), wch == KEY_WIDE(KEY_ALT_B) );
                          else
                            say1( "No files" );
                          }
                        break;
 
-      case 'n' : vfu_file_find( 0 ); break;
-      case KEY_ALT_N  : vfu_file_find( 1 ); break;
+      case L'n' : vfu_file_find( 0 ); break;
+      case KEY_WIDE(KEY_ALT_N)  : vfu_file_find( 1 ); break;
 
-      case '~' : vfu_chdir( home_path ); break;
+      case L'~' : vfu_chdir( home_path ); break;
 
-      case '/' : vfu_command(); break;
+      case L'/' : vfu_command(); break;
 
       case 'i' : if ( files_list_count() > 0 )
                    vfu_edit( files_list_get(FLI)->name() );
@@ -951,29 +945,29 @@ void vfu_run()
                  break;
 
       case 'm'        : vfu_copy_files(sel_count == 0, CM_MOVE); break;
-      case KEY_ALT_M  : vfu_copy_files(1, CM_MOVE); break;
+      case KEY_WIDE(KEY_ALT_M)  : vfu_copy_files(1, CM_MOVE); break;
 
       case 'c'        : vfu_copy_files(sel_count == 0, CM_COPY); break;
-      case KEY_ALT_C  : vfu_copy_files(1, CM_COPY); break;
+      case KEY_WIDE(KEY_ALT_C)  : vfu_copy_files(1, CM_COPY); break;
 
       case 'l'        : vfu_copy_files(sel_count == 0, CM_LINK); break;
-      case KEY_ALT_L  : vfu_copy_files(1, CM_LINK); break;
+      case KEY_WIDE(KEY_ALT_L)  : vfu_copy_files(1, CM_LINK); break;
 
       case 'e'        : vfu_erase_files(sel_count == 0); break;
-      case KEY_ALT_E  : vfu_erase_files(1); break;
+      case KEY_WIDE(KEY_ALT_E)  : vfu_erase_files(1); break;
 
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
-      case KEY_ALT_J  : vfu_jump_to_mountpoint( 1 ); break;
+      case KEY_WIDE(KEY_ALT_J)  : vfu_jump_to_mountpoint( 1 ); break;
 
-      case KEY_ALT_1  : bookmark_goto( '1' ); break;
-      case KEY_ALT_2  : bookmark_goto( '2' ); break;
-      case KEY_ALT_3  : bookmark_goto( '3' ); break;
-      case KEY_ALT_4  : bookmark_goto( '4' ); break;
-      case KEY_ALT_5  : bookmark_goto( '5' ); break;
-      case KEY_ALT_6  : bookmark_goto( '6' ); break;
-      case KEY_ALT_7  : bookmark_goto( '7' ); break;
-      case KEY_ALT_8  : bookmark_goto( '8' ); break;
-      case KEY_ALT_9  : bookmark_goto( '9' ); break;
+      case KEY_WIDE(KEY_ALT_1)  : bookmark_goto( '1' ); break;
+      case KEY_WIDE(KEY_ALT_2)  : bookmark_goto( '2' ); break;
+      case KEY_WIDE(KEY_ALT_3)  : bookmark_goto( '3' ); break;
+      case KEY_WIDE(KEY_ALT_4)  : bookmark_goto( '4' ); break;
+      case KEY_WIDE(KEY_ALT_5)  : bookmark_goto( '5' ); break;
+      case KEY_WIDE(KEY_ALT_6)  : bookmark_goto( '6' ); break;
+      case KEY_WIDE(KEY_ALT_7)  : bookmark_goto( '7' ); break;
+      case KEY_WIDE(KEY_ALT_8)  : bookmark_goto( '8' ); break;
+      case KEY_WIDE(KEY_ALT_9)  : bookmark_goto( '9' ); break;
       case '`'        : bookmark_goto(-1 ); break;
 
       case 9          : vfu_edit_entry(); break;
@@ -988,12 +982,12 @@ void vfu_run()
       */
 
       }
-    if (  ( KEY_F1 <= ch && ch <= KEY_F10)
-       || ( KEY_SH_F1 <= ch && ch <= KEY_SH_F10)
-       || ( KEY_ALT_F1 <= ch && ch <= KEY_ALT_F10)
-       || ( KEY_CTRL_F1 <= ch && ch <= KEY_CTRL_F10)
-       || ( ch == KEY_IC) )
-           vfu_user_external_exec( ch );
+    if (  ( KEY_WIDE(KEY_F1) <= wch && wch <= KEY_WIDE(KEY_F10) )
+       || ( KEY_WIDE(KEY_SH_F1) <= wch && wch <= KEY_WIDE(KEY_SH_F10) )
+       || ( KEY_WIDE(KEY_ALT_F1) <= wch && wch <= KEY_WIDE(KEY_ALT_F10) )
+       || ( KEY_WIDE(KEY_CTRL_F1) <= wch && wch <= KEY_WIDE(KEY_CTRL_F10) )
+       || ( wch == KEY_WIDE(KEY_IC)) )
+           vfu_user_external_exec( wch );
     }
 }
 
@@ -1106,28 +1100,28 @@ void vfu_signal( int sig )
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_toggle_view_fields( int ch )
+void vfu_toggle_view_fields( wchar_t wch )
 {
-  switch( ch )
+  switch( wch )
     {
-    case '1' : opt.f_mode = !opt.f_mode; break;
-    case '2' : opt.f_owner = !opt.f_owner; break;
-    case '3' : opt.f_group = !opt.f_group; break;
-    case '4' : opt.f_time = !opt.f_time; break;
-    case '5' : opt.f_size = !opt.f_size; break;
-    case '6' : opt.f_type = !opt.f_type; break;
-    case '7' : opt.f_time_type++;
+    case L'1' : opt.f_mode = !opt.f_mode; break;
+    case L'2' : opt.f_owner = !opt.f_owner; break;
+    case L'3' : opt.f_group = !opt.f_group; break;
+    case L'4' : opt.f_time = !opt.f_time; break;
+    case L'5' : opt.f_size = !opt.f_size; break;
+    case L'6' : opt.f_type = !opt.f_type; break;
+    case L'7' : opt.f_time_type++;
                if (opt.f_time_type > 2)
                  opt.f_time_type = 0;
                break;
-    case '8' : opt.f_mode  =
+    case L'8' : opt.f_mode  =
                opt.f_owner =
                opt.f_group =
                opt.f_time  =
                opt.f_size  =
                opt.f_type  = 1; break;
-    case '0' : opt.long_name_view = !opt.long_name_view; break;
-    case '.' : opt.show_hidden_files = !opt.show_hidden_files; break;
+    case L'0' : opt.long_name_view = !opt.long_name_view; break;
+    case L'.' : opt.show_hidden_files = !opt.show_hidden_files; break;
     default  : return; /* cannot be reached really */
     }
   vfu_drop_all_views();
@@ -1152,7 +1146,7 @@ void vfu_shell( const char* a_command, const char* a_options )
     VString sl = shell_line;
     sl = str_dot_reduce( sl, con_max_x() - 1 );
     say2( sl );
-    con_getch();
+    con_getwch( NULL );
     }
 
   if ( str_find( o, 'n' ) == -1 ) /* [n]o console suspend */
@@ -1183,7 +1177,11 @@ void vfu_shell( const char* a_command, const char* a_options )
     con_cs();
     }
 
-  chdir( work_path ); /* in case SHELL changed directory... (DOS only :)) */
+  if( chdir( work_path ) ) /* in case SHELL changed directory... (DOS only :)) */
+    {
+    say1( VString( "Cannot chdir to: " ) + work_path );
+    say2errno();
+    }
 
   if ( str_find( o, 'r' ) != -1 ) vfu_rescan_files();
 
@@ -1363,7 +1361,7 @@ void vfu_browse( const char *fname, int no_filters )
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_action_plus( int key )
+void vfu_action_plus( wchar_t wch )
 {
   if ( files_list_count() == 0 ) return;
 
@@ -1392,7 +1390,7 @@ void vfu_action_plus( int key )
         vfu_read_files();
         say1( "ARCHIVE mode activated ( some keys/commands are disabled! )" );
         } else
-      if ( key == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
+      if ( wch == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
         vfu_user_external_exec( KEY_ENTER );
       else
         vfu_browse( fi->name() );
@@ -1408,7 +1406,7 @@ void vfu_action_plus( int key )
       vfu_read_files();
       }
     else
-    if ( key == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
+    if ( wch == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
         vfu_user_external_exec( KEY_ENTER );
     else
       { /* file */
@@ -1906,7 +1904,7 @@ void vfu_global_select()
 
 /*--------------------------------------------------------------------------*/
 
-int vfu_user_external_find( int key, const char* ext, const char* type, VString *shell_line )
+int vfu_user_external_find( wchar_t key, const char* ext, const char* type, VString *shell_line )
 {
   VArray split;
   VString str;
@@ -1941,7 +1939,7 @@ int vfu_user_external_find( int key, const char* ext, const char* type, VString 
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_user_external_exec( int key )
+void vfu_user_external_exec( wchar_t key )
 {
   if ( files_list_count() == 0 )
     {
@@ -1962,9 +1960,7 @@ void vfu_user_external_exec( int key )
     }
   else
     {
-    char t[128];
-    snprintf( t, sizeof(t), "No user external defined for this key and extension (%d,%s)", key, fi->ext() );
-    say1( t );
+    say( 1, cNORMAL, "No user external defined for this key and extension (%lx,%s)", key, fi->ext() );
     }
 }
 
@@ -2028,7 +2024,7 @@ void vfu_tools()
                      {
                      say1( "Cannot create directory:" );
                      say2( ms[z] );
-                     con_getch();
+                     con_getwch( NULL );
                      err++;
                      }
                  if ( err == 0 ) say1( "MKDIR: ok." );
@@ -2118,11 +2114,12 @@ void vfu_rename_file_in_place()
   int y = (file_list_index.pos() - file_list_index.page()) + 4;
   int x = tag_mark_pos + 3;
 
-  VString str = fi->name();
-
-  if(TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 4, &str ) &&
-     strcmp( fi->name(), str.data() )
-    )
+  WString www = fi->name();
+  TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 4, www );
+  // FIXME: check return res
+  VString str = www;
+  
+  if( str != fi->name() )
     {
     if ( file_exist(str) )
       say1( "Cannot rename: destination name exists!" );
@@ -2357,7 +2354,7 @@ void vfu_edit_entry( )
           int z = vfu_get_str( "", str, HID_OMODE );
           str_cut_spc( str );
           mode_t m;
-          int im;
+          unsigned int im;
           sscanf( str, "%o", &im );
           m = im;
           file_get_mode_str( m, new_mode );

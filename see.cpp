@@ -467,11 +467,14 @@
     {
     sprintf( sss, "x%" FMT_OFF_T "X", fpos );
     status( " Goto pos: " );
-    if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
+    WString www = sss;
+    if ( ! TextInput( 15, opt->ymax, "", 20, 20, www ) )
       {
       draw();
       return;
       }
+    sss = www;
+    
     off_t new_pos = fpos;
     str_cut_spc( sss );
     str_up( sss );
@@ -494,11 +497,13 @@
       }
     sprintf( sss, "%" FMT_OFF_T "d", line);
     status( " Goto line: " );
-    if (!TextInput( 15, opt->ymax, "", 20, 20, &sss ))
+    WString www = sss;
+    if (!TextInput( 15, opt->ymax, "", 20, 20, www ))
       {
       draw();
       return;
       }
+    sss = www;  
     off_t new_line = line;
     str_cut_spc( sss );
     str_up( sss );
@@ -597,12 +602,13 @@
   VString sss;
   status( "Find %s: ", opts );
   int ii = str_len(sss)+2;
-  sss = opt->last_search;
-  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, &sss ))
+  WString www = opt->last_search;
+  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ))
     {
     draw();
     return 1;
     }
+  sss = www;  
   str_sleft( sss, MAX_SEARCH_LEN );
   strcpy( opt->last_search, sss );
   strcpy( opt->last_opt, opts );
@@ -1529,12 +1535,13 @@
   VString sss = "Command to pipe in: ";
   int ii = str_len( sss )+2;
   status( sss );
-  sss = opt->last_pipe_cmd;
-  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, &sss ))
+  WString www = opt->last_pipe_cmd;
+  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ))
     {
     draw();
     return;
     }
+  sss = www;  
   str_sleft( sss, MAX_SEARCH_LEN );
   strcpy( opt->last_pipe_cmd, sss );
   FILE* f = popen( opt->last_pipe_cmd, "r" );
@@ -1605,12 +1612,13 @@
   VString sss;
   status( "Find %s: ", no_case?"(no case)":"(case sense)" );
   int ii = str_len(sss)+2;
-  sss = opt->last_search;
-  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, &sss ))
+  WString www = opt->last_search;
+  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ))
     {
     draw();
     return 1;
     }
+  sss = www;  
   str_sleft( sss, MAX_SEARCH_LEN );
   strcpy( opt->last_search, sss );
   opt->no_case = no_case;

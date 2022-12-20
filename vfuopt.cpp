@@ -209,9 +209,9 @@ int set_splitter( const char *line, const char *keyword, VArray &splitter )
 
 int key_by_name( const char* key_name )
 {
-  if ( strcmp( key_name, "IC"     ) == 0 ) return KEY_IC;
-  if ( strcmp( key_name, "INS"    ) == 0 ) return KEY_IC;
-  if ( strcmp( key_name, "INSERT" ) == 0 ) return KEY_IC;
+  if ( strcmp( key_name, "IC"     ) == 0 ) return KEY_WIDE(KEY_IC);
+  if ( strcmp( key_name, "INS"    ) == 0 ) return KEY_WIDE(KEY_IC);
+  if ( strcmp( key_name, "INSERT" ) == 0 ) return KEY_WIDE(KEY_IC);
   if ( strcmp( key_name, "ENTER"  ) == 0 ) return KEY_ENTER;
   if ( strcmp( key_name, "RETURN" ) == 0 ) return KEY_ENTER;
   /*
@@ -222,13 +222,13 @@ int key_by_name( const char* key_name )
   if ( reFKEYS.m( key_name ) )
     {
     if ( toupper(key_name[0]) == 'F' )
-      return KEY_F1 + atoi( key_name + 1 ) - 1; else
+      return KEY_WIDE(KEY_F1) + atoi( key_name + 1 ) - 1; else
     if ( toupper(key_name[0]) == '@' )
-      return KEY_ALT_F1 + atoi( key_name + 2 ) - 1; else
+      return KEY_WIDE(KEY_ALT_F1) + atoi( key_name + 2 ) - 1; else
     if ( toupper(key_name[0]) == '^' )
-      return KEY_CTRL_F1 + atoi( key_name + 2 ) - 1; else
+      return KEY_WIDE(KEY_CTRL_F1) + atoi( key_name + 2 ) - 1; else
     if ( toupper(key_name[0]) == '#' )
-      return KEY_SH_F1 + atoi( key_name + 2 ) - 1;
+      return KEY_WIDE(KEY_SH_F1) + atoi( key_name + 2 ) - 1;
     }
   return 0;
 }

@@ -10,6 +10,8 @@
 #ifndef _SEE_H_
 #define _SEE_H_
 
+#include <vstring.h>
+#include <wstring.h>
 #include <vslib.h>
 
 #define SEE_VERSION "4.10"
