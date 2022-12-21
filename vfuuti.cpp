@@ -457,7 +457,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 {
   if ( x == -1 ) x = 1;
   if ( y == -1 ) y = con_max_y();
-  int len = con_max_x() - 3 - x;
+  int len = con_max_x() - x;
 
   /* FIXME: this is not correct if x and y are specified */
   if ( prompt && prompt[0] )
@@ -469,7 +469,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
     target = vfu_hist_get( hist_id, 0 );
   
   WString www = target;
-  int r = TextInput( x, y, "", len, len, www, vfu_get_str_history );
+  int r = TextInput( x, y, "", 1024, len, www, vfu_get_str_history );
   target = www;
 
   say1( "" );

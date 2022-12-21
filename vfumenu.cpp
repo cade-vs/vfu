@@ -37,7 +37,7 @@ int vfu_menu_box( int x, int y, const wchar_t *title, WArray *wa )
 
 int vfu_menu_box( const wchar_t* title, const wchar_t* menustr, int row )
 {
-  WArray wmb = str_split( menustr, L"," );
+  WArray wmb = str_split( L",", menustr );
   if ( row == -1 ) row = con_max_y() - 5 - wmb.count();
   return vfu_menu_box( 50, row, title, &wmb );
 }

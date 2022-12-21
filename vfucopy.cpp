@@ -241,7 +241,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
       VString diff = vfu_temp();
       VString cmd;
       cmd = shell_diff + " " + shell_escape( dst ) + " " + shell_escape( src ) + " > " + diff;
-      if(system( cmd ) < 0)
+      if(system( cmd ) != 0)
         {
         say1( "Cannot execute command: " + cmd );
         say2errno();
@@ -1043,7 +1043,9 @@ void vfu_copy_files( int a_one, int a_mode )
   if ( copy_info.current_size > 0 )
     { 
     /* i.e. only if there *are* some bytes copied :) */
-    str = copy_info.description + " DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
+    str = copy_info.description;
+    str += " DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
+    str += " SKIPPED:" + vfu_str_comma( copy_info.skipped_count );
     }
   else
     {

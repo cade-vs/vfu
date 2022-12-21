@@ -2113,7 +2113,7 @@ void vfu_rename_file_in_place()
   int x = tag_mark_pos + 3;
 
   WString www = fi->name();
-  TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 4, www );
+  TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 3, www );
   // FIXME: check return res
   VString str = www;
   
