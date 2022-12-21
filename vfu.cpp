@@ -844,7 +844,7 @@ void vfu_run()
       case L' ' : vfu_nav_select(); break;
 
   #ifdef _TARGET_UNIX_
-      case KEY_BACKSPACE :
+      case KEY_WIDE(KEY_BACKSPACE) :
   #endif
       case 8   :
       case L'-' : vfu_action_minus(); break;
@@ -2919,8 +2919,8 @@ void vfu_read_files_menu()
 
 void vfu_inc_search( int use_last_one )
 {
-  VString str;
-  int key;
+  WString str;
+  wchar_t wch;
   if( use_last_one && last_inc_search == "" )
     use_last_one = 0;
   if( use_last_one && last_inc_search != "" )
@@ -2930,27 +2930,27 @@ void vfu_inc_search( int use_last_one )
   if( use_last_one )
     {
     say1( "Incremental" + no_case_opt_str + "search pattern: ( ALT+S for next match )" );
-    key = 9;
+    wch = 9;
     }
   else
     {
     say1( "Enter incremental" + no_case_opt_str + "search pattern: ( TAB for next match )" );
-    key = con_getch();
+    wch = con_getwch();
     }
-  VRegexp size_re("^size:(\\d+)$");
-  while( ( key >= 32 && key <= 255 ) || key == 8 || key == KEY_BACKSPACE || key == 9 )
+  WRegexp size_re( L"^size:(\\d+)$" ); // TODO: allow "size:1024+"
+  while( ( wch >= 32 && ( ! KEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) || wch == 9 )
     {
-    if ( key == 8 || key == KEY_BACKSPACE )
+    if ( wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) )
       str_trim_right( str, 1 );
     else
-    if ( key != 9 )
-      str_add_ch( str, key );
-    say2( str );
+    if ( wch != 9 )
+      str_add_ch( str, wch );
+    say2( VString( str ) );
 
-    if ( files_list_count() == 0 ) { key = con_getch(); continue; }
+    if ( files_list_count() == 0 ) { wch = con_getwch(); continue; }
 
     int z;
-    if ( key == 9 )
+    if ( wch == 9 )
       {
       z = FLI+1;
       if ( z > file_list_index.max() ) z = file_list_index.min();
@@ -2964,7 +2964,7 @@ void vfu_inc_search( int use_last_one )
     VString s_mask = str;
     int s_size = 0;
     if( size_re.m( str ) )
-      s_size = atoi( size_re[1] );
+      s_size = atoi( VString( size_re[1] ) );
     else
       vfu_expand_mask( s_mask );
     while(1)
@@ -2991,7 +2991,7 @@ void vfu_inc_search( int use_last_one )
     if( use_last_one )
       break;
     else
-      key = con_getch();
+      wch = con_getwch();
     }
   last_inc_search = str;
   if( use_last_one )

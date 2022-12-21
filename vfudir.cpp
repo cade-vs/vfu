@@ -121,7 +121,7 @@ int cc = 0;
       wch = 0;
       }
 
-    if ( ( wch == 8 || wch == KEY_BACKSPACE ) && pos > 0 )
+    if ( ( wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) ) && pos > 0 )
       {
       pos--;
       str_del( target, pos, 1 );
@@ -288,7 +288,7 @@ int cc = 0;
         pos = str_len( target );
       }
     else
-    if ( wch >= 32 && wch != 8 && wch != KEY_BACKSPACE && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
+    if ( wch >= 32 && wch != 8 && wch != KEY_WIDE(KEY_BACKSPACE) && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
       {
       if( firsthit )
         {
@@ -823,9 +823,9 @@ void tree_view()
         str = "";
         say1( "Enter search pattern: ( use TAB to advance )" );
         key = con_getch();
-        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_BACKSPACE || key == 9 )
+        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_WIDE(KEY_BACKSPACE) || key == 9 )
           {
-          if ( key == 8 || key == KEY_BACKSPACE )
+          if ( key == 8 || key == KEY_WIDE(KEY_BACKSPACE) )
             str_trim_right( str, 1 );
           else
           if ( key != 9 )
