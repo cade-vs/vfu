@@ -39,7 +39,7 @@ int  tree_index( const char *s );
 const char* tree_find( const char *s ); /* return full path by dirname */
 
 /* return count of found dirnames and stores them to sc */
-int tree_find( const char *s, VArray *va );
+int tree_find( const char *s, WArray *wa );
 
 void size_cache_load();
 void size_cache_save();

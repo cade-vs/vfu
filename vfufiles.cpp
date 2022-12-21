@@ -222,13 +222,13 @@ void vfu_read_files( int a_recursive )
     {
     ASSERT( work_mode == WM_NORMAL );
     vfu_read_external_files();
-    opt.sort_order = 'U';
+    opt.sort_order = L'U';
     } else
   if ( list_panelizer.count()  )
     {
     ASSERT( work_mode == WM_NORMAL );
     vfu_read_pszlist_files();
-    opt.sort_order = 'U';
+    opt.sort_order = L'U';
     }
   else
     {
@@ -328,48 +328,6 @@ int __vfu_ftw_add( const char* origin, const char* fname,
 void vfu_read_local_files( int a_recursive )
 {
   ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
-
-  if ( opt.auto_mount && files_list_count() == 1 &&
-       ( FNMATCH( files_list_get(0)->name(), "automount" ) == 0 ||
-         FNMATCH( files_list_get(0)->name(), ".automount" ) == 0 ) )
-   {
-   VString tmp_file_name;
-   tmp_file_name += tmp_path;
-   tmp_file_name += "vfu_automount_error.";
-   tmp_file_name += user_id_str;
-
-   VString str = work_path;
-   chdir( "/" );
-   str = "mount " + str + " 2> " + tmp_file_name;
-   say1( "AutoMount point detected, executing:" );
-   say2( str );
-   int err;
-   if ( (err = system( str )) == 0)
-     {
-     //---------------
-     files_list_trim();
-     sel_count = 0;
-     sel_size = 0;
-     files_size = 0;
-     //---------------
-     chdir( work_path );
-     ftwalk( ".", __vfu_ftw_add, a_recursive ? -1 : 1 );
-     }
-   else
-     {
-     char t[128];
-     FILE *f = fopen( tmp_file_name, "r" );
-     t[0] = 0;
-     fgets( t, sizeof(t), f );
-     fclose(f);
-     str_tr( t, "\n\r", "  " );
-     say1( "AutoMount failed! ( press ESC ) reason:" );
-     say2( t );
-     con_beep();
-     con_getch();
-     }
-   unlink( tmp_file_name );
-   }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -460,59 +418,59 @@ if( opt.sort_top_dirs )
   if (!f1->is_dir() &&  f2->is_dir()) return  1;
   }
 
-if (opt.sort_order == 'U') return 0;
+if (opt.sort_order == L'U') return 0;
 switch (opt.sort_order)
  {
- case 'N' : z = pathcmp(f1->name(), f2->name());
-            break;
+ case L'N' : z = pathcmp(f1->name(), f2->name());
+             break;
 
- case 'M' : z = namenumcmp(f1->name(), f2->name());
-            break;
+ case L'M' : z = namenumcmp(f1->name(), f2->name());
+             break;
 
- case 'E' : z = pathcmp(f1->ext(), f2->ext());
-            break;
+ case L'E' : z = pathcmp(f1->ext(), f2->ext());
+             break;
 
- case 'S' : z = (f2->size()  < f1->size()) - (f2->size()  > f1->size());
-            break;
+ case L'S' : z = (f2->size()  < f1->size()) - (f2->size()  > f1->size());
+             break;
 
- case 'T' : z = f1->st()->st_mtime - f2->st()->st_mtime;
-            break;
+ case L'T' : z = f1->st()->st_mtime - f2->st()->st_mtime;
+             break;
 
- case 'H' : z = f1->st()->st_ctime - f2->st()->st_ctime;
-            break;
+ case L'H' : z = f1->st()->st_ctime - f2->st()->st_ctime;
+             break;
 
- case 'C' : z = f1->st()->st_atime - f2->st()->st_atime;
-            break;
+ case L'C' : z = f1->st()->st_atime - f2->st()->st_atime;
+             break;
 
- case 'A' : z = strcmp( f1->mode_str(), f2->mode_str() );
-            break;
+ case L'A' : z = strcmp( f1->mode_str(), f2->mode_str() );
+             break;
 
- case 'O' : z =   (f2->st()->st_uid  > f1->st()->st_uid)  -
-                  (f2->st()->st_uid  < f1->st()->st_uid);
-            if ( z == 0 )
-              z = (f2->st()->st_gid  > f1->st()->st_gid)  -
-                  (f2->st()->st_gid  < f1->st()->st_gid);
-            break;
+ case L'O' : z =   (f2->st()->st_uid  > f1->st()->st_uid)  -
+                   (f2->st()->st_uid  < f1->st()->st_uid);
+             if ( z == 0 )
+               z = (f2->st()->st_gid  > f1->st()->st_gid)  -
+                   (f2->st()->st_gid  < f1->st()->st_gid);
+             break;
 
- case 'G' : z =   (f2->st()->st_gid  > f1->st()->st_gid)  -
-                  (f2->st()->st_gid  < f1->st()->st_gid);
-            if ( z == 0 )
-              z = (f2->st()->st_uid  > f1->st()->st_uid)  -
-                  (f2->st()->st_uid  < f1->st()->st_uid);
-            break;
+ case L'G' : z =   (f2->st()->st_gid  > f1->st()->st_gid)  -
+                   (f2->st()->st_gid  < f1->st()->st_gid);
+             if ( z == 0 )
+               z = (f2->st()->st_uid  > f1->st()->st_uid)  -
+                   (f2->st()->st_uid  < f1->st()->st_uid);
+             break;
 
- case 'Y' : z = strcmp( f1->type_str(), f2->type_str() );
-            break;
- default  : ASSERT( !"Non valid sort order (opt.sort_order)" ); break;
+ case L'Y' : z = strcmp( f1->type_str(), f2->type_str() );
+             break;
+ default  : ASSERT( ! "Non valid sort order (opt.sort_order)" ); break;
  }
 
 if ( z == 0 ) z = pathcmp( f1->name(), f2->name() );
 
-ASSERT( opt.sort_direction == 'A' || opt.sort_direction == 'D' );
+ASSERT( opt.sort_direction == L'A' || opt.sort_direction == L'D' );
 if (z)
   {
   z = (z > 0) - (z < 0);
-  if (opt.sort_direction == 'D') return -z;
+  if (opt.sort_direction == L'D') return -z;
   }
 return z;
 }
@@ -554,7 +512,7 @@ void __vfu_sort( int l, int r )
 void vfu_sort_files()
 {
   if ( ! files_list_cnt ) return;
-  if ( opt.sort_order == 'U' ) return;
+  if ( opt.sort_order == L'U' ) return;
   VString str = files_list[FLI]->name();
 
   VString ss = "Sorting... [";
@@ -584,42 +542,42 @@ void vfu_arrange_files()
   int _ord;
   int _rev;
   mb.undef();
-  mb.push( "N Name" );
-  mb.push( "M Name### (RTFM)" );
-  mb.push( "E Extension" );
-  mb.push( "S Size" );
-  mb.push( "T Modify Time" );
-  mb.push( "H Change Time" );
-  mb.push( "C Access Time" );
-  mb.push( "D Attr/mode" );
-  mb.push( "O Owner" );
-  mb.push( "G Group" );
-  mb.push( "Y Type (TP)" );
-  mb.push( "U Unsorted" );
-  mb.push( "---" );
-  mb.push( "R Randomize" );
-  mb.push( "V Move Entry" );
-  mb.push( "---" );
-  mb.push( "A Quick swap NAME/CHANGE" );
-  if ( vfu_menu_box( 50, 5, "Arrange" ) == -1 ) return;
+  mb.push( L"N Name" );
+  mb.push( L"M Name### (RTFM)" );
+  mb.push( L"E Extension" );
+  mb.push( L"S Size" );
+  mb.push( L"T Modify Time" );
+  mb.push( L"H Change Time" );
+  mb.push( L"C Access Time" );
+  mb.push( L"D Attr/mode" );
+  mb.push( L"O Owner" );
+  mb.push( L"G Group" );
+  mb.push( L"Y Type (TP)" );
+  mb.push( L"U Unsorted" );
+  mb.push( L"---" );
+  mb.push( L"R Randomize" );
+  mb.push( L"V Move Entry" );
+  mb.push( L"---" );
+  mb.push( L"A Quick swap NAME/CHANGE" );
+  if ( vfu_menu_box( 50, 5, L"Arrange" ) == -1 ) return;
   _ord = menu_box_info.ec;
 
-  if ( _ord == 'A' )
+  if ( _ord == L'A' )
     {
-    opt.sort_direction = 'A';
-    opt.sort_order = opt.sort_order == 'N' ? 'H' : 'N';
+    opt.sort_direction = L'A';
+    opt.sort_order = opt.sort_order == L'N' ? L'H' : L'N';
     vfu_sort_files();
     say1( VString( "File list is now arranged by " ) + ( opt.sort_order == 'N' ? "NAME (ASCENDING)" : "CHANGE TIME (ASCENDING)" ) );
     return;
     }
 
-  if (_ord == 'V' )
+  if (_ord == L'V' )
     {
     vfu_file_entry_move();
     return;
     }
 
-  if (_ord == 'R')
+  if (_ord == L'R')
     {
     /* Fisher-Yates shuffle */
     int i = files_list_count() - 1;
@@ -637,16 +595,16 @@ void vfu_arrange_files()
 
   opt.sort_order = _ord;
   
-  if( opt.sort_order == 'U' ) 
+  if( opt.sort_order == L'U' ) 
     {
     say1( "Next directory rescan will be unsorted." );
     return;
     }
 
   mb.undef();
-  mb.push( "A Ascending");
-  mb.push( "D Descending" );
-  if ( vfu_menu_box( 50, 5, "Order" ) == -1 ) return;
+  mb.push( L"A Ascending");
+  mb.push( L"D Descending" );
+  if ( vfu_menu_box( 50, 5, L"Order" ) == -1 ) return;
   _rev = menu_box_info.ec;
 
   opt.sort_direction = _rev;

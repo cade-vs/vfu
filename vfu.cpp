@@ -67,7 +67,7 @@
   int      dir_tree_changed;
   VString   dir_tree_file;
 
-  VArray file_find_results; // filefind results
+  WArray file_find_results; // filefind results
 
   VArray path_bookmarks;
 
@@ -78,7 +78,7 @@
   VArray see_filters;
   VArray panelizers;
 
-  VArray mb; /* menu boxes */
+  WArray mb; /* menu boxes */
 
   VArray trim_tree;
 
@@ -416,78 +416,78 @@ void vfu_help()
   say1center( HEADER  );
   say2center( CONTACT );
   mb.undef();
-  mb.push( "*keypad -- navigation keys" );
-  mb.push( "ENTER   -- enter into directory/View file ( `+' and `=' too )");
-  mb.push( "BACKSPC -- (BS) chdir to parent directory ( `-' and ^H too )"         );
-  mb.push( "Alt + - -- exit current archive ( Alt + BACKSPACE too )"     );
-  mb.push( "TAB     -- edit entry: filename, atrrib's/mode, owner, group");
-  mb.push( "R.Arrow -- rename current file " );
-  mb.push( "SPACE   -- select/deselect current list item"   );
-  mb.push( "ESC     -- exit menu");
-  mb.push( "ESC+ESC -- exit menu");
-  mb.push( "1       -- toggle `mode'  field on/off "    );
-  mb.push( "2       -- toggle `owner' field on/off "    );
-  mb.push( "3       -- toggle `group' field on/off "    );
-  mb.push( "4       -- toggle `time'  field on/off "    );
-  mb.push( "5       -- toggle `size'  field on/off "    );
-  mb.push( "6       -- toggle `type'  field on/off "    );
-  mb.push( "7       -- toggle `time type' field change/modify/access time "    );
-  mb.push( "8       -- turn on all fields"    );
-  mb.push( "0       -- toggle long name view ( show only type and file name )"    );
-  mb.push( "~       -- change current dir to HOME directory"     );
-  mb.push( "A       -- arrange/Sort file list"                   );
-  mb.push( "B       -- browse(view) selected (if selection) or current file"         );
-  mb.push( "Alt+B   -- browse(view) ONLY current file (regardless selection)"      );
-  mb.push( "C       -- copy selected (if selection) or current file(s)"             );
-  mb.push( "Alt+C   -- copy ONLY current file (regardless selection)"             );
-  mb.push( "D       -- change directory"                         );
-  mb.push( "Ctrl+D  -- directory tree "                          );
-  mb.push( "Alt+D   -- chdir history " );
-  mb.push( "E       -- erase(remove) selected (if selection) or current file(s)!"    );
-  mb.push( "Alt+E   -- erase(remove) ONLY current file (regardless selection)!"    );
-  mb.push( "F       -- change file masks (space-delimited)       ");
-  mb.push( "Ctrl+F  -- reset file mask to `*'"                    );
-  mb.push( "G       -- global select/deselect"                    );
-  mb.push( "H       -- this help text"                            );
-  mb.push( "I       -- edit file"                            );
-  mb.push( "Q       -- exit here (to the current directory)");
-  mb.push( "R       -- reload directory/refresh file list"       );
-  mb.push( "Ctrl+R  -- recursive reload... "                     );
-  mb.push( "Alt+R   -- reload/tree menu" );
-  mb.push( "J       -- jump to mountpoint"                       );
-  mb.push( "L       -- symlink selected/current file(s) into new directory" );
-  mb.push( "Ctrl+L  -- refresh/redraw entire screen" );
-  mb.push( "M       -- move selected (if selection) or current file(s)"             );
-  mb.push( "Alt+M   -- move ONLY current file (regardless selection)"             );
-  mb.push( "N       -- file find"                                );
-  mb.push( "Alt+N   -- file find menu"   );
-  mb.push( "O       -- options(toggles) menu"       );
-  mb.push( "P       -- file clipboard menu"       );
-  mb.push( "S       -- incremental filename search"       );
-  mb.push( "Alt+S   -- repeat last used incremental search entry (find next)"       );
+  mb.push( L"*keypad -- navigation keys" );
+  mb.push( L"ENTER   -- enter into directory/View file ( `+' and `=' too )");
+  mb.push( L"BACKSPC -- (BS) chdir to parent directory ( `-' and ^H too )"         );
+  mb.push( L"Alt + - -- exit current archive ( Alt + BACKSPACE too )"     );
+  mb.push( L"TAB     -- edit entry: filename, atrrib's/mode, owner, group");
+  mb.push( L"R.Arrow -- rename current file " );
+  mb.push( L"SPACE   -- select/deselect current list item"   );
+  mb.push( L"ESC     -- exit menu");
+  mb.push( L"ESC+ESC -- exit menu");
+  mb.push( L"1       -- toggle `mode'  field on/off "    );
+  mb.push( L"2       -- toggle `owner' field on/off "    );
+  mb.push( L"3       -- toggle `group' field on/off "    );
+  mb.push( L"4       -- toggle `time'  field on/off "    );
+  mb.push( L"5       -- toggle `size'  field on/off "    );
+  mb.push( L"6       -- toggle `type'  field on/off "    );
+  mb.push( L"7       -- toggle `time type' field change/modify/access time "    );
+  mb.push( L"8       -- turn on all fields"    );
+  mb.push( L"0       -- toggle long name view ( show only type and file name )"    );
+  mb.push( L"~       -- change current dir to HOME directory"     );
+  mb.push( L"A       -- arrange/Sort file list"                   );
+  mb.push( L"B       -- browse(view) selected (if selection) or current file"         );
+  mb.push( L"Alt+B   -- browse(view) ONLY current file (regardless selection)"      );
+  mb.push( L"C       -- copy selected (if selection) or current file(s)"             );
+  mb.push( L"Alt+C   -- copy ONLY current file (regardless selection)"             );
+  mb.push( L"D       -- change directory"                         );
+  mb.push( L"Ctrl+D  -- directory tree "                          );
+  mb.push( L"Alt+D   -- chdir history " );
+  mb.push( L"E       -- erase(remove) selected (if selection) or current file(s)!"    );
+  mb.push( L"Alt+E   -- erase(remove) ONLY current file (regardless selection)!"    );
+  mb.push( L"F       -- change file masks (space-delimited)       ");
+  mb.push( L"Ctrl+F  -- reset file mask to `*'"                    );
+  mb.push( L"G       -- global select/deselect"                    );
+  mb.push( L"H       -- this help text"                            );
+  mb.push( L"I       -- edit file"                            );
+  mb.push( L"Q       -- exit here (to the current directory)");
+  mb.push( L"R       -- reload directory/refresh file list"       );
+  mb.push( L"Ctrl+R  -- recursive reload... "                     );
+  mb.push( L"Alt+R   -- reload/tree menu" );
+  mb.push( L"J       -- jump to mountpoint"                       );
+  mb.push( L"L       -- symlink selected/current file(s) into new directory" );
+  mb.push( L"Ctrl+L  -- refresh/redraw entire screen" );
+  mb.push( L"M       -- move selected (if selection) or current file(s)"             );
+  mb.push( L"Alt+M   -- move ONLY current file (regardless selection)"             );
+  mb.push( L"N       -- file find"                                );
+  mb.push( L"Alt+N   -- file find menu"   );
+  mb.push( L"O       -- options(toggles) menu"       );
+  mb.push( L"P       -- file clipboard menu"       );
+  mb.push( L"S       -- incremental filename search"       );
+  mb.push( L"Alt+S   -- repeat last used incremental search entry (find next)"       );
   /*
-  mb.push( "Ctrl+C  -- copy files to clipboard"       );
-  mb.push( "Ctrl+X  -- cut  files to clipboard"       );
-  mb.push( "Ctrl+V  -- paste (copy) files from clipboard to current directory" );
+  mb.push( L"Ctrl+C  -- copy files to clipboard"       );
+  mb.push( L"Ctrl+X  -- cut  files to clipboard"       );
+  mb.push( L"Ctrl+V  -- paste (copy) files from clipboard to current directory" );
   */
-  mb.push( "T       -- tools menu (including rename and classify tools)"                              );
-  mb.push( "U       -- user menu (user external commands bound to menu)  " );
-  mb.push( "X       -- exit to the old(startup) directory ");
-  mb.push( "Alt+X   -- exit to the old(startup) directory ");
-  mb.push( "Z       -- calculate directories sizes menu"       );
-  mb.push( "Ctrl+Z  -- show size of the current (under the cursor >>) directory");
-  mb.push( "Alt+Z   -- show all directories sizes ( or Alt+Z )" );
-  mb.push( "V       -- edit vfu.conf file");
-  mb.push( "!       -- shell (also available with '?')"                         );
-  mb.push( "/       -- command line"                                            );
-  mb.push( "vfu uses these (one of) these config files:");
-  mb.push( "        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
-  mb.push( "        2. $HOME/.vfu/vfu.conf");
-  mb.push( "        3. " FILENAME_CONF_GLOBAL0 );
-  mb.push( "        4. " FILENAME_CONF_GLOBAL1 );
-  mb.push( "        5. " FILENAME_CONF_GLOBAL2 );
-  mb.push( "" );
-  vfu_menu_box( 1, 4, "VFU Help ( PageUp/PageDown to scroll )" );
+  mb.push( L"T       -- tools menu (including rename and classify tools)"                              );
+  mb.push( L"U       -- user menu (user external commands bound to menu)  " );
+  mb.push( L"X       -- exit to the old(startup) directory ");
+  mb.push( L"Alt+X   -- exit to the old(startup) directory ");
+  mb.push( L"Z       -- calculate directories sizes menu"       );
+  mb.push( L"Ctrl+Z  -- show size of the current (under the cursor >>) directory");
+  mb.push( L"Alt+Z   -- show all directories sizes ( or Alt+Z )" );
+  mb.push( L"V       -- edit vfu.conf file");
+  mb.push( L"!       -- shell (also available with '?')"                         );
+  mb.push( L"/       -- command line"                                            );
+  mb.push( L"vfu uses these (one of) these config files:");
+  mb.push( L"        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
+  mb.push( L"        2. $HOME/.vfu/vfu.conf");
+  mb.push( L"        3. " FILENAME_CONF_GLOBAL0 );
+  mb.push( L"        4. " FILENAME_CONF_GLOBAL1 );
+  mb.push( L"        5. " FILENAME_CONF_GLOBAL2 );
+  mb.push( L"" );
+  vfu_menu_box( 1, 4, L"VFU Help ( PageUp/PageDown to scroll )" );
   mb.undef();
   do_draw = 1;
 }
@@ -728,13 +728,13 @@ int vfu_exit( const char* a_path )
 {
   int z;
   mb.undef();
-  mb.push( "X Exit (to startup path)" );
-  mb.push( "Q Quit (to work path)   " );
+  mb.push( L"X Exit (to startup path)" );
+  mb.push( L"Q Quit (to work path)   " );
 
   if ( a_path == NULL )
     {
     vfu_beep();
-    z = vfu_menu_box( 50, 5, "  Exit VFU?" );
+    z = vfu_menu_box( 50, 5, L"  Exit VFU?" );
     if ( z == -1 ) return 1;
     z ? vfu_exit_path( work_path ) : vfu_exit_path( startup_path );
     return 0;
@@ -909,8 +909,8 @@ void vfu_run()
                  break;
 
       case L'z'        : vfu_directories_sizes(  0  ); break;
-      case KEY_WIDE(KEY_ALT_Z)  : vfu_directories_sizes( 'A' ); break;
-      case KEY_CTRL_Z : vfu_directories_sizes( 'Z' ); break;
+      case KEY_WIDE(KEY_ALT_Z)  : vfu_directories_sizes( L'A' ); break;
+      case KEY_CTRL_Z : vfu_directories_sizes( L'Z' ); break;
       }
     if ( work_mode == WM_ARCHIVE ) switch (wch)
       {
@@ -959,16 +959,16 @@ void vfu_run()
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
       case KEY_WIDE(KEY_ALT_J)  : vfu_jump_to_mountpoint( 1 ); break;
 
-      case KEY_WIDE(KEY_ALT_1)  : bookmark_goto( '1' ); break;
-      case KEY_WIDE(KEY_ALT_2)  : bookmark_goto( '2' ); break;
-      case KEY_WIDE(KEY_ALT_3)  : bookmark_goto( '3' ); break;
-      case KEY_WIDE(KEY_ALT_4)  : bookmark_goto( '4' ); break;
-      case KEY_WIDE(KEY_ALT_5)  : bookmark_goto( '5' ); break;
-      case KEY_WIDE(KEY_ALT_6)  : bookmark_goto( '6' ); break;
-      case KEY_WIDE(KEY_ALT_7)  : bookmark_goto( '7' ); break;
-      case KEY_WIDE(KEY_ALT_8)  : bookmark_goto( '8' ); break;
-      case KEY_WIDE(KEY_ALT_9)  : bookmark_goto( '9' ); break;
-      case '`'        : bookmark_goto(-1 ); break;
+      case KEY_WIDE(KEY_ALT_1)  : bookmark_goto( L'1' ); break;
+      case KEY_WIDE(KEY_ALT_2)  : bookmark_goto( L'2' ); break;
+      case KEY_WIDE(KEY_ALT_3)  : bookmark_goto( L'3' ); break;
+      case KEY_WIDE(KEY_ALT_4)  : bookmark_goto( L'4' ); break;
+      case KEY_WIDE(KEY_ALT_5)  : bookmark_goto( L'5' ); break;
+      case KEY_WIDE(KEY_ALT_6)  : bookmark_goto( L'6' ); break;
+      case KEY_WIDE(KEY_ALT_7)  : bookmark_goto( L'7' ); break;
+      case KEY_WIDE(KEY_ALT_8)  : bookmark_goto( L'8' ); break;
+      case KEY_WIDE(KEY_ALT_9)  : bookmark_goto( L'9' ); break;
+      case '`'        : bookmark_goto( 0 ); break;
 
       case 9          : vfu_edit_entry(); break;
 
@@ -1620,26 +1620,24 @@ for (z = 0; z < files_list_count(); z++)
 
 void vfu_global_select()
 {
-  char ch;
-
   mb.undef();
-  mb.push( "S All" );
-  mb.push( "A All (+Dirs)" );
-  mb.push( "R Reverse selection" );
-  mb.push( "C Clear selection" );
-  mb.push( "P Pack (list selected only)" );
-  mb.push( "H Hide selected" );
-  mb.push( "D Different" );
-  mb.push( ". Hide dirs" );
-  mb.push( ", Hide dotfiles" );
-  mb.push( "= Select by mask (with directories)" );
-  mb.push( "+ Select by mask (w/o  directories)" );
-  mb.push( "- Deselect by mask" );
-  mb.push( "L Select Same..." );
-  mb.push( "X Extended Select..." );
-  if ( vfu_menu_box( 30, 5, "Select Files and Directories" ) == -1 ) return;
-  ch = menu_box_info.ec;
-  if (ch == 'X')
+  mb.push( L"S All" );
+  mb.push( L"A All (+Dirs)" );
+  mb.push( L"R Reverse selection" );
+  mb.push( L"C Clear selection" );
+  mb.push( L"P Pack (list selected only)" );
+  mb.push( L"H Hide selected" );
+  mb.push( L"D Different" );
+  mb.push( L". Hide dirs" );
+  mb.push( L", Hide dotfiles" );
+  mb.push( L"= Select by mask (with directories)" );
+  mb.push( L"+ Select by mask (w/o  directories)" );
+  mb.push( L"- Deselect by mask" );
+  mb.push( L"L Select Same..." );
+  mb.push( L"X Extended Select..." );
+  if ( vfu_menu_box( 30, 5, L"Select Files and Directories" ) == -1 ) return;
+  wchar_t wch = menu_box_info.ec;
+  if ( wch == L'X')
     {
     if ( work_mode != WM_NORMAL )
       {
@@ -1647,47 +1645,47 @@ void vfu_global_select()
       return;
       }
     mb.undef();
-    mb.push( "A Select to the begin of the list" );
-    mb.push( "E Select to the end of the list" );
-    mb.push( "--searching--" );
-    mb.push( "F Find string (no case)" );
-    mb.push( "S Scan string (case sense)" );
-    mb.push( "H Hex  string" );
-    mb.push( "/ Regular expression" );
-    mb.push( "\\ Reg.exp (no case)" );
+    mb.push( L"A Select to the begin of the list" );
+    mb.push( L"E Select to the end of the list" );
+    mb.push( L"--searching--" );
+    mb.push( L"F Find string (no case)" );
+    mb.push( L"S Scan string (case sense)" );
+    mb.push( L"H Hex  string" );
+    mb.push( L"/ Regular expression" );
+    mb.push( L"\\ Reg.exp (no case)" );
 //    mb.push( "--other--" );
 //    mb.push( "M Mode/Attributes" );
-    if ( vfu_menu_box( 32, 6, "Extended Select" ) == -1 ) return;
-    ch = menu_box_info.ec;
-    if (ch == 'S') ch = 'B'; /* 'B' trans scan */
-    if (ch == 'H') ch = 'E'; /* 'E' trans hex  */
-    if (ch == 'A') ch = '<'; /* '<' trans to begin  */
-    if (ch == 'E') ch = '>'; /* '>' trans to end    */
+    if ( vfu_menu_box( 32, 6, L"Extended Select" ) == -1 ) return;
+    wch = menu_box_info.ec;
+    if (wch == L'S') wch = L'B'; /* 'B' trans scan */
+    if (wch == L'H') wch = L'E'; /* 'E' trans hex  */
+    if (wch == L'A') wch = L'<'; /* '<' trans to begin  */
+    if (wch == L'E') wch = L'>'; /* '>' trans to end    */
     }
 
-  switch(ch)
+  switch(wch)
     {
-    case 'S' : {
+    case L'S' : {
                for (int z = 0; z < files_list_count(); z++)
                  if (!files_list_get(z)->is_dir())
                    files_list_get(z)->sel = 1;
                } break;
-    case 'A' : {
+    case L'A' : {
                for (int z = 0; z < files_list_count(); z++)
                  files_list_get(z)->sel = 1;
                } break;
-    case 'R' : {
+    case L'R' : {
                int z;
                for (z = 0; z < files_list_count(); z++)
                  if (!files_list_get(z)->is_dir())
                    files_list_get(z)->sel = !files_list_get(z)->sel;
                } break;
-    case 'C' : {
+    case L'C' : {
                int z;
                for (z = 0; z < files_list_count(); z++)
                    files_list_get(z)->sel = 0;
                } break;
-    case 'P' :
+    case L'P' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
@@ -1697,7 +1695,7 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case 'H' :
+    case L'H' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
@@ -1707,7 +1705,7 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case '.' :
+    case L'.' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
@@ -1717,7 +1715,7 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case ',' :
+    case L',' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
@@ -1727,33 +1725,32 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case '+' :
-    case '=' :
-    case '-' :
+    case L'+' :
+    case L'=' :
+    case L'-' :
               {
-              VString m;
+              VString mask;
               int selaction = 0;
-              if (ch != '-') selaction = 1;
-              if (ch == '+')
+              if (wch != L'-') selaction = 1;
+              if (wch == L'+')
                 say1("Select by mask: (w/o directories)");
               else
-              if (ch == '=')
+              if (wch == '=')
                 say1("Select by mask: (with directories)");
               else
                 say1("Deselect by mask:");
-              if ( vfu_get_str( "", m, HID_GS_MASK ))
+              if ( vfu_get_str( "", mask, HID_GS_MASK ))
                 {
-                VArray sm;
-                sm = str_split( " +", m );
-                while( (m = sm.pop()) != "" )
+                VArray mask_array = str_split( " +", mask );
+                while( ( mask = mask_array.pop() ) != "" )
                   {
                   if (opt.mask_auto_expand)
-                    vfu_expand_mask( m );
+                    vfu_expand_mask( mask );
                   int z = 0;
                   for (z = 0; z < files_list_count(); z++)
                     {
-                    if (files_list_get(z)->is_dir() && ch == '+') continue;
-                    if (FNMATCH(m,files_list_get(z)->name_ext()) == 0)
+                    if ( files_list_get(z)->is_dir() && wch == L'+') continue;
+                    if ( FNMATCH( mask, files_list_get(z)->name_ext() ) == 0)
                       files_list_get(z)->sel = selaction;
                     }
                   }
@@ -1761,7 +1758,7 @@ void vfu_global_select()
               say1( " " );
               say2( " " );
               } break;
-    case 'D' :
+    case L'D' :
               {
               if ( work_mode != WM_NORMAL )
                 {
@@ -1785,11 +1782,11 @@ void vfu_global_select()
               say1( "Done." );
               say2( " " );
               } break;
-    case '/':
-    case '\\':
-    case 'E':
-    case 'F':
-    case 'B': {
+    case L'/':
+    case L'\\':
+    case L'E':
+    case L'F':
+    case L'B': {
               say1("");
               VString pat;
               if ( vfu_get_str( "Search string: ", pat, HID_GS_GREP ) )
@@ -1805,21 +1802,21 @@ void vfu_global_select()
                   if ( files_list_get(z)->is_dir() ) continue;
 
                   int pos = -1;
-                  switch( ch )
+                  switch( wch )
                     {
-                    case 'F':
+                    case L'F':
                        pos = file_string_search( pat, files_list_get(z)->name(), "i" );
                        break;
-                    case 'B':
+                    case L'B':
                        pos = file_string_search( pat, files_list_get(z)->name(), "" );
                        break;
-                    case 'E':
+                    case L'E':
                        pos = file_string_search( pat, files_list_get(z)->name(), "h" );
                        break;
-                    case '/':
+                    case L'/':
                        pos = file_string_search( pat, files_list_get(z)->name(), "r" );
                        break;
-                    case '\\':
+                    case L'\\':
                        pos = file_string_search( pat, files_list_get(z)->name(), "ri" );
                        break;
                     }
@@ -1840,41 +1837,41 @@ void vfu_global_select()
               break;
               }
 
-    case 'L':
+    case L'L':
               {
               mb.undef();
-              mb.push( "N Name" );
-              mb.push( "E Extension" );
-              mb.push( "S Size" );
-              mb.push( "T Time" );
-              mb.push( "I Time (1 min.round)" );
-              mb.push( "D Date" );
-              mb.push( "M Date+Time" );
-              mb.push( "A Attr/Mode" );
+              mb.push( L"N Name" );
+              mb.push( L"E Extension" );
+              mb.push( L"S Size" );
+              mb.push( L"T Time" );
+              mb.push( L"I Time (1 min.round)" );
+              mb.push( L"D Date" );
+              mb.push( L"M Date+Time" );
+              mb.push( L"A Attr/Mode" );
               #ifndef _TARGET_GO32_
-              mb.push( "O Owner" );
-              mb.push( "G Group" );
+              mb.push( L"O Owner" );
+              mb.push( L"G Group" );
               #endif
-              mb.push( "Y Type (TP)" );
+              mb.push( L"Y Type (TP)" );
 
-              vfu_menu_box( 32, 6, "Select Same..." );
-              ch = menu_box_info.ec;
-              switch ( ch )
+              vfu_menu_box( 32, 6, L"Select Same..." );
+              wch = menu_box_info.ec;
+              switch ( wch )
                 {
-                case 'N' : vfu_global_select_same( GSAME_NAME  ); break;
-                case 'E' : vfu_global_select_same( GSAME_EXT   ); break;
-                case 'S' : vfu_global_select_same( GSAME_SIZE  ); break;
-                case 'M' : vfu_global_select_same( GSAME_DATETIME  ); break;
-                case 'T' : vfu_global_select_same( GSAME_TIME  ); break;
-                case 'I' : vfu_global_select_same( GSAME_TIME1 ); break;
-                case 'D' : vfu_global_select_same( GSAME_DATE  ); break;
-                case 'O' : vfu_global_select_same( GSAME_OWNER ); break;
-                case 'G' : vfu_global_select_same( GSAME_GROUP ); break;
-                case 'A' : vfu_global_select_same( GSAME_MODE  ); break;
-                case 'Y' : vfu_global_select_same( GSAME_TYPE  ); break;
+                case L'N' : vfu_global_select_same( GSAME_NAME  ); break;
+                case L'E' : vfu_global_select_same( GSAME_EXT   ); break;
+                case L'S' : vfu_global_select_same( GSAME_SIZE  ); break;
+                case L'M' : vfu_global_select_same( GSAME_DATETIME  ); break;
+                case L'T' : vfu_global_select_same( GSAME_TIME  ); break;
+                case L'I' : vfu_global_select_same( GSAME_TIME1 ); break;
+                case L'D' : vfu_global_select_same( GSAME_DATE  ); break;
+                case L'O' : vfu_global_select_same( GSAME_OWNER ); break;
+                case L'G' : vfu_global_select_same( GSAME_GROUP ); break;
+                case L'A' : vfu_global_select_same( GSAME_MODE  ); break;
+                case L'Y' : vfu_global_select_same( GSAME_TYPE  ); break;
                 }
               } break;
-    case 'M': {
+    case L'M': {
               mode_str_t mode_str;
               strcpy( mode_str, MODE_STRING );
               if(vfu_edit_attr( mode_str, 0 ))
@@ -1885,13 +1882,13 @@ void vfu_global_select()
                 do_draw = 1;
                 }
               } break;
-    case '<' : {
+    case L'<' : {
                if( files_list_count() > 0)
                  for (int z = 0; z <= FLI; z++)
                    if (!files_list_get(z)->is_dir())
                      files_list_get(z)->sel = 1;
                } break;
-    case '>' : {
+    case L'>' : {
                if( files_list_count() > 0)
                  for (int z = FLI; z < files_list_count(); z++)
                    if (!files_list_get(z)->is_dir())
@@ -1970,31 +1967,31 @@ VString tools_last_target;
 void vfu_tools()
 {
   mb.undef();
-  mb.push( "R Real path" );
-  mb.push( "D ChDir to symlink path" );
-  mb.push( "G Go to symlink target" );
-  mb.push( "B Go back to last target" );
-  mb.push( "T Make directory" );
-  mb.push( "P Path bookmarks" );
-  mb.push( "A Rename tools..." );
-  mb.push( "C Classify files" );
-  if ( vfu_menu_box( 30, 5, "Tools" ) == -1 ) return;
+  mb.push( L"R Real path" );
+  mb.push( L"D ChDir to symlink path" );
+  mb.push( L"G Go to symlink target" );
+  mb.push( L"B Go back to last target" );
+  mb.push( L"T Make directory" );
+  mb.push( L"P Path bookmarks" );
+  mb.push( L"A Rename tools..." );
+  mb.push( L"C Classify files" );
+  if ( vfu_menu_box( 30, 5, L"Tools" ) == -1 ) return;
   switch( menu_box_info.ec )
     {
-    case 'R' : {
+    case L'R' : {
                fname_t s;
                expand_path(files_list_get(FLI)->name(), s);
                say1( s );
                break;
                }
-    case 'D' : {
+    case L'D' : {
                if( ! files_list_get(FLI)->is_link() ) break;
                tools_last_target = files_list_get(FLI)->full_name();
                if( ! files_list_get(FLI)->is_dir() ) break;
                vfu_chdir( expand_path( files_list_get(FLI)->name() ) );
                break;
                }
-    case 'G' : {
+    case L'G' : {
                if( ! files_list_get(FLI)->is_link() ) break;
                tools_last_target = files_list_get(FLI)->full_name();
                VString target = vfu_readlink( files_list_get(FLI)->full_name() );
@@ -2002,7 +1999,7 @@ void vfu_tools()
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
                }
-    case 'B' : {
+    case L'B' : {
                if( tools_last_target == "" ) break;
                VString target = tools_last_target;
                tools_last_target = files_list_get(FLI)->full_name();
@@ -2010,7 +2007,7 @@ void vfu_tools()
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
                }
-    case 'T' : {
+    case L'T' : {
                VString str;
                if (vfu_get_str( "Make directory(ies) (use space for separator)",
                                 str, HID_MKPATH ))
@@ -2032,43 +2029,44 @@ void vfu_tools()
                  }
                }
                break;
-    case 'P' : bookmark_goto( -1 ); break;
-    case 'A' : vfu_tool_rename(); break;
-    case 'C' : vfu_tool_classify(); break;
+    case L'P' : bookmark_goto( 0 ); break;
+    case L'A' : vfu_tool_rename(); break;
+    case L'C' : vfu_tool_classify(); break;
     }
 }
 
 /*--------------------------------------------------------------------------*/
 
-void bookmark_goto( int n )
+void bookmark_goto( wchar_t wch )
 {
   VString t;
-  if ( n == -1 )
+  WString wt;
+  if ( wch == 0 )
     {
     int z;
     mb.undef();
-    mb.push( "A Bookmark current directory" );
-    mb.push( "` Change working directory" );
-    mb.push( "---" );
+    mb.push( L"A Bookmark current directory" );
+    mb.push( L"` Change working directory" );
+    mb.push( L"---" );
     for( z = 1; z < 10; z++ )
       {
-      const char* ps = path_bookmarks.get( z-1 );
+      const char* ps = path_bookmarks.get( z - 1 );
       if( !ps ) break;
-      sprintf( t, "%d %s", z%10, ps );
-      mb.push( str_dot_reduce( t, 60 ) );
+      sprintf( t, "%d %s", z % 10, ps );
+      wt = t;
+      mb.push( str_dot_reduce( wt, 60 ) );
       }
-    n = vfu_menu_box( 5, 5, "Path bookmarks");
-    if ( n == -1 ) return;
-    n = menu_box_info.ec;
+    if ( vfu_menu_box( 5, 5, L"Path bookmarks") == -1 ) return;
+    wchar_t wch = menu_box_info.ec;
     }
-  switch( n )
+  switch( wch )
     {
-    case '`' : vfu_chdir( NULL ); return;
-    case 'A' : bookmark_hookup(); return;
+    case L'`' : vfu_chdir( NULL ); return;
+    case L'A' : bookmark_hookup(); return;
     }
-  if ( n >= '1' && n <= '9' && str_len( path_bookmarks[ n - '1' ] ) > 0 )
+  if ( wch >= L'1' && wch <= L'9' && str_len( path_bookmarks[ wch - L'1' ] ) > 0 )
     {
-    vfu_chdir( path_bookmarks[ n - '1' ] );
+    vfu_chdir( path_bookmarks[ wch - L'1' ] );
     return;
     }
 }
@@ -2184,36 +2182,36 @@ void vfu_change_file_mask( const char* a_new_mask )
 int __vfu_dir_size_followsymlinks = 0;
 int __vfu_dir_size_samedevonly    = 0;
 
-void vfu_directories_sizes( int n )
+void vfu_directories_sizes( wchar_t wch )
 {
   int z;
   char t[256];
 
   int dir_size_mode = __vfu_dir_size_followsymlinks | __vfu_dir_size_samedevonly;
 
-  n = toupper( n );
-  if ( n == 0 )
+  wch = toupper( wch );
+  if ( wch == 0 )
     {
     mb.undef();
-    mb.push( "E Specify directory" );
-    mb.push( "Z Directory under cursor" );
-    mb.push( ". Current directory `.'" );
-    mb.push( "S Selected directories" );
-    mb.push( "A All dir's in the list" );
-    mb.push( "--directory size options--" );
-    mb.push( "N Normal" );
-    mb.push( "Y Follow symlinks (WARNING: may loop!)" );
-    mb.push( "V Keep on the same device/filesystem only" );
-    if ( vfu_menu_box( 5, FPS - 8, "Directory size of:" ) == -1 ) return;
-    n = menu_box_info.ec;
+    mb.push( L"E Specify directory" );
+    mb.push( L"Z Directory under cursor" );
+    mb.push( L". Current directory `.'" );
+    mb.push( L"S Selected directories" );
+    mb.push( L"A All dir's in the list" );
+    mb.push( L"--directory size options--" );
+    mb.push( L"N Normal" );
+    mb.push( L"Y Follow symlinks (WARNING: may loop!)" );
+    mb.push( L"V Keep on the same device/filesystem only" );
+    if ( vfu_menu_box( 5, FPS - 8, L"Directory size of:" ) == -1 ) return;
+    wch = menu_box_info.ec;
     }
 
   DirSizeInfo size_info;
   say1( "Calculating files size. Press ESCAPE to cancel calculation." );
-  if ( n == 'E' || n == '.' ) /* specific directory */
+  if ( wch == L'E' || wch == L'.' ) /* specific directory */
     {
     VString target = work_path;
-    if ( n == '.' )
+    if ( wch == L'.' )
       target = work_path;
     else
       if ( !vfu_get_dir_name( "Calculate size of directory: ", target ) ) return;
@@ -2222,14 +2220,14 @@ void vfu_directories_sizes( int n )
     say1( "Path: " + target );
     say2( size_info.str() );
     } else
-  if ( n == 'A' || n == 'S' ) /* all or selected  */
+  if ( wch == L'A' || wch == L'S' ) /* all or selected  */
     {
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);
       if ( fi->is_dir() ) /* dirs */
         {
-        if ( n == 'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
+        if ( wch == L'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
         /* if ( n == 'A' ) continue; // all */
         fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
         if ( dir_size == -1 )
@@ -2238,10 +2236,10 @@ void vfu_directories_sizes( int n )
         }
       }
     size_cache_sort();
-    say1( n == 'S' ? "Path: *** selected dirs in the list ***" : "Path: *** all dirs in the list ***" );
+    say1( wch == L'S' ? "Path: *** selected dirs in the list ***" : "Path: *** all dirs in the list ***" );
     say2( size_info.str() );
     }  else
-  if ( n == 'Z' ) /* single one, under cursor  */
+  if ( wch == L'Z' ) /* single one, under cursor  */
     {
     if ( files_list_get(FLI)->is_dir() )
       {
@@ -2252,13 +2250,13 @@ void vfu_directories_sizes( int n )
     else
       say1("This is not directory...");
     } else
-  if( n == 'N' ) /* normal traverse mode */
+  if( wch == L'N' ) /* normal traverse mode */
     {
     __vfu_dir_size_followsymlinks = 0;
     __vfu_dir_size_samedevonly    = 0;
     say1( "Directory size calculation mode set to NORMAL (all dev/fs, no symlinks)" );
     } else
-  if( n == 'Y' ) /* follow symlinks */
+  if( wch == L'Y' ) /* follow symlinks */
     {
     __vfu_dir_size_followsymlinks = __vfu_dir_size_followsymlinks ? 0 : DIR_SIZE_FOLLOWSYMLINKS;
     if( __vfu_dir_size_followsymlinks )
@@ -2266,7 +2264,7 @@ void vfu_directories_sizes( int n )
     else
       say1( "Directory size calculation will NOT follow symlinks" );
     } else
-  if( n == 'V' ) /* traverse same device/filesystem only */
+  if( wch == L'V' ) /* traverse same device/filesystem only */
     {
     __vfu_dir_size_samedevonly = __vfu_dir_size_samedevonly ? 0 : DIR_SIZE_SAMEDEVONLY;
     if( __vfu_dir_size_samedevonly )
@@ -2279,7 +2277,7 @@ void vfu_directories_sizes( int n )
 
   do_draw = 1;
   update_status();
-  if ( opt.sort_order == 'S' && n < 0 ) vfu_sort_files();
+  if ( opt.sort_order == 'S' && wch < 0 ) vfu_sort_files();
 }
 
 /*--------------------------------------------------------------------------*/
@@ -2290,53 +2288,53 @@ void vfu_edit_entry( )
 
   int one = ( sel_count == 0 );
   int z;
-  VString str;
+  WString str;
 
   mb.undef();
-  mb.push( "M Mode" );
-  mb.push( "A Octal Mode" );
-  mb.push( "O Owner/Group" );
-  mb.push( "N Name (TAB)" );
-  mb.push( "T Time/Touch Mod+Acc Times" );
-  mb.push( "I Modify Time" );
-  mb.push( "E Access Time" );
-  mb.push( "L Edit SymLink Reference" );
+  mb.push( L"M Mode" );
+  mb.push( L"A Octal Mode" );
+  mb.push( L"O Owner/Group" );
+  mb.push( L"N Name (TAB)" );
+  mb.push( L"T Time/Touch Mod+Acc Times" );
+  mb.push( L"I Modify Time" );
+  mb.push( L"E Access Time" );
+  mb.push( L"L Edit SymLink Reference" );
   if ( sel_count )
     { /* available only when selection exist */
-    mb.push( "--");
-    mb.push( "+ Target: Toggle" );
-    mb.push( "C Target: Current File" );
-    mb.push( "S Target: Selection" );
+    mb.push( L"--");
+    mb.push( L"+ Target: Toggle" );
+    mb.push( L"C Target: Current File" );
+    mb.push( L"S Target: Selection" );
     }
 
   while(1)
     {
     while(1)
       {
-      str = "Edit entry: ";
-      str += one ? "current file" : "[ SELECTION ] ";
+      str = L"Edit entry: ";
+      str += one ? L"current file" : L"[ SELECTION ] ";
       menu_box_info.ac = 9;
       z = vfu_menu_box( 50, 5, str );
       if ( z == -1 ) return; /* canceled */
-      if (menu_box_info.ac == -2 ) menu_box_info.ec = 'N';
-      if (menu_box_info.ec == '+') { one = !one; continue; }
-      if (menu_box_info.ec == 'S') { one = 0; continue; }
-      if (menu_box_info.ec == 'C') { one = 1; continue; }
+      if (menu_box_info.ec ==   9 ) menu_box_info.ec = L'N';
+      if (menu_box_info.ec == L'+') { one = !one; continue; }
+      if (menu_box_info.ec == L'S') { one = 0; continue; }
+      if (menu_box_info.ec == L'C') { one = 1; continue; }
       break;
       }
 
-    if ( menu_box_info.ec == 'N' ) /* name (rename) */
+    if ( menu_box_info.ec == L'N' ) /* name (rename) */
       {
       vfu_rename_file_in_place();
       break;
       } else
-    if ( menu_box_info.ec == 'M' ||
-         menu_box_info.ec == 'A' ) /* attributes/mode */
+    if ( menu_box_info.ec == L'M' ||
+         menu_box_info.ec == L'A' ) /* attributes/mode */
       {
         mode_str_t new_mode;
         int ok = 1;
         int err = 0;
-        if ( menu_box_info.ec == 'M' )
+        if ( menu_box_info.ec == L'M' )
           {
           if (one)
             {
@@ -2385,9 +2383,9 @@ void vfu_edit_entry( )
           say2errno();
         break;
       } else
-    if ( menu_box_info.ec == 'T' ||
-         menu_box_info.ec == 'I' ||
-         menu_box_info.ec == 'E' )
+    if ( menu_box_info.ec == L'T' ||
+         menu_box_info.ec == L'I' ||
+         menu_box_info.ec == L'E' )
       {
         char t[128];
         strcpy( t, "Change times: " );
@@ -2417,10 +2415,10 @@ void vfu_edit_entry( )
             TF *fi = files_list_get(z);
             tb.actime  = fi->st()->st_atime;
             tb.modtime = fi->st()->st_mtime;
-            if (menu_box_info.ec == 'M') tb.modtime = new_time;
-            if (menu_box_info.ec == 'S') tb.actime  = new_time;
-            if (menu_box_info.ec == 'T') tb.modtime = new_time;
-            if (menu_box_info.ec == 'T') tb.actime  = new_time;
+            if (menu_box_info.ec == L'M') tb.modtime = new_time;
+            if (menu_box_info.ec == L'S') tb.actime  = new_time;
+            if (menu_box_info.ec == L'T') tb.modtime = new_time;
+            if (menu_box_info.ec == L'T') tb.actime  = new_time;
             if (utime( fi->name(), &tb ) == 0)
               {
               fi->update_stat();
@@ -2438,7 +2436,7 @@ void vfu_edit_entry( )
           say2errno();
         break;
       } else
-    if ( menu_box_info.ec == 'O' )
+    if ( menu_box_info.ec == L'O' )
       {
         #ifdef _TARGET_GO32_
         say1( "Change owner/group function is not supported under DOS filesystem" );
@@ -2593,12 +2591,12 @@ void vfu_jump_to_mountpoint( int all )
              (const char*)(str_dot_reduce( t, 30 ))
              );
 
-    mb.push(str);
+    mb.push(WString(str));
     }
   menu_box_info.ac = KEY_CTRL_U;
-  z = vfu_menu_box( 5, 5, "Jump to mount-point (free/total) Ctrl+U=umount" );
+  z = vfu_menu_box( 5, 5, L"Jump to mount-point (free/total) Ctrl+U=umount" );
   if ( z == -1 )   return;
-  if (menu_box_info.ac == -2)
+  if ( menu_box_info.ec == KEY_CTRL_U )
     {
     str = va[z];
     str_fix_path( str );
@@ -2616,7 +2614,7 @@ void vfu_jump_to_mountpoint( int all )
       say1( "umount failed" );
     }
   else
-    vfu_chdir( va[z] );
+    vfu_chdir( VString( va[z] ) );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -2646,7 +2644,7 @@ void vfu_user_menu()
       }
 
     lines.push( split[3] );
-    mb.push( des );
+    mb.push( WString( des ) );
     }
 
   if ( mb.count() == 0 )
@@ -2654,7 +2652,7 @@ void vfu_user_menu()
     say1("No menu user externals defined...");
     return;
     }
-  z = vfu_menu_box( 5, 5, "User menu (externals) " );
+  z = vfu_menu_box( 5, 5, L"User menu (externals) " );
   if ( z == -1 ) return;
 
   if ( work_mode == WM_NORMAL )
@@ -2686,7 +2684,7 @@ void vfu_file_find_results()
 
   say1center("------- ESC Exit ----- ENTER Chdir to target ----- P Panelize all results -----", cINFO );
   say2("");
-  int z = con_full_box( 1, 1, "VFU File find results", &file_find_results, &bi );
+  int z = con_full_box( 1, 1, L"VFU File find results", &file_find_results, &bi );
 
   if ( bi.ec == 13 )
     {
@@ -2776,10 +2774,12 @@ int __ff_process( const char* origin,    /* origin path */
   str_pad( size_str, 7 );
   str = "";
   str = str + time_str + " " + size_str + " | " + fname;
-  file_find_results.push( str );
-  str = str_dot_reduce( str, con_max_x()-1 );
+  WString wstr;
+  wstr.set_failsafe( str );
+  file_find_results.push( wstr );
+  wstr = str_dot_reduce( wstr, con_max_x()-1 );
   con_puts( "\r" );
-  con_puts( str, cSTATUS );
+  con_puts( VString( wstr ), cSTATUS );
   con_puts( "\n" );
 
   str = "Found items: ";
@@ -2791,23 +2791,23 @@ int __ff_process( const char* origin,    /* origin path */
 void vfu_file_find( int menu )
 {
   VString str;
-  char ch;
+  wchar_t wch;
 
   if (menu)
     {
-    if ( vfu_menu_box("File find", "L Last find results,D Drop find results,N File find,F Find string (no case),S Scan string (case),B Scan string (case),E Hex string,/ Regular expresion,\\ Reg.exp (no case)", 5 ) == -1 ) return;
-    ch = menu_box_info.ec;
+    if ( vfu_menu_box( L"File find", L"L Last find results,D Drop find results,N File find,F Find string (no case),S Scan string (case),B Scan string (case),E Hex string,/ Regular expresion,\\ Reg.exp (no case)", 5 ) == -1 ) return;
+    wch = menu_box_info.ec;
     }
   else
-    ch = 'N';
-  if ( ch == 'L' )
+    wch = L'N';
+  if ( wch == L'L' )
     {
     if ( file_find_results.count() == 0 )
       file_find_results.fload( filename_ffr );
     vfu_file_find_results();
     return;
     }
-  if ( ch == 'D' )
+  if ( wch == L'D' )
     {
     file_find_results.undef();
     vfu_file_find_results(); /* FIXME: this will show `no results' warning */
@@ -2815,16 +2815,16 @@ void vfu_file_find( int menu )
     }
 
   __ff_pattern = "";
-  if ( str_find( "FSB/\\", ch ) != -1 ) /* we want search for pattern */
+  if ( str_find( "FSB/\\", wch ) != -1 ) /* we want search for pattern */
     {
     __ff_pattern = vfu_hist_get( HID_FFGREP, 0 );
     if (!vfu_get_str( "Enter search pattern: ", __ff_pattern, HID_FFGREP )) return;
-    if (ch == 'F' ) __ff_opt = "i "; else
-    if (ch == 'S' ) __ff_opt = "  "; else
-    if (ch == 'B' ) __ff_opt = "  "; else
-    if (ch == 'E' ) __ff_opt = "h "; else
-    if (ch == '/' ) __ff_opt = "r "; else
-    if (ch == '\\') __ff_opt = "ri"; else
+    if (wch == L'F' ) __ff_opt = "i "; else
+    if (wch == L'S' ) __ff_opt = "  "; else
+    if (wch == L'B' ) __ff_opt = "  "; else
+    if (wch == L'E' ) __ff_opt = "h "; else
+    if (wch == L'/' ) __ff_opt = "r "; else
+    if (wch == L'\\') __ff_opt = "ri"; else
     {};
     }
 
@@ -2875,25 +2875,25 @@ void vfu_read_files_menu()
   VString str;
   mb.undef();
   /* I don't format src like this but it gives clear idea what is all about */
-  mb.push( "T Rescan DirTree" );           list.push("");
-  mb.push( "F Rescan Files" );             list.push("");
-  mb.push( "R Rescan Files Recursive" );   list.push("");
-  mb.push( "L Refresh all views/screen (Ctrl+L)" ); list.push("");
+  mb.push( L"T Rescan DirTree" );           list.push("");
+  mb.push( L"F Rescan Files" );             list.push("");
+  mb.push( L"R Rescan Files Recursive" );   list.push("");
+  mb.push( L"L Refresh all views/screen (Ctrl+L)" ); list.push("");
   if ( panelizers.count() > 0 )
     {
-    mb.push( "--panelizers---" );         list.push("");
+    mb.push( L"--panelizers---" );         list.push("");
     for ( z = 0; z < panelizers.count(); z++ )
       {
       str = panelizers[z];
       str_word( str, ",", t );
       /* fix menu hotkeys */
       str_ins( t, 1, " " );
-      str_set_ch( t, 0, toupper(str_get_ch(t, 0)) );
-      mb.push(t);
+      str_set_ch( t, 0, toupper( str_get_ch( t, 0 ) ) );
+      mb.push( WString( t ) );
       list.push(str);
       }
     }
-  z = vfu_menu_box( 25, 5, "Read/Rescan Files" );
+  z = vfu_menu_box( 25, 5, L"Read/Rescan Files" );
   if ( z == -1 )
     {
     return;
@@ -2906,12 +2906,12 @@ void vfu_read_files_menu()
     vfu_read_files( 0 );
     }
   else
-  switch(menu_box_info.ec)
+  switch( menu_box_info.ec )
     {
-    case 'T' : tree_rebuild(); break;
-    case 'F' : vfu_read_files( 0 ); break;
-    case 'R' : vfu_read_files( 1 ); break;
-    case 'L' : vfu_reset_screen(); break;
+    case L'T' : tree_rebuild(); break;
+    case L'F' : vfu_read_files( 0 ); break;
+    case L'R' : vfu_read_files( 1 ); break;
+    case L'L' : vfu_reset_screen(); break;
     }
 }
 

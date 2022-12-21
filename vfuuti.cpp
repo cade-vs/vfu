@@ -187,10 +187,10 @@ while( a_line[i] )
 int vfu_break_op()
 {
   if (con_kbhit())
-    if (con_getch() == 27)
+    if (con_getwch() == 27)
       {
       say2( "Press ENTER to cancel or other key to continue..." );
-      int key = con_getch();
+      int key = con_getwch();
       say2( "" );
       if ( key == 13 )
         return 1;
@@ -239,12 +239,17 @@ fsize_t vfu_update_sel_size( int one ) // used before copy/move to calc estimate
 
 /*---------------------------------------------------------------------------*/
 
-int vfu_ask( const char *prompt, const char *allowed )
+wchar_t vfu_ask( const wchar_t *prompt, const wchar_t *allowed )
 {
-  int ch = 1;
-  say1( prompt );
-  while ( strchr( allowed, ch ) == NULL ) ch = con_getch();
-  return ch;
+  wchar_t wch = 0;
+  say1( VString( prompt ) );
+  while(4)
+    {
+    wch = con_getwch();
+    if( wch == 27 ) return wch;
+    if( str_find( allowed, wch ) >= 0 ) return wch;
+    }
+  return 0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -415,7 +420,7 @@ void vfu_hist_remove( int hist_id, int index )
     }
 }
 
-int vfu_hist_menu( int x, int y, const char* title, int hist_id )
+int vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id )
 {
   VString str;
 
@@ -430,7 +435,7 @@ int vfu_hist_menu( int x, int y, const char* title, int hist_id )
     str = "";
     str_add_ch( str, z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
     str = str + " " + vfu_hist_get( hist_id, z );
-    mb.push( str );
+    mb.push( WString( str ) );
     }
   return vfu_menu_box( x, y, title );
 }
@@ -444,7 +449,7 @@ void vfu_get_str_history( int key, WString &w, int &pos )
   if ( key != KEY_NPAGE && key != KEY_PPAGE ) return;
   con_chide();
 
-  int z = vfu_hist_menu( 5, 5, "Line History", __vfu_get_str_hist_id );
+  int z = vfu_hist_menu( 5, 5, L"Line History", __vfu_get_str_hist_id );
 
   con_cshow();
   if ( z == -1 ) return;

@@ -221,8 +221,16 @@ int cc = 0;
           wch = con_getwch();
           if ( wch != 9 ) { dir_list.undef(); continue; }
           dir_list.sort();
+          WArray w_dir_list;
+          int di;
+          for( di = 0; di < dir_list.count(); di++ ) 
+            {
+            WString ws;
+            ws.set_failsafe( dir_list[di] );
+            w_dir_list.push( ws );
+            }
           con_chide();
-          z = vfu_menu_box( 10, 5, "Complete...", &dir_list );
+          z = vfu_menu_box( 10, 5, L"Complete...", &w_dir_list );
           con_cshow();
           wch = 0;
           }
@@ -308,7 +316,7 @@ int cc = 0;
     if ( wch == KEY_WIDE(KEY_NPAGE) || wch == KEY_WIDE(KEY_PPAGE) )
       {
       con_chide();
-      int zz = vfu_hist_menu( 5, 5, ( wch == KEY_WIDE(KEY_PPAGE) ) ? "Dir Entry History" : "ChDir History",
+      int zz = vfu_hist_menu( 5, 5, ( wch == KEY_WIDE(KEY_PPAGE) ) ? L"Dir Entry History" : L"ChDir History",
                                     ( wch == KEY_WIDE(KEY_PPAGE) ) ? HID_GETDIR : HID_CHDIR );
       con_cshow();
       if (zz != -1)
@@ -341,21 +349,18 @@ int cc = 0;
   if ( res == 1 && str_len( target ) > 0 && should_exist && type == 'D' && !dir_exist( VString( target ) ))
     {
     vfu_beep();
-    int ch = tolower( vfu_ask( "Directory does not exist! Create? "
-                               "( ENTER=Yes, ESC=cancel )",
-                               "\033\rcC" ));
-    if ( ch == 27 )
+    wchar_t wch = towlower( vfu_ask( L"Directory does not exist! Create? "
+                                     L"( ENTER=Yes, ESC=cancel )",
+                                     L"cC" ));
+    if ( wch == 27 )
       {
       res = 0;
       target = "";
       }
-    else
-    if ( ch == 13 )
+    else if ( wch == 13 )
        if ( make_path( VString( target ) ))
          {
-         if(tolower(
-            vfu_ask( "Cannot create path! ( ESC=cancel, C=continue-anyway )",
-            "\033Cc" )) == 27)
+         if(vfu_ask( L"Cannot create path! ( ESC=cancel, C=continue-anyway )", L"Cc" ) == 27 )
             {
             res = 0;
             target.undef();
@@ -420,7 +425,7 @@ void vfu_chdir( const char *a_new_dir )
       z = tree_find( target, &mb );
       if (z > 1)
         {
-        z = vfu_menu_box( 10, 5, "Change dir to..." );
+        z = vfu_menu_box( 10, 5, L"Change dir to..." );
         if (z > -1)
           target = mb.get(z);
         else
@@ -477,7 +482,7 @@ void vfu_chdir( const char *a_new_dir )
 
 void vfu_chdir_history()
 {
-  int z = vfu_hist_menu( 5, 5, "ChDir History", HID_CHDIR );
+  int z = vfu_hist_menu( 5, 5, L"ChDir History", HID_CHDIR );
   if (z == -1) return;
   do_draw = 1;
   //strcpy(opt.LastDir, CPath);
@@ -1112,7 +1117,7 @@ const char* tree_find( const char *s ) // return full path by dirname
 /*-----------------------------------------------------------------------*/
 /* return count of found dirnames and stores them to va */
 
-int tree_find( const char *s, VArray *va )
+int tree_find( const char *s, WArray *wa )
 {
   VString str;
   int z = 0;
@@ -1126,10 +1131,10 @@ int tree_find( const char *s, VArray *va )
       {
       str = dir_tree[z];
       str_tr( str, "\\", "/" );
-      va->push( str );
+      wa->push( WString( str ) );
       }
     }
-  return va->count();
+  return wa->count();
 }
 
 /*###########################################################################*/

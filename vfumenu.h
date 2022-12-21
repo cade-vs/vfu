@@ -15,9 +15,9 @@
 
 #define menu_box_info con_default_menu_info
 
-int vfu_toggle_box( int x, int y, const char *title, ToggleEntry* toggles );
-int vfu_menu_box( int x, int y, const char *title, VArray *va = &mb );
-int vfu_menu_box( const char* title, const char* menustr, int row = -1 );
+int vfu_toggle_box( int x, int y, const wchar_t *title, ToggleEntry* toggles );
+int vfu_menu_box( int x, int y, const wchar_t *title, WArray *wa = &mb );
+int vfu_menu_box( const wchar_t* title, const wchar_t* menustr, int row = -1 );
 
 
 #endif /* _VFUMENU_H_ */

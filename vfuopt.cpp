@@ -16,66 +16,66 @@
 
 Options opt;
 
-const char *NOYES[] = { " - ", "YES", NULL };
-const char *NOYESPRECOPY[] = { " - ", "YES", "PRELIM", NULL };
-const char *FTIMETYPE[] = { "CHANGE", "MODIFY", "ACCESS", NULL };
+const wchar_t *NOYES[] = { L" - ", L"YES", NULL };
+const wchar_t *NOYESPRECOPY[] = { L" - ", L"YES", L"PRELIM", NULL };
+const wchar_t *FTIMETYPE[] = { L"CHANGE", L"MODIFY", L"ACCESS", NULL };
 #ifdef _TARGET_GO32_
-const char *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
+const wchar_t *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
 #else
-const char *TAGMARKS[] = { ">>", "=>", "->", NULL };
+const wchar_t *TAGMARKS[] = { L">>", L"=>", L"->", L"*>", NULL };
 #endif
-const char *SIIEC[] = { "IEC", "SI ", NULL };
-const char *COMMA_TYPES[] = { "'", "`", ",", " ", "_", NULL };
-const char *PAGE_STEPS[] = { "1 LINE", "30% PG", "50% PG", NULL };
+const wchar_t *SIIEC[] = { L"IEC", L"SI ", NULL };
+const wchar_t *COMMA_TYPES[] = { L"'", L"`", L",", L" ", L"_", NULL };
+const wchar_t *PAGE_STEPS[] = { L"1 LINE", L"30% PG", L"50% PG", NULL };
 
 ToggleEntry Toggles[] =
 {
 //  { "[a] 1234567890123456", &(opt.some) },
-  {  0 , "--screen--", NULL, NULL },
-  { '1', "Show Mode  field", &(opt.f_mode), NOYES },
-  { '2', "Show Owner field", &(opt.f_owner), NOYES },
-  { '3', "Show Group field", &(opt.f_group), NOYES },
-  { '4', "Show Time  field", &(opt.f_time), NOYES },
-  { '5', "Show Size  field", &(opt.f_size), NOYES },
-  { '6', "Show Type  field", &(opt.f_type), NOYES },
-  { '7', "     Time Type ", &(opt.f_time_type), FTIMETYPE },
-  { '8', "Long name view ", &(opt.long_name_view), NOYES },
-  { ' ', "TagMark type   ", &(opt.tag_mark_type), TAGMARKS },
-  { ' ', "Use colors     ", &(opt.use_colors), NOYES },
-  { ' ', "Use /etc/DIR_COLORS", &(opt.use_dir_colors), NOYES },
-  { ' ', "Lowercase extensions for configs", &(opt.lower_case_ext_config), NOYES },
-  { '.', "Show hidden files", &(opt.show_hidden_files), NOYES },
-  {  0 , "--navigation--", NULL, NULL },
-  { 'i', "Use internal viewer", &(opt.internal_browser), NOYES },
-  { 'I', "Use internal editor", &(opt.internal_editor), NOYES },
-  { ' ', "Use menu borders", &(opt.menu_borders), NOYES },
-  {  0 , "--trees/dirs-- " , NULL, NULL },
-  { ' ', "Compact DirTree", &(opt.tree_compact), NOYES },
-  { ' ', "CDTree (cdpath) ", &(opt.tree_cd), NOYES },
-  {  0 , "--troubleshooting--", NULL, NULL },
-  { ' ', "Clear screen on shell", &(opt.shell_cls), NOYES },
-  {  0 , "--compatibility--", NULL, NULL },
-  { ' ', "Lynx style navigation",       &(opt.lynx_navigation), NOYES },
-  { ' ', "Mask auto expand", &(opt.mask_auto_expand), NOYES },
-  { ' ', "Use CWD as target for COPY/MOVE", &(opt.default_copy_to_cwd), NOYES },
-  {  0 , "--other--", NULL, NULL },
-/*  { ' ', "Can Zap/Erase READ-ONLY Files?!",       &(opt.zap_ro), NOYES }, ? */
-  { ' ', "Keep directories on top of the list",    &(opt.sort_top_dirs), NOYES },
-  { ' ', "Smart HOME/END keys (only Top Dirs mode)",    &(opt.smart_home_end), NOYES },
-  { ' ', "Case insensitive file/dir names matching",       &(opt.no_case_glob), NOYES },
-  { 'b', "Allow beep!",       &(opt.allow_beep), NOYES },
-  { 's', "Free space check on copy",  &(opt.copy_free_space_check), NOYES },
-  { ' ', "Auto mount on change dir",  &(opt.auto_mount), NOYES},
-  { ' ', "Preserve selection (after rescan)",  &(opt.keep_selection), NOYES},
-  { ' ', "Preserve ownership/mode on copy?", &(opt.copy_keep_mode), NOYES },
-  { ' ', "Show user's free space", &(opt.show_user_free), NOYES },
-  { ' ', "Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
-  { ' ', "Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
-  { ' ', "Prefer GiB in disk usage status", &(opt.use_gib_usage), NOYES },
-  { ' ', "Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
-  { ' ', "1000s separator type", &(opt.comma_type), COMMA_TYPES },
-  { ' ', "Scrolling page step", &(opt.scroll_pagestep), PAGE_STEPS },
-  {  -1, "---", NULL, NULL }
+  { L' ', L"--screen--", NULL, NULL },
+  { L'1', L"Show Mode  field", &(opt.f_mode), NOYES },
+  { L'2', L"Show Owner field", &(opt.f_owner), NOYES },
+  { L'3', L"Show Group field", &(opt.f_group), NOYES },
+  { L'4', L"Show Time  field", &(opt.f_time), NOYES },
+  { L'5', L"Show Size  field", &(opt.f_size), NOYES },
+  { L'6', L"Show Type  field", &(opt.f_type), NOYES },
+  { L'7', L"     Time Type ", &(opt.f_time_type), FTIMETYPE },
+  { L'8', L"Long name view ", &(opt.long_name_view), NOYES },
+  { L' ', L"TagMark type   ", &(opt.tag_mark_type), TAGMARKS },
+  { L' ', L"Use colors     ", &(opt.use_colors), NOYES },
+  { L' ', L"Use /etc/DIR_COLORS", &(opt.use_dir_colors), NOYES },
+  { L' ', L"Lowercase extensions for configs", &(opt.lower_case_ext_config), NOYES },
+  { L'.', L"Show hidden files", &(opt.show_hidden_files), NOYES },
+  { L' ', L"--navigation--", NULL, NULL },
+  { L'i', L"Use internal viewer", &(opt.internal_browser), NOYES },
+  { L'I', L"Use internal editor", &(opt.internal_editor), NOYES },
+  { L' ', L"Use menu borders", &(opt.menu_borders), NOYES },
+  { L' ', L"--trees/dirs-- " , NULL, NULL },
+  { L' ', L"Compact DirTree", &(opt.tree_compact), NOYES },
+  { L' ', L"CDTree (cdpath) ", &(opt.tree_cd), NOYES },
+  { L' ', L"--troubleshooting--", NULL, NULL },
+  { L' ', L"Clear screen on shell", &(opt.shell_cls), NOYES },
+  { L' ', L"--compatibility--", NULL, NULL },
+  { L' ', L"Lynx style navigation",       &(opt.lynx_navigation), NOYES },
+  { L' ', L"Mask auto expand", &(opt.mask_auto_expand), NOYES },
+  { L' ', L"Use CWD as target for COPY/MOVE", &(opt.default_copy_to_cwd), NOYES },
+  { L' ', L"--other--", NULL, NULL },
+/*  { ' 'L, "Can Zap/Erase READ-ONLY Files?!",       &(opt.zap_ro), NOYES }, ? */
+  { L' ', L"Keep directories on top of the list",    &(opt.sort_top_dirs), NOYES },
+  { L' ', L"Smart HOME/END keys (only Top Dirs mode)",    &(opt.smart_home_end), NOYES },
+  { L' ', L"Case insensitive file/dir names matching",       &(opt.no_case_glob), NOYES },
+  { L'b', L"Allow beep!",       &(opt.allow_beep), NOYES },
+  { L's', L"Free space check on copy",  &(opt.copy_free_space_check), NOYES },
+  { L' ', L"Auto mount on change dir",  &(opt.auto_mount), NOYES},
+  { L' ', L"Preserve selection (after rescan)",  &(opt.keep_selection), NOYES},
+  { L' ', L"Preserve ownership/mode on copy?", &(opt.copy_keep_mode), NOYES },
+  { L' ', L"Show user's free space", &(opt.show_user_free), NOYES },
+  { L' ', L"Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
+  { L' ', L"Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
+  { L' ', L"Prefer GiB in disk usage status", &(opt.use_gib_usage), NOYES },
+  { L' ', L"Show file/dir sizes in units", &(opt.use_si_sizes), SIIEC },
+  { L' ', L"1000s separator type", &(opt.comma_type), COMMA_TYPES },
+  { L' ', L"Scrolling page step", &(opt.scroll_pagestep), PAGE_STEPS },
+  {    0, L"---", NULL, NULL }
 };
 
 /*---------------------------------------------------------------------------*/
@@ -477,7 +477,7 @@ void vfu_options()
 {
   say1("press SPACE to toggle, ENTER or ESC to exit");
   say2("");
-  vfu_toggle_box( 30, 5, "Options/Toggles (scroll down, SPACE selects)", Toggles );
+  vfu_toggle_box( 30, 5, L"Options/Toggles (scroll down, SPACE selects)", Toggles );
   vfu_settings_save();
   vfu_settings_load();
   vfu_drop_all_views();

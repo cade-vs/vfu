@@ -188,7 +188,7 @@ void vfu_draw( int n )
 
 /*#######################################################################*/
 
-extern const char *FTIMETYPE[]; /* in vfuopt.cpp */
+extern const wchar_t *FTIMETYPE[]; /* in vfuopt.cpp */
 void vfu_redraw() /* redraw file list and header */
 {
   fname_t t;
@@ -196,12 +196,12 @@ void vfu_redraw() /* redraw file list and header */
 
   str  = "Mask: ";
   str += files_mask;
-  con_out(1,1,str,cINFO);
-  con_ce(cINFO);
+  con_out( 1, 1, VString(str), cINFO );
+  con_ce( cINFO );
   if ( work_mode == WM_ARCHIVE )
     con_out( con_max_x()-34, 1, " [-ARCHIVE-] ", cWARNING );
-  con_out(con_max_x()-17,1,"Press H for help",cINFO);
-  con_out(con_max_x()-20,1,"VFU " VFU_VERSION " <H> for help",cINFO);
+  con_out( con_max_x()-17,1, "Press H for help", cINFO);
+  con_out( con_max_x()-20,1, "VFU " VFU_VERSION " <H> for help",cINFO);
 
   str = "Path: ";
   str += work_path;
@@ -238,7 +238,7 @@ void vfu_redraw() /* redraw file list and header */
     if ( opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
     if ( opt.f_owner ) spos += sprintf( spos, "   OWNER " );
     if ( opt.f_group ) spos += sprintf( spos, "   GROUP " );
-    if ( opt.f_time  ) spos += sprintf( spos, "%s  TiME ", FTIMETYPE[opt.f_time_type] );
+    if ( opt.f_time  ) spos += sprintf( spos, "%s  TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
     if ( opt.f_size  ) spos += sprintf( spos, "          SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )

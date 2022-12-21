@@ -133,10 +133,20 @@ void vfu_browse_archive_file()
 
   vfu_shell( s, "" );
 
-  chdir( tmpdir ); /* FIXME: a little hack -- vfu_shell() changes current path */
+  if(chdir( tmpdir )) /* FIXME: a little hack -- vfu_shell() changes current path */
+    {
+    say1( "error: cannot chdir to temp directory: " + tmpdir );
+    say2errno();
+    return;
+    }
   vfu_browse( fn );
 
-  chdir( work_path );
+  if(chdir( work_path ))
+    {
+    say1( "error: cannot chdir back to work directory: " + work_path );
+    say2errno();
+    return;
+    }
   __vfu_dir_erase( tmpdir );
   say1( "" );
 }
@@ -165,12 +175,22 @@ void vfu_user_external_archive_exec( VString &shell_line  )
 
   vfu_shell( s, "" );
 
-  chdir( tmpdir ); /* FIXME: a little hack -- vfu_shell() changes current path */
+  if(chdir( tmpdir )) /* FIXME: a little hack -- vfu_shell() changes current path */
+    {
+    say1( "error: cannot chdir to temp directory: " + tmpdir );
+    say2errno();
+    return;
+    }
   str_replace( shell_line, "%f", fn );
   str_replace( shell_line, "%F", fn );
   vfu_shell( shell_line, "" );
 
-  chdir( work_path );
+  if(chdir( work_path ))
+    {
+    say1( "error: cannot chdir back to work directory: " + work_path );
+    say2errno();
+    return;
+    }
   __vfu_dir_erase( tmpdir );
   say1( "" );
 }

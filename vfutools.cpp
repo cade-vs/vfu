@@ -15,16 +15,16 @@
 
 /*------------------------------------------------------------------------*/
 
-void __get_classify_str( const char *fname, char ch, char *tmp )
+void __get_classify_str( const char *fname, wchar_t wch, char *tmp )
 {
   tmp[0] = 0;
   strcpy( tmp, str_file_path( fname ) );
-  if (ch == 'N')
+  if ( wch == L'N')
     {
     strcat( tmp, str_file_name( fname ) );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     }
-  else if (ch == 'E')
+  else if (wch == L'E')
     {
     strcat( tmp, str_file_ext( fname ) );
     if (strlen(tmp) == 0) strcat( tmp, "---" );
@@ -32,7 +32,7 @@ void __get_classify_str( const char *fname, char ch, char *tmp )
   else
     {
     strcat( tmp, str_file_name( fname ) );
-    str_sleft( tmp, ch - '0' );
+    str_sleft( tmp, wch - L'0' );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     }
 }
@@ -47,21 +47,21 @@ void vfu_tool_classify()
     }
 
   mb.undef();
-  mb.push( "N Name           ");
-  mb.push( "E Ext"             );
-  mb.push( "1 First 1 letter "  );
-  mb.push( "2 First 2 letters" );
-  mb.push( "3 First 3 letters" );
-  mb.push( "4 First 4 letters" );
-  mb.push( "5 First 5 letters" );
-  mb.push( "6 First 6 letters" );
-  mb.push( "7 First 7 letters" );
-  mb.push( "8 First 8 letters" );
-  mb.push( "9 First 9 letter"  );
-  if ( vfu_menu_box( 32, 6, "Classify files by") == -1 ) return;
-  char ch = menu_box_info.ec;
+  mb.push( L"N Name           ");
+  mb.push( L"E Ext"             );
+  mb.push( L"1 First 1 letter "  );
+  mb.push( L"2 First 2 letters" );
+  mb.push( L"3 First 3 letters" );
+  mb.push( L"4 First 4 letters" );
+  mb.push( L"5 First 5 letters" );
+  mb.push( L"6 First 6 letters" );
+  mb.push( L"7 First 7 letters" );
+  mb.push( L"8 First 8 letters" );
+  mb.push( L"9 First 9 letter"  );
+  if ( vfu_menu_box( 32, 6, L"Classify files by") == -1 ) return;
+  wchar_t wch = menu_box_info.ec;
 
-  mb.undef();
+  VArray fa; // files array
   int z;
   int i;
   for ( z = 0; z < files_list_count(); z++ )
@@ -69,23 +69,23 @@ void vfu_tool_classify()
     TF *fi = files_list_get(z);
     if (   fi->is_dir() ) continue;
     if ( ! fi->sel      ) continue;
-    __get_classify_str( fi->name(), ch, tmp );
+    __get_classify_str( fi->name(), wch, tmp );
     int found = 0;
-    for ( i = 0; i < mb.count(); i++ )
-      if ( pathcmp( tmp, mb[i] ) == 0 ) { found = 1; break; }
-    if ( ! found ) mb.push( tmp );
+    for ( i = 0; i < fa.count(); i++ )
+      if ( pathcmp( tmp, fa[i] ) == 0 ) { found = 1; break; }
+    if ( ! found ) fa.push( tmp );
     }
-  for ( i = 0; i < mb.count(); i++ )
+  for ( i = 0; i < fa.count(); i++ )
     {
-    if( dir_exist( mb[i] ) ) continue;
-    int res = make_path( mb[i] );
+    if( dir_exist( fa[i] ) ) continue;
+    int res = make_path( fa[i] );
     if ( res )
       {
       fname_t t;
-      sprintf( t, "Cannot create directory: %s, (press a key for cancel)", mb.get(i) );
+      sprintf( t, "Cannot create directory: %s, (press a key for cancel)", fa.get(i) );
       say1( t );
       say2errno();
-      con_getch();
+      con_getwch();
       return;
       }
     }
@@ -98,7 +98,7 @@ void vfu_tool_classify()
     if ( fi->is_dir()  ) continue;
     if ( fi->is_link() ) continue;
     if ( !fi->sel      ) continue;
-    __get_classify_str( fi->name(), ch, tmp );
+    __get_classify_str( fi->name(), wch, tmp );
     strcat( tmp, "/" );
     ASSERT( dir_exist( tmp ) );
     strcat( tmp, fi->name_ext());
@@ -123,33 +123,33 @@ void vfu_tool_rename()
     { say1( "No files to rename... (You have to select required files)" ); return; };
 
   mb.undef();
-  mb.push( "1 README.TXT => readme.txt"    );
-  mb.push( "2 README.TXT => readme.TXT"    );
-  mb.push( "3 README.TXT => README.txt"    );
-  mb.push( "4 readme.txt => README.TXT"    );
-  mb.push( "5 readme.txt => README.txt"    );
-  mb.push( "6 readme.txt => readme.TXT"    );
-  mb.push( "_ Replace spaces with _"       );
-  mb.push( "Y Simplify name (RTFM)"        );
-  mb.push( "S Sequential rename"           );
-  mb.push( "T Prefix with current date+time" );
-  mb.push( "D Prefix with current date"      );
-  mb.push( "W Swap SymLink with Original"     );
-  mb.push( "R Replace SymLink with Original"   );
-  if (vfu_menu_box( 32, 6, "Rename Tools" ) == -1) return;
+  mb.push( L"1 README.TXT => readme.txt"    );
+  mb.push( L"2 README.TXT => readme.TXT"    );
+  mb.push( L"3 README.TXT => README.txt"    );
+  mb.push( L"4 readme.txt => README.TXT"    );
+  mb.push( L"5 readme.txt => README.txt"    );
+  mb.push( L"6 readme.txt => readme.TXT"    );
+  mb.push( L"_ Replace spaces with _"       );
+  mb.push( L"Y Simplify name (RTFM)"        );
+  mb.push( L"S Sequential rename"           );
+  mb.push( L"T Prefix with current date+time" );
+  mb.push( L"D Prefix with current date"      );
+  mb.push( L"W Swap SymLink with Original"     );
+  mb.push( L"R Replace SymLink with Original"   );
+  if (vfu_menu_box( 32, 6, L"Rename Tools" ) == -1) return;
   switch( menu_box_info.ec )
     {
-    case 'S' : vfu_tool_seq_rename(); break;
-    case 'R' : vfu_tool_replace_sym_org(0); break;
-    case 'W' : vfu_tool_replace_sym_org(1); break;
-    case '1' :
-    case '2' :
-    case '3' :
-    case '4' :
-    case '5' :
-    case '6' :
-    case '_' :
-    case 'Y' :
+    case L'S' : vfu_tool_seq_rename(); break;
+    case L'R' : vfu_tool_replace_sym_org(0); break;
+    case L'W' : vfu_tool_replace_sym_org(1); break;
+    case L'1' :
+    case L'2' :
+    case L'3' :
+    case L'4' :
+    case L'5' :
+    case L'6' :
+    case L'_' :
+    case L'Y' :
                err = 0;
                for ( z = 0; z < files_list_count(); z++ )
                  {
@@ -161,16 +161,16 @@ void vfu_tool_rename()
                  new_name = "";
 
                  t = str_file_name( fi->name() );
-                 if (menu_box_info.ec == '1' || menu_box_info.ec == '2')
+                 if (menu_box_info.ec == L'1' || menu_box_info.ec == L'2')
                    str_low( t );
-                 if (menu_box_info.ec == '4' || menu_box_info.ec == '5')
+                 if (menu_box_info.ec == L'4' || menu_box_info.ec == L'5')
                    str_up( t );
                  new_name += t;
 
                  t = str_file_ext( fi->name() );
-                 if (menu_box_info.ec == '1' || menu_box_info.ec == '3')
+                 if (menu_box_info.ec == L'1' || menu_box_info.ec == L'3')
                    str_low( t );
-                 if (menu_box_info.ec == '4' || menu_box_info.ec == '6')
+                 if (menu_box_info.ec == L'4' || menu_box_info.ec == L'6')
                    str_up( t );
 
                  if (strlen(t) > 0)
@@ -179,10 +179,10 @@ void vfu_tool_rename()
                    new_name += t;
                    }
 
-                 if (menu_box_info.ec == '_')
+                 if (menu_box_info.ec == L'_')
                    str_tr( new_name, " ", "_" );
 
-                 if (menu_box_info.ec == 'Y')
+                 if (menu_box_info.ec == L'Y')
                    {
                    str_replace( new_name, "%20", "_" );
                    str_tr( new_name, " `'&\"\\/,()!", "___________" );
@@ -210,13 +210,13 @@ void vfu_tool_rename()
                say1( t );
                break;
 
-    case 'T' :
-    case 'D' :
+    case L'T' :
+    case L'D' :
                char   time_prefix[32];
                time_t timenow = time( NULL );
                tm     tmnow;
                localtime_r( &timenow, &tmnow );
-               if( strftime( time_prefix, sizeof(time_prefix) - 1, menu_box_info.ec == 'T' ? "%Y%m%d_%H%M%S_" : "%Y%m%d_", &tmnow ) <= 0 )
+               if( strftime( time_prefix, sizeof(time_prefix) - 1, menu_box_info.ec == L'T' ? "%Y%m%d_%H%M%S_" : "%Y%m%d_", &tmnow ) <= 0 )
                  {
                  t = "Rename error! Cannot constrict date/time prefix: ";
                  t += strerror( errno );
@@ -330,7 +330,12 @@ void vfu_tool_replace_sym_org( int swap )
     if (rename( org, sym ))  { err++; continue; }
     if (swap)
       {
-      symlink( sym, org );
+      if(symlink( sym, org ))
+        {
+        say1( "error: cannot symlink " + sym + " -> " + org );
+        say2errno();
+        return;
+        }
       }
     fi->update_stat();
     do_draw = 2;

@@ -15,14 +15,15 @@
 
   #define OPT_SCROLL_PAGESTEP(s)  ( (s) == 1 ? 0.3 : (s) == 2 ? 0.5 : 1 )
 
-  extern const char *NOYES[];
-  extern const char *FTIMETYPE[];
-  extern const char *TAGMARKS[];
-  extern const char *COMMA_TYPES[];
+
+  extern const wchar_t *NOYES[];
+  extern const wchar_t *FTIMETYPE[];
+  extern const wchar_t *TAGMARKS[];
+  extern const wchar_t *COMMA_TYPES[];
 
   struct Options {
-    int sort_order;
-    int sort_direction;
+    wchar_t sort_order;
+    wchar_t sort_direction;
     int sort_top_dirs;
 
     fname_t last_copy_path[3];

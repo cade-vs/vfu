@@ -136,27 +136,27 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
     for ( int z = 0; z < 16; z++ ) mode_i[z] = 2;
     }
 
-  const char* AONOFF1[] = { "YES", " - ", " ? ", NULL };
-  const char* AONOFF2[] = { "YES", " - ", NULL };
+  const wchar_t* AONOFF1[] = { L"YES", L" - ", L" ? ", NULL };
+  const wchar_t* AONOFF2[] = { L"YES", L" - ", NULL };
   #define AONOFF  ( allow_masking ? AONOFF1 : AONOFF2 )
   ToggleEntry mode_toggles[] =
   {
-  { ' ', "Read      Owner", &mode_i[ 1], AONOFF },
-  { ' ', "Write     Owner", &mode_i[ 2], AONOFF },
-  { ' ', "Exec/Srch Owner", &mode_i[ 3], AONOFF },
-  { ' ', "Read      Group", &mode_i[ 4], AONOFF },
-  { ' ', "Write     Group", &mode_i[ 5], AONOFF },
-  { ' ', "Exec/Srch Group", &mode_i[ 6], AONOFF },
-  { ' ', "Read      Other", &mode_i[ 7], AONOFF },
-  { ' ', "Write     Other", &mode_i[ 8], AONOFF },
-  { ' ', "Exec/Srch Other", &mode_i[ 9], AONOFF },
-  { ' ', "Set user  id",    &mode_i[10], AONOFF },
-  { ' ', "Set group id",    &mode_i[11], AONOFF },
-  { ' ', "Sticky  Bit",     &mode_i[12], AONOFF },
-  {  -1, "---",             NULL,        NULL },
+  { L' ', L"Read      Owner", &mode_i[ 1], AONOFF },
+  { L' ', L"Write     Owner", &mode_i[ 2], AONOFF },
+  { L' ', L"Exec/Srch Owner", &mode_i[ 3], AONOFF },
+  { L' ', L"Read      Group", &mode_i[ 4], AONOFF },
+  { L' ', L"Write     Group", &mode_i[ 5], AONOFF },
+  { L' ', L"Exec/Srch Group", &mode_i[ 6], AONOFF },
+  { L' ', L"Read      Other", &mode_i[ 7], AONOFF },
+  { L' ', L"Write     Other", &mode_i[ 8], AONOFF },
+  { L' ', L"Exec/Srch Other", &mode_i[ 9], AONOFF },
+  { L' ', L"Set user  id",    &mode_i[10], AONOFF },
+  { L' ', L"Set group id",    &mode_i[11], AONOFF },
+  { L' ', L"Sticky  Bit",     &mode_i[12], AONOFF },
+  {    0, L"---",             NULL,        NULL },
   };
 
-  if ( !vfu_toggle_box( 50, 5, "Change file Mode", mode_toggles ) ) return 0;
+  if ( !vfu_toggle_box( 50, 5, L"Change file Mode", mode_toggles ) ) return 0;
 
   if (mode_i[ 1] < 2) mod_str[1] = mode_i[ 1] == 0 ? 'r' : '-';
   if (mode_i[ 2] < 2) mod_str[2] = mode_i[ 2] == 0 ? 'w' : '-';

@@ -131,7 +131,7 @@ void clipboard_add();
 void clipboard_paste( int mode );
 void clipboard_clear();
 void clipboard_view();
-void clipboard_menu( int act );
+void clipboard_menu( wchar_t act );
 
 #endif //_VFUCOPY_H_
 

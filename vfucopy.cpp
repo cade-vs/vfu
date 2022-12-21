@@ -206,7 +206,7 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
   if ( copy_info->over_mode == OM_ALWAYS_IF_MTIME &&
        stat_src.st_mtime > stat_dst.st_mtime ) return 1; /* newer mtime, do it! */
 
-  int ch = 0;
+  int wch = 0;
   while(4)
     {
     vfu_redraw();
@@ -234,16 +234,23 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     say2( t );
 
     vfu_beep();
-    vfu_menu_box( "Overwrite", "Y Yes,N No,A Always overwrite,V Never overwrite,I If newer (MODIFY),W Always if newer (MODIFY),D View differences,  Abort (ESC)", -1 );
-    ch = menu_box_info.ec;
-    if( ch == 'D' )
+    vfu_menu_box( L"Overwrite", L"Y Yes,N No,A Always overwrite,V Never overwrite,I If newer (MODIFY),W Always if newer (MODIFY),D View differences,  Abort (ESC)", -1 );
+    wch = menu_box_info.ec;
+    if( wch == L'D' )
       {
       VString diff = vfu_temp();
       VString cmd;
-      cmd = shell_diff + " '" + dst + "' '" + src + "' > " + diff;
-      system( cmd );
-      vfu_browse( diff );
-      unlink( diff );
+      cmd = shell_diff + " " + shell_escape( dst ) + " " + shell_escape( src ) + " > " + diff;
+      if(system( cmd ) < 0)
+        {
+        say1( "Cannot execute command: " + cmd );
+        say2errno();
+        }
+      else
+        {  
+        vfu_browse( diff );
+        unlink( diff );
+        }
       continue;
       }
     break;
@@ -251,14 +258,14 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
   say1( "" );
   say2( "" );
 
-  switch (ch)
+  switch (wch)
     {
-    case 'Y' : return 1;
-    case 'N' : return 0;
-    case 'A' : copy_info->over_mode = OM_ALWAYS; return 1;
-    case 'V' : copy_info->over_mode = OM_NEVER; return 0;
-    case 'I' : return ( stat_src.st_mtime > stat_dst.st_mtime ); break;
-    case 'W' : copy_info->over_mode = OM_ALWAYS_IF_MTIME; return 0;
+    case L'Y' : return 1;
+    case L'N' : return 0;
+    case L'A' : copy_info->over_mode = OM_ALWAYS; return 1;
+    case L'V' : copy_info->over_mode = OM_NEVER; return 0;
+    case L'I' : return ( stat_src.st_mtime > stat_dst.st_mtime ); break;
+    case L'W' : copy_info->over_mode = OM_ALWAYS_IF_MTIME; return 0;
     default  : copy_info->abort = 1; return 0;
     }
   return 1;
@@ -342,16 +349,16 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( size ) );
       say2( dst );
 
-      vfu_menu_box( "Error prompt", "C Continue anyway,S Skip file,N No free space check,  Abort (ESC)", -1 );
+      vfu_menu_box( L"Error prompt", L"C Continue anyway,S Skip file,N No free space check,  Abort (ESC)", -1 );
       switch (menu_box_info.ec)
         {
-        case 'C' : break;
+        case L'C' : break;
 
-        case 'S' : copy_info->skipped_count++;
+        case L'S' : copy_info->skipped_count++;
                    return CR_SKIP;
                    break; /* skip it */
 
-        case 'N' : copy_info->no_free_check = 1;
+        case L'N' : copy_info->no_free_check = 1;
                    break;
 
         default  : copy_info->abort = 1;
@@ -493,11 +500,11 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
     say1( dst );
     say2errno();
-    vfu_menu_box( "Create dir error",
-                  "C Continue anyway,I Ignore further errors,  Abort (ESC)", -1 );
-    if ( menu_box_info.ec != 'C' )
+    vfu_menu_box( L"Create dir error",
+                  L"C Continue anyway,I Ignore further errors,  Abort (ESC)", -1 );
+    if ( menu_box_info.ec != L'C' )
       return CR_ABORT; /* cancel operation */
-    if ( menu_box_info.ec != 'I' )
+    if ( menu_box_info.ec != L'I' )
       {
       ignore_copy_errors = 1;
       return CR_ABORT; /* cancel operation */
@@ -539,17 +546,17 @@ int __vfu_dir_copy( const char* src, const char* dst, CopyInfo* copy_info )
         vfu_beep();
         say1( fname_dst );
         say2errno();
-        vfu_menu_box( "Copy/Move/SymLink error",
-                      "T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
-        if ( menu_box_info.ec == 'T' )
+        vfu_menu_box( L"Copy/Move/SymLink error",
+                      L"T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
+        if ( menu_box_info.ec == L'T' )
           continue; /* while(4) */
         else
-        if ( menu_box_info.ec == 'S' )
+        if ( menu_box_info.ec == L'S' )
           {
           copy_info->skipped_count++;
           break; /* consider it ok */
           };
-        if ( menu_box_info.ec == 'I' )
+        if ( menu_box_info.ec == L'I' )
           {
           ignore_copy_errors = 1;
           break;
@@ -590,8 +597,8 @@ int __vfu_dir_move( const char* src, const char* dst, CopyInfo* copy_info )
       {
       vfu_beep();
       say1( "There were errors or files were skipped! You have to erase dir manually." );
-      vfu_menu_box( "Copy/Move error", "C Continue operation,  Abort (ESC)" );
-      if ( menu_box_info.ec != 'C' )
+      vfu_menu_box( L"Copy/Move error", L"C Continue operation,  Abort (ESC)" );
+      if ( menu_box_info.ec != L'C' )
         return CR_ABORT;
       else
         return CR_SKIP;
@@ -706,8 +713,8 @@ int __vfu_dir_erase( const char* target, fsize_t* bytes_freed )
         vfu_beep();
         say1( fname );
         say2errno();
-        vfu_menu_box( "Erase error",
-                      "T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
+        vfu_menu_box( L"Erase error",
+                      L"T Try again,S Skip/continue,I Ignore further errors,  Abort (ESC)" );
         if ( menu_box_info.ec == 'T' )
           continue; /* while(4) */
         else
@@ -926,14 +933,14 @@ void vfu_copy_files( int a_one, int a_mode )
     say1( "Target is file, not directory!" );
     say2( t );
 
-    vfu_menu_box( "Error prompt",
-                  "C Continue anyway,E Erase first,  Abort (ESC)", -1 );
-    if ( menu_box_info.ec == 'E' )
+    vfu_menu_box( L"Error prompt",
+                  L"C Continue anyway,E Erase first,  Abort (ESC)", -1 );
+    if ( menu_box_info.ec == L'E' )
       {
       unlink( t );
-      menu_box_info.ec = 'C';
+      menu_box_info.ec = L'C';
       }
-    if ( menu_box_info.ec != 'C' ) return; /* abort */
+    if ( menu_box_info.ec != L'C' ) return; /* abort */
     }
   str_fix_path( t );
   target = t;
@@ -958,9 +965,9 @@ void vfu_copy_files( int a_one, int a_mode )
       say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
       say2( target );
 
-      vfu_menu_box( "Error prompt",
-                    "C Continue anyway,  Abort (ESC)", -1 );
-      if ( menu_box_info.ec != 'C' ) return; /* abort */
+      vfu_menu_box( L"Error prompt",
+                    L"C Continue anyway,  Abort (ESC)", -1 );
+      if ( menu_box_info.ec != L'C' ) return; /* abort */
       }
     } /* free space check */
 
@@ -1015,8 +1022,8 @@ void vfu_copy_files( int a_one, int a_mode )
       {
       say1( target );
       say2errno();
-      vfu_menu_box( "Copy/Move error", "C Continue operation,  Abort (ESC)" );
-      if ( menu_box_info.ec != 'C' )
+      vfu_menu_box( L"Copy/Move error", L"C Continue operation,  Abort (ESC)" );
+      if ( menu_box_info.ec != L'C' )
         r = CR_ABORT;
       }
     if ( r == CR_ABORT ) break; /* cancel operation */
@@ -1109,11 +1116,11 @@ void vfu_erase_files( int a_one )
       vfu_beep();
       say1( target );
       say2errno();
-      vfu_menu_box( "Erase error",
-                    "C Continue operation,I Ignore further errors,  Abort (ESC)" );
-      if ( menu_box_info.ec != 'C' && menu_box_info.ec != 'I' )
+      vfu_menu_box( L"Erase error",
+                    L"C Continue operation,I Ignore further errors,  Abort (ESC)" );
+      if ( menu_box_info.ec != L'C' && menu_box_info.ec != L'I' )
         r = CR_ABORT;
-      if ( menu_box_info.ec == 'I' )
+      if ( menu_box_info.ec == L'I' )
         ignore_copy_errors = 1;
       }
     if ( r == CR_ABORT ) break; /* cancel operation */
@@ -1213,8 +1220,8 @@ void clipboard_paste( int mode )
       vfu_beep();
       say1( dst + r );
       say2errno();
-      vfu_menu_box( "Copy/Move/Symlink error", "C Continue operation,  Abort (ESC)" );
-      if ( menu_box_info.ec != 'C' ) r = CR_ABORT;
+      vfu_menu_box( L"Copy/Move/Symlink error", L"C Continue operation,  Abort (ESC)" );
+      if ( menu_box_info.ec != L'C' ) r = CR_ABORT;
       }
     if ( r == CR_ABORT ) break; // cancel operation
     }
@@ -1244,45 +1251,52 @@ void clipboard_clear()
 
 void clipboard_view()
 {
-  mb = clipboard.keys();
+  VArray ca = clipboard.keys();
+  int z;
+  for( z = 0; z < ca.count(); z++ )
+    {
+    WString ws;
+    ws.set_failsafe( ca[z] );
+    mb.push( ws );
+    }
   if( mb.count() == 0 )
     {
     say2( "CLIPBOARD: empty" );
     return;
     }
-  vfu_menu_box( 5, 5, "File Clipboard Content" );
+  vfu_menu_box( 5, 5, L"File Clipboard Content" );
 }
 
-void clipboard_menu( int act )
+void clipboard_menu( wchar_t act )
 {
   if ( act == 0 )
     {
     mb.undef();
-    mb.push( "A Add files to the clipboard" );
-    mb.push( "P Copy files here" );
-    mb.push( "O Move files here" );
-    mb.push( "L Symlink files here" );
-    mb.push( "E Clear clipboard" );
-    mb.push( "V View clipboard" );
+    mb.push( L"A Add files to the clipboard" );
+    mb.push( L"P Copy files here" );
+    mb.push( L"O Move files here" );
+    mb.push( L"L Symlink files here" );
+    mb.push( L"E Clear clipboard" );
+    mb.push( L"V View clipboard" );
 
     VString fcnt = clipboard_copy_info.files_count;
     vfu_str_comma( fcnt );
     VString fsize = clipboard_copy_info.files_size;
     vfu_str_comma( fsize );
-    mb.push( "---  " + fcnt + " files, " + fsize + " bytes" );
+    mb.push( L"---  " + WString( fcnt ) + L" files, " + WString( fsize ) + L" bytes" );
 
-    if ( vfu_menu_box( 5, 5, "File Clipboard " + fcnt + " files, " + fsize + " bytes" ) == -1 ) return;
+    if ( vfu_menu_box( 5, 5, L"File Clipboard " + WString( fcnt ) + " files, " + WString( fsize ) + " bytes" ) == -1 ) return;
     act = menu_box_info.ec;
     }
-  act = toupper( act );
+  act = towupper( act );
   switch( act )
     {
-    case 'A': clipboard_add(); break;
-    case 'P': clipboard_paste( CM_COPY ); break;
-    case 'O': clipboard_paste( CM_MOVE ); break;
-    case 'L': clipboard_paste( CM_LINK ); break;
-    case 'E': clipboard_clear(); break;
-    case 'V': clipboard_view(); break;
+    case L'A': clipboard_add(); break;
+    case L'P': clipboard_paste( CM_COPY ); break;
+    case L'O': clipboard_paste( CM_MOVE ); break;
+    case L'L': clipboard_paste( CM_LINK ); break;
+    case L'E': clipboard_clear(); break;
+    case L'V': clipboard_view(); break;
     }
 }
 

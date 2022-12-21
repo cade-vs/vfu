@@ -213,7 +213,7 @@
 
   /* files masks */
   extern VString         files_mask;
-  extern VArray         files_mask_array;
+  extern VArray          files_mask_array;
 
   /* misc */
   extern int print_help_on_exit;
@@ -225,7 +225,7 @@
   extern VArray dir_tree;
   extern int        dir_tree_changed;
 
-  extern VArray file_find_results; // filefind results
+  extern WArray file_find_results; // filefind results
 
   extern VArray path_bookmarks;
 
@@ -237,7 +237,7 @@
   extern VArray see_filters;
   extern VArray panelizers;
 
-  extern VArray mb; /* menu boxes */
+  extern WArray mb; /* menu boxes */
 
   extern VArray trim_tree;
 
@@ -314,11 +314,11 @@ void vfu_tools();
 void vfu_command();
 void vfu_file_find( int menu );
 void vfu_file_find_results();
-void vfu_directories_sizes( int a_which_one );
+void vfu_directories_sizes( wchar_t wch );
 
 void vfu_change_file_mask( const char* a_new_mask );
 
-void bookmark_goto( int a_n );
+void bookmark_goto( wchar_t wch );
 void bookmark_set( int a_n, const char* a_path );
 const char* bookmark_get( int a_n );
 void bookmark_hookup();
