@@ -351,7 +351,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
     vfu_beep();
     wchar_t wch = towlower( vfu_ask( L"Directory does not exist! Create? "
                                      L"( ENTER=Yes, ESC=cancel )",
-                                     L"cC" ));
+                                     L"\r" ));
     if ( wch == 27 )
       {
       res = 0;
