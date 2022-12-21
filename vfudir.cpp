@@ -89,7 +89,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
   pos = str_len( target );
 
   //------------------------------------------------------------------
-int cc = 0;
+  int cc = 0;
   con_cshow();
   // say2( target, firsthit ? cINPUT2 : cINPUT );
   while(1)
@@ -108,10 +108,10 @@ int cc = 0;
     if ( str_len( target ) - page > mx )
       str_set_ch( target_out, mx-1, L'>' );
 
-    say1(VString(cc++));
     say2( VString( target_out ).data(), firsthit ? cINPUT2 : cINPUT );
     con_xy( pos-page+1, con_max_y() );
-    if (wch == 0) wch = con_getwch();
+    if ( wch == 0 ) wch = con_getwch();
+    say1( VString(cc++) + " " + wch );
     if ( wch == L'\\') wch = L'/'; /* dos hack :)) */
     if ( wch == L'/' && str_find( target, L'/' ) == -1 && target[0] == L'~' )
       {
@@ -121,7 +121,7 @@ int cc = 0;
       wch = 0;
       }
 
-    if ( ( wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) ) && pos > 0 )
+    if ( ( wch == 8 || wch == KEY_BACKSPACE ) && pos > 0 )
       {
       pos--;
       str_del( target, pos, 1 );
@@ -288,7 +288,7 @@ int cc = 0;
         pos = str_len( target );
       }
     else
-    if ( wch >= 32 && wch != 8 && wch != KEY_WIDE(KEY_BACKSPACE) && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
+    if ( wch >= 32 && wch != 8 && wch != KEY_BACKSPACE && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
       {
       if( firsthit )
         {
@@ -823,9 +823,9 @@ void tree_view()
         str = "";
         say1( "Enter search pattern: ( use TAB to advance )" );
         key = con_getch();
-        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_WIDE(KEY_BACKSPACE) || key == 9 )
+        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_BACKSPACE || key == 9 )
           {
-          if ( key == 8 || key == KEY_WIDE(KEY_BACKSPACE) )
+          if ( key == 8 || key == KEY_BACKSPACE )
             str_trim_right( str, 1 );
           else
           if ( key != 9 )

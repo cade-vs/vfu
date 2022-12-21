@@ -844,7 +844,7 @@ void vfu_run()
       case L' ' : vfu_nav_select(); break;
 
   #ifdef _TARGET_UNIX_
-      case KEY_WIDE(KEY_BACKSPACE) :
+      case KEY_BACKSPACE :
   #endif
       case 8   :
       case L'-' : vfu_action_minus(); break;
@@ -2048,16 +2048,16 @@ void bookmark_goto( wchar_t wch )
     mb.push( L"A Bookmark current directory" );
     mb.push( L"` Change working directory" );
     mb.push( L"---" );
-    for( z = 1; z < 10; z++ )
+    for( z = 0; z < 10; z++ )
       {
-      const char* ps = path_bookmarks.get( z - 1 );
+      const char* ps = path_bookmarks.get( z );
       if( !ps ) break;
-      sprintf( t, "%d %s", z % 10, ps );
+      sprintf( t, "%d %s", ( z + 1 ) % 10, ps );
       wt = t;
       mb.push( str_dot_reduce( wt, 60 ) );
       }
     if ( vfu_menu_box( 5, 5, L"Path bookmarks") == -1 ) return;
-    wchar_t wch = menu_box_info.ec;
+    wch = menu_box_info.ec;
     }
   switch( wch )
     {
@@ -2938,9 +2938,9 @@ void vfu_inc_search( int use_last_one )
     wch = con_getwch();
     }
   WRegexp size_re( L"^size:(\\d+)$" ); // TODO: allow "size:1024+"
-  while( ( wch >= 32 && ( ! KEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) || wch == 9 )
+  while( ( wch >= 32 && ( ! KEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == KEY_BACKSPACE || wch == 9 )
     {
-    if ( wch == 8 || wch == KEY_WIDE(KEY_BACKSPACE) )
+    if ( wch == 8 || wch == KEY_BACKSPACE )
       str_trim_right( str, 1 );
     else
     if ( wch != 9 )
