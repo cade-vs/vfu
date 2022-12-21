@@ -220,14 +220,14 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
     fname_t t;
 
     time_str_compact( stat_src.st_mtime, sttime);
-    str = file_st_size( &stat_src );
+    str = stat_src.st_size;
     vfu_str_comma(str);
     str_pad( str, 15 );
     snprintf( t, sizeof(t), "SRC: %s%c %s%c %s", sttime, s_t, str.data(), s_s, src );
     say1( t );
 
     time_str_compact(stat_dst.st_mtime, sttime);
-    str = file_st_size( &stat_dst );
+    str = stat_dst.st_size;
     vfu_str_comma(str);
     str_pad( str, 15 );
     snprintf( t, sizeof(t), "DST: %s%c %s%c %s", sttime, s_t, str.data(), s_s, dst );

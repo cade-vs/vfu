@@ -624,7 +624,7 @@ fsize_t __tree_rebuild_process( const char* path )
       }
     else
       { /* file */
-      size += file_st_size( &st );
+      size += st.st_size;
       }
 
     }
@@ -1215,7 +1215,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
       }
     else
       {
-      fsize_t fs = file_st_size( &st );
+      fsize_t fs = st.st_size;
       if ( size_info ) 
         {
         size_info->files_count++;

@@ -402,7 +402,7 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
   if ( _is_dir )
     _size = -1; /* FIXME: some auto thing here? */
   else
-    _size = file_st_size( &_st );
+    _size = _st.st_size;
 
   _color = -1;
 

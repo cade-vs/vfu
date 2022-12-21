@@ -18,11 +18,6 @@
 
 /*---------------------------------------------------------------------------*/
 
-fsize_t file_st_size( struct stat* st )
-{
-  return st->st_size + ( st->st_size < 0 ) * ((uintmax_t)TYPE_MAXIMUM(off_t) - TYPE_MINIMUM(off_t) + 1);
-}
-
 VString vfu_readlink( const char* fname )
 {
   fname_t t;
@@ -425,15 +420,15 @@ int vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id )
   VString str;
 
   mb.undef();
-  size_t z;
-  size_t cnt = vfu_hist_count( hist_id );
+  int z;
+  int cnt = vfu_hist_count( hist_id );
   if ( cnt < 1 ) return -1;
   if ( cnt > con_max_y() - 9 ) cnt = con_max_y() - 9; // limit to visible space
   for ( z = 0; z < cnt; z++ )
     {
 //    ASSERT( z < str_len( hist_menu_hotkeys ) );
     str = "";
-    str_add_ch( str, z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
+    str_add_ch( str, (size_t)z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
     str = str + " " + vfu_hist_get( hist_id, z );
     mb.push( WString( str ) );
     }
@@ -492,8 +487,8 @@ fname_t vfu_temp_filename;
 const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
-    mkstemp( vfu_temp_filename );
-    unlink( vfu_temp_filename );
+    int fd = mkstemp( vfu_temp_filename );
+    if( fd ) close( fd );
     return vfu_temp_filename;
 }
 
