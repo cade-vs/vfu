@@ -1797,7 +1797,7 @@ void vfu_global_select()
 
                 size = 0;
                 for ( int z = 0; z < files_list_count(); z++ )
-                  {
+                  {       
                   size += files_list_get(z)->size();
                   if ( files_list_get(z)->is_dir() ) continue;
 

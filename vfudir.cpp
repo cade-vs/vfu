@@ -212,7 +212,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
           VString exact_dtail_max;
           str_copy( exact_dtail_max, dir_list[xm], 0, mi );
           
-          WString dmain_dir = dmain + exact_dtail_max;
+          target = dmain + exact_dtail_max;
           pos = str_len( target );
           say2( VString( target ), cINPUT );
           con_xy( pos+1, con_max_y() );

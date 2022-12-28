@@ -77,9 +77,9 @@
   #define PATH_DELIMITER   ":"
 #endif
 
-#define FNMATCH(p,s) fnmatch((p),(s),FNMATCH_FLAGS)
-#define FNMATCH_NC(p,s) fnmatch((p),(s),FNM_CASEFOLD)
-#define FNMATCH_OC(p,s,n) fnmatch((p),(s),(n)?FNM_CASEFOLD:FNMATCH_FLAGS)
+#define FNMATCH(p,s)      sfn_match((p),(s),FNMATCH_FLAGS)
+#define FNMATCH_NC(p,s)   sfn_match((p),(s),FNM_CASEFOLD)
+#define FNMATCH_OC(p,s,n) sfn_match((p),(s),(n)?FNM_CASEFOLD:FNMATCH_FLAGS)
 
 #ifdef _TARGET_GO32_
   #define pathcmp strcasecmp
@@ -223,7 +223,7 @@
 /*############################################ GLOBAL STRUCTS  #########*/
 
   extern VArray dir_tree;
-  extern int        dir_tree_changed;
+  extern int    dir_tree_changed;
 
   extern WArray file_find_results; // filefind results
 

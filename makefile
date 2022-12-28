@@ -25,8 +25,8 @@ link: mm_update link-vfu link-vfu.yas link-vfu-debug link-vfu.yas-debug
 
 
 AR = ar rv
-CC = g++
-LD = g++
+CC = $(CXX)
+LD = $(CXX)
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,11 +36,11 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: vfu ##############################################################
 
-CC_1       = g++
-LD_1       = g++
+CC_1       = $(CXX)
+LD_1       = $(CXX)
 AR_1       = ar rv
 RANLIB_1   = ranlib
-CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = -L../vstring -L../vslib -lvslib -lvscon -lvstring -lwstring -lpcre2-8 -lpcre2-32 -lncursesw $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
@@ -139,11 +139,11 @@ link-vfu: .OBJ.vfu $(OBJ_1)
 
 ### TARGET 2: vfu.yas ##########################################################
 
-CC_2       = g++
-LD_2       = g++
+CC_2       = $(CXX)
+LD_2       = $(CXX)
 AR_2       = ar rv
 RANLIB_2   = ranlib
-CCFLAGS_2  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_2  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_2  = -L../vstring -L../vslib -lwstring -lvslib -lvscony -lvstring -lwstring -lpcre2-8 -lpcre2-32 ../yascreen/libyascreen.a -lrt $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
@@ -242,8 +242,8 @@ link-vfu.yas: .OBJ.vfu.yas $(OBJ_2)
 
 ### TARGET 3: vfu-debug ########################################################
 
-CC_3       = g++
-LD_3       = g++
+CC_3       = $(CXX)
+LD_3       = $(CXX)
 AR_3       = ar rv
 RANLIB_3   = ranlib
 CCFLAGS_3  = -I../vstring -I../vslib -I/usr/include/ncurses -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
@@ -345,8 +345,8 @@ link-vfu-debug: .OBJ.vfu-debug $(OBJ_3)
 
 ### TARGET 4: vfu.yas-debug ####################################################
 
-CC_4       = g++
-LD_4       = g++
+CC_4       = $(CXX)
+LD_4       = $(CXX)
 AR_4       = ar rv
 RANLIB_4   = ranlib
 CCFLAGS_4  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  

@@ -145,14 +145,15 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
 
   long t1  = a_et;
   long t2  = copy_info->elapsed_time;
-  long eta = ((t1+t2)*a2)/(c1+c2) - (t1+t2);
+  long eta = ( ( t1 + t2 ) * a2 ) / ( c1 + c2 ) - ( t1 + t2 );
 
   int eta_h = eta / ( 60*60 );
   int eta_m = eta / 60;
   int eta_s = eta % 60;
   
-  int  eta_v = eta_m > 0 ? eta_m : eta_s;
-  char eta_c = eta_m > 0 ? eta_m : eta_s;
+  int  eta_v;
+  char eta_c;
+  
   if( eta_h > 0 )
     {
     eta_v = eta_h;
@@ -171,16 +172,16 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
   
   int speed = -1;
   // if( t1 > 0 ) speed = ( c1 / ( 1024 * 1024 ) ) / t1; // current MiB/s
-  if( t1+t2 > 0 ) speed = ( (c1+c2) / ( 1024 * 1024 ) ) / (t1+t2); // total MiB/s
+  if( t1 + t2 > 0 ) speed = ( ( c1 + c2 ) / ( 1024 * 1024 ) ) / ( t1 + t2 ); // total MiB/s
 
   ASSERT( a1 >= 0 && a2 >= 0 );
 
   if ( a1 < 1 ) a1 = 1;
   if ( a2 < 1 ) a2 = 1;
   if ( c1 == a1 ) /* hack, every single 100% each is not meaningfull really */
-    sprintf( t, "     %%%5.1f @%3dM/s%3d%c", (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
+    sprintf( t, "     %%%5.1f @%3dM/s%3d%c ", (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
   else
-    sprintf( t, "%5.1f%%%5.1f @%3dM/s%3d%c", (100.0*c1)/a1, (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
+    sprintf( t, "%5.1f%%%5.1f @%3dM/s%3d%c ", (100.0*c1)/a1, (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
   con_out( con_max_x() - 24, con_max_y(), t, cSTATUS2 );
 }
 
