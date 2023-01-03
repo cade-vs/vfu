@@ -65,8 +65,8 @@
 #define PATH_DELIMITER   ":"
 
 #define FNMATCH(p,s)      sfn_match((p),(s),FNMATCH_FLAGS)
-#define FNMATCH_NC(p,s)   sfn_match((p),(s),FNM_CASEFOLD)
-#define FNMATCH_OC(p,s,n) sfn_match((p),(s),(n)?FNM_CASEFOLD:FNMATCH_FLAGS)
+#define FNMATCH_NC(p,s)   sfn_match((p),(s),SFN_CASEFOLD)
+#define FNMATCH_OC(p,s,n) sfn_match((p),(s),(n)?SFN_CASEFOLD:FNMATCH_FLAGS)
 
 #define pathcmp strcmp
 #define pathncmp strncmp

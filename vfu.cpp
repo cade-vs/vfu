@@ -690,7 +690,6 @@ void vfu_exit_path( const char *a_path )
   if ( ! f ) return;
   fputs( a_path, f);
   fclose( f );
-  #endif
 }
 
 /*--------------------------------------------------------------------------*/
