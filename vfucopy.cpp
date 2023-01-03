@@ -59,21 +59,12 @@ fsize_t device_avail_space( const char *target )
  */
 int file_is_same( const char *src, const char *dst )
 {
-  #ifdef _TARGET_GO32_
-    fname_t _f1;
-    fname_t _f2;
-    _fixpath( src, _f1 );
-    _fixpath( dst, _f2 );
-    ASSERT( _f1[1] == ':' && _f2[1] == ':' );
-    return ( strcasecmp( _f1, _f2 ) != 0 );
-  #else
-    struct stat st1;
-    struct stat st2;
-    if(stat( src, &st1 )) return 1;
-    if(stat( dst, &st2 )) return 1;
-    return !( st1.st_dev == st2.st_dev && /* same device */
-              st1.st_ino == st2.st_ino ); /* same inode */
-  #endif
+  struct stat st1;
+  struct stat st2;
+  if(stat( src, &st1 )) return 1;
+  if(stat( dst, &st2 )) return 1;
+  return !( st1.st_dev == st2.st_dev && /* same device */
+            st1.st_ino == st2.st_ino ); /* same inode */
 }
 
 /*
@@ -81,52 +72,23 @@ int file_is_same( const char *src, const char *dst )
 */
 int device_is_same( const char *src, const char *dst )
 {
-  #ifdef _TARGET_GO32_
-    fname_t _f1;
-    fname_t _f2;
-    _fixpath( src, _f1 );
-    _fixpath( dst, _f2 );
-    ASSERT( _f1[1] == ':' && _f2[1] == ':' );
-    return ( _f1[0] != _f2[0] );
-  #else
-    char *ch;
-    struct stat st1;
-    struct stat st2;
-    fname_t _f1;
-    fname_t _f2;
-    strcpy( _f1, src );
-    ch = strrchr( _f1, '/' );
-    if (ch == NULL) _f1[0] = 0; else ch[1] = 0;
-    strcat( _f1, "." );
-    strcpy( _f2, dst );
-    ch = strrchr( _f2, '/' );
-    if (ch == NULL) _f2[0] = 0; else ch[1] = 0;
-    strcat( _f2, "." );
-    if(stat( _f1, &st1 )) return 1;
-    if(stat( _f2, &st2 )) return 1;
-    return !( st1.st_dev == st2.st_dev );
-  #endif
+  char *ch;
+  struct stat st1;
+  struct stat st2;
+  fname_t _f1;
+  fname_t _f2;
+  strcpy( _f1, src );
+  ch = strrchr( _f1, '/' );
+  if (ch == NULL) _f1[0] = 0; else ch[1] = 0;
+  strcat( _f1, "." );
+  strcpy( _f2, dst );
+  ch = strrchr( _f2, '/' );
+  if (ch == NULL) _f2[0] = 0; else ch[1] = 0;
+  strcat( _f2, "." );
+  if(stat( _f1, &st1 )) return 1;
+  if(stat( _f2, &st2 )) return 1;
+  return !( st1.st_dev == st2.st_dev );
 }
-
-#ifdef _TARGET_GO32_
-  int fast_stat( const char* s, struct stat *st )
-  {
-      /*
-        NOTE: vfu does not use this info, so don't simulate it
-        under DOS/WinXX -- otherwise it is too slow
-      */
-      _djstat_flags =  _STAT_INODE       /* don't simulate inode info */
-                      |_STAT_EXEC_EXT    /* don't try recognize exe's */
-                      |_STAT_EXEC_MAGIC  /* don't try recognize exe's */
-                      |_STAT_DIRSIZE     /* don't get dir sizes */
-                      |_STAT_ROOT_TIME;  /* don't get root time */
-      int r = stat( s, st );
-      _djstat_flags = 0;
-      return r;
-  }
-#else
-  #define fast_stat stat
-#endif
 
 
 /*###########################################################################*/
@@ -201,8 +163,8 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
 
   struct stat stat_src;
   struct stat stat_dst;
-  fast_stat( src, &stat_src );
-  fast_stat( dst, &stat_dst );
+  stat( src, &stat_src );
+  stat( dst, &stat_dst );
 
   if ( copy_info->over_mode == OM_ALWAYS_IF_MTIME &&
        stat_src.st_mtime > stat_dst.st_mtime ) return 1; /* newer mtime, do it! */
@@ -616,36 +578,31 @@ int __vfu_dir_move( const char* src, const char* dst, CopyInfo* copy_info )
 
 int __vfu_link_copy( const char* src, const char* dst, CopyInfo* copy_info )
 {
-  #ifdef _TARGET_GO32_
-    ASSERT(!"Symlinks are not supported for this platform!");
-    return 0;
-  #else
-    errno = 0; /* clear error status */
+  errno = 0; /* clear error status */
 
-    if ( ! over_if_exist( src, dst, copy_info ) )
+  if ( ! over_if_exist( src, dst, copy_info ) )
+    {
+    copy_info->skipped_count++;
+    return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+    }
+
+  if ( file_exist( dst ) )
+    { /* destination file exists */
+    if ( file_is_same( src, dst ) == 0 )
       {
       copy_info->skipped_count++;
-      return copy_info->abort ? CR_ABORT : CR_SKIP; /* ok */
+      return CR_SKIP; /* dst is src actually */
       }
+    __vfu_file_erase( dst ); /* overwrite! */
+    }
 
-    if ( file_exist( dst ) )
-      { /* destination file exists */
-      if ( file_is_same( src, dst ) == 0 )
-        {
-        copy_info->skipped_count++;
-        return CR_SKIP; /* dst is src actually */
-        }
-      __vfu_file_erase( dst ); /* overwrite! */
-      }
-
-    fname_t t;
-    int z = readlink( src, t, sizeof(t)-1);
-    if (z < 1) return 1;
-    t[z] = 0;
-    if (symlink( t, dst ) == -1) return 1;
-    /* FIXME: should we keep src mode? does links have this? */
-    return 0;
-  #endif /* _TARGET_UNIX_ */
+  fname_t t;
+  int z = readlink( src, t, sizeof(t)-1);
+  if (z < 1) return 1;
+  t[z] = 0;
+  if (symlink( t, dst ) == -1) return 1;
+  /* FIXME: should we keep src mode? does links have this? */
+  return 0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -763,11 +720,6 @@ int __vfu_file_erase( const char* target, fsize_t* bytes_freed  )
 {
   errno = 0; /* clear error status */
 
-  #ifdef _TARGET_GO32_
-  /* under dos write access rules and delete protection
-     so we have to remove it first */
-  file_set_mode_str( target, MODE_WRITE_ON );
-  #endif
   fsize_t target_size = 0;
   if ( bytes_freed )
     target_size = file_size( target );
@@ -785,11 +737,7 @@ int __vfu_link_erase( const char* target, fsize_t* bytes_freed )
 {
   errno = 0; /* clear error status */
 
-  #ifdef _TARGET_GO32_
-    return 0; /* always ok under dos */
-  #else
-    return (unlink( target ) != 0);
-  #endif
+  return (unlink( target ) != 0);
 }
 
 
@@ -898,14 +846,6 @@ void vfu_copy_files( int a_one, int a_mode )
   fname_t t;
 
   ASSERT( a_mode == CM_COPY || a_mode == CM_MOVE || a_mode == CM_LINK );
-
-  #ifdef _TARGET_GO32_
-  if ( a_mode == CM_LINK )
-    {
-    say1( "LINK: SymLinks are NOT supported on this platform!" );
-    return;
-    }
-  #endif
 
   CopyInfo copy_info;
 

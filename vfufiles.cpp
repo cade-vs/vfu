@@ -265,13 +265,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   /* now try to hide `system/special' files */
   if ( !opt.show_hidden_files )
     {
-    #ifdef _TARGET_GO32_
-      mode_str_t mode_str;
-      file_get_mode_str( st->st_mode, mode_str );
-      if ( mode_str[7] == 'H' || mode_str[8] == 'S' ) return 0;
-    #else
-      if ( ne[0] == '.' ) return 0;
-    #endif
+    if ( ne[0] == '.' ) return 0;
     }
 
   int is_dir = S_ISDIR( st->st_mode );

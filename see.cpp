@@ -1733,9 +1733,6 @@
 
       case UKEY_DEL       : kdel(); break;
 
-      #ifndef _TARGET_GO32_
-      case UKEY_BACKSPACE :
-      #endif
       case UKEY_CTRL_H    : kbs(); break;
 
       case 10            :

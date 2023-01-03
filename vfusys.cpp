@@ -12,10 +12,6 @@
 #include "vfuuti.h"
 #include "vfumenu.h"
 
-#ifdef _TARGET_GO32_
-  #include <io.h>
-#endif
-
 /*###########################################################################*/
 
 void file_get_mode_str( const mode_t tm, mode_str_t &mod_str )
@@ -38,15 +34,9 @@ void file_get_mode_str( const mode_t tm, mode_str_t &mod_str )
   if ((tm & S_IWOTH) != 0) mod_str[8] = 'w';
   if ((tm & S_IXOTH) != 0) mod_str[9] = 'x';
 
-  #ifndef _TARGET_GO32_
   if ((tm & S_ISUID) != 0) mod_str[3] = ((tm & S_IXUSR) != 0) ? 's' : 'S';
   if ((tm & S_ISGID) != 0) mod_str[6] = ((tm & S_IXGRP) != 0) ? 's' : 'S';
   if ((tm & S_ISVTX) != 0) mod_str[9] = ((tm & S_IXOTH) != 0) ? 't' : 'T';
-  #endif
-
-  #ifdef _TARGET_GO32_
-  mod_str[4]=mod_str[5]=mod_str[6]=mod_str[7]=mod_str[8]=mod_str[9]='-';
-  #endif
 }
 
 /*---------------------------------------------------------------------------*/
@@ -94,14 +84,12 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str )
   if (new_mod_str[8] == 'w') new_mode |= S_IWOTH;
   if (new_mod_str[9] == 'x') new_mode |= S_IXOTH;
 
-  #ifndef _TARGET_GO32_
   if (new_mod_str[3] == 's') { new_mode |= S_ISUID; new_mode |= S_IXUSR; }
   if (new_mod_str[3] == 'S') new_mode |= S_ISUID;
   if (new_mod_str[6] == 's') { new_mode |= S_ISGID; new_mode |= S_IXGRP; }
   if (new_mod_str[6] == 'S') new_mode |= S_ISGID;
   if (new_mod_str[9] == 't') { new_mode |= S_ISVTX; new_mode |= S_IXOTH; }
   if (new_mod_str[9] == 'T') new_mode |= S_ISVTX;
-  #endif
 
   return ( chmod( filename, new_mode ) != 0 );
 }
@@ -176,60 +164,6 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking )
 }
 
 /*---------------------------------------------------------------------------*/
-
-#ifdef _TARGET_GO32_
-#include <dpmi.h>
-#include <go32.h>
-
-int file_get_sfn( const char *in, char *out )
-{
-  fname_t src;
-  fname_t dst;
-
-  strcpy( src, in );
-
-  __dpmi_regs r;
-  dosmemput(src, strlen (src)+1, __tb);
-  r.x.ax = 0x7160;    /* Truename */
-  r.x.cx = 1;     /* Get short name */
-  r.x.ds = r.x.es = __tb / 16;
-  r.x.si = r.x.di = __tb & 15;
-  __dpmi_int(0x21, &r);
-  if (r.x.flags & 1 || r.x.ax == 0x7100)
-    {
-    strcpy( out, in );
-    return -1;
-    }
-  dosmemget (__tb, MAX_PATH, dst);
-  strcpy( out, dst );
-  return 0;
-}
-
-int file_get_lfn( const char *in, char *out )
-{
-  fname_t src;
-  fname_t dst;
-
-  strcpy( src, in );
-
-  __dpmi_regs r;
-  dosmemput(src, strlen (src)+1, __tb);
-  r.x.ax = 0x7160;    /* Truename */
-  r.x.cx = 2;     /* Get long name */
-  r.x.ds = r.x.es = __tb / 16;
-  r.x.si = r.x.di = __tb & 15;
-  __dpmi_int(0x21, &r);
-  if (r.x.flags & 1 || r.x.ax == 0x7100)
-    {
-    strcpy( out, in );
-    return -1;
-    }
-  dosmemget (__tb, MAX_PATH, dst);
-  strcpy( out, dst );
-  return 0;
-}
-
-#endif /* _TARGET_GO32_ */
 
 /*###########################################################################*/
 

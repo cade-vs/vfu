@@ -40,20 +40,12 @@ int one = 0;
 int full = 0;
 
 // toggles
-#ifdef _TARGET_GO32_
-  int use_SFN = 0;
-#endif
-
 while( a_line[i] )
   {
   if ( a_line[i] == '%' )
     {
     switch( a_line[i+1] )
       {
-      #ifdef _TARGET_GO32_
-      case '_' : use_SFN = 1; break;
-      #endif
-
       case 'r' : /* rescan files after */
       case 'R' : a_options += "r"; 
                  break; 
@@ -129,17 +121,11 @@ while( a_line[i] )
 
       case 'c' : /* current path */
                  s = work_path;
-                 #ifdef _TARGET_GO32_
-                  str_tr( s, "/", "\\" );
-                 #endif
                  out += s;
                  break;
 
       case 'C' : /* startup dir */
                  s = startup_path;
-                 #ifdef _TARGET_GO32_
-                  str_tr( s, "/", "\\" );
-                 #endif
                  out += s;
                  break;
 
@@ -149,9 +135,6 @@ while( a_line[i] )
 
       case 'A' : /* Archive path */
                  s = archive_path;
-                 #ifdef _TARGET_GO32_
-                  str_tr( s, "/", "\\" );
-                 #endif
                  out += s;
                  break;
 

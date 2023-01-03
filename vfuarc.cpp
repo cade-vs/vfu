@@ -69,14 +69,12 @@ void vfu_read_archive_files( int a_recursive )
       if (ms[8] == 'w') st.st_mode |= S_IWOTH;
       if (ms[9] == 'x') st.st_mode |= S_IXOTH;
 
-      #ifndef _TARGET_GO32_
       if (ms[3] == 's') { st.st_mode |= S_ISUID; st.st_mode |= S_IXUSR; }
       if (ms[3] == 'S') st.st_mode |= S_ISUID;
       if (ms[6] == 's') { st.st_mode |= S_ISGID; st.st_mode |= S_IXGRP; }
       if (ms[6] == 'S') st.st_mode |= S_ISGID;
       if (ms[9] == 't') { st.st_mode |= S_ISVTX; st.st_mode |= S_IXOTH; }
       if (ms[9] == 'T') st.st_mode |= S_ISVTX;
-      #endif
 
       } else
     if ( strncmp( line, "SIZE:", 5 ) == 0 )

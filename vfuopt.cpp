@@ -19,11 +19,7 @@ Options opt;
 const wchar_t *NOYES[] = { L" - ", L"YES", NULL };
 const wchar_t *NOYESPRECOPY[] = { L" - ", L"YES", L"PRELIM", NULL };
 const wchar_t *FTIMETYPE[] = { L"CHANGE", L"MODIFY", L"ACCESS", NULL };
-#ifdef _TARGET_GO32_
-const wchar_t *TAGMARKS[] = { ">>", "=>", "->", "Í", "Ä", " ¯", "¯¯", NULL };
-#else
 const wchar_t *TAGMARKS[] = { L">>", L"=>", L"->", L"*>", NULL };
-#endif
 const wchar_t *SIIEC[] = { L"IEC", L"SI ", NULL };
 const wchar_t *COMMA_TYPES[] = { L"'", L"`", L",", L" ", L"_", NULL };
 const wchar_t *PAGE_STEPS[] = { L"1 LINE", L"30% PG", L"50% PG", NULL };
@@ -414,11 +410,6 @@ void vfu_settings_load()
       }
     fclose(fsett);
     }
-
-  #ifdef _TARGET_GO32_
-  int z;
-  for ( z = 0; z < 16; z++ ) str_low( ext_colors[z] );
-  #endif
 
   if (opt.use_dir_colors) vfu_load_dir_colors();
 //  if (file_load_crc32( filename_size_cache, &size_cache, sizeof(size_cache)))

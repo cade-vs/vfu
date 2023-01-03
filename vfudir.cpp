@@ -89,7 +89,6 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
   pos = str_len( target );
 
   //------------------------------------------------------------------
-  int cc = 0;
   con_cshow();
   // say2( target, firsthit ? cINPUT2 : cINPUT );
   while(1)
@@ -111,7 +110,6 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
     say2( VString( target_out ).data(), firsthit ? cINPUT2 : cINPUT );
     con_xy( pos-page+1, con_max_y() );
     if ( wch == 0 ) wch = con_getwch();
-    say1( VString(cc++) + " " + wch );
     if ( wch == L'\\') wch = L'/'; /* dos hack :)) */
     if ( wch == L'/' && str_find( target, L'/' ) == -1 && target[0] == L'~' )
       {
@@ -437,21 +435,7 @@ void vfu_chdir( const char *a_new_dir )
       }
   VString str = target;
   str_cut_spc( str );
-  #ifdef _TARGET_GO32_
-    if ( str[0] == '/' )
-      {
-      str_ins_ch( str, 0, ':' );
-      str_ins_ch( str, 0, work_path[0] );
-      } else
-    if ( str[1] == ':' && str[2] == 0 ) /* c: d: e: */
-      {
-      expand_path( str, t );
-      str = t;
-      }
-    if ( str[1] == ':' && str[2] == '/' )
-  #else /* _TARGET_GO32_ -> i.e. _TARGET_UNIX_ here*/
-    if (str[0] == '/')
-  #endif /* _TARGET_GO32_ */
+  if (str[0] == '/')
     { /* root directory */
     target = str;
     }
@@ -584,11 +568,7 @@ fsize_t __tree_rebuild_process( const char* path )
 
     if (is_link) continue;
 
-    #ifdef _TARGET_GO32_
-    dosstat(dir, &st);
-    #else
     stat(new_name, &st);
-    #endif
 
     int is_dir = S_ISDIR(st.st_mode);
 
@@ -637,13 +617,6 @@ fsize_t __tree_rebuild_process( const char* path )
 
 void tree_rebuild()
 {
-#ifdef _TARGET_GO32_
-// we do need only files sizes -- so the other stuff under dos is unneeded :)
-_djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
-                _STAT_EXEC_MAGIC | _STAT_DIRSIZE | _STAT_ROOT_TIME |
-                _STAT_WRITEBIT;
-// _djstat_flags = 0;
-#endif
   dir_tree.undef();
   size_cache.undef();
   say1( "Rebuilding tree..." );
@@ -651,9 +624,6 @@ _djstat_flags = _STAT_INODE | _STAT_EXEC_EXT | _STAT_EXEC_MAGIC |
   __tree_rebuild_process( "/" );
 
   tree_fix();
-#ifdef _TARGET_GO32_
- _djstat_flags = 0;
-#endif
 
   dir_tree_changed = 1;
   tree_save();
@@ -1061,11 +1031,7 @@ int tree_index( const char *s )
 
   if ( dir_tree.count() == 0 ) return -1;
 
-  const char *s1 = s
-  #ifdef _TARGET_GO32_
-  + 2; // to cut `d:' chars len
-  #endif
-  ;
+  const char *s1 = s;
   sl1 = strlen( s1 );
 
   z = __tree_index_last_cache + 1;
@@ -1184,11 +1150,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
     lstat(new_name, &st);
     int is_link = int(S_ISLNK(st.st_mode));
     memset( &st, 0, sizeof(st) );
-    #ifdef _TARGET_GO32_
-      dosstat(dir, &st);
-    #else
-      stat(new_name, &st);
-    #endif
+    stat(new_name, &st);
     int is_dir = int(S_ISDIR(st.st_mode));
 
     if ( is_link )

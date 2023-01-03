@@ -23,21 +23,12 @@
 #define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski 'Cade'"
 #define CONTACT "<cade@noxrun.com> <cade@bis.bg> [http://cade.noxrun.com]"
 
-#ifdef _TARGET_GO32_
-  #define FILENAME_OPT     "vfu.opt"
-  #define FILENAME_CONF    "vfu.cfg"
-  #define FILENAME_TREE    "vfu.tre"
-  #define FILENAME_SIZE_CACHE    "vfu.siz"
-  #define FILENAME_HISTORY "vfu.hst"
-  #define FILENAME_FFR     "vfu.ffr"
-#else
-  #define FILENAME_OPT     "vfu.options"
-  #define FILENAME_CONF    "vfu.conf"
-  #define FILENAME_TREE    "vfu.tree"
-  #define FILENAME_SIZE_CACHE    "vfu.size"
-  #define FILENAME_HISTORY "vfu.history"
-  #define FILENAME_FFR     "vfu.ffr"
-#endif
+#define FILENAME_OPT         "vfu.options"
+#define FILENAME_CONF        "vfu.conf"
+#define FILENAME_TREE        "vfu.tree"
+#define FILENAME_SIZE_CACHE  "vfu.size"
+#define FILENAME_HISTORY     "vfu.history"
+#define FILENAME_FFR         "vfu.ffr"
 
 // The SYSCONFDIR macro can be used here, which is defined when
 // ../configure --sysconfdir=nnnn is used. It no option is given, it

@@ -54,11 +54,6 @@ int get_item_color( TF *fi )
 
   if ( opt.lower_case_ext_config ) str_low( str ); // lowercase extension
 
-  #ifdef _TARGET_GO32_
-  /* under dos/windows file names are not case sensitive */
-  str_low( str );
-  #endif
-
   if ( str != ".." )
     {
     for ( z = cBLACK; z <= chWHITE; z++ )

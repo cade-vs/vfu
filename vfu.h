@@ -60,34 +60,16 @@
 
 /*############################################ COMPATIBILITY DEF's #####*/
 
-#ifdef _TARGET_GO32_
-  #define S_ISLNK( p ) 0
-  #define S_ISSOCK( p ) 0
-  #define lstat(n,p) memset(p,0,sizeof(p))
-  #define cuserid(x)    0
-
-  #define FNMATCH_FLAGS FNM_CASEFOLD
-  #define FNCASE        0
-  #define PATH_DELIMITER   ";"
-#endif
-
-#ifdef _TARGET_UNIX_
-  #define FNMATCH_FLAGS 0
-  #define FNCASE        1
-  #define PATH_DELIMITER   ":"
-#endif
+#define FNMATCH_FLAGS 0
+#define FNCASE        1
+#define PATH_DELIMITER   ":"
 
 #define FNMATCH(p,s)      sfn_match((p),(s),FNMATCH_FLAGS)
 #define FNMATCH_NC(p,s)   sfn_match((p),(s),FNM_CASEFOLD)
 #define FNMATCH_OC(p,s,n) sfn_match((p),(s),(n)?FNM_CASEFOLD:FNMATCH_FLAGS)
 
-#ifdef _TARGET_GO32_
-  #define pathcmp strcasecmp
-  #define pathncmp strncasecmp
-#else
-  #define pathcmp strcmp
-  #define pathncmp strncmp
-#endif
+#define pathcmp strcmp
+#define pathncmp strncmp
 
   typedef double fsize_t; /* used as big integer */
   typedef char  fname_t[MAX_PATH]; /* */

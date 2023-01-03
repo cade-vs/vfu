@@ -529,13 +529,6 @@ void vfu_init()
   file_list_index.wrap = 0;
   /* file_list_index.* are setup by vfu_read_files() */
 
-#ifdef _TARGET_GO32_
-  user_id_str = "dosuser";
-  group_id_str = "dos";
-  gethostname( t, MAX_PATH-1 );
-  host_name_str = t;
-  __opendir_flags = __OPENDIR_FIND_HIDDEN;
-#else /* _TARGET_UNIX_ */
   uid_t _uid = getuid();
   gid_t _gid = getgid();
   struct passwd* _pwd = getpwuid(_uid);
@@ -550,7 +543,6 @@ void vfu_init()
     group_id_str = (int)_gid;
   gethostname( t, MAX_PATH-1 );
   host_name_str = t;
-#endif
 
   startup_path = work_path;
 
@@ -558,13 +550,7 @@ void vfu_init()
   if ( getenv( "TEMP" ) ) tmp_path = getenv( "TEMP" );
   if ( getenv( "TMP"  ) ) tmp_path = getenv( "TMP" );
   if ( tmp_path == "" )
-    {
-    #ifdef _TARGET_GO32_
-    tmp_path = "c:/tmp/";
-    #else
     tmp_path = "/tmp/";
-    #endif
-  }
   else
     str_fix_path( tmp_path );
 
@@ -573,20 +559,12 @@ void vfu_init()
   else
     {
     home_path = tmp_path;
-  home_path += user_id_str;
-  home_path += "/";
-  make_path( home_path );
-  }
-  #ifdef _TARGET_GO32_
-  str_tr( home_path, "\\", "/" );
-  #endif
+    home_path += user_id_str;
+    home_path += "/";
+    make_path( home_path );
+    }
 
-
-  #ifdef _TARGET_GO32_
-  shell_diff = "fc";
-  #else
   shell_diff = "/usr/bin/diff";
-  #endif
 
   /*
    FIXME: this should something relevant to the home_path
@@ -647,9 +625,6 @@ void vfu_init()
   /* shell setup */
   shell_prog = "";
   if (getenv("SHELL")) shell_prog = getenv("SHELL");
-  #ifdef _TARGET_GO32_
-  if ( shell_prog == "" ) if(getenv("COMSPEC")) shell_prog = getenv("COMSPEC");
-  #endif
   if (getenv("VFU_SHELL")) shell_prog = getenv("VFU_SHELL");
 
   /* this will load defaults first then load vfu.opt and at the
@@ -694,10 +669,6 @@ void vfu_exit_path( const char *a_path )
     say1( VString( "Cannot chdir to: " ) + a_path );
     say2errno();
     }
-
-  #ifdef _TARGET_GO32_
-  return; // this is enough under DOS
-  #else
 
   VString str;
   if ( getenv( "VFU_EXIT" ) )
@@ -1027,9 +998,6 @@ void vfu_cli( int argc, char* argv[] )
       case 'h'  : print_help_on_exit = 1; break;
       case 'i'  : vfu_run(); break;
       case 'd'  : temp = optarg;
-          #ifdef _TARGET_GO32_
-          str_tr( temp, "\\", "/" );
-          #endif
           vfu_chdir( temp );
           break;
       case 'r'  : con_out(1,1,HEADER,cINFO);
@@ -1424,13 +1392,7 @@ void vfu_action_minus( int mode )
 
   if ( work_mode == WM_NORMAL )
     {
-      #ifdef _TARGET_GO32_
-        if ( work_path[1] == ':' && work_path[2] == '/' && work_path[3] == 0 )
-           return;
-      #else
-        if ( work_path[0] == '/' && work_path[1] == 0 )
-          return;
-      #endif
+      if ( work_path[0] == '/' && work_path[1] == 0 ) return;
       vfu_chdir( ".." );
     } else
   if ( work_mode == WM_ARCHIVE )
@@ -1849,10 +1811,8 @@ void vfu_global_select()
               mb.push( L"D Date" );
               mb.push( L"M Date+Time" );
               mb.push( L"A Attr/Mode" );
-              #ifndef _TARGET_GO32_
               mb.push( L"O Owner" );
               mb.push( L"G Group" );
-              #endif
               mb.push( L"Y Type (TP)" );
 
               vfu_menu_box( 32, 6, L"Select Same..." );
@@ -2439,11 +2399,6 @@ void vfu_edit_entry( )
       } else
     if ( menu_box_info.ec == L'O' )
       {
-        #ifdef _TARGET_GO32_
-        say1( "Change owner/group function is not supported under DOS filesystem" );
-        break;
-        #endif
-
         VString str;
         if (one)
           say1("Enter new `user.group | user | .group' for current file:");
@@ -2496,9 +2451,6 @@ void vfu_edit_entry( )
       } else
     if ( menu_box_info.ec == 'L' )
       {
-      #ifdef _TARGET_GO32_
-      say1( "Edit SymLink reference is not supported under DOS filesystem" );
-      #else
       if ( ! one )
         {
         say1( "Cannot edit symlink reference for selection..." );
@@ -2529,7 +2481,6 @@ void vfu_edit_entry( )
           say1( "Edit SymLink reference ok." );
           }
         }
-      #endif
       break;
       }
     }
@@ -2544,19 +2495,7 @@ void vfu_jump_to_mountpoint( int all )
   char t[2048];
   int z;
   VArray va;
-#ifdef _TARGET_UNIX_
   if ( va.fload( "/etc/mtab" ) ) return;
-#endif
-#ifdef _TARGET_GO32_
-  str = home_path;
-  str += "_vfu.mtb";
-  if ( va.fload( str ) ) return;
-  if (all)
-    {
-    va.ins( 0, "-  b:/" );
-    va.ins( 0, "-  a:/" );
-    }
-#endif
   if (va.count() < 1) return;
 
   mb.undef();
@@ -2573,10 +2512,6 @@ void vfu_jump_to_mountpoint( int all )
     struct statfs stafs;
     statfs( t, &stafs );
     int hk = ('A'+ z); /* hot key */
-    #ifdef _TARGET_GO32_
-    if (toupper(t[0]) >= 'A' && toupper(t[0]) <= 'Z' && toupper(t[1]) == ':')
-      hk = toupper(t[0]);
-    #endif
     
     fsize_t fs_free   = stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree );
     fsize_t fs_total  = stafs.f_bsize * stafs.f_blocks;

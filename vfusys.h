@@ -44,11 +44,6 @@ int  vfu_edit_attr( mode_str_t mod_str, int allow_masking = 1 );
 #define  dir_exist( d ) ( access( d, F_OK ) == 0)
 #define file_exist( d ) ( access( d, F_OK ) == 0)
 
-#ifdef _TARGET_GO32_
-int file_get_sfn( const char *in, char *out );
-int file_get_lfn( const char *in, char *out );
-#endif
-
 #endif /* _VFUSYS_H_ */
 
 /* eof vfusys.h */
