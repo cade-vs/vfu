@@ -673,7 +673,7 @@
     switch( key )
       {
       case 9         : in_text = !in_text; break;
-      case KEY_RIGHT : if (bytepos == 0 && !in_text)
+      case UKEY_RIGHT : if (bytepos == 0 && !in_text)
                          bytepos = 1;
                        else
                          if (epos < editbs - 1)
@@ -682,7 +682,7 @@
                            if (!in_text) bytepos = 0;
                            }
                        break;
-      case KEY_LEFT  : if (bytepos == 1 && !in_text )
+      case UKEY_LEFT  : if (bytepos == 1 && !in_text )
                          bytepos = 0;
                        else
                          if (epos > 0)
@@ -691,16 +691,16 @@
                            if (!in_text) bytepos = 1;
                            }
                        break;
-      case KEY_DOWN  : if ( epos + rowsz <  editbs ) epos += rowsz; break;
-      case KEY_UP    : if ( epos - rowsz >= 0      ) epos -= rowsz; break;
+      case UKEY_DOWN  : if ( epos + rowsz <  editbs ) epos += rowsz; break;
+      case UKEY_UP    : if ( epos - rowsz >= 0      ) epos -= rowsz; break;
 
-      case KEY_PPAGE : epos = epos % rowsz; break;
-      case KEY_NPAGE : epos = editbs - editbs % rowsz + epos % rowsz;
+      case UKEY_PGUP : epos = epos % rowsz; break;
+      case UKEY_PGDN : epos = editbs - editbs % rowsz + epos % rowsz;
                        if (epos >= editbs) epos = editbs - 1;
                        break;
 
-      case KEY_HOME  : epos = epos - epos % rowsz; bytepos = 0; break;
-      case KEY_END   : epos = epos + (rowsz - epos%rowsz - 1);
+      case UKEY_HOME  : epos = epos - epos % rowsz; bytepos = 0; break;
+      case UKEY_END   : epos = epos + (rowsz - epos%rowsz - 1);
                        if (epos >= editbs) epos = editbs - 1;
                        break;
       }
@@ -722,7 +722,7 @@
       filter( tmp, 1 );
       con_xy( 13 + rowsz * 3 + (opt->hex_cols - 1) * 2 + 1 + epos % rowsz, 1 + epos / rowsz);
       con_puts( tmp, chRED );
-      key = KEY_RIGHT;
+      key = UKEY_RIGHT;
       }
     else
     if ( in_text && key >= 32 && key < 255 )
@@ -735,7 +735,7 @@
       tmp[2] = 0;
       con_puts( tmp, chRED );
       editb[epos] = key;
-      key = KEY_RIGHT;
+      key = UKEY_RIGHT;
       }
     else
       key = 0;
@@ -770,35 +770,35 @@
       do_draw = 0;
       }
     ch = con_getch();
-    if( ch == 0 ) ch = KEY_CTRL_L;
+    if( ch == 0 ) ch = UKEY_CTRL_L;
     if (  ch == 27        || ch == '-'           || ch == 'q' ||
-          ch == KEY_ALT_X || ch == KEY_BACKSPACE ) return ch;
+          ch == UKEY_ALT_X || ch == UKEY_BACKSPACE ) return ch;
     int z = 0;
     while( escape_keys[z] )
       if ( escape_keys[z++] == ch )
         return ch;
     switch(ch)
       {
-      case KEY_F1     :
-      case KEY_ALT_H  :
+      case UKEY_F1     :
+      case UKEY_ALT_H  :
       case '?'        :
       case 'h'        :
       case 'H'        : help(); break;
-      case KEY_UP     : up(); draw(); break;
+      case UKEY_UP     : up(); draw(); break;
       case 13         :
-      case KEY_DOWN   : down(); draw(); break;
+      case UKEY_DOWN   : down(); draw(); break;
       case 'b'        :
       case 'B'        :
-      case KEY_PPAGE  : for ( z = 0; z < rows; z++ ) up(); draw(); break;
+      case UKEY_PGUP  : for ( z = 0; z < rows; z++ ) up(); draw(); break;
       case ' '        :
-      case KEY_NPAGE  : for ( z = 0; z < rows; z++ ) down(); draw(); break;
+      case UKEY_PGDN  : for ( z = 0; z < rows; z++ ) down(); draw(); break;
       case 'p'        :
       case 'P'        :
-      case KEY_HOME   : if (fpos == 0) col = 0; else home(); draw(); break;
-      case KEY_END    : end();  draw(); break;
-      case KEY_CTRL_E : end2(); draw(); break;
+      case UKEY_HOME   : if (fpos == 0) col = 0; else home(); draw(); break;
+      case UKEY_END    : end();  draw(); break;
+      case UKEY_CTRL_E : end2(); draw(); break;
 
-      case KEY_CTRL_L : if ( opt->auto_size )
+      case UKEY_CTRL_L : if ( opt->auto_size )
                           {
                           opt->xmin = 1;
                           opt->ymin = 1;
@@ -813,7 +813,7 @@
 
       case '>'        :
       case '.'        :
-      case KEY_RIGHT  : if (opt->hex_mode)
+      case UKEY_RIGHT  : if (opt->hex_mode)
                           {
                           if (fpos < fsize) fpos++;
                           draw();
@@ -829,7 +829,7 @@
                         break;
       case '<'        :
       case ','        :
-      case KEY_LEFT   :
+      case UKEY_LEFT   :
                         if (opt->hex_mode)
                           {
                           if (fpos > 0) fpos--;
@@ -881,7 +881,7 @@
       case 'E'        : find( "fh" ); break;
       case '/'        : find( "r" ); break; //FIXME: remove 'r', use 'f'
       case '\\'       : find( "ri" ); break;
-      case KEY_F3     :
+      case UKEY_F3     :
       case 'n'        :
       case 'N'        : find_next( 0 ); break;
       case 'm'        :
@@ -1656,25 +1656,25 @@
 
     pend = 0;
     key = con_getch();
-    if( key == 0 ) key = KEY_CTRL_L;
-    if (key == KEY_CTRL_C)
+    if( key == 0 ) key = UKEY_CTRL_L;
+    if (key == UKEY_CTRL_C)
       {
       mod = 0; /* it is `quit' i.e. no save so this should be ok */
       return key;
       }
-    if (key == KEY_CTRL_X)
+    if (key == UKEY_CTRL_X)
       {
         save();
         return key;
       } else
-    if ( key == 27 || key == KEY_ALT_X )
+    if ( key == 27 || key == UKEY_ALT_X )
       {
       if ( request_quit() == 0 )
         return key;
       else
         continue;
       }
-    if ( key == KEY_CTRL_K )
+    if ( key == UKEY_CTRL_K )
       {
       pend = key;
       con_out( SEEDCOL, SEEDROW, "^K", opt->cs );
@@ -1685,63 +1685,63 @@
 
     switch( key )
       {
-      case KEY_CTRL_N :
-      case KEY_DOWN   : down(); break;
-      case KEY_CTRL_P :
-      case KEY_UP     : up(); break;
-      case KEY_CTRL_B :
-      case KEY_LEFT   : left(); break;
-      case KEY_CTRL_F :
-      case KEY_RIGHT  : right(); break;
-      case KEY_CTRL_U : if ( pend == KEY_CTRL_K )
+      case UKEY_CTRL_N :
+      case UKEY_DOWN   : down(); break;
+      case UKEY_CTRL_P :
+      case UKEY_UP     : up(); break;
+      case UKEY_CTRL_B :
+      case UKEY_LEFT   : left(); break;
+      case UKEY_CTRL_F :
+      case UKEY_RIGHT  : right(); break;
+      case UKEY_CTRL_U : if ( pend == UKEY_CTRL_K )
                           sv.home();
                         else
                           sv.ppage();
                         break;
-      case KEY_PPAGE  : sv.ppage(); break;
-      case KEY_CTRL_V : if ( pend == KEY_CTRL_K )
+      case UKEY_PGUP  : sv.ppage(); break;
+      case UKEY_CTRL_V : if ( pend == UKEY_CTRL_K )
                           sv.end();
                         else
                           sv.npage();
                         break;
-      case KEY_NPAGE  : sv.npage(); break;
-      case KEY_CTRL_A :
-      case KEY_HOME   : home(); break;
-      case KEY_CTRL_E :
-      case KEY_END    : end();  break;
-      case KEY_INSERT : opt->insert = !opt->insert; break;
+      case UKEY_PGDN  : sv.npage(); break;
+      case UKEY_CTRL_A :
+      case UKEY_HOME   : home(); break;
+      case UKEY_CTRL_E :
+      case UKEY_END    : end();  break;
+      case UKEY_INS    : opt->insert = !opt->insert; break;
 
-      case KEY_CTRL_Y : remove_line(); break;
+      case UKEY_CTRL_Y : remove_line(); break;
 
       /* SeedKxxx functions are for KEYxxx handles */
-      case KEY_ALT_H  :
-      case KEY_F1     : help(); break;
+      case UKEY_ALT_H  :
+      case UKEY_F1     : help(); break;
 
-      case KEY_CTRL_S :
-      case KEY_F2     : save(); break;
-      case KEY_CTRL_D : if ( pend == KEY_CTRL_K )
+      case UKEY_CTRL_S :
+      case UKEY_F2     : save(); break;
+      case UKEY_CTRL_D : if ( pend == UKEY_CTRL_K )
                           save();
                         else
                           kdel();
                         break;
 
-      case KEY_ALT_F     : find( 1 ); break;
-      case KEY_ALT_S     : find( 0 ); break;
+      case UKEY_ALT_F     : find( 1 ); break;
+      case UKEY_ALT_S     : find( 0 ); break;
 
-      case KEY_ALT_G     :
-      case KEY_F3        : find_next(); break;
+      case UKEY_ALT_G     :
+      case UKEY_F3        : find_next(); break;
 
-      case KEY_DEL       : kdel(); break;
+      case UKEY_DEL       : kdel(); break;
 
       #ifndef _TARGET_GO32_
-      case KEY_BACKSPACE :
+      case UKEY_BACKSPACE :
       #endif
-      case KEY_CTRL_H    : kbs(); break;
+      case UKEY_CTRL_H    : kbs(); break;
 
       case 10            :
       case 13            : kenter(); break;
 
-      case KEY_CTRL_L    : if ( opt->auto_size )
+      case UKEY_CTRL_L    : if ( opt->auto_size )
                               {
                               opt->xmin = 1;
                               opt->ymin = 1;
@@ -1754,22 +1754,22 @@
                            con_cs();
                            draw();
                            break;
-      case KEY_CTRL_W    : insert_pipe_cmd(); break;
+      case UKEY_CTRL_W    : insert_pipe_cmd(); break;
 
-      case KEY_CTRL_T    : opt->auto_indent = !opt->auto_indent;
+      case UKEY_CTRL_T    : opt->auto_indent = !opt->auto_indent;
                            status( (opt->auto_indent) ? "AutoIndent ON" : "AutoIndent OFF" );
                            break;
 
-      case KEY_ALT_0  :
-      case KEY_ALT_1  :
-      case KEY_ALT_2  :
-      case KEY_ALT_3  :
-      case KEY_ALT_4  :
-      case KEY_ALT_5  :
-      case KEY_ALT_6  :
-      case KEY_ALT_7  :
-      case KEY_ALT_8  :
-      case KEY_ALT_9  : if (key == KEY_ALT_0) key = KEY_ALT_9+1;
+      case UKEY_ALT_0  :
+      case UKEY_ALT_1  :
+      case UKEY_ALT_2  :
+      case UKEY_ALT_3  :
+      case UKEY_ALT_4  :
+      case UKEY_ALT_5  :
+      case UKEY_ALT_6  :
+      case UKEY_ALT_7  :
+      case UKEY_ALT_8  :
+      case UKEY_ALT_9  : if (key == UKEY_ALT_0) key = UKEY_ALT_9+1;
                         return key;
       case 27         : return key;
       default         : kinsert( key ); break;

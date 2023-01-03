@@ -121,13 +121,13 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       wch = 0;
       }
 
-    if ( ( wch == 8 || wch == KEY_BACKSPACE ) && pos > 0 )
+    if ( ( wch == 8 || wch == UKEY_BACKSPACE ) && pos > 0 )
       {
       pos--;
       str_del( target, pos, 1 );
       }
     else
-    if ( wch == KEY_CTRL_A && str_len( target ) > 0)
+    if ( wch == UKEY_CTRL_A && str_len( target ) > 0)
       {
       int z = str_len( target )-1;
       if ( str_get_ch(target, z) == L'/' ) z--;
@@ -272,13 +272,13 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       res = 0;
       break;
       }
-    if ( wch == KEY_CTRL_U )
+    if ( wch == UKEY_CTRL_U )
       {
       target.undef();
       pos = 0;
       }
     else
-    if ( wch == KEY_CTRL_X )
+    if ( wch == UKEY_CTRL_X )
       {
         if ( target[0] == L'~' )
           target.set( tilde_expand( VString( target ) ) );
@@ -288,7 +288,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
         pos = str_len( target );
       }
     else
-    if ( wch >= 32 && wch != 8 && wch != KEY_BACKSPACE && ( ! KEY_IS_WIDE_CTRL( wch ) ) )
+    if ( wch >= 32 && wch != 8 && wch != UKEY_BACKSPACE && ( ! UKEY_IS_WIDE_CTRL( wch ) ) )
       {
       if( firsthit )
         {
@@ -299,29 +299,29 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       str_ins_ch( target, pos, wch );
       pos++;
       } else
-    if( wch == KEY_WIDE(KEY_LEFT)  )
+    if( wch == UKEY_LEFT  )
       {
       if (pos > 0)
         pos--;
       } else
-    if( wch == KEY_WIDE(KEY_RIGHT) )
+    if( wch == UKEY_RIGHT )
       {
       if (pos < str_len( target ))
         pos++;
       } else
-    if ( wch == KEY_WIDE(KEY_IC)   ) insert = !insert; else
-    if ( wch == KEY_WIDE(KEY_HOME) ) pos = 0; else
-    if ( wch == KEY_WIDE(KEY_END)  ) pos = str_len(target); else
-    if ( wch == KEY_WIDE(KEY_DC)  && pos < str_len(target) ) str_del( target, pos, 1 ); else
-    if ( wch == KEY_WIDE(KEY_NPAGE) || wch == KEY_WIDE(KEY_PPAGE) )
+    if ( wch == UKEY_INS   ) insert = !insert; else
+    if ( wch == UKEY_HOME ) pos = 0; else
+    if ( wch == UKEY_END  ) pos = str_len(target); else
+    if ( wch == UKEY_DEL  && pos < str_len(target) ) str_del( target, pos, 1 ); else
+    if ( wch == UKEY_PGUP || wch == UKEY_PGDN )
       {
       con_chide();
-      int zz = vfu_hist_menu( 5, 5, ( wch == KEY_WIDE(KEY_PPAGE) ) ? L"Dir Entry History" : L"ChDir History",
-                                    ( wch == KEY_WIDE(KEY_PPAGE) ) ? HID_GETDIR : HID_CHDIR );
+      int zz = vfu_hist_menu( 5, 5, ( wch == UKEY_PGUP ) ? L"Dir Entry History" : L"ChDir History",
+                                    ( wch == UKEY_PGUP ) ? HID_GETDIR : HID_CHDIR );
       con_cshow();
       if (zz != -1)
         {
-        const char* pc = vfu_hist_get( ( wch == KEY_WIDE(KEY_PPAGE) ) ? HID_GETDIR : HID_CHDIR, zz );
+        const char* pc = vfu_hist_get( ( wch == UKEY_PGUP ) ? HID_GETDIR : HID_CHDIR, zz );
         if ( pc )
           {
           target = pc;
@@ -815,7 +815,7 @@ void tree_view()
   int opos = -1;
   int opage = -1;
   while( key != 27 && key != 13 && key != '-' &&
-         toupper( key ) != 'Q' && toupper( key ) != 'X' && key != KEY_ALT_X )
+         toupper( key ) != 'Q' && toupper( key ) != 'X' && key != UKEY_ALT_X )
     {
     if ( key >= 'A' && key <= 'Z' ) key = tolower( key );
     if ( key == 's' )
@@ -823,9 +823,9 @@ void tree_view()
         str = "";
         say1( "Enter search pattern: ( use TAB to advance )" );
         key = con_getch();
-        while( str_find( search_set, key ) >= 0 || key == 8 || key == KEY_BACKSPACE || key == 9 )
+        while( str_find( search_set, key ) >= 0 || key == 8 || key == UKEY_BACKSPACE || key == 9 )
           {
-          if ( key == 8 || key == KEY_BACKSPACE )
+          if ( key == 8 || key == UKEY_BACKSPACE )
             str_trim_right( str, 1 );
           else
           if ( key != 9 )
@@ -878,12 +878,12 @@ void tree_view()
     else
     switch( key )
       {
-      case KEY_UP     : scroll.up(); break;
-      case KEY_DOWN   : scroll.down(); break;
-      case KEY_PPAGE  : scroll.ppage(); break;
-      case KEY_NPAGE  : scroll.npage(); break;
-      case KEY_HOME   : scroll.home(); break;
-      case KEY_END    : scroll.end(); break;
+      case UKEY_UP     : scroll.up(); break;
+      case UKEY_DOWN   : scroll.down(); break;
+      case UKEY_PGUP   : scroll.ppage(); break;
+      case UKEY_PGDN   : scroll.npage(); break;
+      case UKEY_HOME   : scroll.home(); break;
+      case UKEY_END    : scroll.end(); break;
       case 'r'        : tree_rebuild();
                         scroll.set_min_max( 0, dir_tree.count()-1 );
                         scroll.home();
@@ -895,7 +895,7 @@ void tree_view()
                         scroll.home();
                         break;
       case 'z'        :
-      case KEY_CTRL_Z :
+      case UKEY_CTRL_Z :
                         str = dir_tree[scroll.pos()];
                         str_tr( str, "\\", "/" );
                         size_cache_set( str, vfu_dir_size( str ) );

@@ -441,7 +441,7 @@ int __vfu_get_str_hist_id; /* used to keep history id passed here... */
 void vfu_get_str_history( int key, WString &w, int &pos )
 {
   if ( __vfu_get_str_hist_id <= 0 ) return;
-  if ( key != KEY_NPAGE && key != KEY_PPAGE ) return;
+  if ( key != UKEY_PGUP && key != UKEY_PGDN ) return;
   con_chide();
 
   int z = vfu_hist_menu( 5, 5, L"Line History", __vfu_get_str_hist_id );

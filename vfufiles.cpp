@@ -627,8 +627,8 @@ void vfu_file_entry_move()
     int old = FLI;
     switch(key)
       {
-      case KEY_UP    : vfu_nav_up(); break;
-      case KEY_DOWN  : vfu_nav_down(); break;
+      case UKEY_UP    : vfu_nav_up(); break;
+      case UKEY_DOWN  : vfu_nav_down(); break;
       }
 
     if ( old != FLI )

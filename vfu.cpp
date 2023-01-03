@@ -781,7 +781,7 @@ void vfu_run()
 
     wchar_t wch = con_getwch();
 
-    if( wch == 0 || wch == KEY_WIDE(KEY_RESIZE) ) wch = KEY_CTRL_L;
+    if( wch == 0 || wch == UKEY_RESIZE ) wch = UKEY_CTRL_L;
     if ( wch >= 'A' && wch <= 'Z' ) wch = towlower( wch );
     say1( "" );
     if ( user_id_str == "root" )
@@ -806,59 +806,60 @@ void vfu_run()
                         vfu_rescan_files( 0 ); break;
 
       case L's'       : vfu_inc_search( 0 ); break;
-      case KEY_WIDE(KEY_ALT_S) : vfu_inc_search( 1 ); break;
+      case UKEY_ALT_S : vfu_inc_search( 1 ); break;
 
-      case KEY_CTRL_L : do_draw = 3; break;
+      case UKEY_CTRL_L: do_draw = 3; break;
 
       case L'q'       : if( vfu_exit( work_path ) == 0 ) return; break;
 
-      case KEY_WIDE(KEY_ALT_X) :
+      case UKEY_ALT_X :
       case L'x'       : if( vfu_exit( startup_path ) == 0 ) return; break;
 
       case 27        : if( vfu_exit( NULL ) == 0 ) return; break;
 
-      case KEY_WIDE(KEY_UP)    : vfu_nav_up(); break;
-      case KEY_WIDE(KEY_DOWN)  : vfu_nav_down(); break;
-      case KEY_WIDE(KEY_PPAGE) : vfu_nav_ppage(); break;
-      case KEY_WIDE(KEY_NPAGE) : vfu_nav_npage(); break;
+      case UKEY_UP    : vfu_nav_up(); break;
+      case UKEY_DOWN  : vfu_nav_down(); break;
+      case UKEY_PGUP : vfu_nav_ppage(); break;
+      case UKEY_PGDN : vfu_nav_npage(); break;
 
-      case KEY_CTRL_A          :
-      case KEY_WIDE(KEY_HOME)  : vfu_nav_home(); break;
-      case KEY_CTRL_E          :
-      case KEY_WIDE(KEY_END)   : vfu_nav_end(); break;
+      case UKEY_CTRL_A:
+      case UKEY_HOME  : vfu_nav_home(); break;
+      
+      case UKEY_CTRL_E:
+      case UKEY_END   : vfu_nav_end(); break;
 
       case L'h' : vfu_help(); break;
 
       case L'f'        : vfu_change_file_mask( NULL ); break;
-      case KEY_CTRL_F : vfu_change_file_mask( "*" ); break;
+      case UKEY_CTRL_F : vfu_change_file_mask( "*" ); break;
 
-      case KEY_CTRL_D : tree_view(); break;
-      case KEY_WIDE(KEY_ALT_R)  : vfu_read_files_menu(); break;
+      case UKEY_CTRL_D : tree_view(); break;
+      case UKEY_ALT_R  : vfu_read_files_menu(); break;
 
       /* this will be in alt+r menu
       case 'R' : con_cs(); vfu_refresh_all_views(); do_draw = 1; break;
       */
-      case KEY_CTRL_R : vfu_rescan_files( 1 ); break;
+      case UKEY_CTRL_R : vfu_rescan_files( 1 ); break;
       case L'r'        : vfu_rescan_files( 0 ); break;
 
       case L' ' : vfu_nav_select(); break;
 
   #ifdef _TARGET_UNIX_
-      case KEY_BACKSPACE :
+      case UKEY_BACKSPACE :
   #endif
       case 8   :
       case L'-' : vfu_action_minus(); break;
 
-      case KEY_WIDE(KEY_ALT_BACKSPACE) :
-      case KEY_WIDE(KEY_ALT_MINUS) :
+      case UKEY_ALT_BACKSPACE :
+      case UKEY_ALT_MINUS :
                  vfu_action_minus( 2 ); break;
 
       case 13  :
       case L'+' :
       case L'=' : vfu_action_plus( wch ); break;
 
-      case KEY_WIDE(KEY_LEFT)  : if (opt.lynx_navigation) vfu_action_minus(); break;
-      case KEY_WIDE(KEY_RIGHT) : if (opt.lynx_navigation)
+      case UKEY_LEFT  : if (opt.lynx_navigation) vfu_action_minus(); break;
+      case UKEY_RIGHT : if (opt.lynx_navigation)
                          vfu_action_plus( L'+' );
                        else
                          if ( work_mode == WM_NORMAL )
@@ -866,9 +867,9 @@ void vfu_run()
                        break;
 
       case L'd' : vfu_chdir( NULL ); break;
-      case KEY_WIDE(KEY_ALT_D) : vfu_chdir_history(); break;
+      case UKEY_ALT_D : vfu_chdir_history(); break;
 
-      case KEY_WIDE(KEY_ALT_EQ) :
+      case UKEY_ALT_EQ :
       case L'>' : opt.long_name_view = !opt.long_name_view;
                  vfu_drop_all_views();
                  do_draw = 1;
@@ -892,7 +893,7 @@ void vfu_run()
 
 
       /* not documented unless here :) */
-      case KEY_CTRL_T  :
+      case UKEY_CTRL_T  :
         {
         char s[128];
         say1( "Timing screen draws (x1000)..." );
@@ -909,30 +910,30 @@ void vfu_run()
                  break;
 
       case L'z'        : vfu_directories_sizes(  0  ); break;
-      case KEY_WIDE(KEY_ALT_Z)  : vfu_directories_sizes( L'A' ); break;
-      case KEY_CTRL_Z : vfu_directories_sizes( L'Z' ); break;
+      case UKEY_ALT_Z  : vfu_directories_sizes( L'A' ); break;
+      case UKEY_CTRL_Z : vfu_directories_sizes( L'Z' ); break;
       }
     if ( work_mode == WM_ARCHIVE ) switch (wch)
       {
       case L'c' : vfu_extract_files( 0 ); break;
-      case KEY_WIDE(KEY_ALT_C) : vfu_extract_files( 1 ); break;
+      case UKEY_ALT_C : vfu_extract_files( 1 ); break;
       }
     if ( work_mode == WM_NORMAL ) switch (wch)
       {
       case L'b' :
-      case KEY_WIDE(KEY_ALT_B) : if ( wch == L'b' && sel_count > 0 )
+      case UKEY_ALT_B : if ( wch == L'b' && sel_count > 0 )
                          vfu_browse_selected_files();
                        else
                          {
                          if ( files_list_count() > 0 )
-                           vfu_browse( files_list_get(FLI)->name(), wch == KEY_WIDE(KEY_ALT_B) );
+                           vfu_browse( files_list_get(FLI)->name(), wch == UKEY_ALT_B );
                          else
                            say1( "No files" );
                          }
                        break;
 
       case L'n' : vfu_file_find( 0 ); break;
-      case KEY_WIDE(KEY_ALT_N)  : vfu_file_find( 1 ); break;
+      case UKEY_ALT_N  : vfu_file_find( 1 ); break;
 
       case L'~' : vfu_chdir( home_path ); break;
 
@@ -945,29 +946,29 @@ void vfu_run()
                  break;
 
       case 'm'        : vfu_copy_files(sel_count == 0, CM_MOVE); break;
-      case KEY_WIDE(KEY_ALT_M)  : vfu_copy_files(1, CM_MOVE); break;
+      case UKEY_ALT_M : vfu_copy_files(1, CM_MOVE); break;
 
       case 'c'        : vfu_copy_files(sel_count == 0, CM_COPY); break;
-      case KEY_WIDE(KEY_ALT_C)  : vfu_copy_files(1, CM_COPY); break;
+      case UKEY_ALT_C : vfu_copy_files(1, CM_COPY); break;
 
       case 'l'        : vfu_copy_files(sel_count == 0, CM_LINK); break;
-      case KEY_WIDE(KEY_ALT_L)  : vfu_copy_files(1, CM_LINK); break;
+      case UKEY_ALT_L : vfu_copy_files(1, CM_LINK); break;
 
       case 'e'        : vfu_erase_files(sel_count == 0); break;
-      case KEY_WIDE(KEY_ALT_E)  : vfu_erase_files(1); break;
+      case UKEY_ALT_E : vfu_erase_files(1); break;
 
       case 'j'        : vfu_jump_to_mountpoint( 0 ); break;
-      case KEY_WIDE(KEY_ALT_J)  : vfu_jump_to_mountpoint( 1 ); break;
+      case UKEY_ALT_J : vfu_jump_to_mountpoint( 1 ); break;
 
-      case KEY_WIDE(KEY_ALT_1)  : bookmark_goto( L'1' ); break;
-      case KEY_WIDE(KEY_ALT_2)  : bookmark_goto( L'2' ); break;
-      case KEY_WIDE(KEY_ALT_3)  : bookmark_goto( L'3' ); break;
-      case KEY_WIDE(KEY_ALT_4)  : bookmark_goto( L'4' ); break;
-      case KEY_WIDE(KEY_ALT_5)  : bookmark_goto( L'5' ); break;
-      case KEY_WIDE(KEY_ALT_6)  : bookmark_goto( L'6' ); break;
-      case KEY_WIDE(KEY_ALT_7)  : bookmark_goto( L'7' ); break;
-      case KEY_WIDE(KEY_ALT_8)  : bookmark_goto( L'8' ); break;
-      case KEY_WIDE(KEY_ALT_9)  : bookmark_goto( L'9' ); break;
+      case UKEY_ALT_1 : bookmark_goto( L'1' ); break;
+      case UKEY_ALT_2 : bookmark_goto( L'2' ); break;
+      case UKEY_ALT_3 : bookmark_goto( L'3' ); break;
+      case UKEY_ALT_4 : bookmark_goto( L'4' ); break;
+      case UKEY_ALT_5 : bookmark_goto( L'5' ); break;
+      case UKEY_ALT_6 : bookmark_goto( L'6' ); break;
+      case UKEY_ALT_7 : bookmark_goto( L'7' ); break;
+      case UKEY_ALT_8 : bookmark_goto( L'8' ); break;
+      case UKEY_ALT_9 : bookmark_goto( L'9' ); break;
       case '`'        : bookmark_goto( 0 ); break;
 
       case 9          : vfu_edit_entry(); break;
@@ -982,11 +983,11 @@ void vfu_run()
       */
 
       }
-    if (  ( KEY_WIDE(KEY_F1) <= wch && wch <= KEY_WIDE(KEY_F10) )
-       || ( KEY_WIDE(KEY_SH_F1) <= wch && wch <= KEY_WIDE(KEY_SH_F10) )
-       || ( KEY_WIDE(KEY_ALT_F1) <= wch && wch <= KEY_WIDE(KEY_ALT_F10) )
-       || ( KEY_WIDE(KEY_CTRL_F1) <= wch && wch <= KEY_WIDE(KEY_CTRL_F10) )
-       || ( wch == KEY_WIDE(KEY_IC)) )
+    if (  ( UKEY_F1      <= wch && wch <= UKEY_F10      )
+       || ( UKEY_SH_F1   <= wch && wch <= UKEY_SH_F10   )
+       || ( UKEY_ALT_F1  <= wch && wch <= UKEY_ALT_F10  )
+       || ( UKEY_CTRL_F1 <= wch && wch <= UKEY_CTRL_F10 )
+       || ( wch == UKEY_INS) )
            vfu_user_external_exec( wch );
     }
 }
@@ -1146,7 +1147,7 @@ void vfu_shell( const char* a_command, const char* a_options )
     VString sl = shell_line;
     sl = str_dot_reduce( sl, con_max_x() - 1 );
     say2( sl );
-    con_getwch( NULL );
+    con_getwch();
     }
 
   if ( str_find( o, 'n' ) == -1 ) /* [n]o console suspend */
@@ -1390,8 +1391,8 @@ void vfu_action_plus( wchar_t wch )
         vfu_read_files();
         say1( "ARCHIVE mode activated ( some keys/commands are disabled! )" );
         } else
-      if ( wch == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
-        vfu_user_external_exec( KEY_ENTER );
+      if ( wch == UKEY_ENTER && vfu_user_external_find( UKEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
+        vfu_user_external_exec( UKEY_ENTER );
       else
         vfu_browse( fi->name() );
       }
@@ -1406,8 +1407,8 @@ void vfu_action_plus( wchar_t wch )
       vfu_read_files();
       }
     else
-    if ( wch == KEY_ENTER && vfu_user_external_find( KEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
-        vfu_user_external_exec( KEY_ENTER );
+    if ( wch == UKEY_ENTER && vfu_user_external_find( UKEY_ENTER, fi->ext(), fi->type_str(), NULL ) != -1 )
+        vfu_user_external_exec( UKEY_ENTER );
     else
       { /* file */
       vfu_browse_archive_file();
@@ -2021,7 +2022,7 @@ void vfu_tools()
                      {
                      say1( "Cannot create directory:" );
                      say2( ms[z] );
-                     con_getwch( NULL );
+                     con_getwch();
                      err++;
                      }
                  if ( err == 0 ) say1( "MKDIR: ok." );
@@ -2593,10 +2594,10 @@ void vfu_jump_to_mountpoint( int all )
 
     mb.push(WString(str));
     }
-  menu_box_info.ac = KEY_CTRL_U;
+  menu_box_info.ac = UKEY_CTRL_U;
   z = vfu_menu_box( 5, 5, L"Jump to mount-point (free/total) Ctrl+U=umount" );
   if ( z == -1 )   return;
-  if ( menu_box_info.ec == KEY_CTRL_U )
+  if ( menu_box_info.ec == UKEY_CTRL_U )
     {
     str = va[z];
     str_fix_path( str );
@@ -2938,9 +2939,9 @@ void vfu_inc_search( int use_last_one )
     wch = con_getwch();
     }
   WRegexp size_re( L"^size:(\\d+)$" ); // TODO: allow "size:1024+"
-  while( ( wch >= 32 && ( ! KEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == KEY_BACKSPACE || wch == 9 )
+  while( ( wch >= 32 && ( ! UKEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == UKEY_BACKSPACE || wch == 9 )
     {
-    if ( wch == 8 || wch == KEY_BACKSPACE )
+    if ( wch == 8 || wch == UKEY_BACKSPACE )
       str_trim_right( str, 1 );
     else
     if ( wch != 9 )
