@@ -848,12 +848,12 @@ void tree_view()
     else
     switch( key )
       {
-      case UKEY_UP     : scroll.up(); break;
-      case UKEY_DOWN   : scroll.down(); break;
-      case UKEY_PGUP   : scroll.ppage(); break;
-      case UKEY_PGDN   : scroll.npage(); break;
-      case UKEY_HOME   : scroll.home(); break;
-      case UKEY_END    : scroll.end(); break;
+      case UKEY_UP    : scroll.up(); break;
+      case UKEY_DOWN  : scroll.down(); break;
+      case UKEY_PGUP  : scroll.ppage(); break;
+      case UKEY_PGDN  : scroll.npage(); break;
+      case UKEY_HOME  : scroll.home(); break;
+      case UKEY_END   : scroll.end(); break;
       case 'r'        : tree_rebuild();
                         scroll.set_min_max( 0, dir_tree.count()-1 );
                         scroll.home();

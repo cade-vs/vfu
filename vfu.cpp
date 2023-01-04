@@ -789,8 +789,8 @@ void vfu_run()
 
       case UKEY_UP    : vfu_nav_up(); break;
       case UKEY_DOWN  : vfu_nav_down(); break;
-      case UKEY_PGUP : vfu_nav_ppage(); break;
-      case UKEY_PGDN : vfu_nav_npage(); break;
+      case UKEY_PGUP  : vfu_nav_ppage(); break;
+      case UKEY_PGDN  : vfu_nav_npage(); break;
 
       case UKEY_CTRL_A:
       case UKEY_HOME  : vfu_nav_home(); break;
