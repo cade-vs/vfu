@@ -1073,7 +1073,7 @@
   if (access( fname, F_OK ))
     {
     mod = 1;
-    va.push( "" ); /* hack if new file */
+    va.push( L"" ); /* hack if new file */
     }
   sv.set_min_max( 0, va.count() - 1 );
   sv.go( 0 );
@@ -1393,10 +1393,10 @@
   void SeeEditor::kenter()
   {
   mod = 1;
-  if ( va.count() == 0 ) va.push( "" );
+  if ( va.count() == 0 ) va.push( L"" );
   int c = real_col();
-  VString str = va[sv.pos()];
-  VString nstr = str;
+  WString str = va[sv.pos()];
+  WString nstr = str;
   str_sleft( str, c );
   str_trim_left( nstr, c );
   va.set( sv.pos(), str );
@@ -1409,14 +1409,14 @@
     str = va[sv.pos()-1];
     int z = 0;
     int nc = 0;
-    while( z < str_len(str) && (str[z] == ' ' || str[z] == '\t') )
+    while( z < str_len(str) && (str[z] == L' ' || str[z] == L'\t') )
       {
-      if ( str[z] == '\t' ) nc += opt->tabsize; else nc++;
+      if ( str[z] == L'\t' ) nc += opt->tabsize; else nc++;
       z++;
       }
     str = va[sv.pos()];
     col = nc;
-    while( nc-- ) str_ins_ch( str, 0, ' ' );
+    while( nc-- ) str_ins_ch( str, 0, L' ' );
     va.set( sv.pos(), str );
     }
   if ( SEEDCOL > opt->xmax || SEEDCOL < 1 )
@@ -1431,24 +1431,24 @@
 
 /*--------------------------------------------------------------------*/
 
-  void SeeEditor::kinsert( int ch )
+  void SeeEditor::kinsert( wchar_t wch )
   {
-  if ( ch < 0 || ch > 255 ) return;
-  if ( ch == 13 || ch == 10 )
+  if ( UKEY_IS_WIDE_CTRL( wch ) ) return;
+  if ( wch == 13 || wch == 10 )
     {
     kenter();
     return;
     }
   mod = 1;
-  if ( va.count() == 0 ) va.push( "" );
-  VString str = va[sv.pos()];
+  if ( va.count() == 0 ) va.push( L"" );
+  WString str = va[sv.pos()];
 
   int c = real_col();
 
   if (!opt->insert)
     str_del( str, c, 1 );
-  if ( str_len(str) < c ) str_pad( str, -c, ' ' );
-  str_ins_ch( str, c, ch );
+  if ( str_len(str) < c ) str_pad( str, -c, L' ' );
+  str_ins_ch( str, c, wch );
   va.set( sv.pos(), str );
   right();
 
@@ -1485,7 +1485,7 @@
   if ( n == sv.max() )
     {
     if ( str_len( va[n] ) == 0 ) return;
-    va.set( n, "" );
+    va.set( n, L"" );
     }
   else
     {
@@ -1515,15 +1515,15 @@
     {
     ASSERT( sv.max() == va.count() - 1 );
     if ( n < 0 || n > sv.max() ) return;
-    VString str = va[n];
-    str_cut_right( str, " \t\n\r" );
+    WString str = va[n];
+    str_cut_right( str, L" \t\n\r" );
     va.set( n, str );
     }
   else
   for ( int z = 0; z < va.count(); z++ )
     {
-    VString str = va[z];
-    str_cut_right( str, " \t\n\r" );
+    WString str = va[z];
+    str_cut_right( str, L" \t\n\r" );
     va.set( z, str );
     }
   }
@@ -1536,7 +1536,7 @@
   int ii = str_len( sss )+2;
   status( sss );
   WString www = opt->last_pipe_cmd;
-  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ))
+  if( ! TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ) )
     {
     draw();
     return;
@@ -1574,12 +1574,12 @@
   int pos = -1;
   for ( z = sv.pos() + 1; z <= sv.max(); z++ )
     {
-    VString str = va[z];
+    WString str = va[z];
     if ( opt->no_case )
       str_up( str );
     if ( opt->last_search[0] == '~' )
       pos = str_find_regexp( str, opt->last_search + 1 );
-    else if ( str[0] == '\\' )
+    else if ( str[0] == L'\\' )
       pos = str_find( str, opt->last_search + 1 );
     else
       pos = str_find( str, opt->last_search );
@@ -1609,18 +1609,15 @@
 
   int SeeEditor::find( int no_case )
   {
-  VString sss;
   status( "Find %s: ", no_case?"(no case)":"(case sense)" );
-  int ii = str_len(sss)+2;
   WString www = opt->last_search;
-  if(!TextInput( opt->xmin+ii, opt->ymax, "", opt->xmax-ii-4, opt->xmax-ii-4, www ))
+  if( ! TextInput( opt->xmin, opt->ymax, "", opt->xmax-1, opt->xmax-1, www ) )
     {
     draw();
     return 1;
     }
-  sss = www;  
-  str_sleft( sss, MAX_SEARCH_LEN );
-  strcpy( opt->last_search, sss );
+  str_sleft( www, MAX_SEARCH_LEN );
+  VS_FN_STRCPY( opt->last_search, www );
   opt->no_case = no_case;
   if ( opt->no_case )
     str_up( opt->last_search );
@@ -1633,7 +1630,7 @@
   {
   con_out( 1, 1, help_str );
   do_draw = 1;
-  con_getch();
+  con_getwch();
   }
 
 /*--------------------------------------------------------------------*/
@@ -1644,7 +1641,7 @@
   draw();
   set_cursor();
 
-  int key;
+  wchar_t wch;
   int pend = 0; /* used for double key-strokes as ^K^x command */
   while(4)
     {
@@ -1655,35 +1652,35 @@
     int oi  = opt->insert;
 
     pend = 0;
-    key = con_getch();
-    if( key == 0 ) key = UKEY_CTRL_L;
-    if (key == UKEY_CTRL_C)
+    wch = con_getwch();
+    if( wch == 0 ) wch = UKEY_CTRL_L;
+    if ( wch == UKEY_CTRL_C )
       {
       mod = 0; /* it is `quit' i.e. no save so this should be ok */
-      return key;
+      return wch;
       }
-    if (key == UKEY_CTRL_X)
+    if ( wch == UKEY_CTRL_X )
       {
         save();
-        return key;
+        return wch;
       } else
-    if ( key == 27 || key == UKEY_ALT_X )
+    if ( wch == 27 || wch == UKEY_ALT_X )
       {
       if ( request_quit() == 0 )
-        return key;
+        return wch;
       else
         continue;
       }
-    if ( key == UKEY_CTRL_K )
+    if ( wch == UKEY_CTRL_K )
       {
-      pend = key;
+      pend = wch;
       con_out( SEEDCOL, SEEDROW, "^K", opt->cs );
       set_cursor();
-      key = con_getch();
+      wch = con_getwch();
       draw_line( sv.pos() );
       }
 
-    switch( key )
+    switch( wch )
       {
       case UKEY_CTRL_N :
       case UKEY_DOWN   : down(); break;
@@ -1766,10 +1763,10 @@
       case UKEY_ALT_6  :
       case UKEY_ALT_7  :
       case UKEY_ALT_8  :
-      case UKEY_ALT_9  : if (key == UKEY_ALT_0) key = UKEY_ALT_9+1;
-                        return key;
-      case 27         : return key;
-      default         : kinsert( key ); break;
+      case UKEY_ALT_9  : if ( wch == UKEY_ALT_0 ) wch = UKEY_ALT_9+1;
+                        return wch;
+      case 27         : return wch;
+      default         : kinsert( wch ); break;
 
       }
 

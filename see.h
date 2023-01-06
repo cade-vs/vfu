@@ -171,8 +171,7 @@ class SeeViewer
 
 struct SeeEditorOptions
 {
-  SeeEditorOptions()
-    { reset(); }
+  SeeEditorOptions() { reset(); }
   void reset()
     {
     auto_size = 1;
@@ -208,7 +207,7 @@ struct SeeEditorOptions
   int auto_indent;
   int insert; /* if editor is in `insert' mode */
 
-  char last_search[MAX_SEARCH_LEN+1];
+  wchar_t last_search[MAX_SEARCH_LEN+1];
   int no_case;
   char last_pipe_cmd[MAX_PIPE_LEN];
 };
@@ -225,7 +224,7 @@ class SeeEditor
   int col;
   int colpage;
   ScrollPos sv; /* vertical scroller */
-  VArray va; /* string/text cluster */
+  WArray va; /* string/text cluster */
   int mod; /* modify flag */
 
   int rows;
@@ -275,7 +274,7 @@ class SeeEditor
   void kdel();
   void kbs();
   void kenter();
-  void kinsert( int ch );
+  void kinsert( wchar_t wch );
 
   void insert_file( const char* fn );
 
