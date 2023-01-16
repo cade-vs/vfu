@@ -50,6 +50,7 @@ void size_cache_set( const char *s, fsize_t size, int sort = 1 );
 void size_cache_append( const char *s, fsize_t size );
 void size_cache_clean( const char *s );
 void size_cache_sort();
+void size_cache_sort_names();
 
 /*###########################################################################*/
 

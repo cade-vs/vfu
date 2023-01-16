@@ -152,7 +152,7 @@ void vfu_drop_all_views()
 
 void vfu_draw( int n )
 {
-  if ( n < FLP || n > FLP + FPS )
+  if ( n < FLP || n > FLP + FLPS )
     return; /* we are out of screen -- don't draw */
 
   TF* fi = files_list_get(n);
@@ -254,7 +254,7 @@ void vfu_redraw() /* redraw file list and header */
 
   int z;
 
-  for ( z = 0; z < FPS; z++ )
+  for ( z = 0; z < FLPS; z++ )
     {
     ASSERT( FLP + z >= 0 );
     if ( FLP + z >= files_list_count() || files_list_is_empty( FLP + z ) )
@@ -393,7 +393,7 @@ if ( FLP == 0 && FLI == 0 ) return;
 void vfu_nav_npage()
 {
   if ( files_list_count() == 0 ) return;
-  if ( FLP >= files_list_count() - FPS && FLI == files_list_count() - 1 ) return;
+  if ( FLP >= files_list_count() - FLPS && FLI == files_list_count() - 1 ) return;
 
   int old_fli = FLI;
   int old_flp = FLP;
@@ -423,16 +423,16 @@ void vfu_nav_home()
       z++;
       }
     if( z < files_list_count() )
-      FGO( z );
+      FLGO( z );
     }
   else
-    FGO( 0 );
+    FLGO( 0 );
   vfu_nav_update_pos();
   do_draw = 1;
 /*
   if ( files_list_count() == 0 ) return;
   if ( FLI == 0 ) return;
-  FGO( 0 );
+  FLGO( 0 );
   vfu_nav_update_pos();
   do_draw = 1;
 */  
@@ -454,16 +454,16 @@ void vfu_nav_end()
       z--;
       }
     if( z >= 0 )
-      FGO( z );
+      FLGO( z );
     }
   else
-    FGO( files_list_count() - 1 );
+    FLGO( files_list_count() - 1 );
   vfu_nav_update_pos();
   do_draw = 1;
 /*
   if ( files_list_count() == 0 ) return;
   if ( FLI >= files_list_count() - 1 ) return;
-  FGO( files_list_count() - 1 );
+  FLGO( files_list_count() - 1 );
   vfu_nav_update_pos();
   do_draw = 1;
 */
@@ -503,9 +503,9 @@ void vfu_nav_select()
 void vfu_nav_update_pos()
 {
  ASSERT( files_list_count() >= 0 );
- if ( FLI < 0 ) FGO( 0 );
- if ( files_list_count() == 0 ) FGO( 0 );
- if ( files_list_count() > 0 && FLI > files_list_count() - 1 ) FGO( files_list_count() - 1 );
+ if ( FLI < 0 ) FLGO( 0 );
+ if ( files_list_count() == 0 ) FLGO( 0 );
+ if ( files_list_count() > 0 && FLI > files_list_count() - 1 ) FLGO( files_list_count() - 1 );
 }
 
 /* eof vfuview.cpp */

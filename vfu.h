@@ -184,8 +184,12 @@
   extern  ScrollPos file_list_index;
   #define FLI       (file_list_index.pos())
   #define FLP       (file_list_index.page())
-  #define FPS       (file_list_index.pagesize())
-  #define FGO(n)    (file_list_index.go(n))
+  #define FLPS      (file_list_index.pagesize())
+  #define FLMIN     (file_list_index.min())
+  #define FLMAX     (file_list_index.max())
+  #define FLGO(n)   (file_list_index.go(n))
+  #define FLGET(n)  (files_list_get(n))
+  #define FLCUR     (files_list_get(FLI))
 
   /* some world wide variables */
   extern VString startup_path;
@@ -296,7 +300,7 @@ void vfu_tools();
 void vfu_command();
 void vfu_file_find( int menu );
 void vfu_file_find_results();
-void vfu_directories_sizes( wchar_t wch );
+void vfu_directory_sizes( wchar_t wch );
 
 void vfu_change_file_mask( const char* a_new_mask );
 

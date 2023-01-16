@@ -411,7 +411,7 @@ int vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id )
     {
 //    ASSERT( z < str_len( hist_menu_hotkeys ) );
     str = "";
-    str_add_ch( str, (size_t)z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
+    str_add_ch( str, z < str_len( hist_menu_hotkeys ) ? hist_menu_hotkeys[z] : ' ' );
     str = str + " " + vfu_hist_get( hist_id, z );
     mb.push( WString( str ) );
     }

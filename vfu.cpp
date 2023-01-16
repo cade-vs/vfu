@@ -224,11 +224,13 @@ const char* TF::full_name( int fix )
   if ( _name[0] == '/' )
     _full_name = _name;
   else
+    {
     if ( work_mode == WM_ARCHIVE )
       _full_name = archive_path;
     else
       _full_name = work_path;
     _full_name += _name;
+    }
   if ( fix && _is_dir )
     _full_name += "/"; /* i.e. str_fix_path() */
   return _full_name.data();
@@ -875,13 +877,13 @@ void vfu_run()
         break;
         }
 
-      case L'*' : FGO( rand() % files_list_count() );
+      case L'*' : FLGO( rand() % files_list_count() );
                  do_draw = 1;
                  break;
 
-      case L'z'        : vfu_directories_sizes(  0  ); break;
-      case UKEY_ALT_Z  : vfu_directories_sizes( L'A' ); break;
-      case UKEY_CTRL_Z : vfu_directories_sizes( L'Z' ); break;
+      case L'z'        : vfu_directory_sizes(  0  ); break;
+      case UKEY_ALT_Z  : vfu_directory_sizes( L'A' ); break;
+      case UKEY_CTRL_Z : vfu_directory_sizes( L'Z' ); break;
       }
     if ( work_mode == WM_ARCHIVE ) switch (wch)
       {
@@ -896,7 +898,7 @@ void vfu_run()
                        else
                          {
                          if ( files_list_count() > 0 )
-                           vfu_browse( files_list_get(FLI)->name(), wch == UKEY_ALT_B );
+                           vfu_browse( FLCUR->name(), wch == UKEY_ALT_B );
                          else
                            say1( "No files" );
                          }
@@ -1034,7 +1036,7 @@ void vfu_soft_reset_screen()
   /* update scroll parameters */
   file_list_index.set_min_max( 0, files_list_count() - 1 );
   file_list_index.set_pagesize( con_max_y() - 7 );
-  FGO( file_list_index.pos() );
+  FLGO( file_list_index.pos() );
 
   vfu_drop_all_views();
   vfu_redraw();
@@ -1200,7 +1202,7 @@ void vfu_edit( const char *fname )
     say1( "No files");
     return;
     }
-  if ( files_list_get(FLI)->is_dir() )
+  if ( FLCUR->is_dir() )
     {
     say1( "Cannot edit directory");
     return;
@@ -1333,7 +1335,7 @@ void vfu_action_plus( wchar_t wch )
 {
   if ( files_list_count() == 0 ) return;
 
-  TF *fi = files_list_get(FLI);
+  TF *fi = FLCUR;
 
   if ( work_mode == WM_NORMAL )
     {
@@ -1433,7 +1435,7 @@ void vfu_action_minus( int mode )
     n += "/";
     if ( pathcmp( o, n ) == 0 )
       {
-      FGO(z);
+      FLGO(z);
       break;
       }
     }
@@ -1518,7 +1520,7 @@ VString same_str;
 long same_int = 0;
 fsize_t same_fsize = 0;
 
-TF* fi = files_list_get(FLI);
+TF* fi = FLCUR;
 
 switch( same_mode )
   {
@@ -1904,7 +1906,7 @@ void vfu_user_external_exec( wchar_t key )
     return;
     }
   VString shell_line;
-  TF *fi = files_list_get(FLI);
+  TF *fi = FLCUR;
   if (vfu_user_external_find( key, fi->ext(), fi->type_str(), &shell_line ) != -1)
     {
     if ( work_mode == WM_NORMAL )
@@ -1936,25 +1938,26 @@ void vfu_tools()
   mb.push( L"A Rename tools..." );
   mb.push( L"C Classify files" );
   if ( vfu_menu_box( 30, 5, L"Tools" ) == -1 ) return;
+
+  TF *fi = FLCUR;
+
   switch( menu_box_info.ec )
     {
     case L'R' : {
-               fname_t s;
-               expand_path(files_list_get(FLI)->name(), s);
-               say1( s );
+               say1( expand_path( fi->name() ) );
                break;
                }
     case L'D' : {
-               if( ! files_list_get(FLI)->is_link() ) break;
-               tools_last_target = files_list_get(FLI)->full_name();
-               if( ! files_list_get(FLI)->is_dir() ) break;
-               vfu_chdir( expand_path( files_list_get(FLI)->name() ) );
+               if( ! fi->is_link() ) break;
+               tools_last_target = fi->full_name();
+               if( ! fi->is_dir() ) break;
+               vfu_chdir( expand_path( fi->name() ) );
                break;
                }
     case L'G' : {
-               if( ! files_list_get(FLI)->is_link() ) break;
-               tools_last_target = files_list_get(FLI)->full_name();
-               VString target = vfu_readlink( files_list_get(FLI)->full_name() );
+               if( ! fi->is_link() ) break;
+               tools_last_target = fi->full_name();
+               VString target = vfu_readlink( fi->full_name() );
                vfu_chdir( expand_path( str_file_path( target ) ) );
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
@@ -1962,22 +1965,21 @@ void vfu_tools()
     case L'B' : {
                if( tools_last_target == "" ) break;
                VString target = tools_last_target;
-               tools_last_target = files_list_get(FLI)->full_name();
+               tools_last_target = fi->full_name();
                vfu_chdir( expand_path( str_file_path( target ) ) );
                vfu_goto_filename( str_file_name_ext( target ) );
                break;
                }
     case L'T' : {
                VString str;
-               if (vfu_get_str( "Make directory(ies) (use space for separator)",
-                                str, HID_MKPATH ))
+               if (vfu_get_str( "Make directory(ies) (use space for separator)", str, HID_MKPATH ))
                  {
                  int err = 0;
                  int z;
                  VArray ms;
                  ms = str_split( " +", str );
                  for ( z = 0; z < ms.count(); z++ )
-                   if( make_path(ms[z]) )
+                   if( make_path( ms[z] ) )
                      {
                      say1( "Cannot create directory:" );
                      say2( ms[z] );
@@ -2067,9 +2069,9 @@ void vfu_rename_file_in_place()
     }
 
 
-  TF *fi = files_list_get(FLI);
+  TF *fi = FLCUR;
 
-  int y = (file_list_index.pos() - file_list_index.page()) + 4;
+  int y = ( FLI - FLP ) + 4;
   int x = tag_mark_pos + 3;
 
   WString www = fi->name();
@@ -2142,7 +2144,7 @@ void vfu_change_file_mask( const char* a_new_mask )
 int __vfu_dir_size_followsymlinks = 0;
 int __vfu_dir_size_samedevonly    = 0;
 
-void vfu_directories_sizes( wchar_t wch )
+void vfu_directory_sizes( wchar_t wch )
 {
   int z;
   char t[256];
@@ -2162,7 +2164,7 @@ void vfu_directories_sizes( wchar_t wch )
     mb.push( L"N Normal" );
     mb.push( L"Y Follow symlinks (WARNING: may loop!)" );
     mb.push( L"V Keep on the same device/filesystem only" );
-    if ( vfu_menu_box( 5, FPS - 8, L"Directory size of:" ) == -1 ) return;
+    if ( vfu_menu_box( 5, FLPS - 8, L"Directory size of:" ) == -1 ) return;
     wch = menu_box_info.ec;
     }
 
@@ -2182,18 +2184,15 @@ void vfu_directories_sizes( wchar_t wch )
     } else
   if ( wch == L'A' || wch == L'S' ) /* all or selected  */
     {
+//    size_cache_sort_names();
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);
-      if ( fi->is_dir() ) /* dirs */
-        {
-        if ( wch == L'S' && !fi->sel ) continue; /* if not sel'd and required -- skip */
-        /* if ( n == 'A' ) continue; // all */
-        fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
-        if ( dir_size == -1 )
-          break;
-        fi->set_size( dir_size );
-        }
+      if ( ! fi->is_dir() ) continue;
+      if ( wch == L'S' && ! fi->sel ) continue; /* if not sel'd and required -- skip */
+      fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
+      if ( dir_size == -1 ) continue;
+      fi->set_size( dir_size );
       }
     size_cache_sort();
     say1( wch == L'S' ? "Path: *** selected dirs in the list ***" : "Path: *** all dirs in the list ***" );
@@ -2201,10 +2200,10 @@ void vfu_directories_sizes( wchar_t wch )
     }  else
   if ( wch == L'Z' ) /* single one, under cursor  */
     {
-    if ( files_list_get(FLI)->is_dir() )
+    if ( FLCUR->is_dir() )
       {
-      files_list_get(FLI)->set_size( vfu_dir_size( files_list_get(FLI)->name(), 1, dir_size_mode, &size_info ) );
-      say1( "Path: " + work_path + VString( files_list_get(FLI)->name() ) );
+      FLCUR->set_size( vfu_dir_size( FLCUR->name(), 1, dir_size_mode, &size_info ) );
+      say1( "Path: " + work_path + VString( FLCUR->name() ) );
       say2( size_info.str() );
       }
     else
@@ -2298,8 +2297,8 @@ void vfu_edit_entry( )
           {
           if (one)
             {
-            strcpy( new_mode, files_list_get(FLI)->mode_str() );
-            file_get_mode_str( files_list_get(FLI)->name(), new_mode);
+            strcpy( new_mode, FLCUR->mode_str() );
+            file_get_mode_str( FLCUR->name(), new_mode);
             }
           else
             strcpy(new_mode, MODE_MASK);
@@ -2455,7 +2454,7 @@ void vfu_edit_entry( )
         say1( "Cannot edit symlink reference for selection..." );
         break;
         }
-      TF* fi = files_list_get(FLI);
+      TF* fi = FLCUR;
       if ( ! fi->is_link() )
         {
         say1( "This is not a symlink..." );
@@ -2634,7 +2633,7 @@ void vfu_file_find_results()
     for( z = 0; z < files_list_count(); z++ )
       if ( pathcmp( fname, files_list_get(z)->name_ext() ) == 0 )
         {
-        FGO(z);
+        FLGO(z);
         vfu_nav_update_pos();
         break;
         }
@@ -2869,10 +2868,10 @@ void vfu_inc_search( int use_last_one )
     }
   else
     {
-    say1( "Enter incremental" + no_case_opt_str + "search pattern: ( TAB for next match )" );
+    say1( "Enter incremental" + no_case_opt_str + "search pattern: ( TAB for next match or 'size:NNN' for size search )" );
     wch = con_getwch();
     }
-  WRegexp size_re( L"^size:(\\d+)$" ); // TODO: allow "size:1024+"
+  WRegexp size_re( L"^size:\\s*(\\d+)$" ); // TODO: allow "size:1024+"
   while( ( wch >= 32 && ( ! UKEY_IS_WIDE_CTRL( wch ) ) ) || wch == 8 || wch == UKEY_BACKSPACE || wch == 9 )
     {
     if ( wch == 8 || wch == UKEY_BACKSPACE )
@@ -2887,8 +2886,8 @@ void vfu_inc_search( int use_last_one )
     int z;
     if ( wch == 9 )
       {
-      z = FLI+1;
-      if ( z > file_list_index.max() ) z = file_list_index.min();
+      z = FLI + 1;
+      if ( z > FLMAX ) z = FLMIN;
       }
     else
       z = FLI;
@@ -2899,13 +2898,13 @@ void vfu_inc_search( int use_last_one )
     VString s_mask = str;
     int s_size = 0;
     if( size_re.m( str ) )
-      s_size = atoi( VString( size_re[1] ) );
+      s_size = VString( size_re[1] ).i();
     else
       vfu_expand_mask( s_mask );
     while(1)
       {
-      if ( z > file_list_index.max() ) z = file_list_index.min();
-      if ( z < file_list_index.min() ) z = file_list_index.max();
+      if ( z > FLMAX ) z = FLMIN;
+      if ( z < FLMIN ) z = FLMAX;
       if( s_size )
         found = files_list_get(z)->size() == s_size;
       else
@@ -2919,9 +2918,9 @@ void vfu_inc_search( int use_last_one )
       }
     if (found)
       {
-      FGO(z);
+      FLGO(z);
       vfu_redraw();
-      show_pos( FLI+1, files_list_count() );
+      show_pos( FLI + 1, files_list_count() );
       }
     if( use_last_one )
       break;
@@ -2945,7 +2944,7 @@ void vfu_goto_filename( const char* fname )
   for (int z = 0; z < files_list_count(); z++)
     {
     if( strcmp( fname, files_list_get(z)->name_ext() ) ) continue;
-    FGO(z);
+    FLGO(z);
     return;
     }
 }

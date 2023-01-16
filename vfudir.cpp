@@ -224,7 +224,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
           for( di = 0; di < dir_list.count(); di++ ) 
             {
             WString ws;
-            ws.set_failsafe( dir_list[di] );
+            ws = dir_list[di];
             w_dir_list.push( ws );
             }
           con_chide();
@@ -777,7 +777,7 @@ void tree_view()
 
   ScrollPos scroll;
   scroll.set_min_max( 0, dir_tree.count()-1 );
-  scroll.set_pagesize( FPS + 2 );
+  scroll.set_pagesize( FLPS + 2 );
   scroll.set_pagestep( OPT_SCROLL_PAGESTEP(opt.scroll_pagestep) );
   scroll.go( new_pos );
 
@@ -899,6 +899,7 @@ void tree_view()
 
 void size_cache_load()
 {
+  size_cache.set_block_size( 1024*1024 );
   size_cache.undef();
   size_cache.fload( filename_size_cache );
   // removes old-style size cache entries
@@ -914,6 +915,11 @@ void size_cache_save()
 int size_cache_cmp( const char* s1, const char* s2 )
 {
   return strcmp( s1 + SIZE_CACHE_OFFSET, s2 + SIZE_CACHE_OFFSET );
+}
+
+int size_cache_cmp_names( const char* s1, const char* s2 )
+{
+  return strcmp( s1 + SIZE_CACHE_OFFSET_CLEAN, s2 + SIZE_CACHE_OFFSET_CLEAN );
 }
 
 VString size_cache_compose_key( const char *s, fsize_t size )
@@ -997,25 +1003,37 @@ void size_cache_append( const char *s, fsize_t size )
 void size_cache_clean( const char *s )
 {
   VString str = size_cache_compose_key( s, 0 );
-  size_t qc = str_len( str );
+  ssize_t qc = str_len( str );
   str_trim_left( str, SIZE_CACHE_OFFSET_CLEAN );
   int sl = str_len( str );
   int z = 0;
+  int in = 0;
   while( z < size_cache.count() )
     {
     const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET_CLEAN;
-    if ( ( strlen( size_cache[z] ) >= qc && strncmp( ps, str, sl ) == 0 && (ps[sl] == '/' || ps[sl] == 0) )
+    if ( ( str_len( size_cache[z] ) >= qc && (ps[sl] == '/' || ps[sl] == 0) && strncmp( ps, str, sl ) == 0 )
          ||
          ( size_cache[z][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
+      {
       size_cache.del( z );
+//      in = 1;
+      }
     else
+      {
+//      if( in ) return;
       z++;
+      }
     }
 }
 
 void size_cache_sort()
 {
   size_cache.sort( 0, size_cache_cmp );
+}
+
+void size_cache_sort_names()
+{
+  size_cache.sort( 0, size_cache_cmp_names );
 }
 
 /*###########################################################################*/

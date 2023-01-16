@@ -245,7 +245,7 @@ void vfu_read_files( int a_recursive )
   vfu_nav_update_pos();
   vfu_sort_files();
   vfu_drop_all_views();
-  FGO(0); /* this ignores the sort keep list position */
+  FLGO(0); /* this ignores the sort keep list position */
 
 
   say1( "" );
@@ -263,10 +263,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
   if ( ne == "."  || ne == ".." ) return 0;
 
   /* now try to hide `system/special' files */
-  if ( !opt.show_hidden_files )
-    {
-    if ( ne[0] == '.' ) return 0;
-    }
+  if ( ! opt.show_hidden_files && ne[0] == '.' ) return 0;
 
   int is_dir = S_ISDIR( st->st_mode );
   if ( ! is_dir ) /* mask is not allowed for dirs */
@@ -285,6 +282,9 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
       expand_path( fi->full_name( 1 ), t );
       str_fix_path( t );
       fi->set_size( size_cache_get( t ) );
+      /*
+      fi->set_size( size_cache_get( str_fix_path( expand_path( fi->full_name( 1 ) ) ) ) );
+      */
       }
     else
       {
@@ -523,7 +523,7 @@ void vfu_sort_files()
     for (z = 0; z < files_list_cnt; z++)
       if ( str == files_list[z]->name() )
         {
-        FGO(z);
+        FLGO(z);
         break;
         }
     }

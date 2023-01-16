@@ -41,7 +41,7 @@
   SeeViewer::SeeViewer( SeeViewerOptions *a_opt )
   {
     opt = a_opt;
-    memset( &escape_keys, 0, sizeof(escape_keys));
+    memset( &escape_keys, 0, sizeof( escape_keys ) );
     f = NULL;
     line = last_line = 1;
     col = 0;
@@ -51,7 +51,7 @@
     freezed = 0;
     do_draw = 0;
 
-    if ( opt->auto_size )
+    if( opt->auto_size )
       {
       opt->xmin = 1;
       opt->ymin = 1;
@@ -297,6 +297,7 @@
       while ( z > 0 && ( buff[z-1] == '\r' || buff[z-1] == '\n' ) ) z--;
       buff[z] = 0;
       filter( buff, z );
+      WString www = buff;
 
       int show_lmark = 0;
       int show_rmark = 0;
@@ -306,27 +307,31 @@
         {
         if (col >= z)
           {
-          buff[0] = 0;
+          // buff[0] = 0;
+          www = L"";
           show_lmark = 1;
           z = 0;
           }
         else
           {
-          str_trim_left( buff, col );
+          // str_trim_left( buff, col );
+          str_trim_left( www, col );
           z -= col;
           }
         }
       if ( z > cols )
         {
-        buff[cols] = 0;
+        // buff[cols] = 0;
+        str_sleft( www, col );
         show_rmark = 1;
         }
       else
         {
         if ( opt->show_eol && !show_lmark ) show_eol = z+1;
         }
-      str_pad( buff, -cols );
-      con_out( 1, opt->ymin+y, buff, (opt->grid && y%2==0) ? opt->ch : opt->cn);
+      //str_pad( buff, -cols );
+      str_pad( www, -cols );
+      con_out( 1, opt->ymin+y, VString( www ), (opt->grid && y%2==0) ? opt->ch : opt->cn);
 
       if ( re.ok() && re.m( buff ) )
         con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
