@@ -632,6 +632,7 @@ void vfu_init()
   /* this will load defaults first then load vfu.opt and at the
      end will load vfu.conf which will overwrite all if need to */
   vfu_settings_load();
+  size_cache_load();
 
   file_list_index.wrap = 0; /* just to be safe :) */
 
@@ -2184,7 +2185,7 @@ void vfu_directory_sizes( wchar_t wch )
     } else
   if ( wch == L'A' || wch == L'S' ) /* all or selected  */
     {
-//    size_cache_sort_names();
+    size_cache_sort_names();
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);

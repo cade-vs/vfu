@@ -16,6 +16,7 @@
 #include "vfumenu.h"
 
 VArray size_cache;
+int    size_cache_sorted_by_name;
 
 /*###########################################################################*/
 
@@ -899,6 +900,7 @@ void tree_view()
 
 void size_cache_load()
 {
+  size_cache_sorted_by_name = 0;
   size_cache.set_block_size( 1024*1024 );
   size_cache.undef();
   size_cache.fload( filename_size_cache );
@@ -1016,11 +1018,11 @@ void size_cache_clean( const char *s )
          ( size_cache[z][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
       {
       size_cache.del( z );
-//      in = 1;
+      if ( size_cache_sorted_by_name ) in = 1;
       }
     else
       {
-//      if( in ) return;
+      if( size_cache_sorted_by_name && in ) return;
       z++;
       }
     }
@@ -1028,11 +1030,13 @@ void size_cache_clean( const char *s )
 
 void size_cache_sort()
 {
+  size_cache_sorted_by_name = 0;
   size_cache.sort( 0, size_cache_cmp );
 }
 
 void size_cache_sort_names()
 {
+  size_cache_sorted_by_name = 1;
   size_cache.sort( 0, size_cache_cmp_names );
 }
 

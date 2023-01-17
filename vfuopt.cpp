@@ -412,9 +412,6 @@ void vfu_settings_load()
     }
 
   if (opt.use_dir_colors) vfu_load_dir_colors();
-//  if (file_load_crc32( filename_size_cache, &size_cache, sizeof(size_cache)))
-//    memset( &size_cache, 0, sizeof(size_cache) );
-  size_cache_load();
 }
 
 /*---------------------------------------------------------------------------*/

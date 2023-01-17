@@ -54,9 +54,10 @@ void size_cache_sort_names();
 
 /*###########################################################################*/
 
-#define DIR_SIZE_NORMAL         0
-#define DIR_SIZE_FOLLOWSYMLINKS 2
-#define DIR_SIZE_SAMEDEVONLY    4
+#define DIR_SIZE_NORMAL           0
+#define DIR_SIZE_FOLLOWSYMLINKS   2
+#define DIR_SIZE_SAMEDEVONLY      4
+#define DIR_SIZE_NO_CACHECLEAN  128
 
 struct DirSizeInfo
   {
