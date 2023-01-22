@@ -1232,6 +1232,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
     src_dev = st.st_dev;
     }
   fsize_t size = __dir_size_process( t, mode, src_dev, size_info );
+  if( size == -1 ) return -1;
   size_cache_set( t, size, sort );
   return size;
 }

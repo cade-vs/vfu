@@ -2192,7 +2192,7 @@ void vfu_directory_sizes( wchar_t wch )
       if ( ! fi->is_dir() ) continue;
       if ( wch == L'S' && ! fi->sel ) continue; /* if not sel'd and required -- skip */
       fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
-      if ( dir_size == -1 ) continue;
+      if ( dir_size == -1 ) break; // break requested
       fi->set_size( dir_size );
       }
     size_cache_sort();
