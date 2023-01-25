@@ -13,6 +13,7 @@
 #include <vstring.h>
 #include <wstring.h>
 #include <vslib.h>
+#include "vfuuti.h"
 
 #define SEE_VERSION "4.10"
 

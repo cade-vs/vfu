@@ -52,4 +52,11 @@ const char* vfu_temp();
 
 /*###########################################################################*/
 
+void vfu_con_out( int x, int y, const char    *s );
+void vfu_con_out( int x, int y, const char    *s, int attr );
+void vfu_con_out( int x, int y, const wchar_t *s );
+void vfu_con_out( int x, int y, const wchar_t *s, int attr );
+
+/*###########################################################################*/
+
 #endif//_VFUUTI_H_

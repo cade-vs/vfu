@@ -144,7 +144,7 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
     sprintf( t, "     %%%5.1f @%3dM/s%3d%c ", (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
   else
     sprintf( t, "%5.1f%%%5.1f @%3dM/s%3d%c ", (100.0*c1)/a1, (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
-  con_out( con_max_x() - 24, con_max_y(), t, cSTATUS2 );
+  vfu_con_out( con_max_x() - 24, con_max_y(), t, cSTATUS2 );
 }
 
 /*###########################################################################*/
@@ -300,7 +300,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
-  con_out( 1, con_max_y(), copy_info->description, cMESSAGE );
+  vfu_con_out( 1, con_max_y(), copy_info->description, cMESSAGE );
 
 
   if ( ! copy_info->no_free_check && ! copy_info->no_info )

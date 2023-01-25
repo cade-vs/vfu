@@ -496,4 +496,37 @@ VString vfu_str_comma( fsize_t size )
 
 /*###########################################################################*/
 
+#define WCHAR_CTRL_LIST L"\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u000A\u000B\u000C\u000D\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F"
+#define WCHAR_PRNT_LIST L"\u2401\u2402\u2403\u2404\u2405\u2406\u2407\u2408\u2409\u240A\u240B\u240C\u240D\u240E\u240F\u2410\u2411\u2412\u2413\u2414\u2415\u2416\u2417\u2418\u2419\u241A\u241B\u241C\u241D\u241E\u241F"
+
+WString __vfu_translate_controls( const wchar_t *s )
+{
+  WString str = s;
+  // 00..1f --> 2400..241f, replace non-printable chars
+  str_tr( str, WCHAR_CTRL_LIST, WCHAR_PRNT_LIST );
+  return str;
+}
+
+void vfu_con_out( int x, int y, const char    *s )
+{
+  con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ) );
+}
+
+void vfu_con_out( int x, int y, const char    *s, int attr )
+{
+  con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ), attr );
+}
+
+void vfu_con_out( int x, int y, const wchar_t *s )
+{
+  con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ) );
+}
+
+void vfu_con_out( int x, int y, const wchar_t *s, int attr )
+{
+  con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ), attr );
+}
+
+/*###########################################################################*/
+
 /* eof vfuuti.cpp */

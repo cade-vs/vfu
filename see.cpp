@@ -34,8 +34,6 @@
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
   };
 
-  #define MAXCOLS 1024
-
 /*--------------------------------------------------------------------*/
 
   SeeViewer::SeeViewer( SeeViewerOptions *a_opt )
@@ -165,7 +163,7 @@
     else
       str_pad( str, -(cols-2) );
     str += "|";
-    con_out( opt->xmin, opt->ymax, str, opt->cs );
+    vfu_con_out( opt->xmin, opt->ymax, str, opt->cs );
   }
 
 /*--------------------------------------------------------------------*/
@@ -261,7 +259,7 @@
       if ( hexdump[0] == '~' ) line = "~";
 
       str_pad( line, -cols );
-      con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
+      vfu_con_out( 1, y+1, line, (opt->grid && y % 2 == 0) ? opt->ch : opt->cn );
       }
 
     status( "%3.0f%% | Pos. %4" FMT_OFF_T "d of %4" FMT_OFF_T "d | Alt+H Help | %s",
@@ -289,7 +287,7 @@
         {
         str = "~";
         str_pad( str, -cols );
-        con_out( 1, y+1, str, (opt->grid && y%2==0) ? opt->ch : opt->cn );
+        vfu_con_out( 1, y+1, str, (opt->grid && y%2==0) ? opt->ch : opt->cn );
         continue;
         }
 
@@ -319,10 +317,11 @@
           z -= col;
           }
         }
+      
       if ( z > cols )
         {
         // buff[cols] = 0;
-        str_sleft( www, col );
+        str_sleft( www, cols );
         show_rmark = 1;
         }
       else
@@ -331,14 +330,14 @@
         }
       //str_pad( buff, -cols );
       str_pad( www, -cols );
-      con_out( 1, opt->ymin+y, VString( www ), (opt->grid && y%2==0) ? opt->ch : opt->cn);
+      vfu_con_out( 1, opt->ymin+y, VString( www ), (opt->grid && y%2==0) ? opt->ch : opt->cn);
 
       if ( re.ok() && re.m( buff ) )
-        con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
+        vfu_con_out( re.sub_sp(0)+1, opt->ymin+y, re.sub(0), CONCOLOR( cBLACK, cWHITE ) );
 
-      if (show_lmark) con_out(1,opt->ymin+y,"<",chRED);
-      if (show_rmark) con_out( opt->xmax, opt->ymin+y, ">", chRED );
-      if (show_eol != -1) con_out( show_eol, opt->ymin+y, "$", chGREEN );
+      if (show_lmark) vfu_con_out(1,opt->ymin+y,"<",chRED);
+      if (show_rmark) vfu_con_out( opt->xmax, opt->ymin+y, ">", chRED );
+      if (show_eol != -1) vfu_con_out( show_eol, opt->ymin+y, "$", chGREEN );
       }
     status( "%3.0f%% | Pos. %4" FMT_OFF_T "d | Line %4" FMT_OFF_T "d of %4" FMT_OFF_T "d%c|%4d+ | Alt+H Help | %s",
             fpos_percent(), fpos, line, last_line,
@@ -350,8 +349,8 @@
   void SeeViewer::draw()
   {
     (opt->hex_mode) ? draw_hex() : draw_txt();
-    if ( xlat == 1 ) con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
-    if ( xlat == 2 ) con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
+    if ( xlat == 1 ) vfu_con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
+    if ( xlat == 2 ) vfu_con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
   }
 
 /*--------------------------------------------------------------------*/
@@ -754,7 +753,7 @@
 
   void SeeViewer::help()
   {
-  con_out( 1, 1, help_str );
+  vfu_con_out( 1, 1, help_str );
   do_draw = 1;
   con_getch();
   }
@@ -934,7 +933,7 @@
                             ruler += z % 10;
                             }
                           str_sleft( ruler, opt->xmax );
-                          con_out( 1, 1, ruler, opt->ch );
+                          vfu_con_out( 1, 1, ruler, opt->ch );
                           }
                         break;
       case 'i'        :
@@ -1121,7 +1120,7 @@
     else
       str_pad( str, -(cols-2) );
     str += "|";
-    con_out( opt->xmin, opt->ymax, str, opt->cs );
+    vfu_con_out( opt->xmin, opt->ymax, str, opt->cs );
     set_cursor();
   }
 
@@ -1186,7 +1185,7 @@
     {
     VString sss = "~";
     str_pad( sss, - cols );
-    con_out( 1, ( n - sv.page() ) + 1, sss, opt->cn );
+    vfu_con_out( 1, ( n - sv.page() ) + 1, sss, opt->cn );
     }
   else
     {
@@ -1196,7 +1195,7 @@
     str_trim_left( str, colpage );
     str_sleft( str, cols );
     str_pad( str, - cols );
-    con_out( 1, ( n - sv.page() ) + 1, str, opt->cn );
+    vfu_con_out( 1, ( n - sv.page() ) + 1, str, opt->cn );
     }
   set_cursor();
   }
@@ -1633,7 +1632,7 @@
 
   void SeeEditor::help()
   {
-  con_out( 1, 1, help_str );
+  vfu_con_out( 1, 1, help_str );
   do_draw = 1;
   con_getwch();
   }
@@ -1679,7 +1678,7 @@
     if ( wch == UKEY_CTRL_K )
       {
       pend = wch;
-      con_out( SEEDCOL, SEEDROW, "^K", opt->cs );
+      vfu_con_out( SEEDCOL, SEEDROW, "^K", opt->cs );
       set_cursor();
       wch = con_getwch();
       draw_line( sv.pos() );

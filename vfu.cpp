@@ -129,7 +129,7 @@ void say( int line, int attr, const char* format, ... )
 
   WString ws = say_buf;
   VString os = str_dot_reduce( ws, con_max_x()-1 );
-  con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), os, attr );
+  vfu_con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), os, attr );
   con_ce( attr );
 }
 
@@ -1000,22 +1000,22 @@ void vfu_cli( int argc, char* argv[] )
       case 'h'  : print_help_on_exit = 1; break;
       case 'i'  : vfu_run(); break;
       case 'd'  : temp = optarg;
-          vfu_chdir( temp );
-          break;
-      case 'r'  : con_out(1,1,HEADER,cINFO);
-                temp = "Rebuilding directory tree ( work_path is";
-          temp += work_path;
-          temp += " )";
-          say2( temp );
-          tree_rebuild();
-          break;
-      case 't'  : con_out(1,1,HEADER,cINFO);
+                  vfu_chdir( temp );
+                  break;
+      case 'r'  : vfu_con_out(1,1,HEADER,cINFO);
+                  temp = "Rebuilding directory tree ( work_path is";
+                  temp += work_path;
+                  temp += " )";
+                  say2( temp );
+                  tree_rebuild();
+                  break;
+      case 't'  : vfu_con_out(1,1,HEADER,cINFO);
                   tree_view();
-          vfu_exit( work_path );
+                  vfu_exit( work_path );
                   break;
       default:
-        vfu_help_cli();
-        break;
+                  vfu_help_cli();
+                  break;
       }
     }
 }
@@ -2186,6 +2186,7 @@ void vfu_directory_sizes( wchar_t wch )
   if ( wch == L'A' || wch == L'S' ) /* all or selected  */
     {
     size_cache_sort_names();
+    size_cache.fsave( "/tmp/zzz.txt" );
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);
@@ -2782,15 +2783,15 @@ void vfu_file_find( int menu )
     }
   con_cs();
   con_ta( cINFO );
-  con_out( 1, 1, HEADER );
+  vfu_con_out( 1, 1, HEADER );
   sprintf( str, "Find mask: %s", vfu_hist_get( HID_FFMASK, 0 ) );
-  con_out( 1, 2, str );
+  vfu_con_out( 1, 2, str );
   sprintf( str, "Start path: %s", __ff_path.data() );
-  con_out( 1, 3, str );
+  vfu_con_out( 1, 3, str );
   if ( __ff_pattern != "" )
     {
     sprintf( str, "Containing pattern: %s", __ff_pattern.data() );
-    con_out( 1, 4, str );
+    vfu_con_out( 1, 4, str );
     }
 
   file_find_results.undef();

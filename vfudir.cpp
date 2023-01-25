@@ -713,7 +713,7 @@ void tree_draw_page( ScrollPos &scroll )
   str_mul( str, con_max_x() );
   str = "          SiZE DiRECTORY" + str;
   str_sleft( str, con_max_x()-16 );
-  con_out(1,3, str, cHEADER );
+  vfu_con_out(1,3, str, cHEADER );
   int z = 0;
   for(z = 0; z < scroll.pagesize(); z++)
     {
@@ -893,10 +893,10 @@ void tree_view()
 }
 
 /*###########################################################################*/
-
-#define SIZE_CACHE_OFFSET      15
-#define SIZE_CACHE_OFFSET_STR "15"
+ 
+#define SIZE_CACHE_OFFSET       15
 #define SIZE_CACHE_OFFSET_CLEAN (SIZE_CACHE_OFFSET+8+1)
+#define SIZE_CACHE_OFFSET_STR  "15"
 
 void size_cache_load()
 {
@@ -929,6 +929,7 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   const char *ps;
   fname_t ss;
   expand_path( s, ss );
+  str_tr( ss, "\x0a\x0b\x0c\x0d", "...." );
   ps = ss;
 
   char s_adler[16];
@@ -990,7 +991,7 @@ void size_cache_set( const char *s, fsize_t size, int sort )
     {
     size_cache.push( size_cache_compose_key( s, size ) );
     if( sort )
-      size_cache.sort( 0, size_cache_cmp );
+      size_cache_sort();
     }
 }
 

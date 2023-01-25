@@ -111,7 +111,7 @@ void show_pos( int curr, int all )
 {
   char t[64];
   sprintf( t, "%5d of %5d", curr, all );
-  con_out( con_max_x() - 13, 3, t, cHEADER );
+  vfu_con_out( con_max_x() - 13, 3, t, cHEADER );
 
   if( all == 0 ) return;
 
@@ -134,8 +134,8 @@ void show_pos( int curr, int all )
 
   for( int z = 0; z < y; z++ )
     {
-    con_out( x, y1 + z, " ", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cNORMAL );
-    //con_out( x, y1 + z, ( s1 <= z and z <= s2 ) ? " " : ".", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cCYAN );
+    vfu_con_out( x, y1 + z, " ", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cNORMAL );
+    //vfu_con_out( x, y1 + z, ( s1 <= z and z <= s2 ) ? " " : ".", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cCYAN );
     }
 }
 
@@ -177,7 +177,7 @@ void vfu_draw( int n )
     //str_replace( view, " ", "-" );
     //c = CONCOLOR(cWHITE,cBLUE);
     }
-  con_out( 1, n - FLP + 4, view, c );
+  vfu_con_out( 1, n - FLP + 4, view, c );
   //  con_ce( c );
 }
 
@@ -191,19 +191,19 @@ void vfu_redraw() /* redraw file list and header */
 
   str  = "Mask: ";
   str += files_mask;
-  con_out( 1, 1, VString(str), cINFO );
+  vfu_con_out( 1, 1, VString(str), cINFO );
   con_ce( cINFO );
   if ( work_mode == WM_ARCHIVE )
-    con_out( con_max_x()-34, 1, " [-ARCHIVE-] ", cWARNING );
-  con_out( con_max_x()-17,1, "Press H for help", cINFO);
-  con_out( con_max_x()-20,1, "VFU " VFU_VERSION " <H> for help",cINFO);
+    vfu_con_out( con_max_x()-34, 1, " [-ARCHIVE-] ", cWARNING );
+  vfu_con_out( con_max_x()-17,1, "Press H for help", cINFO);
+  vfu_con_out( con_max_x()-20,1, "VFU " VFU_VERSION " <H> for help",cINFO);
 
   str = "Path: ";
   str += work_path;
   if ( work_mode == WM_ARCHIVE )
     str += "[" + archive_name + "]/" + archive_path; /* NOTE: to simulate root dir visually */
   str = str_dot_reduce( str, con_max_x()-1 );
-  con_out( 1, 2, str, cINFO );
+  vfu_con_out( 1, 2, str, cINFO );
   con_ce( cINFO );
 
   str = "";
@@ -221,7 +221,7 @@ void vfu_redraw() /* redraw file list and header */
   if ( opt.sort_order == 'Y' ) str = "TYPE";
   str += opt.sort_direction == 'A' ? "+" : "-";
   str = "(SORT:" + str + ")";
-  con_out( con_max_x() - str_len( str ) + 1, 2, str, cHEADER );
+  vfu_con_out( con_max_x() - str_len( str ) + 1, 2, str, cHEADER );
 
   str = "";
 
@@ -249,7 +249,7 @@ void vfu_redraw() /* redraw file list and header */
   str_pad( t, - con_max_x() );
   str_sleft( t, con_max_x() );
 
-  con_out(1,3, t, cHEADER );
+  vfu_con_out(1,3, t, cHEADER );
   show_pos( FLI+1, files_list_count() );
 
   int z;
@@ -259,14 +259,14 @@ void vfu_redraw() /* redraw file list and header */
     ASSERT( FLP + z >= 0 );
     if ( FLP + z >= files_list_count() || files_list_is_empty( FLP + z ) )
       {
-      con_out( 1, z + 4, "~", cPLAIN );
+      vfu_con_out( 1, z + 4, "~", cPLAIN );
       con_ce( cPLAIN );
       }
     else
       vfu_draw( FLP + z );
     }
   if ( files_list_count() <= 0 )
-    con_out( ( con_max_x() - 20 ) / 2, 10, " *** No files found *** ", cHEADER);
+    vfu_con_out( ( con_max_x() - 20 ) / 2, 10, " *** No files found *** ", cHEADER);
 
 }
 
@@ -329,8 +329,8 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   str_pad( s1, - con_max_x() );
   str_pad( s2, - con_max_x() );
 
-  con_out( 1, con_max_y()-3, s1, cINFO2 );
-  con_out( 1, con_max_y()-2, s2, cINFO2 );
+  vfu_con_out( 1, con_max_y()-3, s1, cINFO2 );
+  vfu_con_out( 1, con_max_y()-2, s2, cINFO2 );
 }
 
 /*#######################################################################*/
