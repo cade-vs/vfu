@@ -920,7 +920,7 @@ void size_cache_save()
 int size_cache_cmp( const char* s1, const char* s2 )
 {
   int off = size_cache_sorted_by_name ? SIZE_CACHE_OFFSET_CLEAN : SIZE_CACHE_OFFSET;
-
+/*
   const unsigned char *ss1 = (const unsigned char *) s1 + off;
   const unsigned char *ss2 = (const unsigned char *) s2 + off;
   unsigned char c1, c2;
@@ -938,7 +938,8 @@ int size_cache_cmp( const char* s1, const char* s2 )
   if( c2 == '/' ) return +1;
 
   return c1 - c2;
-  //return strcmp( s1 + off, s2 + off );
+*/
+  return strcmp( s1 + off, s2 + off );
 }
 
 VString size_cache_compose_key( const char *s, fsize_t size )
@@ -946,7 +947,8 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   const char *ps;
   fname_t ss;
   expand_path( s, ss );
-  str_tr( ss, "\x0a\x0b\x0c\x0d", "...." );
+  // replace / with 0x01 to properly pass strcmp (using / is wrong!)
+  str_tr( ss, "/\x0a\x0b\x0c\x0d", "\x01...." );
   ps = ss;
 
   char s_adler[16];
@@ -1046,7 +1048,7 @@ void size_cache_clean( const char *s )
   while( z < size_cache_count )
     {
     const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET_CLEAN;
-    if ( ( str_len( size_cache[z] ) >= qc && (ps[sl] == '/' || ps[sl] == 0) && strncmp( ps, str, sl ) == 0 ) )
+    if ( ( str_len( size_cache[z] ) >= qc && (ps[sl] == 1 || ps[sl] == 0) && strncmp( ps, str, sl ) == 0 ) ) // ps[sl] == 1 is alternative for "/" see size_cache_compose_key()
       {
       size_cache.del( z );
       size_cache_count--;
@@ -1249,6 +1251,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
   fname_t t;
   expand_path( s, t );
   str_fix_path( t );
+  if( ! strncmp( t, "/proc/", 6 ) ) return 0;
   size_cache_clean( t );
 
   int src_dev = 0;
