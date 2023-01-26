@@ -271,6 +271,8 @@ void saycenter( int line, int attr, const char *a_str );
 void say1center(const char *a_str, int attr = cMESSAGE );
 void say2center(const char *a_str, int attr = cMESSAGE );
 
+void log_debug( const char* format, ... );
+
 /*
   Main things
 */

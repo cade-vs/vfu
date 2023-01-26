@@ -16,6 +16,7 @@
 #include "vfumenu.h"
 
 VArray size_cache;
+int    size_cache_count;
 int    size_cache_sorted_by_name;
 
 /*###########################################################################*/
@@ -903,10 +904,12 @@ void size_cache_load()
   size_cache_sorted_by_name = 0;
   size_cache.set_block_size( 1024*1024 );
   size_cache.undef();
+  size_cache_count = 0;
   size_cache.fload( filename_size_cache );
   // removes old-style size cache entries
   if( size_cache.count() > 0 && ( size_cache[0][SIZE_CACHE_OFFSET] != '|' || size_cache[0][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
     size_cache.undef();
+  size_cache_count = size_cache.count();
 }
 
 void size_cache_save()
@@ -916,12 +919,26 @@ void size_cache_save()
 
 int size_cache_cmp( const char* s1, const char* s2 )
 {
-  return strcmp( s1 + SIZE_CACHE_OFFSET, s2 + SIZE_CACHE_OFFSET );
-}
+  int off = size_cache_sorted_by_name ? SIZE_CACHE_OFFSET_CLEAN : SIZE_CACHE_OFFSET;
 
-int size_cache_cmp_names( const char* s1, const char* s2 )
-{
-  return strcmp( s1 + SIZE_CACHE_OFFSET_CLEAN, s2 + SIZE_CACHE_OFFSET_CLEAN );
+  const unsigned char *ss1 = (const unsigned char *) s1 + off;
+  const unsigned char *ss2 = (const unsigned char *) s2 + off;
+  unsigned char c1, c2;
+
+  do
+    {
+    c1 = (unsigned char) *ss1++;
+    c2 = (unsigned char) *ss2++;
+    if ( c1 == '\0' )
+       return c1 - c2;
+    }
+  while (c1 == c2);
+
+  if( c1 == '/' ) return -1;
+  if( c2 == '/' ) return +1;
+
+  return c1 - c2;
+  //return strcmp( s1 + off, s2 + off );
 }
 
 VString size_cache_compose_key( const char *s, fsize_t size )
@@ -947,14 +964,14 @@ VString size_cache_compose_key( const char *s, fsize_t size )
 
 int size_cache_index( const char *s )
 {
-  if ( size_cache.count() == 0 ) return -1;
+  if ( size_cache.count() == 0 || size_cache_count == 0 ) return -1;
   VString str = size_cache_compose_key( s, 0 );
   int l = 0;
-  int h = size_cache.count() - 1;
+  int h = size_cache_count - 1;
   int m = h;
   while(4)
     {
-    int r =  size_cache_cmp( size_cache[m], str );
+    int r = size_cache_cmp( size_cache[m], str );
     if ( l == m && r != 0 )
       return -1;
     if ( r > 0 )
@@ -995,11 +1012,26 @@ void size_cache_set( const char *s, fsize_t size, int sort )
     }
 }
 
+fsize_t size_cache_get_pending( const char *s )
+{
+  VString str = size_cache_compose_key( s, 0 );
+  for( int i = size_cache_count; i < size_cache.count(); i++ )
+    {
+    if( size_cache_cmp( size_cache[i], str ) ) continue;
+    str = size_cache[i];
+    str_sleft( str, SIZE_CACHE_OFFSET );
+    return atof( str );
+    }
+  return -1;
+}
+
 // this function is used to add quickly entries to the cache
 // it REQUIRES that size_cache_sort() is called after it!
-void size_cache_append( const char *s, fsize_t size )
+void size_cache_append( const char *s, fsize_t size, int sort )
 {
   size_cache.push( size_cache_compose_key( s, size ) );
+  if( sort )
+    size_cache_sort();
 }
 
 /* deletes all *s's subdir sizes */
@@ -1011,14 +1043,13 @@ void size_cache_clean( const char *s )
   int sl = str_len( str );
   int z = 0;
   int in = 0;
-  while( z < size_cache.count() )
+  while( z < size_cache_count )
     {
     const char* ps = size_cache[z].data() + SIZE_CACHE_OFFSET_CLEAN;
-    if ( ( str_len( size_cache[z] ) >= qc && (ps[sl] == '/' || ps[sl] == 0) && strncmp( ps, str, sl ) == 0 )
-         ||
-         ( size_cache[z][SIZE_CACHE_OFFSET_CLEAN] != '|' ) )
+    if ( ( str_len( size_cache[z] ) >= qc && (ps[sl] == '/' || ps[sl] == 0) && strncmp( ps, str, sl ) == 0 ) )
       {
       size_cache.del( z );
+      size_cache_count--;
       if ( size_cache_sorted_by_name ) in = 1;
       }
     else
@@ -1029,16 +1060,11 @@ void size_cache_clean( const char *s )
     }
 }
 
-void size_cache_sort()
+void size_cache_sort( int use_names )
 {
-  size_cache_sorted_by_name = 0;
+  size_cache_sorted_by_name = !!use_names;
   size_cache.sort( 0, size_cache_cmp );
-}
-
-void size_cache_sort_names()
-{
-  size_cache_sorted_by_name = 1;
-  size_cache.sort( 0, size_cache_cmp_names );
+  size_cache_count = size_cache.count();
 }
 
 /*###########################################################################*/
@@ -1189,6 +1215,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
       fsize_t dir_size = __dir_size_process( new_name, mode, src_dev, size_info );
       if ( dir_size == -1 )
         {
+        // break operation received, return now
         closedir(dir);
         return -1;
         }
@@ -1221,7 +1248,6 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
 {
   fname_t t;
   expand_path( s, t );
-  //size_cache_clean( t );
   str_fix_path( t );
   size_cache_clean( t );
 
@@ -1234,7 +1260,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
     }
   fsize_t size = __dir_size_process( t, mode, src_dev, size_info );
   if( size == -1 ) return -1;
-  size_cache_set( t, size, sort );
+  size_cache_append( t, size, sort );
   return size;
 }
 

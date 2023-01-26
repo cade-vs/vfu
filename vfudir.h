@@ -13,6 +13,7 @@
 #include "vfu.h"
 
 extern VArray size_cache;
+extern int size_cache_count;
 
 /*###########################################################################*/
 
@@ -47,10 +48,10 @@ VString size_cache_compose_key( const char *s, fsize_t size );
 int size_cache_index( const char *s );
 fsize_t size_cache_get( const char *s );
 void size_cache_set( const char *s, fsize_t size, int sort = 1 );
-void size_cache_append( const char *s, fsize_t size );
+void size_cache_append( const char *s, fsize_t size, int sort = 0 );
+fsize_t size_cache_get_pending( const char *s );
 void size_cache_clean( const char *s );
-void size_cache_sort();
-void size_cache_sort_names();
+void size_cache_sort( int use_names = 0 );
 
 /*###########################################################################*/
 

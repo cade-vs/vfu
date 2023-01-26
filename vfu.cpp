@@ -173,6 +173,21 @@ void say2center(const char *a_str, int attr )
   saycenter( 2, attr, a_str );
 }
 
+void log_debug( const char* format, ... )
+{
+  char say_buf[4096];
+  
+  va_list vlist;
+  va_start( vlist, format );
+  vsnprintf( say_buf, sizeof( say_buf ), format, vlist );
+  va_end( vlist );
+
+  FILE* f = fopen( "/tmp/vfu.debug.txt", "at" );
+  if (!f) return;
+  if ( fwrite( say_buf, 1, strlen( say_buf ), f ) != strlen( say_buf ) ) return;
+  if ( fwrite( "\n", 1, 1, f ) != 1 ) return;
+  fclose(f);
+}
 
 /*######################################################################*/
 
@@ -2185,14 +2200,17 @@ void vfu_directory_sizes( wchar_t wch )
     } else
   if ( wch == L'A' || wch == L'S' ) /* all or selected  */
     {
-    size_cache_sort_names();
-    size_cache.fsave( "/tmp/zzz.txt" );
+    size_cache_sort( 1 );
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);
       if ( ! fi->is_dir() ) continue;
       if ( wch == L'S' && ! fi->sel ) continue; /* if not sel'd and required -- skip */
-      fsize_t dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
+      fsize_t dir_size = -1;
+      if ( fi->is_link() )
+        dir_size = size_cache_get_pending( fi->name() );
+      if( dir_size == -1 )
+        dir_size = vfu_dir_size( fi->name(), 0, dir_size_mode, &size_info );
       if ( dir_size == -1 ) break; // break requested
       fi->set_size( dir_size );
       }
