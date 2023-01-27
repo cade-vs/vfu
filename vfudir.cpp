@@ -947,6 +947,7 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   const char *ps;
   fname_t ss;
   expand_path( s, ss );
+  str_fix_path( ss );
   // replace / with 0x01 to properly pass strcmp (using / is wrong!)
   str_tr( ss, "/\x0a\x0b\x0c\x0d", "\x01...." );
   ps = ss;
@@ -1248,11 +1249,11 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
 
 fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info )
 {
-  fname_t t;
-  expand_path( s, t );
-  str_fix_path( t );
-  if( ! strncmp( t, "/proc/", 6 ) ) return 0;
-  size_cache_clean( t );
+  fname_t ss;
+  expand_path( s, ss );
+  str_fix_path( ss );
+  if( ! strncmp( ss, "/proc/", 6 ) ) return 0;
+  size_cache_clean( ss );
 
   int src_dev = 0;
   if( mode & DIR_SIZE_SAMEDEVONLY )
@@ -1261,9 +1262,9 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
     stat( s, &st);
     src_dev = st.st_dev;
     }
-  fsize_t size = __dir_size_process( t, mode, src_dev, size_info );
+  fsize_t size = __dir_size_process( ss, mode, src_dev, size_info );
   if( size == -1 ) return -1;
-  size_cache_append( t, size, sort );
+  size_cache_append( ss, size, sort );
   return size;
 }
 

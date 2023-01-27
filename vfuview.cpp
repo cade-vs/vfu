@@ -24,8 +24,7 @@ int get_item_color( TF *fi )
 
   ASSERT( fi );
 
-  if (!opt.use_colors)
-    return cNORMAL; /* don't use colors -- option */
+  if ( ! opt.use_colors ) return cNORMAL; /* don't use colors */
 
   /* try to find file type color first */
 
@@ -35,10 +34,9 @@ int get_item_color( TF *fi )
   if ( str != ".." )
     {
     for ( z = cBLACK; z <= chWHITE; z++ )
-      if (str_find( ext_colors[z], str ) != -1)
+      if ( str_find( ext_colors[z], str ) != -1 )
         return z;
     }
-
 
   /* regular file, try to find extension color */
 
@@ -57,7 +55,7 @@ int get_item_color( TF *fi )
   if ( str != ".." )
     {
     for ( z = cBLACK; z <= chWHITE; z++ )
-      if (str_find( ext_colors[z], str ) != -1)
+      if ( str_find( ext_colors[z], str ) != -1)
         return z;
     }
 
@@ -143,9 +141,8 @@ void show_pos( int curr, int all )
 
 void vfu_drop_all_views()
 {
-  int z = 0;
-  for( z = 0; z < files_list_count(); z++ ) files_list_get(z)->drop_view();
-  do_draw += 1;
+  for( int z = 0; z < files_list_count(); z++ ) files_list_get( z )->drop_view();
+  do_draw++;
 }
 
 /*#######################################################################*/
@@ -162,7 +159,7 @@ void vfu_draw( int n )
   if ( fi->sel )
     {
     str_set_ch( view, sel_mark_pos, '#' );
-    c = CONCOLOR(cBLACK,cWHITE);
+    c = CONCOLOR( cBLACK, cWHITE );
     }
   if ( n == FLI )
     {
@@ -195,8 +192,8 @@ void vfu_redraw() /* redraw file list and header */
   con_ce( cINFO );
   if ( work_mode == WM_ARCHIVE )
     vfu_con_out( con_max_x()-34, 1, " [-ARCHIVE-] ", cWARNING );
-  vfu_con_out( con_max_x()-17,1, "Press H for help", cINFO);
-  vfu_con_out( con_max_x()-20,1, "VFU " VFU_VERSION " <H> for help",cINFO);
+  vfu_con_out( con_max_x()-17, 1, "Press H for help", cINFO);
+  vfu_con_out( con_max_x()-20, 1, "VFU " VFU_VERSION " <H> for help",cINFO);
 
   str = "Path: ";
   str += work_path;
@@ -214,10 +211,10 @@ void vfu_redraw() /* redraw file list and header */
   if ( opt.sort_order == 'A' ) str = "MODE";
   if ( opt.sort_order == 'O' ) str = "OWNER";
   if ( opt.sort_order == 'G' ) str = "GROUP";
-  if ( opt.sort_order == 'T' ) str = "MTIME";
-  if ( opt.sort_order == 'H' ) str = "CTIME";
-  if ( opt.sort_order == 'C' ) str = "ATIME";
-  if ( opt.sort_order == 'S' ) str = "SIZE";
+  if ( opt.sort_order == 'T' ) str = "MTiME";
+  if ( opt.sort_order == 'H' ) str = "CTiME";
+  if ( opt.sort_order == 'C' ) str = "ATiME";
+  if ( opt.sort_order == 'S' ) str = "SiZE";
   if ( opt.sort_order == 'Y' ) str = "TYPE";
   str += opt.sort_direction == 'A' ? "+" : "-";
   str = "(SORT:" + str + ")";
@@ -230,26 +227,27 @@ void vfu_redraw() /* redraw file list and header */
   if (opt.sort_order == 'D') opt.sort_order = 'T'; /* hack anyway */
   if (!opt.long_name_view)
     {
-    if ( opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
-    if ( opt.f_owner ) spos += sprintf( spos, "   OWNER " );
-    if ( opt.f_group ) spos += sprintf( spos, "   GROUP " );
-    if ( opt.f_time  ) spos += sprintf( spos, "%s  TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
-    if ( opt.f_size  ) spos += sprintf( spos, "          SiZE " );
+    //if ( opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
+    if ( opt.f_mode  ) spos += sprintf( spos, "1.MODE     " );
+    if ( opt.f_owner ) spos += sprintf( spos, " 2.OWNER " );
+    if ( opt.f_group ) spos += sprintf( spos, " 3.GROUP " );
+    if ( opt.f_time  ) spos += sprintf( spos, "4.%s TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
+    if ( opt.f_size  ) spos += sprintf( spos, "        5.SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
   if ( opt.f_type || opt.long_name_view ) 
-    spos += sprintf( spos, "TP" );
+    spos += sprintf( spos, "TY" );
   tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
 
-  /* spos += */ sprintf( spos, "  #NAME    %s",
-                         opt.long_name_view ? "( long name view )" : "" );
+  /* spos += */ sprintf( spos, "  #NAME  --  %s",
+                         opt.long_name_view ? "( long name view, 0.DISABLE )" : "8.ALL_FIELDS" );
 
   str_pad( t, - con_max_x() );
   str_sleft( t, con_max_x() );
 
-  vfu_con_out(1,3, t, cHEADER );
+  vfu_con_out( 1, 3, t, cHEADER );
   show_pos( FLI+1, files_list_count() );
 
   int z;
@@ -373,8 +371,8 @@ void vfu_nav_down()
 
 void vfu_nav_ppage()
 {
-if ( files_list_count() == 0 ) return;
-if ( FLP == 0 && FLI == 0 ) return;
+  if ( files_list_count() == 0 ) return;
+  if ( FLP == 0 && FLI == 0 ) return;
 
   int old_fli = FLI;
   int old_flp = FLP;

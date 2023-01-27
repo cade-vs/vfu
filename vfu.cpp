@@ -350,7 +350,8 @@ void TF::refresh_view()
 
     if (opt.f_time )
       {
-      time_str_compact( vfu_opt_time( _st ), sttime );
+      strcpy( sttime, " " ); // TODO: use for something useful
+      time_str_compact( vfu_opt_time( _st ), sttime+1 );
       strcat( sttime, " " ); /* field separator */
       }
 

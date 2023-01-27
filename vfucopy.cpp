@@ -1045,15 +1045,22 @@ void vfu_erase_files( int a_one )
     if ( vfu_break_op() ) break; /* cancel operation */
     TF *fi = files_list_get(z);
 
-    if ( a_one && z != FLI ) continue;
-    if ( !a_one && !fi->sel ) continue;
+    if (   a_one && z != FLI  ) continue;
+    if ( ! a_one && ! fi->sel ) continue;
 
     VString target  = fi->full_name();
 
     int r = __vfu_erase( target, bytes_freed_ptr );
 
     if ( r == 0 )
-      files_list_del(z);
+      {
+      if ( fi->is_dir() ) 
+        {
+        str_fix_path( target );
+        size_cache_clean( target );
+        }
+      files_list_del( z );
+      }
     else if ( r != CR_ABORT && !ignore_copy_errors )
       {
       vfu_beep();
