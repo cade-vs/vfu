@@ -2,12 +2,12 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Dec 16 02:19:55 2022 #########################
+### Created by makemake.pl on Mon Jan 30 01:07:13 2023 #########################
 
 
 ### GLOBAL TARGETS #############################################################
 
-default: all
+default: mm_update  vfu 
 
 re: mm_update rebuild
 
@@ -41,7 +41,7 @@ LD_1       = $(CXX)
 AR_1       = ar rv
 RANLIB_1   = ranlib
 CCFLAGS_1  = -I../vstring -I../vslib -I/usr/include/ncurses -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_1  = -L../vstring -L../vslib -lvslib -lvscon -lvstring -lwstring -lpcre2-8 -lpcre2-32 -lncursesw $(LDFLAGS) $(LDDEF) 
+LDFLAGS_1  = -L../vstring -L../vslib -lvslib -lvscon -lvstring -lpcre2-8 -lpcre2-32 -lncursesw $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = vfu
@@ -101,7 +101,7 @@ link-vfu: .OBJ.vfu $(OBJ_1)
 
 ### TARGET OBJECTS FOR TARGET 1: vfu ###########################################
 
-.OBJ.vfu/see.o: see.cpp  see.cpp see.h
+.OBJ.vfu/see.o: see.cpp  see.cpp see.h vfuuti.h vfu.h vfusetup.h vfusys.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c see.cpp              -o .OBJ.vfu/see.o
 .OBJ.vfu/vfu.o: vfu.cpp  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfufiles.h vfucopy.h vfudir.h vfuview.h vfumenu.h vfuarc.h vfutools.h
@@ -144,7 +144,7 @@ LD_2       = $(CXX)
 AR_2       = ar rv
 RANLIB_2   = ranlib
 CCFLAGS_2  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_2  = -L../vstring -L../vslib -lwstring -lvslib -lvscony -lvstring -lwstring -lpcre2-8 -lpcre2-32 ../yascreen/libyascreen.a -lrt $(LDFLAGS) $(LDDEF) 
+LDFLAGS_2  = -L../vstring -L../vslib -lvstring -lvslib -lvscony -lpcre2-8 -lpcre2-32 ../yascreen/libyascreen.a -lrt $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
 TARGET_2   = vfu.yas
@@ -204,7 +204,7 @@ link-vfu.yas: .OBJ.vfu.yas $(OBJ_2)
 
 ### TARGET OBJECTS FOR TARGET 2: vfu.yas #######################################
 
-.OBJ.vfu.yas/see.o: see.cpp  see.cpp see.h
+.OBJ.vfu.yas/see.o: see.cpp  see.cpp see.h vfuuti.h vfu.h vfusetup.h vfusys.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c see.cpp              -o .OBJ.vfu.yas/see.o
 .OBJ.vfu.yas/vfu.o: vfu.cpp  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfufiles.h vfucopy.h vfudir.h vfuview.h vfumenu.h vfuarc.h vfutools.h
@@ -246,8 +246,8 @@ CC_3       = $(CXX)
 LD_3       = $(CXX)
 AR_3       = ar rv
 RANLIB_3   = ranlib
-CCFLAGS_3  = -I../vstring -I../vslib -I/usr/include/ncurses -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_3  = -L../vstring -L../vslib -lvslib -lvscon -lvstring -lwstring -lpcre2-8 -lpcre2-32 -lncursesw -g $(LDFLAGS) $(LDDEF) 
+CCFLAGS_3  = -I../vstring -I../vslib -I/usr/include/ncurses -O0 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_3  = -L../vstring -L../vslib -lvslib -lvscon -lvstring -lpcre2-8 -lpcre2-32 -lncursesw -g $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_3 = 
 ARFLAGS_3  = 
 TARGET_3   = vfu-debug
@@ -307,7 +307,7 @@ link-vfu-debug: .OBJ.vfu-debug $(OBJ_3)
 
 ### TARGET OBJECTS FOR TARGET 3: vfu-debug #####################################
 
-.OBJ.vfu-debug/see.o: see.cpp  see.cpp see.h
+.OBJ.vfu-debug/see.o: see.cpp  see.cpp see.h vfuuti.h vfu.h vfusetup.h vfusys.h
 	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c see.cpp              -o .OBJ.vfu-debug/see.o
 .OBJ.vfu-debug/vfu.o: vfu.cpp  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfufiles.h vfucopy.h vfudir.h vfuview.h vfumenu.h vfuarc.h vfutools.h
@@ -349,8 +349,8 @@ CC_4       = $(CXX)
 LD_4       = $(CXX)
 AR_4       = ar rv
 RANLIB_4   = ranlib
-CCFLAGS_4  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -O0 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_4  = -L../vstring -L../vslib -L../yascreen -lvslib -lvscony -lvstring -lwstring -lpcre2-8 -lpcre2-32 ../yascreen/libyascreen.a -lrt -g $(LDFLAGS) $(LDDEF) 
+CCFLAGS_4  = -I../vstring -I../vslib -I../yascreen -DUSE_YASCREEN -O0 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_4  = -L../vstring -L../vslib -L../yascreen -lvslib -lvscony -lvstring -lpcre2-8 -lpcre2-32 ../yascreen/libyascreen.a -lrt -g $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_4 = 
 ARFLAGS_4  = 
 TARGET_4   = vfu.yas-debug
@@ -410,7 +410,7 @@ link-vfu.yas-debug: .OBJ.vfu.yas-debug $(OBJ_4)
 
 ### TARGET OBJECTS FOR TARGET 4: vfu.yas-debug #################################
 
-.OBJ.vfu.yas-debug/see.o: see.cpp  see.cpp see.h
+.OBJ.vfu.yas-debug/see.o: see.cpp  see.cpp see.h vfuuti.h vfu.h vfusetup.h vfusys.h
 	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c see.cpp              -o .OBJ.vfu.yas-debug/see.o
 .OBJ.vfu.yas-debug/vfu.o: vfu.cpp  vfu.cpp vfu.h vfusetup.h vfusys.h vfuopt.h see.h vfuuti.h \
  vfufiles.h vfucopy.h vfudir.h vfuview.h vfumenu.h vfuarc.h vfutools.h
