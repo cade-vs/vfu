@@ -1,10 +1,10 @@
 /****************************************************************************
- *
- * Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
- *
- * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
+ #
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ #
+ # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+ #
  ****************************************************************************/
 
 #include <stdarg.h>
@@ -191,6 +191,32 @@ void log_debug( const char* format, ... )
 
 /*######################################################################*/
 
+VString get_user_id_str( int uid, int padw = 0 )
+{
+  VString str;
+  if( struct passwd* _pwd = getpwuid( uid ) )
+    str = _pwd->pw_name;
+  else  
+    str.i( uid );
+
+  if( padw != 0 ) str_padw( str, padw );
+  return str;
+}
+
+VString get_group_id_str( int gid, int padw = 0 )
+{
+  VString str;
+  if( struct group*  _grp = getgrgid( gid ) )
+    str = _grp->gr_name;
+  else  
+    str.i( gid );
+
+  if( padw != 0 ) str_padw( str, padw );
+  return str;
+}
+
+/*######################################################################*/
+
 void TF::reset() /* reset -- NULL all fields */
 {
   _name.undef();
@@ -311,12 +337,12 @@ void TF::refresh_view()
   ASSERT( _name_ext );
   ASSERT( _ext );
 
-  char stmode[16]     = ""; // 10 + 1sep
-  char stowner[16+64] = ""; /* +64 just to keep safe (not too much anyway) */
-  char stgroup[16+64] = ""; /* +64 just to keep safe (not too much anyway) */
-  char sttime[32]     = "";
-  char stsize[16]     = "";
-  char sttype[4]      = "";
+  char    stmode[16]      = ""; // 10 + 1sep
+  VString stowner;
+  VString stgroup;
+  char    sttime[32]      = "";
+  char    stsize[16]      = "";
+  char    sttype[4]       = "";
 
   if ( !opt.long_name_view )
     {
@@ -327,31 +353,16 @@ void TF::refresh_view()
       }
 
     if (opt.f_owner)
-      {
-      struct passwd* _pwd = getpwuid(_st.st_uid);
-      if (_pwd)
-        snprintf( stowner, sizeof(stowner), "%8s", _pwd->pw_name );
-      else
-        snprintf( stowner, sizeof(stowner), "%8d", _st.st_uid);
-      stowner[8] = 0; /* safe */
-      strcat( stowner, " " ); /* field separator */
-      }
+      stowner = get_user_id_str( _st.st_uid, 8 ) + " ";
 
     if (opt.f_group)
-      {
-      struct group*  _grp = getgrgid(_st.st_gid);
-      if (_grp)
-        snprintf( stgroup, sizeof(stgroup), "%8s", _grp->gr_name );
-      else
-        snprintf( stgroup, sizeof(stgroup), "%8d", _st.st_gid);
-      stgroup[8] = 0; /* safe */
-      strcat( stgroup, " " ); /* field separator */
-      }
+      stgroup = get_group_id_str( _st.st_gid, 8 ) + " ";
 
     if (opt.f_time )
       {
-      strcpy( sttime, " " ); // TODO: use for something useful
-      time_str_compact( vfu_opt_time( _st ), sttime+1 );
+      time_t ftm = vfu_opt_time( _st );
+      time_str_compact( ftm, sttime );
+      strcat( sttime, ( time( NULL ) - ftm ) > 24*60*60 ? " " : "*" ); // TODO: use for something useful
       strcat( sttime, " " ); /* field separator */
       }
 
@@ -389,7 +400,7 @@ void TF::refresh_view()
   view = view + stmode + stowner + stgroup + sttime + stsize + sttype + "   " + name_view;
 
   WString wview;
-  wview.set_failsafe( view );
+  wview = view;
 
   int x = con_max_x() - 1; // 1 char for scroller, FIXME: TODO: should be optional
   if ( str_len( wview ) > x )
@@ -524,8 +535,7 @@ void vfu_init()
       }
 
   work_mode = WM_NORMAL;
-  if( ! getcwd( t, sizeof(t) ) )
-    t[0] = 0;
+  if( ! getcwd( t, sizeof(t) ) ) t[0] = 0;
   str_fix_path( t );
   work_path = t;
 
@@ -537,48 +547,35 @@ void vfu_init()
   files_list_clear();
 
   files_size = 0;
-  sel_count = 0;
-  sel_size = 0;
+  sel_count  = 0;
+  sel_size   = 0;
 
-  fs_free = 0;
-  fs_total = 0;
+  fs_free    = 0;
+  fs_total   = 0;
   fs_block_size = 0;
 
   file_list_index.wrap = 0;
   /* file_list_index.* are setup by vfu_read_files() */
 
-  uid_t _uid = getuid();
-  gid_t _gid = getgid();
-  struct passwd* _pwd = getpwuid(_uid);
-  struct group*  _grp = getgrgid(_gid);
-  if ( _pwd )
-    user_id_str  = _pwd->pw_name;
-  else
-    user_id_str = (int)_uid;
-  if ( _grp )
-    group_id_str = _grp->gr_name;
-  else
-    group_id_str = (int)_gid;
+  user_id_str  = get_user_id_str( getuid() );
+  group_id_str = get_group_id_str( getgid() );
+
   gethostname( t, MAX_PATH-1 );
   host_name_str = t;
 
   startup_path = work_path;
 
   tmp_path = "";
-  if ( getenv( "TEMP" ) ) tmp_path = getenv( "TEMP" );
-  if ( getenv( "TMP"  ) ) tmp_path = getenv( "TMP" );
-  if ( tmp_path == "" )
-    tmp_path = "/tmp/";
-  else
-    str_fix_path( tmp_path );
+  if ( tmp_path == "" ) tmp_path = getenv( "TEMP" );
+  if ( tmp_path == "" ) tmp_path = getenv( "TMP" );
+  if ( tmp_path == "" ) tmp_path = "/tmp/";
+  str_fix_path( tmp_path );
 
   if ( getenv( "HOME" ) )
     home_path = getenv( "HOME" );
   else
     {
-    home_path = tmp_path;
-    home_path += user_id_str;
-    home_path += "/";
+    home_path = tmp_path + user_id_str + "/";
     make_path( home_path );
     }
 
@@ -593,61 +590,30 @@ void vfu_init()
   rc_path = get_rc_directory( "vfu" );
 
   /* setup config files locations */
-  filename_opt = rc_path;
-  filename_conf = rc_path;
-  filename_tree = rc_path;
-  filename_size_cache = rc_path;
-  filename_history = rc_path;
-  filename_ffr = rc_path;
+  filename_opt        = rc_path + FILENAME_OPT;
+  filename_conf       = rc_path + FILENAME_CONF;
+  filename_tree       = rc_path + FILENAME_TREE;
+  filename_size_cache = rc_path + FILENAME_SIZE_CACHE;
+  filename_history    = rc_path + FILENAME_HISTORY;
+  filename_ffr        = rc_path + FILENAME_FFR;
 
-  filename_opt += FILENAME_OPT;
-  filename_conf += FILENAME_CONF;
-  filename_tree += FILENAME_TREE;
-  filename_size_cache += FILENAME_SIZE_CACHE;
-  filename_history += FILENAME_HISTORY;
-  filename_ffr += FILENAME_FFR;
-
+  VArray conf_data;
   if ( access( filename_conf, R_OK ) != 0 )
     { /* cannot find local/user conf file, try copy one */
-    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 )
-      {
-      VArray va;
-      va.fload( FILENAME_CONF_GLOBAL0 );
-      va.fsave( filename_conf );
-      }
-    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 )
-      {
-      VArray va;
-      va.fload( FILENAME_CONF_GLOBAL1 );
-      va.fsave( filename_conf );
-      }
-    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 )
-      {
-      VArray va;
-      va.fload( FILENAME_CONF_GLOBAL2 );
-      va.fsave( filename_conf );
-      }
-    }
-
-  if ( access( filename_conf, R_OK ) != 0 )
-    { /* cannot find local/user conf file, try globals */
-    if ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 )
-      filename_conf = FILENAME_CONF_GLOBAL0;
-    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 )
-      filename_conf = FILENAME_CONF_GLOBAL1;
-    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 )
-      filename_conf = FILENAME_CONF_GLOBAL2;
-    /* if we get here then no readable conf file found */
+    if      ( access( FILENAME_CONF_GLOBAL0, R_OK ) == 0 ) conf_data.fload( FILENAME_CONF_GLOBAL0 );
+    else if ( access( FILENAME_CONF_GLOBAL1, R_OK ) == 0 ) conf_data.fload( FILENAME_CONF_GLOBAL1 );
+    else if ( access( FILENAME_CONF_GLOBAL2, R_OK ) == 0 ) conf_data.fload( FILENAME_CONF_GLOBAL2 );
+    conf_data.fsave( filename_conf );
     }
 
   /* shell setup */
   shell_prog = "";
-  if (getenv("SHELL")) shell_prog = getenv("SHELL");
-  if (getenv("VFU_SHELL")) shell_prog = getenv("VFU_SHELL");
+  if ( shell_prog == "" ) shell_prog = getenv( "VFU_SHELL" );
+  if ( shell_prog == "" ) shell_prog = getenv( "SHELL"     );
 
   /* this will load defaults first then load vfu.opt and at the
      end will load vfu.conf which will overwrite all if need to */
-  vfu_settings_load();
+  vfu_settings_load( conf_data.count() > 0 ? &conf_data : NULL );
   size_cache_load();
 
   file_list_index.wrap = 0; /* just to be safe :) */
@@ -663,15 +629,11 @@ void vfu_init()
   menu_box_info.cn = 23; /* normal */
   menu_box_info.ch = 47; /* selected */
 
-  //////////////////////////////////////////
-  // setup signals to VFUdone
-  // this is a patch but at least will reset terminal and save settings
   signal( SIGINT  , vfu_signal );
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
   // signal( SIGWINCH, vfu_signal ); // already set in unicon/vslib
-  //////////////////////////////////////////
 
   srand( time( NULL ) );
   do_draw = 1;
@@ -693,29 +655,19 @@ void vfu_exit_path( const char *a_path )
   if ( getenv( "VFU_EXIT" ) )
     str = getenv( "VFU_EXIT" );
   else
-    {
-    str = tmp_path;
-    str_fix_path( str );
-    str += "vfu.exit.";
-    str += user_id_str;
-    }
+    str = tmp_path + "vfu.exit." + user_id_str;
 
   unlink( str );
-  int fdx = open( str, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR );
-  if( fdx == -1 )
-    return;
+  int fdx = open( str, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR );
+  if( fdx == -1 ) return;
+  int r = write( fdx, a_path, str_len( a_path ) ); // stupid, stupid -Wunused-result
   close( fdx );  
-  FILE *f = fopen( str, "wt" );
-  if ( ! f ) return;
-  fputs( a_path, f);
-  fclose( f );
 }
 
 /*--------------------------------------------------------------------------*/
 /* return 0 for exit-confirmed! */
 int vfu_exit( const char* a_path )
 {
-  int z;
   mb.undef();
   mb.push( L"X Exit (to startup path)" );
   mb.push( L"Q Quit (to work path)   " );
@@ -723,7 +675,7 @@ int vfu_exit( const char* a_path )
   if ( a_path == NULL )
     {
     vfu_beep();
-    z = vfu_menu_box( 50, 5, L"  Exit VFU?" );
+    int z = vfu_menu_box( 50, 5, L"  Exit VFU?" );
     if ( z == -1 ) return 1;
     z ? vfu_exit_path( work_path ) : vfu_exit_path( startup_path );
     return 0;
@@ -777,7 +729,7 @@ void vfu_run()
       say2center( "*** WARNING: YOU HAVE GOT ROOT PRIVILEGES! ***" );
     else
       say2( "" );
-    say( 1, cMESSAGE, "key/wch: %lX", wch );
+    // say( 1, cMESSAGE, "key/wch: %lX", wch );
 
     if ( work_mode == WM_NORMAL || work_mode == WM_ARCHIVE ) switch (wch)
       { /* actually this is ANY work_mode (since there are two modes only) */
@@ -833,9 +785,7 @@ void vfu_run()
 
       case L' ' : vfu_nav_select(); break;
 
-  #ifdef _TARGET_UNIX_
       case UKEY_BACKSPACE :
-  #endif
       case 8   :
       case L'-' : vfu_action_minus(); break;
 
@@ -2177,6 +2127,7 @@ void vfu_directory_sizes( wchar_t wch )
     mb.push( L". Current directory `.'" );
     mb.push( L"S Selected directories" );
     mb.push( L"A All dir's in the list" );
+    mb.push( L"M Missing sizes dirs" );
     mb.push( L"--directory size options--" );
     mb.push( L"N Normal" );
     mb.push( L"Y Follow symlinks (WARNING: may loop!)" );
@@ -2199,14 +2150,15 @@ void vfu_directory_sizes( wchar_t wch )
     say1( "Path: " + target );
     say2( size_info.str() );
     } else
-  if ( wch == L'A' || wch == L'S' ) /* all or selected  */
+  if ( wch == L'A' || wch == L'S' || wch == L'M' ) /* all, selected or missing sizes  */
     {
     size_cache_sort( 1 );
     for( z = 0; z < files_list_count(); z++)
       {
       TF *fi = files_list_get(z);
       if ( ! fi->is_dir() ) continue;
-      if ( wch == L'S' && ! fi->sel ) continue; /* if not sel'd and required -- skip */
+      if ( wch == L'S' && ! fi->sel        ) continue; /* if not sel'd and required -- skip */
+      if ( wch == L'M' &&   fi->size() > 0 ) continue; /* if not sel'd and required -- skip */
       fsize_t dir_size = -1;
       if ( fi->is_link() )
         dir_size = size_cache_get_pending( fi->name() );

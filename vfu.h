@@ -32,6 +32,7 @@
   #include <errno.h>
   #include <signal.h>
 
+  #include <vstruti.h>
   #include <vslib.h>
 
   #ifdef HAVE_CONFIG_H

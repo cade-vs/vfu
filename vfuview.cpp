@@ -1,10 +1,10 @@
 /****************************************************************************
- *
- * Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
- * http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
- *
- * SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
- *
+ #
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ #
+ # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+ #
  ****************************************************************************/
 
 #include "vfu.h"
@@ -228,11 +228,11 @@ void vfu_redraw() /* redraw file list and header */
   if (!opt.long_name_view)
     {
     //if ( opt.f_mode  ) spos += sprintf( spos, "%10s ", MODE_STRING );
-    if ( opt.f_mode  ) spos += sprintf( spos, "1.MODE     " );
-    if ( opt.f_owner ) spos += sprintf( spos, " 2.OWNER " );
-    if ( opt.f_group ) spos += sprintf( spos, " 3.GROUP " );
-    if ( opt.f_time  ) spos += sprintf( spos, "4.%s TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
-    if ( opt.f_size  ) spos += sprintf( spos, "        5.SiZE " );
+    if ( opt.f_mode  ) spos += sprintf( spos, "MODE       " );
+    if ( opt.f_owner ) spos += sprintf( spos, "   OWNER " );
+    if ( opt.f_group ) spos += sprintf( spos, "   GROUP " );
+    if ( opt.f_time  ) spos += sprintf( spos, "  %s TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
+    if ( opt.f_size  ) spos += sprintf( spos, "          SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
@@ -241,8 +241,8 @@ void vfu_redraw() /* redraw file list and header */
   tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
 
-  /* spos += */ sprintf( spos, "  #NAME  --  %s",
-                         opt.long_name_view ? "( long name view, 0.DISABLE )" : "8.ALL_FIELDS" );
+  /* spos += */ sprintf( spos, "  #NAME  %s",
+                         opt.long_name_view ? "( long name view, press 0 to disable )" : "" );
 
   str_pad( t, - con_max_x() );
   str_sleft( t, con_max_x() );
@@ -317,11 +317,15 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   str_pad( tmp, 14 );
   s2 += tmp;
 
-  tmp = fs_block_size; str_pad( tmp,5 ); s2 += " [" + tmp + "]";
-  sprintf( tmp,  " %s.%s@%s ", 
-                 user_id_str.data(), 
-                 group_id_str.data(),
-                 host_name_str.data() );
+  tmp = fs_block_size; 
+  str_pad( tmp, 5 ); 
+  s2 += " [" + tmp + "]";
+  
+  
+  tmp = " ";
+  tmp = tmp + user_id_str + "." + group_id_str + "@" + host_name_str;
+  str_padw( tmp, con_max_x() - str_len( s2 ) - 1 );
+  
   s2 += tmp;
 
   str_pad( s1, - con_max_x() );

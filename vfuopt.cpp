@@ -16,13 +16,13 @@
 
 Options opt;
 
-const wchar_t *NOYES[] = { L" - ", L"YES", NULL };
+const wchar_t *NOYES[]        = { L" - ", L"YES", NULL };
 const wchar_t *NOYESPRECOPY[] = { L" - ", L"YES", L"PRELIM", NULL };
-const wchar_t *FTIMETYPE[] = { L"CHANGE", L"MODIFY", L"ACCESS", NULL };
-const wchar_t *TAGMARKS[] = { L">>", L"=>", L"->", L"*>", NULL };
-const wchar_t *SIIEC[] = { L"IEC", L"SI ", NULL };
-const wchar_t *COMMA_TYPES[] = { L"'", L"`", L",", L" ", L"_", NULL };
-const wchar_t *PAGE_STEPS[] = { L"1 LINE", L"30% PG", L"50% PG", NULL };
+const wchar_t *FTIMETYPE[]    = { L"CHANGE", L"MODIFY", L"ACCESS", NULL };
+const wchar_t *TAGMARKS[]     = { L">>", L"=>", L"->", L"*>", NULL };
+const wchar_t *SIIEC[]        = { L"IEC", L"SI ", NULL };
+const wchar_t *COMMA_TYPES[]  = { L"'", L"`", L",", L" ", L"_", NULL };
+const wchar_t *PAGE_STEPS[]   = { L"1 LINE", L"30% PG", L"50% PG", NULL };
 
 ToggleEntry Toggles[] =
 {
@@ -231,7 +231,7 @@ int key_by_name( const char* key_name )
 
 /*---------------------------------------------------------------------------*/
 
-void vfu_settings_load()
+void vfu_settings_load( VArray* data = NULL )
 {
   VString str;
 
@@ -342,73 +342,75 @@ void vfu_settings_load()
   VRegexp re_see( "^\\s*see\\s*=\\s*([^, \011]*)\\s*,(.*)$", "i" );
   VRegexp re_pan( "^\\s*panelize\\s*=\\s*([^,]*)\\s*,(.*)$", "i" );
 
-  char line[1024];
-  if ( (fsett = fopen( filename_conf, "r")) )
+  VArray conf_data;
+  
+  if ( data ) 
+    conf_data = *data;
+  else
+    conf_data.fload( filename_conf );  
+
+  for( int c = 0; c < conf_data.count(); c++ )
     {
-    while(fgets(line, 1024, fsett))
+    const char* line = conf_data.get( c );
+    if ( line[0] == '#' ) continue;
+    if ( line[0] == ';' ) continue;
+    if ( strlen( line ) == 0 ) continue;
+
+    if(set_str( line, "browser", shell_browser))continue;
+    if(set_str( line, "pager", shell_browser))continue;
+    if(set_str( line, "viewer", shell_browser))continue;
+
+    if(set_arr( line, "archive",  archive_extensions))continue;
+
+    if(set_str( line, "editor", shell_editor))continue;
+    if(set_str( line, "diff",   shell_diff))continue;
+
+    if(set_arr( line, "bookmark",  path_bookmarks))continue;
+
+ /* if(set_str( line, "cblack"   , ext_colors[0]); */
+    if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;
+    if(set_str( line, "cred"     , ext_colors[cRED]))continue;
+    if(set_str( line, "ccyan"    , ext_colors[cCYAN]))continue;
+    if(set_str( line, "cwhite"   , ext_colors[cWHITE]))continue;
+    if(set_str( line, "cmagenta" , ext_colors[cMAGENTA]))continue;
+    if(set_str( line, "cblue"    , ext_colors[cBLUE]))continue;
+    if(set_str( line, "cyellow"  , ext_colors[cYELLOW]))continue;
+    if(set_str( line, "chblack"  , ext_colors[chBLACK]))continue;
+    if(set_str( line, "chgreen"  , ext_colors[chGREEN]))continue;
+    if(set_str( line, "chred"    , ext_colors[chRED]))continue;
+    if(set_str( line, "chcyan"   , ext_colors[chCYAN]))continue;
+    if(set_str( line, "chwhite"  , ext_colors[chWHITE]))continue;
+    if(set_str( line, "chmagenta", ext_colors[chMAGENTA]))continue;
+    if(set_str( line, "chblue"   , ext_colors[chBLUE]))continue;
+    if(set_str( line, "chyellow" , ext_colors[chYELLOW]))continue;
+
+    if(set_splitter( line, "trimtree",  trim_tree  ))continue;
+
+    /* following code is used to clean input data */
+    if( re_ux.m( line ) )
       {
-      if ( line[0] == '#' ) continue;
-      if ( line[0] == ';' ) continue;
-      str_cut( line, "\n\r" );
-      if ( strlen( line ) == 0 ) continue;
-
-      if(set_str( line, "browser", shell_browser))continue;
-      if(set_str( line, "pager", shell_browser))continue;
-      if(set_str( line, "viewer", shell_browser))continue;
-
-      if(set_arr( line, "archive",  archive_extensions))continue;
-
-      if(set_str( line, "editor", shell_editor))continue;
-      if(set_str( line, "diff",   shell_diff))continue;
-
-      if(set_arr( line, "bookmark",  path_bookmarks))continue;
-
-   /* if(set_str( line, "cblack"   , ext_colors[0]); */
-      if(set_str( line, "cgreen"   , ext_colors[cGREEN]))continue;
-      if(set_str( line, "cred"     , ext_colors[cRED]))continue;
-      if(set_str( line, "ccyan"    , ext_colors[cCYAN]))continue;
-      if(set_str( line, "cwhite"   , ext_colors[cWHITE]))continue;
-      if(set_str( line, "cmagenta" , ext_colors[cMAGENTA]))continue;
-      if(set_str( line, "cblue"    , ext_colors[cBLUE]))continue;
-      if(set_str( line, "cyellow"  , ext_colors[cYELLOW]))continue;
-      if(set_str( line, "chblack"  , ext_colors[chBLACK]))continue;
-      if(set_str( line, "chgreen"  , ext_colors[chGREEN]))continue;
-      if(set_str( line, "chred"    , ext_colors[chRED]))continue;
-      if(set_str( line, "chcyan"   , ext_colors[chCYAN]))continue;
-      if(set_str( line, "chwhite"  , ext_colors[chWHITE]))continue;
-      if(set_str( line, "chmagenta", ext_colors[chMAGENTA]))continue;
-      if(set_str( line, "chblue"   , ext_colors[chBLUE]))continue;
-      if(set_str( line, "chyellow" , ext_colors[chYELLOW]))continue;
-
-      if(set_splitter( line, "trimtree",  trim_tree  ))continue;
-
-      /* following code is used to clean input data */
-      if( re_ux.m( line ) )
-        {
-        str = "";
-        str = str + re_ux[1] + ","; /* get description */
-        str = str + re_ux[2] + ","; /* get key name */
-        VString t = re_ux[3]; /* get extensions */
-        if ( t != "*" && t[-1] != '.' ) t += ".";
-        str = str + t + ",";
-        str += re_ux[4]; /* get shell line */
-        user_externals.push( str );
-        continue;
-        } else
-      if( re_see.m( line ) )
-        {
-        str = "";
-        see_filters.push( str + re_see[1] + "," + re_see[2] );
-        continue;
-        } else
-      if( re_pan.m( line ) )
-        {
-        str = "";
-        panelizers.push( str + re_pan[1] + "," + re_pan[2] );
-        continue;
-        }
+      str = "";
+      str = str + re_ux[1] + ","; /* get description */
+      str = str + re_ux[2] + ","; /* get key name */
+      VString t = re_ux[3]; /* get extensions */
+      if ( t != "*" && t[-1] != '.' ) t += ".";
+      str = str + t + ",";
+      str += re_ux[4]; /* get shell line */
+      user_externals.push( str );
+      continue;
+      } else
+    if( re_see.m( line ) )
+      {
+      str = "";
+      see_filters.push( str + re_see[1] + "," + re_see[2] );
+      continue;
+      } else
+    if( re_pan.m( line ) )
+      {
+      str = "";
+      panelizers.push( str + re_pan[1] + "," + re_pan[2] );
+      continue;
       }
-    fclose(fsett);
     }
 
   if (opt.use_dir_colors) vfu_load_dir_colors();

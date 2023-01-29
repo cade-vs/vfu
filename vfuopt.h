@@ -104,7 +104,7 @@
   int set_set( const char *line, const char *keyword, int &target );
   int set_set( const char *line, const char *keyword, VArray &splitter );
 
-  void vfu_settings_load();
+  void vfu_settings_load( VArray* data );
   void vfu_settings_save();
 
   void vfu_edit_conf_file();
