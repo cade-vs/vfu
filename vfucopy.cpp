@@ -112,7 +112,6 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
 
   int eta_h = eta / ( 60*60 );
   int eta_m = eta / 60;
-  int eta_s = eta % 60;
   
   int  eta_v;
   char eta_c;
@@ -734,7 +733,7 @@ int __vfu_file_erase( const char* target, fsize_t* bytes_freed  )
 
 /*---------------------------------------------------------------------------*/
 
-int __vfu_link_erase( const char* target, fsize_t* bytes_freed )
+int __vfu_link_erase( const char* target, fsize_t* bytes_freed __attribute__((unused)) )
 {
   errno = 0; /* clear error status */
 
