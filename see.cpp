@@ -23,13 +23,13 @@
 
   char HEXCHARS[] = "0123456789ABCDEF";
 
-  char bg_xlat_table[2][64] =
+  static char bg_xlat_table[2][64] =
   {
   " ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º¼¾¿€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—?™šœŸ",
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
   };
 
-  char bgw_xlat_table[2][64] =
+  static char bgw_xlat_table[2][64] =
   {
   "àáâãäåæçèéêëìíîïğñòóôõö÷øùúüşÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÜŞß",
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
@@ -548,7 +548,7 @@
 
 /*--------------------------------------------------------------------*/
 
-  int SeeViewer::find_next_hex( int rev )
+  int SeeViewer::find_next_hex( int rev __attribute__((unused)) )
   {
   //FIXME: implement!!!
   return 0;
@@ -1469,7 +1469,7 @@
 
 /*--------------------------------------------------------------------*/
 
-  void SeeEditor::insert_file( const char* fn )
+  void SeeEditor::insert_file( const char* fn __attribute__((unused)) )
   {
   mod = va.count();
 
