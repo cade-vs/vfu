@@ -1,8 +1,5 @@
-.OBJ*
 vfu
-vfu-debug
-vfu.yas*
-
-autom4te.cache
-build
+vfu.yas
 *~
+*.o
+*.d

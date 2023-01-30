@@ -37,7 +37,6 @@ VString out;
 VString s;
 
 int i = 0;
-int one = 0;
 int full = 0;
 
 // toggles
