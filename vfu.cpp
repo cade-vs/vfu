@@ -661,7 +661,9 @@ void vfu_exit_path( const char *a_path )
   unlink( str );
   int fdx = open( str, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR );
   if( fdx == -1 ) return;
-  int r = write( fdx, a_path, str_len( a_path ) ); // stupid, stupid -Wunused-result
+  if( write( fdx, a_path, str_len( a_path ) ) ) // stupid, stupid -Wunused-result
+  {
+  }
   close( fdx );  
 }
 
@@ -2115,7 +2117,6 @@ int __vfu_dir_size_samedevonly    = 0;
 void vfu_directory_sizes( wchar_t wch )
 {
   int z;
-  char t[256];
 
   int dir_size_mode = __vfu_dir_size_followsymlinks | __vfu_dir_size_samedevonly;
 
@@ -2461,7 +2462,7 @@ void vfu_edit_entry( )
 
 /*--------------------------------------------------------------------------*/
 
-void vfu_jump_to_mountpoint( int all )
+void vfu_jump_to_mountpoint( int all __attribute__((unused)) )
 {
   VString str;
   char t[2048];
@@ -2636,10 +2637,10 @@ VString     __ff_pattern;
 VString     __ff_opt;
 int         __ff_rescount;
 
-int __ff_process( const char* origin,    /* origin path */
+int __ff_process( const char* origin __attribute__((unused)),    /* origin path */
                   const char* fname,     /* full file name */
                   const struct stat* st, /* stat struture or NULL */
-                  int is_link,           /* 1 if link */
+                  int is_link __attribute__((unused)),           /* 1 if link */
                   int flag )
 {
   VString str;
