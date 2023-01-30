@@ -17,10 +17,10 @@ NCURSES_LD?=$(shell $(PKG_CONFIG) --libs ncursesw)
 
 BINS:=vfu vfu.yas
 ifeq ($(YASCREEN_LD),)
-	BINS:=$(filter-out vfu.yas,$(BINS)
+	BINS:=$(filter-out vfu.yas,$(BINS))
 endif
 ifeq ($(NCURSES_LD),)
-	BINS:=$(filter-out vfu,$(BINS)
+	BINS:=$(filter-out vfu,$(BINS))
 endif
 
 all: $(BINS)
@@ -39,7 +39,7 @@ SRCS:=\
 	vfuuti.cpp \
 	vfuview.cpp
 OBJS:=$(SRCS:.cpp=.o)
-DEPS:=$(OBJS:.o=.d)
+DEPS:=$(OBJS:.o=.d) $(OBJS:.o=.y.d)
 
 ifndef NO_FLTO
 CXXFLAGS?=-O3 -fno-stack-protector -mno-stackrealign
@@ -78,6 +78,12 @@ endif
 	$(E) CXX $@
 	$(Q)$(CXX) $(MYCXXFLAGS) -c -o $@ $<
 
+%.y.o: %.cpp
+	$(E) DE $@
+	$(Q)$(CXX) $(MYCXXFLAGS) -DUSE_YASCREEN -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(E) CXX $@
+	$(Q)$(CXX) $(MYCXXFLAGS) -DUSE_YASCREEN -c -o $@ $<
+
 VFUOBJ:=\
 	see.o \
 	vfu.o \
@@ -92,17 +98,19 @@ VFUOBJ:=\
 	vfuuti.o \
 	vfuview.o
 
+VFUYOBJ:=$(VFUOBJ:.o=.y.o)
+
 vfu: $(VFUOBJ) ../vstring/libvstring.a ../vslib/libvslib.a ../vslib/libvscon.a
 	$(E) LD $@
 	$(Q)$(CXX) -o $@ $(MYLDFLAGS) $(VFUOBJ) $(MYLIBS) $(NCURSES_LD) -L../vstring -lvstring -L../vslib -lvslib -L../vslib -lvscon
 
-vfu.yas: $(VFUOBJ) ../vstring/libvstring.a ../vslib/libvslib.a ../vslib/libvscony.a
+vfu.yas: $(VFUYOBJ) ../vstring/libvstring.a ../vslib/libvslib.a ../vslib/libvscony.a
 	$(E) LD $@
-	$(Q)$(CXX) -o $@ $(MYLDFLAGS) $(VFUOBJ) $(MYLIBS) $(YASCREEN_LD) -L../vstring -lvstring -L../vslib -lvslib -L../vslib -lvscony
+	$(Q)$(CXX) -o $@ $(MYLDFLAGS) $(VFUYOBJ) $(MYLIBS) $(YASCREEN_LD) -L../vstring -lvstring -L../vslib -lvslib -L../vslib -lvscony
 
 clean:
 	$(E) CLEAN
-	$(Q) rm -f *.a *.o *.d t/test t/*.o
+	$(Q) rm -f *.a *.o *.d vfu vfu.yas
 
 re:
 	$(Q)$(MAKE) --no-print-directory clean
