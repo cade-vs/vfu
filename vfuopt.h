@@ -90,6 +90,53 @@
     
     SeeViewerOptions svo;
     SeeEditorOptions seo;
+    void reset(void)
+    {
+      sort_order = 0;
+      sort_direction = 0;
+      sort_top_dirs = 0;
+      memset(last_copy_path, 0, sizeof last_copy_path);
+      memset(path_bookmarks, 0, sizeof path_bookmarks);
+      f_size = 0;
+      f_time = 0;
+      f_mode = 0;
+      f_group = 0;
+      f_owner = 0;
+      f_type = 0;
+      f_time_type = 0;
+      long_name_view = 0;
+      tree_compact = 0;
+      tree_cd = 0;
+      show_hidden_files = 0;
+      allow_beep = 0;
+      use_colors = 0;
+      use_dir_colors = 0;
+      lower_case_ext_config = 0;
+      copy_free_space_check = 0;
+      copy_calc_totals = 0;
+      copy_keep_mode = 0;
+      tag_mark_type = 0;
+      internal_browser = 0;
+      internal_editor = 0;
+      mask_auto_expand = 0;
+      shell_cls = 0;
+      zap_ro = 0;
+      no_case_glob = 0;
+      show_user_free = 0;
+      menu_borders = 0;
+      lynx_navigation = 0;
+      default_copy_to_cwd = 0;
+      auto_mount = 0;
+      keep_selection = 0;
+      bytes_freed = 0;
+      smart_home_end = 0;
+      use_si_sizes = 0;
+      use_gib_usage = 0;
+      comma_type = 0;
+      scroll_pagestep = 0;
+      svo.reset();
+      seo.reset();
+    }
   };
 
   extern Options opt;
