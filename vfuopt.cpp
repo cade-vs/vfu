@@ -245,10 +245,7 @@ void vfu_settings_load( VArray* data = NULL )
 
   /***** LOAD DEFAULTS *******/
 
-  memset( &opt, 0, sizeof( opt ) );
-
-  opt.svo.reset();
-  opt.seo.reset();
+  opt.reset();
   opt.seo.handle_tab = 1;
 
   opt.sort_order = 'N';
@@ -306,10 +303,8 @@ void vfu_settings_load( VArray* data = NULL )
   opt.scroll_pagestep = 1;
   /***** LOAD DEFAULTS END ***/
 
-  FILE *fsett;
-
   Options tmp_opt;
-  memset( &tmp_opt, 0, sizeof( tmp_opt ) );
+  tmp_opt.reset();
   if ( file_load_crc32( filename_opt, &tmp_opt, sizeof( tmp_opt ) ) == 0 )
     memcpy( &opt, &tmp_opt, sizeof(Options) );
   else
