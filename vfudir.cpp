@@ -336,7 +336,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       mb.push( L"A Add current DATE+TIME" );
       mb.push( L"D Add current DATE only" );
       mb.push( L"N Add current directory name" );
-      vfu_menu_box( 50, 5, L"  Directory helper" );
+      vfu_menu_box( 20, -10, L"  Directory helper" );
       int ec = menu_box_info.ec;
       if( ec == 'A' or ec == 'D' )
         {
