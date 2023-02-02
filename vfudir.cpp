@@ -310,7 +310,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       if (pos < str_len( target ))
         pos++;
       } else
-    if ( wch == UKEY_INS   ) insert = !insert; else
+    if ( wch == UKEY_INS  ) insert = !insert; else
     if ( wch == UKEY_HOME ) pos = 0; else
     if ( wch == UKEY_END  ) pos = str_len(target); else
     if ( wch == UKEY_DEL  && pos < str_len(target) ) str_del( target, pos, 1 ); else
@@ -329,6 +329,36 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
           pos = str_len( target );
           }
         }
+      } else
+    if ( wch == UKEY_CTRL_O  )
+      {
+      mb.undef();
+      mb.push( L"A Add current DATE+TIME" );
+      mb.push( L"D Add current DATE only" );
+      mb.push( L"N Add current directory name" );
+      vfu_menu_box( 50, 5, L"  Directory helper" );
+      int ec = menu_box_info.ec;
+      if( ec == 'A' or ec == 'D' )
+        {
+        char   time_str[32];
+        time_t timenow = time( NULL );
+        tm     tmnow;
+        localtime_r( &timenow, &tmnow );
+        if( strftime( time_str, sizeof(time_str) - 1, ec == L'A' ? "%Y%m%d_%H%M%S" : "%Y%m%d", &tmnow ) )
+          {
+          if( target[-1] != '/' ) target += "_";
+          target += time_str;
+          }
+        } else
+      if( ec == 'N' )
+        {
+        VString str = work_path;
+        str_cut_right( str, "/" );
+        str = str_file_name_ext( str );
+        str_cut_right( target, L"/" );
+        target += "/" + WString( str );
+        }
+      pos = str_len( target );
       }
     wch = 0;
     firsthit = 0;

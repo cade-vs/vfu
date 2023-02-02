@@ -1,5 +1,7 @@
 vfu
 vfu.yas
+vfu-debug
+vfu.yas-debug
 *~
 *.o
 *.d

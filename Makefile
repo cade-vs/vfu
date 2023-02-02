@@ -74,15 +74,15 @@ endif
 
 %.o: %.cpp
 	$(E) DE $@
-	$(Q)$(CXX) $(MYCXXFLAGS) -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(Q)$(CXX) $(MYCXXFLAGS) -D_UNICON_USE_CURSES_ -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
 	$(E) CXX $@
-	$(Q)$(CXX) $(MYCXXFLAGS) -c -o $@ $<
+	$(Q)$(CXX) $(MYCXXFLAGS) -D_UNICON_USE_CURSES_ -c -o $@ $<
 
 %.y.o: %.cpp
 	$(E) DE $@
-	$(Q)$(CXX) $(MYCXXFLAGS) -DUSE_YASCREEN -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+	$(Q)$(CXX) $(MYCXXFLAGS) -D_UNICON_USE_YASCREEN_ -MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
 	$(E) CXX $@
-	$(Q)$(CXX) $(MYCXXFLAGS) -DUSE_YASCREEN -c -o $@ $<
+	$(Q)$(CXX) $(MYCXXFLAGS) -D_UNICON_USE_YASCREEN_ -c -o $@ $<
 
 VFUOBJ:=\
 	see.o \
