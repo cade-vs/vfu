@@ -2131,6 +2131,7 @@ void vfu_directory_sizes( wchar_t wch )
     mb.push( L"S Selected directories" );
     mb.push( L"A All dir's in the list" );
     mb.push( L"M Missing sizes dirs" );
+    mb.push( L"P Drop dir sizes cache (WARNING!)" );
     mb.push( L"--directory size options--" );
     mb.push( L"N Normal" );
     mb.push( L"Y Follow symlinks (WARNING: may loop!)" );
@@ -2207,8 +2208,31 @@ void vfu_directory_sizes( wchar_t wch )
     else
       say1( "Directory size calculation will follow ALL devices/filesystems" );
     }
-
-
+  if( wch == L'P' )
+    {
+    int scc = size_cache.count();
+    wchar_t wch = 0;
+    if( scc > 0 )
+      {
+      vfu_beep();
+      say2( VString() + "Entries to be removed: " + scc );
+      wch = towlower( vfu_ask( L"Directory sizes cache will be dropped? "
+                               L"( D=Yes, drop data!, ESC=cancel )",
+                               L"d" ));
+      say1( "" );
+      say2( "" );
+      }
+    else
+      {
+      say1( "Directory sizes cache is empty." );
+      }  
+                               
+    if( wch == L'd')
+      {
+      size_cache.undef();
+      say1( VString() + "Directory sizes cache dropped. Removed entries: " + scc );
+      }
+    }
 
   do_draw = 1;
   update_status();
