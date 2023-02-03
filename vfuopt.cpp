@@ -446,8 +446,8 @@ void vfu_edit_conf_file()
   else
     {
     VString line = shell_editor;
-    str_replace( line, "%f", filename_conf );
-    str_replace( line, "%F", filename_conf );
+    str_replace( line, "%f", shell_escape( filename_conf ) );
+    str_replace( line, "%F", shell_escape( filename_conf ) );
     vfu_shell( line.data(), 0 );
     }
   vfu_settings_save();

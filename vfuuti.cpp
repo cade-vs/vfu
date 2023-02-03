@@ -63,8 +63,7 @@ while( a_line[i] )
                    {
                    s = files_list_get(FLI)->name();
                    }
-                 shell_escape( s );
-                 out += s;
+                 out += shell_escape( s );
                  break;
 
       case 'g' : /* list selected filenames */
@@ -85,8 +84,7 @@ while( a_line[i] )
                      {
                      s = files_list_get(z)->name();
                      }
-                   shell_escape( s );
-                   out += s + " ";
+                   out += shell_escape( s ) + " ";
                    }
                  break;
 
@@ -96,7 +94,7 @@ while( a_line[i] )
                    s = str_file_name( s );
                  else
                    s = files_list_get(FLI)->ext();
-                 out += s;
+                 out += shell_escape( s );
                  break;
 
       case 's' : /* current file size */
@@ -121,21 +119,22 @@ while( a_line[i] )
 
       case 'c' : /* current path */
                  s = work_path;
-                 out += s;
+                 out += shell_escape( s );
                  break;
 
       case 'C' : /* startup dir */
                  s = startup_path;
-                 out += s;
+                 out += shell_escape( s );
                  break;
 
       case 'a' : /* Archive name */
-                 out += archive_name;
+                 s = archive_name;
+                 out += shell_escape( s );
                  break;
 
       case 'A' : /* Archive path */
                  s = archive_path;
-                 out += s;
+                 out += shell_escape( s );
                  break;
 
       case 'w' :

@@ -1200,8 +1200,8 @@ void vfu_edit( const char *fname )
     VString str = shell_editor;
     if ( fname )
       {
-      str_replace( str, "%f", fname );
-      str_replace( str, "%F", fname );
+      str_replace( str, "%f", shell_escape( fname ) );
+      str_replace( str, "%F", shell_escape( fname ) );
       }
     vfu_shell( str, "" );
     }
@@ -1258,10 +1258,9 @@ void vfu_browse( const char *fname, int no_filters )
       if ( FNMATCH( mask, str_file_name_ext( fname ) ) ) continue;
       /* found */
       tmp_name = vfu_temp();
-      str_replace( str, "%f", fname );
-      str_replace( str, "%F", full_fname );
-      str += " > ";
-      str += tmp_name;
+      str_replace( str, "%f", shell_escape( fname     ) );
+      str_replace( str, "%F", shell_escape( full_fname ) );
+      str += " > " + tmp_name;
       vfu_shell( str, "" );
       chmod( tmp_name, S_IRUSR | S_IWUSR );
       break;
@@ -1275,7 +1274,7 @@ void vfu_browse( const char *fname, int no_filters )
     {
     opt.svo.cs = cINFO;
     SeeViewer viewer( &opt.svo );
-log_debug( "%s | %s", fname, new_name.data() );
+
     if( viewer.open( new_name ) == 0 )
       viewer.run();
     else
@@ -1287,8 +1286,8 @@ log_debug( "%s | %s", fname, new_name.data() );
     VString str = shell_browser;
     if ( fname )
       {
-      str_replace( str, "%f", fname      );
-      str_replace( str, "%F", full_fname );
+      str_replace( str, "%f", shell_escape( fname     ) );
+      str_replace( str, "%F", shell_escape( full_fname ) );
       }
     vfu_shell( str, "" );
     }
@@ -1320,6 +1319,7 @@ void vfu_action_plus( wchar_t wch )
       for ( z = 0; z < archive_extensions.count(); z++ )
         if ( FNMATCH_OC( archive_extensions[z], fi->name_ext(), opt.lower_case_ext_config ) == 0 )
           {
+          FNMATCH_OC( archive_extensions[z], fi->name_ext(), opt.lower_case_ext_config );
           z = -1; /* FIXME: this shouldn't be -1 for TRUE really :) */
           break;
           }

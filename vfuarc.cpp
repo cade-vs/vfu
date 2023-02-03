@@ -189,8 +189,8 @@ void vfu_user_external_archive_exec( VString &shell_line  )
     say2errno();
     return;
     }
-  str_replace( shell_line, "%f", fn );
-  str_replace( shell_line, "%F", fn );
+  str_replace( shell_line, "%f", shell_escape( fn ) );
+  str_replace( shell_line, "%F", shell_escape( fn ) );
   vfu_shell( shell_line, "" );
 
   if(chdir( work_path ))
@@ -245,13 +245,14 @@ void vfu_extract_files( int one )
     }
   chmod( tmpfile, S_IRUSR|S_IWUSR );
 
+  VString wp = work_path;
+  VString an = archive_name;
+  
+  shell_escape( wp );
+  shell_escape( an );
+
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x \"";
-  s += work_path;
-  s += archive_name;
-  s += "\" @";
-  s += tmpfile;
-  s += " 2> /dev/null";
+  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " @" + tmpfile + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
