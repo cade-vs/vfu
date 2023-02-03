@@ -48,6 +48,8 @@ else
 CXXFLAGS?=-O3 -fno-stack-protector -mno-stackrealign
 endif
 
+CXXFLAGS+=$(CCDEF)
+
 # some architectures do not have -mno-stackrealign
 HAVESREA:=$(shell if $(CXX) -mno-stackrealign -xc -c /dev/null -o /dev/null >/dev/null 2>/dev/null;then echo yes;else echo no;fi)
 # old comiplers do not have -Wdate-time
@@ -63,6 +65,8 @@ endif
 
 MYLDFLAGS:=$(MYCXXFLAGS) $(LDFLAGS) -fPIE -pie
 MYLIBS:=$(LIBS) $(PCRE08_LD) $(PCRE32_LD)
+
+MYLDFLAGS+=$(LDDEF)
 
 ifeq ("$(V)","1")
 Q:=

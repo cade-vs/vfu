@@ -27,12 +27,17 @@ void vfu_read_archive_files( int a_recursive )
   if ( a_recursive )
     archive_path = ""; /* cannot have path when recursing archive */
 
+  VString an = archive_name;
+  VString ap = archive_path;
+  
+  shell_escape( an );
+  shell_escape( ap );
+
   VString s;
   s = "/usr/libexec/vfu/rx_auto ";
   s += ( a_recursive ) ? "v" : "l";
-  s += " '" + archive_name + "' ";
-  s += " '" + archive_path + "' ";
-  s += " 2> /dev/null";
+  s += " " + an + " " + ap + " 2> /dev/null";
+
   /* NOTE: calling rx_* should be safe and result should be proper
      all bugs must be traced outside VFU ...
   */
@@ -112,27 +117,29 @@ void vfu_read_archive_files( int a_recursive )
 
 void vfu_browse_archive_file()
 {
-  VString tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ) || chdir( tmpdir ) )
+  VString tmpdir = vfu_temp_dir();
+  if( tmpdir == "" || chdir( tmpdir ) )
     {
-    say1( "error: cannot create temp directory" );
-    say2( tmpdir );
+    say1( "error: cannot create temp directory: " + tmpdir );
+    say2errno();
     return;
     }
 
   VString fn = files_list_get(FLI)->full_name();
 
+  VString wp = work_path;
+  VString an = archive_name;
+  
+  shell_escape( wp );
+  shell_escape( an );
+  shell_escape( fn );
+
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x \"";
-  s += work_path;
-  s += archive_name;
-  s += "\" ";
-  s += fn;
-  s += " 2> /dev/null";
+  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " " + fn + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
-  if(chdir( tmpdir )) /* FIXME: a little hack -- vfu_shell() changes current path */
+  if( chdir( tmpdir ) ) /* FIXME: a little hack -- vfu_shell() changes current path */
     {
     say1( "error: cannot chdir to temp directory: " + tmpdir );
     say2errno();
@@ -154,23 +161,25 @@ void vfu_browse_archive_file()
 
 void vfu_user_external_archive_exec( VString &shell_line  )
 {
-  VString tmpdir = vfu_temp();
-  if(mkdir( tmpdir, S_IRUSR|S_IWUSR|S_IXUSR /*|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH*/ ) || chdir( tmpdir ))
+  VString tmpdir = vfu_temp_dir();
+  if( tmpdir == "" || chdir( tmpdir ) )
     {
-    say1( "error: cannot create temp directory" );
-    say2( tmpdir );
+    say1( "error: cannot create temp directory: " + tmpdir );
+    say2errno();
     return;
     }
 
   VString fn = files_list_get(FLI)->full_name();
 
+  VString wp = work_path;
+  VString an = archive_name;
+  
+  shell_escape( wp );
+  shell_escape( an );
+  shell_escape( fn );
+
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x \"";
-  s += work_path;
-  s += archive_name;
-  s += "\" ";
-  s += fn;
-  s += " 2> /dev/null";
+  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " " + fn + " 2> /dev/null";
 
   vfu_shell( s, "" );
 

@@ -465,14 +465,25 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 
 /*---------------------------------------------------------------------------*/
 
-// FIXME: TODO: new function for tmp dir name etc.
 fname_t vfu_temp_filename;
 const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
     int fd = mkstemp( vfu_temp_filename );
-    if( fd ) close( fd );
+    if( fd >= 0 ) 
+      close( fd );
+    else
+      vfu_temp_filename[0] = 0;  
     return vfu_temp_filename;
+}
+
+fname_t vfu_temp_dirname;
+const char* vfu_temp_dir()
+{
+    strcpy( vfu_temp_dirname, tmp_path + "vfu.XXXXXX" );  
+    char* r = mkdtemp( vfu_temp_dirname );
+    if( ! r ) vfu_temp_dirname[0] = 0;
+    return vfu_temp_dirname;
 }
 
 /*---------------------------------------------------------------------------*/

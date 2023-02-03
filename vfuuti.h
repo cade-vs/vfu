@@ -50,7 +50,7 @@ void vfu_get_str_history( int key, VString &s, int &pos ); /* internal! */
 int vfu_get_str( const char *prompt, VString& target, int hist_id, int x = -1, int y = -1 );
 
 const char* vfu_temp();
-
+const char* vfu_temp_dir();
 /*###########################################################################*/
 
 void vfu_con_out( int x, int y, const char    *s );

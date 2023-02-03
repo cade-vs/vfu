@@ -1275,6 +1275,7 @@ void vfu_browse( const char *fname, int no_filters )
     {
     opt.svo.cs = cINFO;
     SeeViewer viewer( &opt.svo );
+log_debug( "%s | %s", fname, new_name.data() );
     if( viewer.open( new_name ) == 0 )
       viewer.run();
     else

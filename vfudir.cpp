@@ -173,13 +173,13 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
         if ( dir_list.count() > 1)
           {
           int li = 0; // counter 
-//          int ll = 0; // longest directory entry 
+          int ll = 0; // longest directory entry 
           int xm = 0; // exact match entry  
           for ( li = 0; li < dir_list.count(); li++ )
             {
-//            int len = strlen( dir_list[li] );
-//            if( len > ll )
-//              ll = len;
+            int len = strlen( dir_list[li] );
+            if( len > ll )
+              ll = len;
             VString current_dtail;
             if( dtail != str_copy( current_dtail, dir_list[li], 0, dtlen ) )
               continue;
@@ -195,19 +195,21 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
               {
               char ch1 = str_get_ch( dir_list[xm], mi );
               char ch2 = str_get_ch( dir_list[li], mi );
-              if( opt.no_case_glob )
-                {
-                ch1 = toupper( ch1 );
-                ch2 = toupper( ch2 );
-                }
+//              if( opt.no_case_glob )
+//                {
+//                ch1 = toupper( ch1 );
+//                ch2 = toupper( ch2 );
+//                }
               if ( ch1 == ch2 )
                 mc++;
               }
             if ( mc != dir_list.count() )
               break;
             mi++;
-//            if( mi >= ll )
+//            if( dir_list[xm][mi] == 0 || dir_list[li][mi] == 0 )
 //              break;
+            if( mi >= ll )
+              break;
             }
           
           VString exact_dtail_max;
