@@ -187,7 +187,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
             break;
             }
           int mc = 0; // match count        
-          int mi = 0; // match letter index 
+          int mi = dtlen; // match letter index 
           while(4)
             {
             mc = 0;
@@ -195,11 +195,11 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
               {
               char ch1 = str_get_ch( dir_list[xm], mi );
               char ch2 = str_get_ch( dir_list[li], mi );
-//              if( opt.no_case_glob )
-//                {
-//                ch1 = toupper( ch1 );
-//                ch2 = toupper( ch2 );
-//                }
+              if( opt.no_case_glob )
+                {
+                ch1 = toupper( ch1 );
+                ch2 = toupper( ch2 );
+                }
               if ( ch1 == ch2 )
                 mc++;
               }
