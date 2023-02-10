@@ -42,8 +42,8 @@ int  file_set_mode_str( const char *filename, const mode_str_t mod_str );
 int  vfu_edit_attr( mode_str_t mod_str, int allow_masking = 1 );
 
 /* FIXME: dir_exist should check if directory really */
-#define  dir_exist( d ) ( access( d, F_OK ) == 0)
-#define file_exist( d ) ( access( d, F_OK ) == 0)
+#define  dir_exist( d ) ( access( d, F_OK ) == 0 )
+#define file_exist( d ) ( access( d, F_OK ) == 0 )
 
 #endif /* _VFUSYS_H_ */
 

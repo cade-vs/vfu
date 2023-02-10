@@ -32,22 +32,22 @@ void vfu_beep();
 
 VString size_str_compact( const fsize_t siz );
 
-char* vfu_str_comma( char* target );
+char*    vfu_str_comma( char* target );
 VString& vfu_str_comma( VString& target );
-VString vfu_str_comma( fsize_t size );
+VString  vfu_str_comma( fsize_t size );
 
 /*###########################################################################*/
 
-void vfu_hist_add( int hist_id, const char* str );
+void  vfu_hist_add( int hist_id, const char* str );
 const char* vfu_hist_get( int hist_id, int index = 0 );
 char* vfu_hist_get( int hist_id, int index, char* str );
-int vfu_hist_index( int hist_id, const char* value );
-int vfu_hist_count( int hist_id );
-void vfu_hist_remove( int hist_id, int index );
-int vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id );
+int   vfu_hist_index( int hist_id, const char* value );
+int   vfu_hist_count( int hist_id );
+void  vfu_hist_remove( int hist_id, int index );
+int   vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id );
 
-void vfu_get_str_history( int key, VString &s, int &pos ); /* internal! */
-int vfu_get_str( const char *prompt, VString& target, int hist_id, int x = -1, int y = -1 );
+void  vfu_get_str_history( int key, VString &s, int &pos ); /* internal! */
+int   vfu_get_str( const char *prompt, VString& target, int hist_id, int x = -1, int y = -1 );
 
 const char* vfu_temp();
 const char* vfu_temp_dir();
