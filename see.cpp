@@ -754,7 +754,7 @@
 
   void SeeViewer::help()
   {
-  vfu_con_out( 1, 1, help_str );
+  con_out( 1, 1, help_str );
   do_draw = 1;
   con_getch();
   }
