@@ -971,7 +971,7 @@ void vfu_cli( int argc, char* argv[] )
       case 'd'  : temp = optarg;
                   vfu_chdir( temp );
                   break;
-      case 'r'  : vfu_con_out(1,1,HEADER,cINFO);
+      case 'r'  : con_out(1,1,HEADER,cINFO);
                   temp = "Rebuilding directory tree ( work_path is";
                   temp += work_path;
                   temp += " )";
