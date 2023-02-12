@@ -19,7 +19,7 @@
  *
  */
 
-#define VFU_VERSION "5.02"
+#define VFU_VERSION "5.04"
 
 #define HEADER "VF/U v" VFU_VERSION " Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski 'Cade'"
 #define CONTACT "<cade@noxrun.com> <cade@bis.bg> [http://cade.noxrun.com]"
