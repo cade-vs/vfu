@@ -18,6 +18,13 @@
 
 /*---------------------------------------------------------------------------*/
 
+VString find_rx_auto()
+{
+  if( file_exist( "/usr/libexec/vfu/rx_auto" ) ) return VString( "/usr/libexec/vfu/rx_auto" );
+  if( file_exist( "/usr/lib/vfu/rx_auto"     ) ) return VString( "/usr/lib/vfu/rx_auto"     );
+  return VString( "rx_auto" );
+}
+
 void vfu_read_archive_files( int a_recursive )
 {
   char line[2048] = "";
@@ -34,11 +41,11 @@ void vfu_read_archive_files( int a_recursive )
   shell_escape( ap );
 
   VString s;
-  s = "/usr/libexec/vfu/rx_auto ";
+  s = find_rx_auto() + " ";
   s += ( a_recursive ) ? "v" : "l";
   s += " " + an + " " + ap + " 2> /dev/null";
 
-  /* NOTE: calling rx_* should be safe and result should be proper
+  /* NOTE: calling rx_* should be safe and result should be proper.
      all bugs must be traced outside VFU ...
   */
   FILE *f = popen( s, "r" );
@@ -135,7 +142,7 @@ void vfu_browse_archive_file()
   shell_escape( fn );
 
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " " + fn + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wp + an + " " + fn + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
@@ -179,7 +186,7 @@ void vfu_user_external_archive_exec( VString &shell_line  )
   shell_escape( fn );
 
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " " + fn + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wp + an + " " + fn + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
@@ -252,7 +259,7 @@ void vfu_extract_files( int one )
   shell_escape( an );
 
   VString s;
-  s = "/usr/libexec/vfu/rx_auto x " + wp + an + " @" + tmpfile + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wp + an + " @" + tmpfile + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
