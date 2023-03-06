@@ -99,7 +99,7 @@ while( a_line[i] )
       case 'e' : /* name only */
       case 'E' : /* extension only */
                  if ( a_line[i+1] == 'e' )
-                   s = str_file_name( s );
+                   s = str_file_name( files_list_get(FLI)->name() );
                  else
                    s = files_list_get(FLI)->ext();
                  out += shell_escape( s );

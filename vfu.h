@@ -130,9 +130,9 @@
       ~TF();
 
       const char*   full_name( int fix = 0 );
-      const char*   name() { ASSERT(_name); return (const char*)_name; }
-      const char*   name_ext() { ASSERT(_name_ext); return (const char*)_name_ext; }
-      const char*   ext() { ASSERT(_ext); return (const char*)_ext; }
+      const char*   name()     { return (const char*)_name; }
+      const char*   name_ext() { return (const char*)_name_ext; }
+      const char*   ext()      { return (const char*)_ext; }
 
       void          set_name( const char* a_new_name );
       const char*   view();
