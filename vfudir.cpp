@@ -469,7 +469,6 @@ void vfu_chdir( const char *a_new_dir )
         target = mb.get(0);
       }
   VString str = target;
-  str_cut_spc( str );
   if (str[0] == '/')
     { /* root directory */
     target = str;
