@@ -232,7 +232,7 @@ void vfu_redraw() /* redraw file list and header */
     if ( opt.f_mode  ) spos += sprintf( spos, "MODE       " );
     if ( opt.f_owner ) spos += sprintf( spos, "   OWNER " );
     if ( opt.f_group ) spos += sprintf( spos, "   GROUP " );
-    if ( opt.f_time  ) spos += sprintf( spos, "  %s TiME ", VString( FTIMETYPE[opt.f_time_type] ).data() );
+    if ( opt.f_time  ) spos += sprintf( spos, " %s TiME  ", VString( FTIMETYPE[opt.f_time_type] ).data() );
     if ( opt.f_size  ) spos += sprintf( spos, "          SiZE " );
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )

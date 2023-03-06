@@ -363,7 +363,8 @@ void TF::refresh_view()
       {
       time_t ftm = vfu_opt_time( _st );
       time_str_compact( ftm, sttime );
-      strcat( sttime, ( time( NULL ) - ftm ) > 24*60*60 ? " " : "*" ); // TODO: use for something useful
+      long int tdiff = time( NULL ) - ftm;
+      strcat( sttime, tdiff > 0 ? tdiff > 23*60*60 ? " " : "*" : "!" ); // TODO: use for something useful
       strcat( sttime, " " ); /* field separator */
       }
 
@@ -510,6 +511,8 @@ void vfu_help()
   mb.push( L"V       -- edit vfu.conf file");
   mb.push( L"!       -- shell (also available with '?')"                         );
   mb.push( L"/       -- command line"                                            );
+  mb.push( L"`       -- bookmarks menu"                                          );
+  mb.push( L"Alt+#   -- where # is 1..9, go to #'th bookmark"                    );
   mb.push( L"vfu uses these (one of) these config files:");
   mb.push( L"        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
   mb.push( L"        2. $HOME/.vfu/vfu.conf");

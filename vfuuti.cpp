@@ -257,16 +257,22 @@ char* time_str_compact( const time_t tim, char* buf )
   tm     tim_tm;
   localtime_r( &tim, &tim_tm );
   const char* tfm;
-  if (timenow > tim + 6L * 30L * 24L * 60L * 60L /* old */
-      ||
-      timenow < tim - 60L * 60L) /* in the future */
-      {
-      tfm = "%b %d  %Y";
-      }
-    else
-      {
-      tfm = "%b %d %H:%M";
-      }  
+  long int tdiff = timenow - tim;
+  if ( tdiff > 6L * 30L * 24L * 60L * 60L /* older than 6 months */
+       ||
+       tdiff < - 23L * 60L * 60L) /* in the future, past next 23 hours */
+    {
+    tfm = "%b %d  %Y";
+    }
+  else if( abs( tdiff ) < 23L * 60L * 60L )
+    {
+    /* in the near 23 hours */
+    tfm = "%a %H:%M:%S";
+    }
+  else
+    {
+    tfm = "%b %d %H:%M";
+    }  
   strftime( buf, 16, tfm, &tim_tm );
   return buf;
 }
