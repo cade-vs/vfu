@@ -39,19 +39,26 @@ VString s;
 int i = 0;
 int full = 0;
 
-// toggles
+// place-holders
 while( a_line[i] )
   {
   if ( a_line[i] == '%' )
     {
-    switch( a_line[i+1] )
+    char ch = a_line[i+1];
+    if( ! ch ) break;
+    
+    if( ch == 'h' || ch == 'H' ) // auto-sensing F or G depending on selection count
+      ch = sel_count > 0 ? ch == 'H' ? 'G' : 'g' : ch == 'H' ? 'F' : 'f';
+    
+    switch( ch )
       {
       case 'r' : /* rescan files after */
       case 'R' : a_options += "r"; 
                  break; 
 
       case 'f' : /* file name */
-      case 'F' : if( work_mode == WM_ARCHIVE )
+      case 'F' : full = ch == 'F';
+                 if( work_mode == WM_ARCHIVE )
                    {
                    s = files_list_get(FLI)->name();
                    }
@@ -67,7 +74,8 @@ while( a_line[i] )
                  break;
 
       case 'g' : /* list selected filenames */
-      case 'G' : int z;
+      case 'G' : full = ch == 'G';
+                 int z;
                  for( z = 0; z < files_list_count(); z++ )
                    {
                    TF *fi = files_list_get(z);
