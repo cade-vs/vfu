@@ -1913,37 +1913,8 @@ void vfu_tools()
   mb.push( L"C Classify files" );
   if ( vfu_menu_box( 30, 5, L"Tools" ) == -1 ) return;
 
-  TF *fi = FLCUR;
-
   switch( menu_box_info.ec )
     {
-    case L'R' : {
-               say1( expand_path( fi->name() ) );
-               break;
-               }
-    case L'D' : {
-               if( ! fi->is_link() ) break;
-               tools_last_target = fi->full_name();
-               if( ! fi->is_dir() ) break;
-               vfu_chdir( expand_path( fi->name() ) );
-               break;
-               }
-    case L'G' : {
-               if( ! fi->is_link() ) break;
-               tools_last_target = fi->full_name();
-               VString target = vfu_readlink( fi->full_name() );
-               vfu_chdir( expand_path( str_file_path( target ) ) );
-               vfu_goto_filename( str_file_name_ext( target ) );
-               break;
-               }
-    case L'B' : {
-               if( tools_last_target == "" ) break;
-               VString target = tools_last_target;
-               tools_last_target = fi->full_name();
-               vfu_chdir( expand_path( str_file_path( target ) ) );
-               vfu_goto_filename( str_file_name_ext( target ) );
-               break;
-               }
     case L'T' : {
                VString str;
                if (vfu_get_str( "Make directory(ies) (use space for separator)", str, HID_MKPATH ))
@@ -1961,13 +1932,52 @@ void vfu_tools()
                      err++;
                      }
                  if ( err == 0 ) say1( "MKDIR: ok." );
-                 break;
+                 return;
                  }
                }
-               break;
-    case L'P' : bookmark_goto( 0 ); break;
-    case L'A' : vfu_tool_rename(); break;
-    case L'C' : vfu_tool_classify(); break;
+               return;
+    case L'P' : bookmark_goto( 0 );  return;
+    }
+
+  if( files_list_count() < 1 )
+    {
+    say1( "No files..." );
+    return;
+    }
+  
+  TF *fi = FLCUR;
+
+  switch( menu_box_info.ec )
+    {
+    case L'R' : {
+               say1( expand_path( fi->name() ) );
+               return;
+               }
+    case L'D' : {
+               if( ! fi->is_link() ) return;
+               tools_last_target = fi->full_name();
+               if( ! fi->is_dir() ) return;
+               vfu_chdir( expand_path( fi->name() ) );
+               return;
+               }
+    case L'G' : {
+               if( ! fi->is_link() ) return;
+               tools_last_target = fi->full_name();
+               VString target = vfu_readlink( fi->full_name() );
+               vfu_chdir( expand_path( str_file_path( target ) ) );
+               vfu_goto_filename( str_file_name_ext( target ) );
+               return;
+               }
+    case L'B' : {
+               if( tools_last_target == "" ) return;
+               VString target = tools_last_target;
+               tools_last_target = fi->full_name();
+               vfu_chdir( expand_path( str_file_path( target ) ) );
+               vfu_goto_filename( str_file_name_ext( target ) );
+               return;
+               }
+    case L'A' : vfu_tool_rename();   return;
+    case L'C' : vfu_tool_classify(); return;
     }
 }
 
