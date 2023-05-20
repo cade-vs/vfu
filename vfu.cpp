@@ -803,6 +803,16 @@ void vfu_run()
       case L'+' :
       case L'=' : vfu_action_plus( wch ); break;
 
+      case L'[' : vfu_action_minus();
+                  vfu_nav_up();
+                  vfu_action_plus( 13 );
+                  break;
+
+      case L']' : vfu_action_minus();
+                  vfu_nav_down();
+                  vfu_action_plus( 13 );
+                  break;
+
       case UKEY_LEFT  : if (opt.lynx_navigation) vfu_action_minus(); break;
       case UKEY_RIGHT : if (opt.lynx_navigation)
                          vfu_action_plus( L'+' );
@@ -2876,12 +2886,12 @@ void vfu_inc_search( int use_last_one )
   VString no_case_opt_str = opt.no_case_glob ? " no-case " : " ";
   if( use_last_one )
     {
-    say1( "Incremental" + no_case_opt_str + "search pattern: ( ALT+S for next match )" );
+    say1( "Incremental" + no_case_opt_str + "search: ( ALT+S for next match )" );
     wch = 9;
     }
   else
     {
-    say1( "Enter incremental" + no_case_opt_str + "search pattern: ( TAB for next match or 'size:NNN' for size search )" );
+    say1( "Incremental" + no_case_opt_str + "search: ( TAB for next or 'size:NNN' search )" );
     wch = con_getwch();
     }
   WRegexp size_re( L"^size:\\s*(\\d+)$" ); // TODO: allow "size:1024+"

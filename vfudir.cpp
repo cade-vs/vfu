@@ -313,7 +313,24 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
         pos++;
       } else
     if ( wch == UKEY_INS  ) insert = !insert; else
-    if ( wch == UKEY_HOME ) pos = 0; else
+    if ( wch == UKEY_HOME ) 
+      {
+      if( opt.smart_home_end && pos == 0 )
+        {
+        int sp = str_len( target ) - 1;
+        if( sp > 0 )
+          {
+          while( sp > 0 && target[sp] == L'/' ) sp--;
+          while( sp > 0 && target[sp] != L'/' ) sp--;
+          if( sp > 0 ) pos = sp + 1;
+          }
+        }
+      else
+        {
+        pos = 0;
+        }  
+      }
+      else
     if ( wch == UKEY_END  ) pos = str_len(target); else
     if ( wch == UKEY_DEL  && pos < str_len(target) ) str_del( target, pos, 1 ); else
     if ( wch == UKEY_PGUP || wch == UKEY_PGDN )
