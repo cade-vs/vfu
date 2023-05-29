@@ -128,7 +128,7 @@ void vfu_erase_files( int a_one );
 **
 ****************************************************************************/
 
-void clipboard_add();
+void clipboard_add_del( int del = 0 );
 void clipboard_paste( int mode );
 void clipboard_clear();
 void clipboard_view();

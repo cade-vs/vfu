@@ -1101,27 +1101,49 @@ void vfu_erase_files( int a_one )
 **
 ****************************************************************************/
 
-void clipboard_add()
+void clipboard_add_del( int del )
 {
-  if( sel_count == 0 )
+  if( files_list_count() == 0 )
     {
-    say( 1, cINFO, "CLIPBOARD: no files selected, %d files already in clipboard",
+    say( 1, cINFO, "CLIPBOARD: no files to add, %d files already in clipboard",
                      clipboard_copy_info.files_count );
     return;
     }
-
-  clipboard.undef();
-  clipboard_copy_info.reset();
-
+  
   VString keep = "1";
 
-  int z;
-  for ( z = 0; z < files_list_count(); z++ )
+  int za = 0;
+  if( sel_count == 0 )
     {
-    TF *fi = files_list_get(z);
-    if ( !fi->sel ) continue;
-    clipboard[ fi->full_name() ] = keep;
+    if( del )
+      {
+      if( clipboard.exists( files_list_get(FLI)->full_name() ) ) za++;
+      clipboard.del( files_list_get(FLI)->full_name() );
+      }
+    else
+      {  
+      clipboard[ files_list_get(FLI)->full_name() ] = keep;
+      za++;
+      }
     }
+  else
+    {  
+    for ( int z = 0; z < files_list_count(); z++ )
+      {
+      TF *fi = files_list_get(z);
+      if ( !fi->sel ) continue;
+      if( del )
+        {
+        if( clipboard.exists( fi->full_name() ) ) za++;
+        clipboard.del( fi->full_name() );
+        }
+      else
+        {
+        clipboard[ fi->full_name() ] = keep;
+        za++;
+        }  
+      }
+    }  
 
   __copy_calc_totals( clipboard_copy_info, 0 );
 
@@ -1129,8 +1151,8 @@ void clipboard_add()
   clipboard_copy_info.over_mode = OM_ASK; /* 0 */
   clipboard_copy_info.abort = 0;
 
-  say( 1, cINFO, "CLIPBOARD: %d files added.",
-                 clipboard_copy_info.files_count );
+  say( 1, cINFO, "CLIPBOARD: %d file(s) %s. %d in the clipboard now.",
+                 za, del ? "removed" : "added", clipboard.count() );
   say2( "" );
 }
 
@@ -1194,7 +1216,8 @@ void clipboard_clear()
   if( clipboard_copy_info.files_count )
     say( 2, cINFO, "CLIPBOARD: %d files removed", clipboard_copy_info.files_count );
   else
-    say( 2, cINFO, "CLIPBOARD: empty" );
+    say( 2, cINFO, "CLIPBOARD: empty now" );
+
   clipboard.undef();
   clipboard_copy_info.reset();
 }
@@ -1222,7 +1245,9 @@ void clipboard_menu( wchar_t act )
   if ( act == 0 )
     {
     mb.undef();
-    mb.push( L"A Add files to the clipboard" );
+    mb.push( L"A clear & Add files to the clipboard" );
+    mb.push( L"+ Add files to the clipboard" );
+    mb.push( L"- Remove files from the clipboard" );
     mb.push( L"P Copy files here" );
     mb.push( L"O Move files here" );
     mb.push( L"L Symlink files here" );
@@ -1241,7 +1266,9 @@ void clipboard_menu( wchar_t act )
   act = towupper( act );
   switch( act )
     {
-    case L'A': clipboard_add(); break;
+    case L'A': clipboard_clear(); clipboard_add_del(); break;
+    case L'+': clipboard_add_del(); break;
+    case L'-': clipboard_add_del( 1 ); break;
     case L'P': clipboard_paste( CM_COPY ); break;
     case L'O': clipboard_paste( CM_MOVE ); break;
     case L'L': clipboard_paste( CM_LINK ); break;
