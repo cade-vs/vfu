@@ -112,28 +112,26 @@ void show_pos( int curr, int all )
   sprintf( t, "%5d of %5d", curr, all );
   vfu_con_out( con_max_x() - 13, 3, t, cHEADER );
 
-  if( all == 0 ) return;
-
   int x  = con_max_x();
   int y1 = 4;
   int y2 = con_max_y() - 2;
 
   int y = y2 - y1;
 
-  if( all <= y ) return;
+  if( all <= y ) all = 0; // hide scroller
   
-  int ss  = y * y / all;   // scroller size in scroll space
+  int ss  = all > 0 ? y * y / all : 0;   // scroller size in scroll space
   if( ss < 1 ) ss = 1;     // min scroller size
   int vss = y - ss - 1;    // available scroll space without scroller size
 
-  int s1 = vss * curr / all; 
+  int s1 = all > 0 ? vss * curr / all : 0; 
   int s2 = s1 + ss;
 
   // fprintf( stderr, "y %d, ss %d, vss %d, s1 %d, s2 %d\n", y, ss, vss, s1, s2 );
 
   for( int z = 0; z < y; z++ )
     {
-    vfu_con_out( x, y1 + z, " ", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cNORMAL );
+    vfu_con_out( x, y1 + z, " ", ( all > 0 && s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cNORMAL );
     //vfu_con_out( x, y1 + z, ( s1 <= z and z <= s2 ) ? " " : ".", ( s1 <= z and z <= s2 ) ? CONCOLOR(cBLACK,cCYAN) : cCYAN );
     }
 }
