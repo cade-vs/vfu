@@ -426,7 +426,7 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
     stat( _name, &_st );
 
   _is_link = (a_is_link == -1) ? file_is_link( _name ) : a_is_link;
-  _is_dir = S_ISDIR(_st.st_mode );
+  _is_dir  = S_ISDIR(_st.st_mode );
   strcpy( _type_str, file_type_str( _st.st_mode, _is_link ) );
 
   file_get_mode_str( _st.st_mode, _mode_str );

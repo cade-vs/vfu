@@ -834,6 +834,35 @@ void __copy_calc_totals( CopyInfo &copy_info, int a_one )
     copy_info.no_info = 1;
 }
 
+void __copy_calc_totals_clipboard( CopyInfo &copy_info )
+{
+  if ( opt.copy_calc_totals )
+    {
+    say1( "Calculating files size. Press ESCAPE to cancel calculation." );
+    copy_info.files_size = 0;
+    VArray va = clipboard.keys();
+    for( int i = 0; i < va.count(); i++ )
+      {
+      struct stat _st;
+      stat( va[i], &_st );
+      int _is_link = S_ISLNK(_st.st_mode );
+      int _is_dir  = S_ISDIR(_st.st_mode );
+      
+      if( _is_dir && ! _is_link ) 
+        copy_info.files_size += vfu_dir_size( va[i], 0 );
+      else if( ! _is_link )
+        copy_info.files_size += _st.st_size;  
+      }
+    copy_info.files_count = clipboard.count();
+    copy_info.current_size = 0;
+    copy_info.current_count = 0; /* not used */
+    if ( copy_info.files_size == -1 )
+      copy_info.no_info = 1;
+    }
+  else
+    copy_info.no_info = 1;
+}
+
 void vfu_copy_files( int a_one, int a_mode )
 {
   ignore_copy_errors = 0;
@@ -1106,7 +1135,7 @@ void clipboard_add_del( int del )
   if( files_list_count() == 0 )
     {
     say( 1, cINFO, "CLIPBOARD: no files to add, %d files already in clipboard",
-                     clipboard_copy_info.files_count );
+                     clipboard.count() );
     return;
     }
   
@@ -1145,14 +1174,16 @@ void clipboard_add_del( int del )
       }
     }  
 
-  __copy_calc_totals( clipboard_copy_info, 0 );
+  __copy_calc_totals_clipboard( clipboard_copy_info );
 
   clipboard_copy_info.no_free_check = !opt.copy_free_space_check;
   clipboard_copy_info.over_mode = OM_ASK; /* 0 */
   clipboard_copy_info.abort = 0;
 
-  say( 1, cINFO, "CLIPBOARD: %d file(s) %s. %d in the clipboard now.",
-                 za, del ? "removed" : "added", clipboard.count() );
+  VString fsize = clipboard_copy_info.files_size;
+  vfu_str_comma( fsize );
+  say( 1, cINFO, "CLIPBOARD: %d file(s) %s. %d in the clipboard now = %s bytes.",
+                 za, del ? "removed" : "added", clipboard.count(), fsize.data() );
   say2( "" );
 }
 
