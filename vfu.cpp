@@ -427,6 +427,10 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
 
   _is_link = (a_is_link == -1) ? file_is_link( _name ) : a_is_link;
   _is_dir  = S_ISDIR(_st.st_mode );
+
+  if( _is_link && opt.show_symlinks_stat )
+    lstat( _name, &_st );
+
   strcpy( _type_str, file_type_str( _st.st_mode, _is_link ) );
 
   file_get_mode_str( _st.st_mode, _mode_str );
@@ -512,6 +516,12 @@ void vfu_help()
   mb.push( L"!       -- shell (also available with '?')"                         );
   mb.push( L"/       -- command line"                                            );
   mb.push( L"`       -- bookmarks menu"                                          );
+
+  mb.push( L"[       -- go to previous directory in the parent's list"       );
+  mb.push( L"]       -- go to next     directory in the parent's list"       );
+  mb.push( L"Alt+Up  -- same as ["       );
+  mb.push( L"Alt+Dn  -- same as ]"       );
+
   mb.push( L"Alt+#   -- where # is 1..9, go to #'th bookmark"                    );
   mb.push( L"vfu uses these (one of) these config files:");
   mb.push( L"        1. $HOME/$RC_PREFIX/vfu/vfu.conf");
@@ -803,11 +813,13 @@ void vfu_run()
       case L'+' :
       case L'=' : vfu_action_plus( wch ); break;
 
+      case UKEY_ALT_UP:
       case L'[' : vfu_action_minus();
                   vfu_nav_up();
                   vfu_action_plus( 13 );
                   break;
 
+      case UKEY_ALT_DOWN:
       case L']' : vfu_action_minus();
                   vfu_nav_down();
                   vfu_action_plus( 13 );
@@ -2313,15 +2325,21 @@ void vfu_edit_entry( )
     if ( menu_box_info.ec == L'M' ||
          menu_box_info.ec == L'A' ) /* attributes/mode */
       {
+        if( one && FLCUR->is_link() && opt.show_symlinks_stat )
+          {
+          say1( "Symlinks' mode cannot be changed." );
+          return;
+          }
+
         mode_str_t new_mode;
         int ok = 1;
         int err = 0;
         if ( menu_box_info.ec == L'M' )
           {
-          if (one)
+          if(one)
             {
             strcpy( new_mode, FLCUR->mode_str() );
-            file_get_mode_str( FLCUR->name(), new_mode);
+            file_get_mode_str( FLCUR->st()->st_mode, new_mode);
             }
           else
             strcpy(new_mode, MODE_MASK);
@@ -2346,6 +2364,7 @@ void vfu_edit_entry( )
             if ( (one && FLI == z) || (!one && files_list_get(z)->sel) )
               {
               TF *fi = files_list_get(z);
+              if( opt.show_symlinks_stat && fi->is_link() ) continue; // symlinks' mode cannot be changed
               if(file_set_mode_str(fi->name(), new_mode) == 0)
                 {
                 fi->update_stat();
@@ -2452,7 +2471,14 @@ void vfu_edit_entry( )
             int g = gid;
             if (u == -1) u = fi->st()->st_uid;
             if (g == -1) g = fi->st()->st_gid;
-            if(chown(fi->name(), u, g) == 0)
+            int cr = 0;
+
+            if( opt.show_symlinks_stat && fi->is_link() )
+              cr = lchown(fi->name(), u, g);
+            else
+              cr = chown(fi->name(), u, g);
+            
+            if( cr == 0 )
               {
               fi->update_stat();
               do_draw = 1;

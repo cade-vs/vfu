@@ -42,6 +42,7 @@ ToggleEntry Toggles[] =
   { L' ', L"Use /etc/DIR_COLORS", &(opt.use_dir_colors), NOYES },
   { L' ', L"Lowercase extensions for configs", &(opt.lower_case_ext_config), NOYES },
   { L'.', L"Show hidden files", &(opt.show_hidden_files), NOYES },
+  { L'l', L"Show symlink stats", &(opt.show_symlinks_stat), NOYES },
   { L' ', L"--navigation--", NULL, NULL },
   { L'i', L"Use internal viewer", &(opt.internal_browser), NOYES },
   { L'I', L"Use internal editor", &(opt.internal_editor), NOYES },

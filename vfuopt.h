@@ -87,6 +87,8 @@
     int comma_type;
 
     int scroll_pagestep;
+
+    int show_symlinks_stat;
     
     SeeViewerOptions svo;
     SeeEditorOptions seo;
@@ -134,6 +136,7 @@
       use_gib_usage = 0;
       comma_type = 0;
       scroll_pagestep = 0;
+      show_symlinks_stat = 0;
       svo.reset();
       seo.reset();
     }
