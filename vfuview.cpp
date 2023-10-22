@@ -109,8 +109,8 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
 void show_pos( int curr, int all )
 {
   char t[64];
-  sprintf( t, "%5d of %5d", curr, all );
-  vfu_con_out( con_max_x() - 13, 3, t, cHEADER );
+  sprintf( t, all > 999999 ? "%16d" : "%6d of %6d", curr, all );
+  vfu_con_out( con_max_x() - 15, 3, t, cHEADER );
 
   int x  = con_max_x();
   int y1 = 4;

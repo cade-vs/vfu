@@ -647,7 +647,7 @@ void vfu_init()
   signal( SIGHUP  , vfu_signal );
   signal( SIGTERM , vfu_signal );
   signal( SIGQUIT , vfu_signal );
-  // signal( SIGWINCH, vfu_signal ); // already set in unicon/vslib
+  signal( SIGWINCH, vfu_signal ); // already set in unicon/vslib
 
   srand( time( NULL ) );
   do_draw = 1;
@@ -838,15 +838,18 @@ void vfu_run()
 
       case UKEY_ALT_EQ :
       case L'>' : opt.long_name_view = !opt.long_name_view;
-                 vfu_drop_all_views();
-                 do_draw = 1;
-                 break;
+                  vfu_drop_all_views();
+                  do_draw = 1;
+                  break;
 
       case L'a' : vfu_arrange_files(); break;
 
       case L'g' : vfu_global_select(); break;
 
-      case L'o' : vfu_options(); break;
+      case L'o' : vfu_options(); 
+                  vfu_drop_all_views();
+                  do_draw = 1;
+                  break;
 
       case L'v' : vfu_edit_conf_file(); break;
 
@@ -1052,6 +1055,9 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
+  if( sig == SIGWINCH ) 
+      return vfu_reset_screen();
+  
   vfu_done();
 
   con_beep();
@@ -1588,8 +1594,8 @@ void vfu_global_select()
   mb.push( L"P Pack (list selected only)" );
   mb.push( L"H Hide selected" );
   mb.push( L"D Different" );
-  mb.push( L". Hide dirs" );
-  mb.push( L", Hide dotfiles" );
+  mb.push( L". Hide dotfiles" );
+  mb.push( L", Hide dirs" );
   mb.push( L"= Select by mask (with directories)" );
   mb.push( L"+ Select by mask (w/o  directories)" );
   mb.push( L"- Deselect by mask" );
@@ -1665,7 +1671,7 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case L'.' :
+    case L',' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
@@ -1675,7 +1681,7 @@ void vfu_global_select()
                  }
                files_list_pack();
                } break;
-    case L',' :
+    case L'.' :
                {
                int z;
                for (z = 0; z < files_list_count(); z++)
