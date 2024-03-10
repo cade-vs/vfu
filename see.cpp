@@ -442,10 +442,15 @@
       }
     while ( fpos < fsize )
       {
-      if ( con_kbhit() && con_getch() == 27 ) return;
+      if ( con_kbhit() )
+        {
+        int ch = con_getch();
+        if( ch == 27          ) return;
+        if( ch == UKEY_CTRL_E ) break;
+        }
       down();
       if (line % 768 == 0)
-        status( " Going down.... line: %6" FMT_OFF_T "d (%3.0f%%) press ESCAPE to cancel ", line, fpos_percent() );
+        status( " Going down: line: %6" FMT_OFF_T "d (%3.0f%%)  ESCAPE will cancel, CTRL+E will skip to EOF", line, fpos_percent() );
       }
     end2();
   }

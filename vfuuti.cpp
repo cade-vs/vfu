@@ -171,15 +171,17 @@ while( a_line[i] )
 
 int vfu_break_op()
 {
-  if (con_kbhit())
-    if (con_getwch() == 27)
-      {
-      say2( "Press ENTER to cancel or other key to continue..." );
-      int key = con_getwch();
-      say2( "" );
-      if ( key == 13 )
-        return 1;
-      }
+  if (! con_kbhit() ) return 0;
+  int key = con_getwch();
+  if ( key == UKEY_CTRL_C ) return 1;
+  if (key == 27)
+    {
+    say2( "Press ENTER to cancel or other key to continue..." );
+    key = con_getwch();
+    say2( "" );
+    if ( key == 13 )
+      return 1;
+    }
   return 0;
 }
 

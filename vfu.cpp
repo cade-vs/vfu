@@ -1739,6 +1739,7 @@ void vfu_global_select()
                 for (z = 0; z < files_list_count(); z++)
                   {
                   if ( files_list_get(z)->is_dir() ) continue;
+                  if ( vfu_break_op() ) break;
                   say1( files_list_get(z)->name() );
                   files_list_get(z)->sel =
                       (vfu_cmp_files_crc32( work_path, target,
