@@ -305,30 +305,25 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
   if ( ! copy_info->no_free_check && ! copy_info->no_info )
     {
-    fsize_t dev_free = device_avail_space( dst );
-    if (size > dev_free )
+    while(4)
       {
+      fsize_t dev_free = device_avail_space( dst );
+      if (size <= dev_free ) break;
+
       vfu_beep();
       say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( size ) );
       say2( dst );
 
-      vfu_menu_box( L"Error prompt", L"C Continue anyway,S Skip file,N No free space check,  Abort (ESC)", -1 );
-      switch (menu_box_info.ec)
-        {
-        case L'C' : break;
+      vfu_menu_box( L"Error prompt", L"C Continue anyway,P Space check,S Skip file,N No free space check,  Abort (ESC)", -1 );
 
-        case L'S' : copy_info->skipped_count++;
-                   return CR_SKIP;
-                   break; /* skip it */
+      if ( menu_box_info.ec == L'C' ) break; 
+      if ( menu_box_info.ec == L'P' ) continue; 
+      if ( menu_box_info.ec == L'S' ) { copy_info->skipped_count++; return CR_SKIP; }
+      if ( menu_box_info.ec == L'N' ) { copy_info->no_free_check = 1; break; }
 
-        case L'N' : copy_info->no_free_check = 1;
-                   break;
-
-        default  : copy_info->abort = 1;
-                   return CR_ABORT;
-                   break; /* abort! */
-        }
-      }
+      copy_info->abort = 1;
+      return CR_ABORT;
+      }  
     }
 
   ASSERT( copy_buff );
@@ -926,19 +921,23 @@ void vfu_copy_files( int a_one, int a_mode )
   VString dev_free_str;
   if ( !copy_info.no_free_check && !copy_info.no_info )
     {
-    fsize_t dev_free = device_avail_space( target );
-    dev_free_str = size_str_compact( dev_free );
-    dev_free_str = " | TARGET FREE: " + dev_free_str;
-    if (copy_info.files_size > dev_free )
+    while(4)
       {
+      fsize_t dev_free = device_avail_space( target );
+      dev_free_str = size_str_compact( dev_free );
+      dev_free_str = " | TARGET FREE: " + dev_free_str;
+      if ( copy_info.files_size <= dev_free ) break;
+      
       vfu_beep();
       say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
       say2( target );
 
       vfu_menu_box( L"Error prompt",
-                    L"C Continue anyway,  Abort (ESC)", -1 );
-      if ( menu_box_info.ec != L'C' ) return; /* abort */
-      }
+                    L"C Continue anyway,P Space check,  Abort (ESC)", -1 );
+      if ( menu_box_info.ec == L'C' ) break; 
+      if ( menu_box_info.ec == L'P' ) continue; 
+      return; /* abort */
+      }  
     } /* free space check */
 
   copy_info.description = "FILE ";
