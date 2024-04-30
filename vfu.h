@@ -32,6 +32,7 @@
   #include <pwd.h>
   #include <errno.h>
   #include <signal.h>
+  #include <math.h>
 
   #include <vstruti.h>
   #include <vslib.h>

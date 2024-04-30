@@ -364,7 +364,7 @@ void TF::refresh_view()
       time_t ftm = vfu_opt_time( _st );
       time_str_compact( ftm, sttime );
       long int tdiff = time( NULL ) - ftm;
-      strcat( sttime, tdiff > 0 ? tdiff > 23*60*60 ? " " : "*" : "!" ); // TODO: use for something useful
+      strcat( sttime, tdiff > 4 ? tdiff > 23*60*60 ? " " : "*" : "!" ); // TODO: use for something useful
       strcat( sttime, " " ); /* field separator */
       }
 
@@ -593,7 +593,7 @@ void vfu_init()
     make_path( home_path );
     }
 
-  shell_diff = "/usr/bin/diff";
+  shell_diff = "/usr/bin/diff"; // TODO: FIXME: get from config file or environment
 
   /*
    FIXME: this should something relevant to the home_path
@@ -1075,25 +1075,25 @@ void vfu_toggle_view_fields( wchar_t wch )
 {
   switch( wch )
     {
-    case L'1' : opt.f_mode = !opt.f_mode; break;
+    case L'1' : opt.f_mode  = !opt.f_mode; break;
     case L'2' : opt.f_owner = !opt.f_owner; break;
     case L'3' : opt.f_group = !opt.f_group; break;
-    case L'4' : opt.f_time = !opt.f_time; break;
-    case L'5' : opt.f_size = !opt.f_size; break;
-    case L'6' : opt.f_type = !opt.f_type; break;
+    case L'4' : opt.f_time  = !opt.f_time; break;
+    case L'5' : opt.f_size  = !opt.f_size; break;
+    case L'6' : opt.f_type  = !opt.f_type; break;
     case L'7' : opt.f_time_type++;
                if (opt.f_time_type > 2)
                  opt.f_time_type = 0;
                break;
     case L'8' : opt.f_mode  =
-               opt.f_owner =
-               opt.f_group =
-               opt.f_time  =
-               opt.f_size  =
-               opt.f_type  = 1; break;
+                opt.f_owner =
+                opt.f_group =
+                opt.f_time  =
+                opt.f_size  =
+                opt.f_type  = 1; break;
     case L'0' : opt.long_name_view = !opt.long_name_view; break;
     case L'.' : opt.show_hidden_files = !opt.show_hidden_files; break;
-    default  : return; /* cannot be reached really */
+    default   : return; /* unreachable */
     }
   vfu_drop_all_views();
 }
@@ -2080,7 +2080,6 @@ void vfu_rename_file_in_place()
     say1( "No files" );
     return;
     }
-
 
   TF *fi = FLCUR;
 
