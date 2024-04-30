@@ -68,17 +68,39 @@ int get_item_color( TF *fi )
 
 VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
 {
+  VString str;
   int units_size = opt.use_si_sizes ? 1000 : 1024;
+
+  if( fs > pow( units_size, 4 ) )
+    {
+    sprintf( str, "%.3f", fs / pow( units_size, 4 ) );
+    vfu_str_comma( str );
+    str += opt.use_si_sizes ? " TB " : " TiB";
+    }
+  else if( fs > pow( units_size, 3 ) || use_gib )
+    {
+    sprintf( str, "%.3f", fs / pow( units_size, 3 ) );
+    vfu_str_comma( str );
+    str += opt.use_si_sizes ? " GB " : " GiB";
+    }
+  else
+    {
+    str.fi( fs );
+    vfu_str_comma( str );
+    }
+
+  return str;  
+
+/*
   
   fsize_t th = use_gib ? 1024*1024*1024 : 99999999999.0;
   
-  VString str;
   if( fs > th ) // 99_999_999_999 11 positions + 3 comma = 14 chars
     {
-    fsize_t ns = fs / ( units_size * units_size );
+    fsize_t ns = fs / pow( units_size, 2 );
     if( ns > 99999999.0 || use_gib ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
       {
-      ns = fs / ( units_size * units_size * units_size );
+      ns = fs / pow( units_size, 3 );
       if( ns > 99999 )
         str.fi( int( ns ) );
       else
@@ -102,6 +124,9 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
     vfu_str_comma( str );
     }
   return str;
+
+*/
+  
 }
 
 /*-----------------------------------------------------------------------*/
