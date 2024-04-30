@@ -555,7 +555,7 @@
 
   int SeeViewer::find_next_hex( int rev __attribute__((unused)) )
   {
-  //FIXME: implement!!!
+  //FIXME: implement!
   return 0;
   }
 
