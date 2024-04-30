@@ -415,10 +415,14 @@ void vfu_settings_load( VArray* data = NULL )
 
 /*---------------------------------------------------------------------------*/
 
-void vfu_settings_save()
+void vfu_settings_save_opt()
 {
   file_save_crc32( filename_opt, &opt, sizeof(opt));
-//  file_save_crc32( filename_size_cache, &size_cache, sizeof(size_cache));
+}
+
+void vfu_settings_save()
+{
+  vfu_settings_save_opt();
   history.fsave( filename_history );
   size_cache_save();
 }
@@ -465,8 +469,7 @@ void vfu_options()
   say1("press SPACE to toggle, ENTER or ESC to exit");
   say2("");
   vfu_toggle_box( 30, 5, L"Options/Toggles (scroll down, SPACE selects)", Toggles );
-  vfu_settings_save();
-  vfu_settings_load();
+  vfu_settings_save_opt();
   vfu_drop_all_views();
   vfu_redraw();
   vfu_redraw_status();
