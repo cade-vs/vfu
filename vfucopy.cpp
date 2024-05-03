@@ -94,8 +94,8 @@ int device_is_same( const char *src, const char *dst )
 
 /*###########################################################################*/
 
-void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
-                    fsize_t a_fa, /* file under copy all size */
+void show_copy_pos( fsize_t a_fc, /* file under copy, current pos */
+                    fsize_t a_fa, /* file under copy, file size   */
                     long    a_et, /* elapsed time for current file copy */
                     CopyInfo *copy_info ) /* totals info */
 {
@@ -136,11 +136,14 @@ void show_copy_pos( fsize_t a_fc, /* file under copy current pos */
   // if( t1 > 0 ) speed = ( c1 / ( 1024 * 1024 ) ) / t1; // current MiB/s
   if( t1 + t2 > 0 ) speed = ( ( c1 + c2 ) / ( 1024 * 1024 ) ) / ( t1 + t2 ); // total MiB/s
 
-  ASSERT( a1 >= 0 && a2 >= 0 );
-
-  if ( a1 < 1 ) a1 = 1;
-  if ( a2 < 1 ) a2 = 1;
-  if ( c1 == a1 ) /* hack, every single 100% each is not meaningfull really */
+  if ( a1 < 1 ) return; // current file has zero size
+  if ( a2 < 1 ) 
+    {
+    // no info about total files' size or size is zero, 
+    // only current file progress and speed are available
+    sprintf( t, "%5.1f%%  n/a @%3dM      ", (100.0*c1)/a1, speed );
+    }
+  else if ( c1 == a1 ) /* hack, every single 100% each is not meaningfull really */
     sprintf( t, "     %%%5.1f @%3dM/s%3d%c ", (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
   else
     sprintf( t, "%5.1f%%%5.1f @%3dM/s%3d%c ", (100.0*c1)/a1, (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
