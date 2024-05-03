@@ -66,67 +66,40 @@ int get_item_color( TF *fi )
 
 /*-----------------------------------------------------------------------*/
 
+// 999,999,999 -- up to 1GB
+// 999.999 XXX -- above 1GB with metric
+
 VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
 {
   VString str;
+  const char* fix = "";
+
   int units_size = opt.use_si_sizes ? 1000 : 1024;
 
-  if( fs > pow( units_size, 4 ) )
+  if( fs > pow( units_size, 5 ) )
+    {
+    sprintf( str, "%.3f", fs / pow( units_size, 5 ) );
+    fix = opt.use_si_sizes ? " PB " : " PiB";
+    }
+  else if( fs > pow( units_size, 4 ) )
     {
     sprintf( str, "%.3f", fs / pow( units_size, 4 ) );
-    vfu_str_comma( str );
-    str += opt.use_si_sizes ? " TB " : " TiB";
+    fix = opt.use_si_sizes ? " TB " : " TiB";
     }
   else if( fs > pow( units_size, 3 ) || use_gib )
     {
     sprintf( str, "%.3f", fs / pow( units_size, 3 ) );
-    vfu_str_comma( str );
-    str += opt.use_si_sizes ? " GB " : " GiB";
+    fix = opt.use_si_sizes ? " GB " : " GiB";
     }
   else
     {
     str.fi( fs );
-    vfu_str_comma( str );
     }
+
+  vfu_str_comma( str );
+  str += fix;
 
   return str;  
-
-/*
-  
-  fsize_t th = use_gib ? 1024*1024*1024 : 99999999999.0;
-  
-  if( fs > th ) // 99_999_999_999 11 positions + 3 comma = 14 chars
-    {
-    fsize_t ns = fs / pow( units_size, 2 );
-    if( ns > 99999999.0 || use_gib ) // 99_999_999_MIB 8 positions + 2 commas + units = 14 chars
-      {
-      ns = fs / pow( units_size, 3 );
-      if( ns > 99999 )
-        str.fi( int( ns ) );
-      else
-        sprintf( str, "%.3f", ns );  
-      vfu_str_comma( str );
-      str += opt.use_si_sizes ? " GB " : " GiB";
-      }
-    else
-      {  
-      if( ns > 99999 )
-        str.fi( int( ns ) );
-      else
-        sprintf( str, "%.3f", ns );  
-      vfu_str_comma( str );
-      str += opt.use_si_sizes ? " MB " : " MiB";
-      }
-    }
-  else
-    {
-    str.fi( fs );
-    vfu_str_comma( str );
-    }
-  return str;
-
-*/
-  
 }
 
 /*-----------------------------------------------------------------------*/
@@ -136,6 +109,8 @@ void show_pos( int curr, int all )
   char t[64];
   sprintf( t, all > 999999 ? "%16d" : "%6d of %6d", curr, all );
   vfu_con_out( con_max_x() - 15, 3, t, cHEADER );
+
+  // draw scroller
 
   int x  = con_max_x();
   int y1 = 4;
