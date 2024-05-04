@@ -86,7 +86,7 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
     sprintf( str, "%.3f", fs / pow( units_size, 4 ) );
     fix = opt.use_si_sizes ? " TB " : " TiB";
     }
-  else if( fs > pow( units_size, 3 ) || use_gib )
+  else if( fs >= pow( 1000, 3 ) || use_gib ) // 1000 to use only 999'999'999 positions for bytes display
     {
     sprintf( str, "%.3f", fs / pow( units_size, 3 ) );
     fix = opt.use_si_sizes ? " GB " : " GiB";
@@ -94,6 +94,7 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
   else
     {
     str.fi( fs );
+    fix = " =";
     }
 
   vfu_str_comma( str );

@@ -342,7 +342,7 @@ void TF::refresh_view()
   VString stowner;
   VString stgroup;
   char    sttime[32]      = "";
-  char    stsize[16]      = "";
+  char    stsize[18]      = "";
   char    sttype[4]       = "";
 
   if ( !opt.long_name_view )
