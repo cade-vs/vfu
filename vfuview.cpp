@@ -79,22 +79,22 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
   if( fs > pow( units_size, 5 ) )
     {
     sprintf( str, "%.3f", fs / pow( units_size, 5 ) );
-    fix = opt.use_si_sizes ? " PB " : " PiB";
+    fix = opt.use_si_sizes ? " PB !" : " PiB !";
     }
   else if( fs > pow( units_size, 4 ) )
     {
     sprintf( str, "%.3f", fs / pow( units_size, 4 ) );
-    fix = opt.use_si_sizes ? " TB " : " TiB";
+    fix = opt.use_si_sizes ? " TB *" : " TiB *";
     }
   else if( fs >= pow( 1000, 3 ) || use_gib ) // 1000 to use only 999'999'999 positions for bytes display
     {
     sprintf( str, "%.3f", fs / pow( units_size, 3 ) );
-    fix = opt.use_si_sizes ? " GB " : " GiB";
+    fix = opt.use_si_sizes ? " GB +" : " GiB +";
     }
   else
     {
     str.fi( fs );
-    fix = " =";
+    fix = "";
     }
 
   vfu_str_comma( str );

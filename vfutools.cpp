@@ -135,6 +135,8 @@ void vfu_tool_rename()
   mb.push( L"S Sequential rename"           );
   mb.push( L"T Prefix with current date+time" );
   mb.push( L"D Prefix with current date"      );
+  mb.push( L"I Add suffix with current date+time" );
+  mb.push( L"E Add suffix with current date"      );
   mb.push( L"W Swap SymLink with Original"     );
   mb.push( L"R Replace SymLink with Original"   );
   if (vfu_menu_box( 32, 6, L"Rename Tools" ) == -1) return;
@@ -213,13 +215,17 @@ void vfu_tool_rename()
 
     case L'T' :
     case L'D' :
-               char   time_prefix[32];
+    case L'I' :
+    case L'E' :
+               int ps_time = menu_box_info.ec == L'T' || menu_box_info.ec == L'I';
+               int ps_suff = menu_box_info.ec == L'I' || menu_box_info.ec == L'E';
+               char   time_str[32];
                time_t timenow = time( NULL );
                tm     tmnow;
                localtime_r( &timenow, &tmnow );
-               if( strftime( time_prefix, sizeof(time_prefix) - 1, menu_box_info.ec == L'T' ? "%Y%m%d_%H%M%S_" : "%Y%m%d_", &tmnow ) <= 0 )
+               if( strftime( time_str, sizeof( time_str ) - 1, ps_time ? "%Y%m%d_%H%M%S" : "%Y%m%d", &tmnow ) <= 0 )
                  {
-                 t = "Rename error! Cannot constrict date/time prefix: ";
+                 t = "Rename error! Cannot constrict date/time string: ";
                  t += strerror( errno );
                  say1( t );
                  break;
@@ -232,7 +238,11 @@ void vfu_tool_rename()
 
                  if ( !fi->sel ) continue;
                  path = str_file_path( fi->name() );
-                 new_name = path + time_prefix + str_file_name_ext( fi->name() );
+                 
+                 if( ps_suff )
+                   new_name = path + str_file_name( fi->name() ) + "." + time_str + "." + str_file_ext( fi->name() );
+                 else  
+                   new_name = path + time_str + "_" + str_file_name_ext( fi->name() );
 
                  if ( ! file_exist( new_name) )
                    {

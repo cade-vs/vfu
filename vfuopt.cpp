@@ -422,7 +422,7 @@ void vfu_settings_save_opt()
 
 void vfu_settings_save()
 {
-//  vfu_settings_save_opt(); // do not save on VFU exit
+  vfu_settings_save_opt(); // should it be saved on VFU exit?
   history.fsave( filename_history );
   size_cache_save();
 }
