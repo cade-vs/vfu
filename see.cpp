@@ -1561,7 +1561,7 @@
     status( opt->last_pipe_cmd );
     return;
     }
-  char ch;
+  int ch;
   freezed = 1;
   while( (ch = fgetc( f ) ) != EOF )
     kinsert( ch );

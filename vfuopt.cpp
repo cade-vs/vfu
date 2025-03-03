@@ -205,7 +205,7 @@ int set_splitter( const char *line, const char *keyword, VArray &splitter )
 
 /*---------------------------------------------------------------------------*/
 
-int key_by_name( const char* key_name )
+wchar_t key_by_name( const char* key_name )
 {
   if ( strcmp( key_name, "IC"     ) == 0 ) return UKEY_INS;
   if ( strcmp( key_name, "INS"    ) == 0 ) return UKEY_INS;

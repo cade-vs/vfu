@@ -144,7 +144,7 @@
 
   extern Options opt;
 
-  int key_by_name( const char* key_name );
+  wchar_t key_by_name( const char* key_name );
 
   time_t vfu_opt_time( const struct stat st );
   time_t vfu_opt_time( const struct stat* st );
