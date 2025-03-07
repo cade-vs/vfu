@@ -1880,7 +1880,7 @@ int vfu_user_external_find( wchar_t key, const char* ext, const char* type, VStr
   for ( z = 0; z < user_externals.count(); z++ )
     {
     split = str_split( ",", user_externals[z] );
-    if ( key_by_name( split[1] ) != key ) continue; /* if key not the same -- skip */
+    if ( (wchar_t)(key_by_name( split[1] )) != key ) continue; /* if key not the same -- skip */
     if ( split[2] != "*" ) /* if we should match and extension */
       {
       if ( opt.lower_case_ext_config )
