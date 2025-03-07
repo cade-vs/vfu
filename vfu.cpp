@@ -2277,7 +2277,7 @@ void vfu_directory_sizes( wchar_t wch )
 
   do_draw = 1;
   update_status();
-  if ( opt.sort_order == 'S' && wch < 0 ) vfu_sort_files();
+  if ( opt.sort_order == 'S' ) vfu_sort_files();
 }
 
 /*--------------------------------------------------------------------------*/
