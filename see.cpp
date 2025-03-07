@@ -1404,7 +1404,12 @@
   void SeeEditor::kenter()
   {
   mod = 1;
-  if ( va.count() == 0 ) va.push( L"" );
+  if ( va.count() == 0 ) 
+    {
+    va.push( L"" );
+    sv.set_min_max( 0, 0 );
+    sv.go( 0 );
+    }
   int c = real_col();
   WString str = va[sv.pos()];
   WString nstr = str;
