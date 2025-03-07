@@ -2773,6 +2773,8 @@ int __ff_process( const char* origin __attribute__((unused)),    /* origin path 
 
   str = "Found items: ";
   str += __ff_rescount;
+  str += " | ";
+  str += fname;
   say1( str );
   return 0;
 }

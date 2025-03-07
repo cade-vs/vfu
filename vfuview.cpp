@@ -171,6 +171,7 @@ void vfu_draw( int n )
     //str_replace( view, " ", "_" );
     //c += A_UNDERLINE;
     //c += A_STANDOUT;
+    //c += YAS_BOLD;
     //str_replace( view, " ", "-" );
     //c = CONCOLOR(cWHITE,cBLUE);
     }

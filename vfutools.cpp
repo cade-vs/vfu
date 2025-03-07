@@ -192,6 +192,7 @@ void vfu_tool_rename()
                    str_tr( new_name, "βαλιθκΰνξοωϊστ", "aaeeeeaiiiuuoo" );
                    str_squeeze( new_name, "_" );
                    str_replace( new_name, "_-_", "-" );
+                   if( new_name[0] == '-' ) new_name[0] = '_';
                    }
 
                  new_name = path + new_name;

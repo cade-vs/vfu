@@ -957,11 +957,12 @@
   {
   buff[0] = 0;
   int z = 0;
-  unsigned char ch;
+  int ch;
   while( z < opt->wrap )
     {
     if ( cpos >= fsize ) break;
     ch = fgetc( f );
+    if( ch == EOF ) break;
     cpos++;
     if( opt->handle_bs && ch == 8 )
       {
@@ -1186,7 +1187,7 @@
   {
   if ( freezed ) return;
 
-  ASSERT( sv.max() == va.count() - 1 );
+//  ASSERT( sv.max() == va.count() - 1 );
   if ( n > sv.max() )
     {
     VString sss = "~";
@@ -1561,7 +1562,7 @@
     status( opt->last_pipe_cmd );
     return;
     }
-  char ch;
+  int ch;
   freezed = 1;
   while( (ch = fgetc( f ) ) != EOF )
     kinsert( ch );
