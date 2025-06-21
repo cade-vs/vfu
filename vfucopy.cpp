@@ -15,6 +15,7 @@
 #include "vfuview.h"
 #include "vfusys.h"
 #include "vfucopy.h"
+#include "vfuuti.h"
 #include <errno.h>
 
 /****************************************************************************
@@ -960,6 +961,8 @@ void vfu_copy_files( int a_one, int a_mode )
     say1( "Copy error: cannot allocate copy buffer" );
     return;
     }
+
+  // vfu_set_title_info( VString() + CM_DESC[ a_mode ] + " to " + target );
 
   int z;
   for ( z = 0; z < files_list_count(); z++ )

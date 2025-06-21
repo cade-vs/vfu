@@ -553,6 +553,19 @@ void vfu_con_out( int x, int y, const wchar_t *s, int attr )
   con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ), attr );
 }
 
+void vfu_set_title_info( const char* info )
+{
+  if( ! opt.set_term_title_info      ) return;
+  if(   opt.set_term_title_info == 1 ) printf( "\033]0;%s@%s: VFU: %s\007", user_id_str.data(), host_name_str.data(), info );
+  if(   opt.set_term_title_info == 2 ) printf( "\033]0;VFU: %s\007", info );
+  fflush( stdout );
+}
+
+void vfu_set_title_info( const VString info )
+{
+  return vfu_set_title_info( info.data() );
+}
+
 /*###########################################################################*/
 
 /* eof vfuuti.cpp */

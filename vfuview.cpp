@@ -267,6 +267,7 @@ void vfu_redraw() /* redraw file list and header */
   if ( files_list_count() <= 0 )
     vfu_con_out( ( con_max_x() - 20 ) / 2, 10, " *** No files found *** ", cHEADER);
 
+  vfu_set_title_info( work_path );
 }
 
 /*-----------------------------------------------------------------------*/

@@ -1224,7 +1224,7 @@ VString DirSizeInfo::str()
   vfu_str_comma( ls );
   vfu_str_comma( ts );
   
-  sprintf( str, "Dirs: %s | Files: %s | Links: %s | Size: %s ( %s )", ds.data(), fs.data(), ls.data(), fsize_fmt( size, opt.use_gib_usage ).data(), ts.data() );
+  sprintf( str, "Size: %s ( %s ) | Dirs: %s | Files: %s | Links: %s ", fsize_fmt( size, opt.use_gib_usage ).data(), ts.data(), ds.data(), fs.data(), ls.data() );
   
   return str;
 }

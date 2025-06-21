@@ -85,6 +85,7 @@
     int use_gib_usage;
 
     int comma_type;
+    int set_term_title_info;
 
     int scroll_pagestep;
 

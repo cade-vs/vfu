@@ -24,6 +24,7 @@ const wchar_t *TAGMARKS[]     = { L">>", L"=>", L"->", L"*>", NULL };
 const wchar_t *SIIEC[]        = { L"IEC", L"SI ", NULL };
 const wchar_t *COMMA_TYPES[]  = { L"'", L"`", L",", L" ", L"_", NULL };
 const wchar_t *PAGE_STEPS[]   = { L"1 LINE", L"30% PG", L"50% PG", NULL };
+const wchar_t *TITLE_INFO[]   = { L" - ", L"FULL", L"SHORT", NULL };
 
 ToggleEntry Toggles[] =
 {
@@ -66,6 +67,7 @@ ToggleEntry Toggles[] =
   { L' ', L"Auto mount on change dir",  &(opt.auto_mount), NOYES},
   { L' ', L"Preserve selection (after rescan)",  &(opt.keep_selection), NOYES},
   { L' ', L"Preserve ownership/mode on copy?", &(opt.copy_keep_mode), NOYES },
+  { L' ', L"Set terminal title info", &(opt.set_term_title_info), TITLE_INFO },
   { L' ', L"Show user's free space", &(opt.show_user_free), NOYES },
   { L' ', L"Calc/Show bytes on copy", &(opt.copy_calc_totals), NOYESPRECOPY },
   { L' ', L"Calc/Show bytes freed on erase", &(opt.bytes_freed), NOYES },
