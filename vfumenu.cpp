@@ -20,6 +20,7 @@ int vfu_toggle_box( int x, int y, const wchar_t *title, ToggleEntry* toggles )
   menu_box_info.cn = cMENU_CN;
   menu_box_info.ch = cMENU_CH;
   menu_box_info.ti = cMENU_TI;
+  menu_box_info.td = 1;
   int z = con_toggle_box( x, y, title, toggles, &menu_box_info );
   vfu_redraw();
   return z;
@@ -31,6 +32,7 @@ int vfu_menu_box( int x, int y, const wchar_t *title, WArray *wa )
   menu_box_info.cn = cMENU_CN;
   menu_box_info.ch = cMENU_CH;
   menu_box_info.ti = cMENU_TI;
+  menu_box_info.td = 1;
   int z = con_menu_box( x, y, title, wa, 0, &menu_box_info );
   vfu_redraw();
   return z;
