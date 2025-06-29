@@ -306,11 +306,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
-  str = copy_info->description;
-  str += "  Entries: ";
-  str += copy_info->current_count;
-  str += " of ";
-  str += copy_info->files_count;
+  str = VString() + copy_info->description + ", Entries: " + copy_info->current_count +" of " + copy_info->files_count;
   
   str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH + 1 ); // :)
   vfu_con_out( 1, con_max_y(), str, cMESSAGE );
@@ -931,18 +927,18 @@ void vfu_copy_files( int a_one, int a_mode )
   copy_info.over_mode = OM_ASK; /* 0 */
   copy_info.abort = 0;
 
-  VString dev_free_str;
+  VString dev_avail_str;
   if ( !copy_info.no_free_check && !copy_info.no_info )
     {
     while(4)
       {
-      fsize_t dev_free = device_avail_space( target );
-      dev_free_str = size_str_compact( dev_free );
-      dev_free_str = " | TARGET FREE: " + dev_free_str;
-      if ( copy_info.files_size <= dev_free ) break;
+      fsize_t dev_avail = device_avail_space( target );
+      dev_avail_str = size_str_compact( dev_avail );
+      dev_avail_str = "Target avail: " + dev_avail_str;
+      if ( copy_info.files_size <= dev_avail ) break;
       
       vfu_beep();
-      say1( VString() + "Insufficient disk space! Free: " + vfu_str_comma( dev_free ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
+      say1( VString() + "Insufficient disk space! Available: " + vfu_str_comma( dev_avail ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
       say2( target );
 
       vfu_menu_box( L"Error prompt",
@@ -953,14 +949,9 @@ void vfu_copy_files( int a_one, int a_mode )
       }  
     } /* free space check */
 
-  copy_info.description = "";
-  copy_info.description += CM_DESC[ a_mode ];
-  copy_info.description += ": ";
   sprintf( t, "%.0f", copy_info.files_size );
   vfu_str_comma( t );
-  copy_info.description += t;
-  copy_info.description += " bytes.";
-//  copy_info.description += dev_free_str;
+  copy_info.description = VString() + CM_DESC[ a_mode ] + ": " + t + " bytes. " + dev_avail_str;
 
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];
@@ -1024,7 +1015,7 @@ void vfu_copy_files( int a_one, int a_mode )
   delete [] copy_buff;
   copy_buff = NULL;
 
-  say1( copy_info.description );
+//  say1( copy_info.description );
   /* show bytes copied */
   str = "";
   if ( copy_info.current_size > 0 )
@@ -1032,14 +1023,14 @@ void vfu_copy_files( int a_one, int a_mode )
     /* i.e. only if there *are* some bytes copied :) */
 //    str = copy_info.description;
     str += "DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
-    str += " SKIPPED: " + vfu_str_comma( copy_info.skipped_count );
+    str += " Skipped: " + vfu_str_comma( copy_info.skipped_count );
     }
   else
     {
 //    str = copy_info.description;
     str += "DONE";
     }
-  say2( str + " TARGET AVAIL: " + size_str_compact( device_avail_space( target ) ) + ", FREE: " + size_str_compact( device_free_space( target ) ) + "" );
+  say2( str + " Target avail: " + size_str_compact( device_avail_space( target ) ) + ", Free: " + size_str_compact( device_free_space( target ) ) + "" );
 
   ignore_copy_errors = 0;
 }
