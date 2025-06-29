@@ -24,6 +24,8 @@
 **
 ****************************************************************************/
 
+#define COPY_PROG_FIELD_WIDTH 24
+
 const char *CM_DESC[] = { "COPY", "MOVE", "SYMLINK" };
 char *copy_buff = NULL;
 
@@ -148,7 +150,7 @@ void show_copy_pos( fsize_t a_fc, /* file under copy, current pos */
     sprintf( t, "     %%%5.1f @%3dM/s%3d%c ", (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
   else
     sprintf( t, "%5.1f%%%5.1f @%3dM/s%3d%c ", (100.0*c1)/a1, (100.0*(c1+c2))/a2, speed, eta_v, eta_c );
-  vfu_con_out( con_max_x() - 24, con_max_y(), t, cSTATUS2 );
+  vfu_con_out( con_max_x() - COPY_PROG_FIELD_WIDTH, con_max_y(), t, cSTATUS2 );
 }
 
 /*###########################################################################*/
@@ -304,7 +306,14 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
-  vfu_con_out( 1, con_max_y(), copy_info->description, cMESSAGE );
+  str = copy_info->description;
+  str += "  Entries: ";
+  str += copy_info->current_count;
+  str += " of ";
+  str += copy_info->files_count;
+  
+  str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH + 1 ); // :)
+  vfu_con_out( 1, con_max_y(), str, cMESSAGE );
 
 
   if ( ! copy_info->no_free_check && ! copy_info->no_info )
@@ -944,7 +953,7 @@ void vfu_copy_files( int a_one, int a_mode )
       }  
     } /* free space check */
 
-  copy_info.description = "FILE ";
+  copy_info.description = "";
   copy_info.description += CM_DESC[ a_mode ];
   copy_info.description += ": ";
   sprintf( t, "%.0f", copy_info.files_size );
@@ -982,6 +991,8 @@ void vfu_copy_files( int a_one, int a_mode )
     VString dst  = target;
            dst += fi->name_ext();
 
+    copy_info.current_count++;
+    
     int r = 0;
     if ( a_mode == CM_COPY ) r = __vfu_copy( src, dst, &copy_info ); else
     if ( a_mode == CM_MOVE ) r = __vfu_move( src, dst, &copy_info ); else
@@ -1013,21 +1024,22 @@ void vfu_copy_files( int a_one, int a_mode )
   delete [] copy_buff;
   copy_buff = NULL;
 
-  say1( "" );
+  say1( copy_info.description );
   /* show bytes copied */
+  str = "";
   if ( copy_info.current_size > 0 )
     { 
     /* i.e. only if there *are* some bytes copied :) */
-    str = copy_info.description;
-    str += " DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
-    str += " SKIPPED:" + vfu_str_comma( copy_info.skipped_count );
+//    str = copy_info.description;
+    str += "DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
+    str += " SKIPPED: " + vfu_str_comma( copy_info.skipped_count );
     }
   else
     {
-    str = copy_info.description;
-    str += " DONE";
+//    str = copy_info.description;
+    str += "DONE";
     }
-  say2( str + " TARGET AVAIL: " + size_str_compact( device_avail_space( target ) ) + " (FREE: " + size_str_compact( device_free_space( target ) ) + ")" );
+  say2( str + " TARGET AVAIL: " + size_str_compact( device_avail_space( target ) ) + ", FREE: " + size_str_compact( device_free_space( target ) ) + "" );
 
   ignore_copy_errors = 0;
 }

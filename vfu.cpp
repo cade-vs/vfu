@@ -130,6 +130,7 @@ void say( int line, int attr, const char* format, ... )
 
   WString ws = say_buf;
   VString os = str_dot_reduce( ws, con_max_x()-1 );
+  str_pad( os, - con_max_x(), ' ' );
   vfu_con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), os, attr );
   con_ce( attr );
 }
