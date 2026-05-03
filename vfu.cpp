@@ -1106,22 +1106,6 @@ void vfu_reset_screen()
   vfu_soft_reset_screen();
 }
 
-void vfu_signal( int sig )
-{
-  if( sig == SIGWINCH )
-      return vfu_reset_screen();
-
-  vfu_done();
-
-  con_beep();
-  con_cs();
-  con_cshow();
-  con_done();
-
-  printf( "vfu: signal received: %d -- terminated\n", sig );
-  exit(200);
-}
-
 /*--------------------------------------------------------------------------*/
 
 void vfu_toggle_view_fields( wchar_t wch )

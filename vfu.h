@@ -288,7 +288,6 @@ void vfu_run();
 void vfu_cli();
 void vfu_done();
 void vfu_reset_screen();
-void vfu_signal( int sig );
 void vfu_exit_path( const char *a_path );
 int vfu_exit( const char* a_path );
 
