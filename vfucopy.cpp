@@ -306,7 +306,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   str = str_dot_reduce( str, con_max_x() - 10 );
   str = "COPY TO: " + str;
   say1( str );
-  str = VString() + copy_info->description + ", Entries: " + copy_info->current_count +" of " + copy_info->files_count;
+  str = VString() + copy_info->description + ", Entry " + copy_info->current_count +"/" + copy_info->files_count;
   
   str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH + 1 ); // :)
   vfu_con_out( 1, con_max_y(), str, cMESSAGE );
@@ -1022,7 +1022,7 @@ void vfu_copy_files( int a_one, int a_mode )
     { 
     /* i.e. only if there *are* some bytes copied :) */
 //    str = copy_info.description;
-    str += "DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes.";
+    str += "DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes";
     str += " Skipped: " + vfu_str_comma( copy_info.skipped_count );
     }
   else
@@ -1030,7 +1030,7 @@ void vfu_copy_files( int a_one, int a_mode )
 //    str = copy_info.description;
     str += "DONE";
     }
-  say2( str + " Target avail: " + size_str_compact( device_avail_space( target ) ) + ", Free: " + size_str_compact( device_free_space( target ) ) + "" );
+  say2( str + ", Target avail: " + size_str_compact( device_avail_space( target ) ) + ", Free: " + size_str_compact( device_free_space( target ) ) + "" );
 
   ignore_copy_errors = 0;
 }

@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -107,12 +107,60 @@
   VString filename_size_cache;
   VString filename_ffr; /* file find results */
 
-/*######################################################################*/
+/*--- flags ----------------------------------------------------------------*/
 
   int do_draw;
   int do_draw_status;
 
-/*######################################################################*/
+  static volatile sig_atomic_t signal_got_winch    = 0;
+  static volatile sig_atomic_t signal_got_term     = 0;
+
+/*--- new signals ----------------------------------------------------------*/
+
+static void on_signal_winch(int sig)
+{
+  signal_got_winch = sig;
+}
+
+static void on_signal_term(int sig)
+{
+  if( signal_got_term ) _exit(201);
+  signal_got_term = sig;
+}
+
+static void install_signal_handlers()
+{
+  struct sigaction sa;
+
+  // term signals: SIGINT, SIGHUP, SIGTERM, SIGQUIT
+  sigemptyset(&sa.sa_mask);
+
+  sigaddset(&sa.sa_mask, SIGINT);
+  sigaddset(&sa.sa_mask, SIGHUP);
+  sigaddset(&sa.sa_mask, SIGTERM);
+  sigaddset(&sa.sa_mask, SIGQUIT);
+  sa.sa_flags   = SA_RESTART;       /* don't break read()/write() with EINTR */
+  sa.sa_handler = on_signal_term;
+
+  if (sigaction(SIGINT,  &sa, NULL) == -1) perror( "sigaction SIGINT"  );
+  if (sigaction(SIGHUP,  &sa, NULL) == -1) perror( "sigaction SIGHUP"  );
+  if (sigaction(SIGTERM, &sa, NULL) == -1) perror( "sigaction SIGTERM" );
+  if (sigaction(SIGQUIT, &sa, NULL) == -1) perror( "sigaction SIGQUIT" );
+
+  // window resize: flag it, handle in main loop
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags   = SA_RESTART;
+  sa.sa_handler = on_signal_winch;
+  if (sigaction(SIGWINCH, &sa, NULL) == -1) perror("sigaction SIGWINCH");
+
+  // sigpipe
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags   = 0;
+  sa.sa_handler = SIG_IGN;
+  if (sigaction(SIGPIPE, &sa, NULL) == -1) perror( "sigaction SIGPIPE" );
+}
+
+/*--------------------------------------------------------------------------*/
 
 /*
    messages printing
@@ -122,7 +170,7 @@ void say( int line, int attr, const char* format, ... )
 {
   char say_buf[4096];
   ASSERT( line == 1 || line == 2 );
-  
+
   va_list vlist;
   va_start( vlist, format );
   vsnprintf( say_buf, sizeof(say_buf), format, vlist );
@@ -178,7 +226,7 @@ void say2center(const char *a_str, int attr )
 void log_debug( const char* format, ... )
 {
   char say_buf[4096];
-  
+
   va_list vlist;
   va_start( vlist, format );
   vsnprintf( say_buf, sizeof( say_buf ), format, vlist );
@@ -198,7 +246,7 @@ VString get_user_id_str( int uid, int padw = 0 )
   VString str;
   if( struct passwd* _pwd = getpwuid( uid ) )
     str = _pwd->pw_name;
-  else  
+  else
     str.i( uid );
 
   if( padw != 0 ) str_padw( str, padw );
@@ -210,7 +258,7 @@ VString get_group_id_str( int gid, int padw = 0 )
   VString str;
   if( struct group*  _grp = getgrgid( gid ) )
     str = _grp->gr_name;
-  else  
+  else
     str.i( gid );
 
   if( padw != 0 ) str_padw( str, padw );
@@ -413,7 +461,7 @@ void TF::refresh_view()
     }
   else
     str_pad( wview, - x ); // +1 for the scroller
-  
+
   _view = wview;
 }
 
@@ -542,7 +590,7 @@ void vfu_init()
 {
   char t[MAX_PATH];
 
-  if( expand_path( "." ) == "" ) 
+  if( expand_path( "." ) == "" )
     if( chdir( "/" ) )
       {
       say1( "Cannot chdir to: /" );
@@ -644,11 +692,7 @@ void vfu_init()
   menu_box_info.cn = 23; /* normal */
   menu_box_info.ch = 47; /* selected */
 
-  signal( SIGINT  , vfu_signal );
-  signal( SIGHUP  , vfu_signal );
-  signal( SIGTERM , vfu_signal );
-  signal( SIGQUIT , vfu_signal );
-  signal( SIGWINCH, vfu_signal ); // already set in unicon/vslib
+  install_signal_handlers();
 
   srand( time( NULL ) );
   do_draw = 1;
@@ -678,7 +722,7 @@ void vfu_exit_path( const char *a_path )
   if( write( fdx, a_path, str_len( a_path ) ) ) // stupid, stupid -Wunused-result
   {
   }
-  close( fdx );  
+  close( fdx );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -714,6 +758,14 @@ void vfu_run()
   /* int oldFLI = -1; // quick view */
   while (4)
     {
+    if( signal_got_winch )
+      {
+      signal_got_winch = 0;
+      vfu_reset_screen();
+      }
+
+    if( signal_got_term ) return;
+
     if (do_draw)
       {
       if ( do_draw > 2 ) vfu_reset_screen();
@@ -782,7 +834,7 @@ void vfu_run()
 
       case UKEY_CTRL_A:
       case UKEY_HOME  : vfu_nav_home(); break;
-      
+
       case UKEY_CTRL_E:
       case UKEY_END   : vfu_nav_end(); break;
 
@@ -847,7 +899,7 @@ void vfu_run()
 
       case L'g' : vfu_global_select(); break;
 
-      case L'o' : vfu_options(); 
+      case L'o' : vfu_options();
                   vfu_drop_all_views();
                   do_draw = 1;
                   break;
@@ -1056,9 +1108,9 @@ void vfu_reset_screen()
 
 void vfu_signal( int sig )
 {
-  if( sig == SIGWINCH ) 
+  if( sig == SIGWINCH )
       return vfu_reset_screen();
-  
+
   vfu_done();
 
   con_beep();
@@ -1402,7 +1454,7 @@ void vfu_action_minus( int mode )
   if ( work_mode == WM_ARCHIVE )
     {
     if( mode == 2 ) archive_path = "";
-    
+
     if ( str_len( archive_path ) > 0 )
       {
       str_cut_right( archive_path, "/" );
@@ -1555,7 +1607,7 @@ for (z = 0; z < files_list_count(); z++)
     case GSAME_EXT   : sel = (pathcmp(same_str, fi->ext()) == 0);
                        break;
     case GSAME_SIZE  : sel = (same_fsize == fi->size());
-                       if ( fi->is_dir() ) sel = 0; 
+                       if ( fi->is_dir() ) sel = 0;
                        break;
     case GSAME_DATETIME  :
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st()));
@@ -1572,13 +1624,13 @@ for (z = 0; z < files_list_count(); z++)
                        sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
                                       TIMECMP_T1 );
                        break;
-    case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid); 
+    case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid);
                        break;
-    case GSAME_GROUP : sel = ((unsigned int)same_int == fi->st()->st_gid); 
+    case GSAME_GROUP : sel = ((unsigned int)same_int == fi->st()->st_gid);
                        break;
-    case GSAME_MODE  : sel = ((unsigned int)same_int == fi->st()->st_mode); 
+    case GSAME_MODE  : sel = ((unsigned int)same_int == fi->st()->st_mode);
                        break;
-    case GSAME_TYPE  : sel = ( same_str == fi->type_str()); 
+    case GSAME_TYPE  : sel = ( same_str == fi->type_str());
                        break;
     }
   fi->sel = sel;
@@ -1765,7 +1817,7 @@ void vfu_global_select()
 
                 size = 0;
                 for ( int z = 0; z < files_list_count(); z++ )
-                  {       
+                  {
                   size += files_list_get(z)->size();
                   if ( files_list_get(z)->is_dir() ) continue;
 
@@ -1974,7 +2026,7 @@ void vfu_tools()
     say1( "No files..." );
     return;
     }
-  
+
   TF *fi = FLCUR;
 
   switch( menu_box_info.ec )
@@ -2091,7 +2143,7 @@ void vfu_rename_file_in_place()
   TextInput( x, y, "", MAX_PATH, con_max_x() - tag_mark_pos - 3, www );
   // FIXME: check return res
   VString str = www;
-  
+
   if( str != fi->name() )
     {
     if ( file_exist(str) )
@@ -2267,8 +2319,8 @@ void vfu_directory_sizes( wchar_t wch )
     else
       {
       say1( "Directory sizes cache is empty." );
-      }  
-                               
+      }
+
     if( wch == L'd')
       {
       size_cache.undef();
@@ -2484,7 +2536,7 @@ void vfu_edit_entry( )
               cr = lchown(fi->name(), u, g);
             else
               cr = chown(fi->name(), u, g);
-            
+
             if( cr == 0 )
               {
               fi->update_stat();
@@ -2566,12 +2618,12 @@ void vfu_jump_to_mountpoint( int all __attribute__((unused)) )
     struct statfs stafs;
     statfs( t, &stafs );
     int hk = ('A'+ z); /* hot key */
-    
+
     fsize_t fs_free   = stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree );
     fsize_t fs_total  = stafs.f_bsize * stafs.f_blocks;
     VString str_free  = opt.use_gib_usage ? fsize_fmt( fs_free,  1 ) : size_str_compact( fs_free  );
     VString str_total = opt.use_gib_usage ? fsize_fmt( fs_total, 1 ) : size_str_compact( fs_total );
-    
+
     sprintf( str, "%c | %15s | %15s | %-30s ",
              hk,
              (const char*)str_free,
