@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -46,15 +46,15 @@ while( a_line[i] )
     {
     char ch = a_line[i+1];
     if( ! ch ) break;
-    
+
     if( ch == 'h' || ch == 'H' ) // auto-sensing F or G depending on selection count
       ch = sel_count > 0 ? ch == 'H' ? 'G' : 'g' : ch == 'H' ? 'F' : 'f';
-    
+
     switch( ch )
       {
       case 'r' : /* rescan files after */
-      case 'R' : a_options += "r"; 
-                 break; 
+      case 'R' : a_options += "r";
+                 break;
 
       case 'f' : /* file name */
       case 'F' : full = ch == 'F';
@@ -161,7 +161,7 @@ while( a_line[i] )
     str_add_ch( out, a_line[i] );
     i++;
     }
-  }  
+  }
 
   a_line = out;
   return 0;
@@ -266,7 +266,7 @@ char* time_str_compact( const time_t tim, char* buf )
     {
     tfm = "%b %d  %Y";
     }
-  else if( abs( tdiff ) < 23L * 60L * 60L )
+  else if( labs( tdiff ) < 23L * 60L * 60L )
     {
     /* in the near 23 hours */
     tfm = "%a %H:%M:%S";
@@ -274,7 +274,7 @@ char* time_str_compact( const time_t tim, char* buf )
   else
     {
     tfm = "%b %d %H:%M";
-    }  
+    }
   strftime( buf, 16, tfm, &tim_tm );
   return buf;
 }
@@ -286,7 +286,7 @@ VString size_str_compact( const fsize_t siz )
   char buf[32];
   const char* size_str;
   int units_size = opt.use_si_sizes ? 1000 : 1024;
-  
+
   if ( siz < units_size )
     {
     sprintf( buf, "%.0f", siz );
@@ -312,7 +312,7 @@ VString size_str_compact( const fsize_t siz )
     sprintf( buf, "%.0f", siz/( units_size * units_size * units_size ) );
     size_str = opt.use_si_sizes ? " GB " : " GiB";
     }
-  vfu_str_comma( buf );  
+  vfu_str_comma( buf );
   strcat( buf, size_str );
   return VString( buf );
 }
@@ -465,7 +465,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
   __vfu_get_str_hist_id = hist_id;
   if ( strcmp( target, "" ) == 0 && vfu_hist_get( hist_id, 0 ) )
     target = vfu_hist_get( hist_id, 0 );
-  
+
   WString www = target;
   int r = TextInput( x, y, "", 1024, len, www, vfu_get_str_history );
   target = www;
@@ -485,17 +485,17 @@ const char* vfu_temp()
 {
     strcpy( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
     int fd = mkstemp( vfu_temp_filename );
-    if( fd >= 0 ) 
+    if( fd >= 0 )
       close( fd );
     else
-      vfu_temp_filename[0] = 0;  
+      vfu_temp_filename[0] = 0;
     return vfu_temp_filename;
 }
 
 fname_t vfu_temp_dirname;
 const char* vfu_temp_dir()
 {
-    strcpy( vfu_temp_dirname, tmp_path + "vfu.XXXXXX" );  
+    strcpy( vfu_temp_dirname, tmp_path + "vfu.XXXXXX" );
     char* r = mkdtemp( vfu_temp_dirname );
     if( ! r ) vfu_temp_dirname[0] = 0;
     return vfu_temp_dirname;
@@ -553,11 +553,34 @@ void vfu_con_out( int x, int y, const wchar_t *s, int attr )
   con_out( x, y, VString( __vfu_translate_controls( WString( s ) ) ), attr );
 }
 
+static VString __title_sanitize( const char *s )
+{
+  VString out;
+  if ( ! s ) return out;
+  for ( ; *s; s++ )
+    {
+    unsigned char c = (unsigned char) *s;
+    if ( c < 0x20 || c == 0x7F )      /* C0 controls + DEL */
+      out += '?';
+    else
+      out += (char) c;
+    }
+  return out;
+}
+
 void vfu_set_title_info( const char* info )
 {
-  if( ! opt.set_term_title_info      ) return;
-  if(   opt.set_term_title_info == 1 ) printf( "\033]0;%s@%s: VFU: %s\007", user_id_str.data(), host_name_str.data(), info );
-  if(   opt.set_term_title_info == 2 ) printf( "\033]0;VFU: %s\007", info );
+  if ( ! opt.set_term_title_info ) return;
+
+  VString safe_info = __title_sanitize( info );
+  VString safe_user = __title_sanitize( user_id_str.data() );
+  VString safe_host = __title_sanitize( host_name_str.data() );
+
+  if ( opt.set_term_title_info == 1 )
+    printf( "\033]0;%s@%s: VFU: %s\007",
+            safe_user.data(), safe_host.data(), safe_info.data() );
+  if ( opt.set_term_title_info == 2 )
+    printf( "\033]0;VFU: %s\007", safe_info.data() );
   fflush( stdout );
 }
 
