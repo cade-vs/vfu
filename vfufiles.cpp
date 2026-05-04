@@ -340,7 +340,9 @@ void vfu_read_external_files()
     if ( access( fn_line, F_OK ) ) continue;
 
     struct stat st;
-    stat( fn_line, &st );
+    if( stat( fn_line, &st ) )
+      memset( &st, 0, sizeof(st) ); // no valid stat, will chear all flags, sizes, dev, etc.
+    
 
     say2( fn_line );
 
@@ -359,7 +361,8 @@ void vfu_read_pszlist_files()
     {
     const char* pc = list_panelizer[z];
     struct stat st;
-    stat( pc, &st );
+    if( stat( pc, &st ) )
+      memset( &st, 0, sizeof(st) ); // no valid stat, will chear all flags, sizes, dev, etc.
     vfu_add_file( pc, &st, file_is_link( pc )  );
     }
   list_panelizer.undef(); /* reset -- there's no reload on this */

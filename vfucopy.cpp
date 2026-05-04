@@ -372,8 +372,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
     elapsed_break += time(NULL) - timer_break;
       
     z = fread( copy_buff, 1, COPY_BUFFER_SIZE, f1 );
-    if (z > 0) z = fwrite( copy_buff, 1, z, f2 );
-    if (z == -1)
+    if ( z > 0 ) z = fwrite( copy_buff, 1, z, f2 );
+    if ( ferror(f1) || ferror(f2) )
       {
       fclose(f1);
       fclose(f2);
@@ -388,9 +388,8 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   while ( z == COPY_BUFFER_SIZE );
 
   fclose(f1);
-  fclose(f2);
 
-  if ( cp < size )
+  if ( fclose(f2) || cp < size )
     {
     unlink( dst ); /* remove dst if partially copied */
     if ( aborted ) return CR_ABORT;
@@ -848,7 +847,7 @@ void __copy_calc_totals_clipboard( CopyInfo &copy_info )
     for( int i = 0; i < va.count(); i++ )
       {
       struct stat _st;
-      stat( va[i], &_st );
+      if( stat( va[i], &_st ) ) continue; // no valid stats, skip this entry
       int _is_link = S_ISLNK(_st.st_mode );
       int _is_dir  = S_ISDIR(_st.st_mode );
       
@@ -876,8 +875,6 @@ void vfu_copy_files( int a_one, int a_mode )
     return;
     }
 
-  fname_t t;
-
   ASSERT( a_mode == CM_COPY || a_mode == CM_MOVE || a_mode == CM_LINK );
 
   CopyInfo copy_info;
@@ -896,29 +893,27 @@ void vfu_copy_files( int a_one, int a_mode )
   else
     str += " SELECTED FILES/DIRS to:";
   if ( !vfu_get_dir_name( str, target ) ) return;
-  expand_path( target, t );
+  target = expand_path( target );
   /* str_reduce_path( NULL, t ); */
-  str_fix_path( t );
-  str_trim_right( t, 1 );
-  if ( file_exists( t ) && !file_is_dir( t ) )
+  str_fix_path( target );
+  str_trim_right( target, 1 );
+  if ( file_exists( target ) && !file_is_dir( target ) )
     {
-
     vfu_beep();
     say1( "Target is file, not directory!" );
-    say2( t );
+    say2( target );
 
     vfu_menu_box( L"Error prompt",
                   L"C Continue anyway,E Erase first,  Abort (ESC)", -1 );
     if ( menu_box_info.ec == L'E' )
       {
-      unlink( t );
+      unlink( target );
       menu_box_info.ec = L'C';
       }
     if ( menu_box_info.ec != L'C' ) return; /* abort */
     }
-  str_fix_path( t );
-  target = t;
-  strcpy( opt.last_copy_path[ a_mode ], target );
+  str_fix_path( target );
+  strncpyz( opt.last_copy_path[ a_mode ], target, sizeof(opt.last_copy_path[ a_mode ]) );
 
   if ( opt.copy_calc_totals == 1 ) /* copy calc totals if not PRELIMINARY */
     __copy_calc_totals( copy_info, a_one );
@@ -949,9 +944,10 @@ void vfu_copy_files( int a_one, int a_mode )
       }  
     } /* free space check */
 
-  sprintf( t, "%.0f", copy_info.files_size );
-  vfu_str_comma( t );
-  copy_info.description = VString() + CM_DESC[ a_mode ] + ": " + t + " bytes. " + dev_avail_str;
+  char file_size_s[32];
+  snprintf( file_size_s, sizeof( file_size_s ), "%.0f", copy_info.files_size );
+  vfu_str_comma( file_size_s );
+  copy_info.description = VString() + CM_DESC[ a_mode ] + ": " + file_size_s + " bytes. " + dev_avail_str;
 
   ASSERT( !copy_buff );
   copy_buff = new char[1024*1024];

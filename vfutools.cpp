@@ -19,22 +19,22 @@
 void __get_classify_str( const char *fname, wchar_t wch, char *tmp )
 {
   tmp[0] = 0;
-  strcpy( tmp, str_file_path( fname ) );
+  strncpyz( tmp, str_file_path( fname ), sizeof(fname_t)  );
   if ( wch == L'N')
     {
-    strcat( tmp, str_file_name( fname ) );
+    strncatz( tmp, str_file_name( fname ), sizeof(fname_t)  );
     if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
     }
   else if (wch == L'E')
     {
-    strcat( tmp, str_file_ext( fname ) );
+    strncatz( tmp, str_file_ext( fname ), sizeof(fname_t)  );
     if (strlen(tmp) == 0) strcat( tmp, "---" );
     }
   else
     {
-    strcat( tmp, str_file_name( fname ) );
+    strncatz( tmp, str_file_name( fname ), sizeof(fname_t)  );
     str_sleft( tmp, wch - L'0' );
-    if (strlen(fname) == strlen(tmp)) strcat( tmp, ".---" );
+    if (strlen(fname) == strlen(tmp)) strncatz( tmp, ".---", sizeof(fname_t)  );
     }
 }
 
@@ -100,9 +100,9 @@ void vfu_tool_classify()
     if ( fi->is_link() ) continue;
     if ( !fi->sel      ) continue;
     __get_classify_str( fi->name(), wch, tmp );
-    strcat( tmp, "/" );
+    strncatz( tmp, "/", sizeof(fname_t) );
     ASSERT( dir_exist( tmp ) );
-    strcat( tmp, fi->name_ext());
+    strncatz( tmp, fi->name_ext(), sizeof(fname_t) );
     if ( __vfu_file_move( fi->name(), tmp, &copy_info ) == 255 ) break;
     }
   vfu_read_files( 0 );
@@ -339,7 +339,7 @@ void vfu_tool_replace_sym_org( int swap )
 
     if (access( org, F_OK )) { err++; continue; }
     if (unlink( sym ))       { err++; continue; } // FIXME: TODO: correct?
-    if (rename( org, sym ))  { err++; continue; }
+    if (rename( org, sym ))  { err++; continue; } // TODO: FIXME: may fail!?
     if (swap)
       {
       if(symlink( sym, org ))

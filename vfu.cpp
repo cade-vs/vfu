@@ -139,7 +139,7 @@ static void install_signal_handlers()
   sigaddset(&sa.sa_mask, SIGHUP);
   sigaddset(&sa.sa_mask, SIGTERM);
   sigaddset(&sa.sa_mask, SIGQUIT);
-  sa.sa_flags   = SA_RESTART;       /* don't break read()/write() with EINTR */
+  sa.sa_flags   = 0;
   sa.sa_handler = on_signal_term;
 
   if (sigaction(SIGINT,  &sa, NULL) == -1) perror( "sigaction SIGINT"  );
@@ -149,7 +149,7 @@ static void install_signal_handlers()
 
   // window resize: flag it, handle in main loop
   sigemptyset(&sa.sa_mask);
-  sa.sa_flags   = SA_RESTART;
+  sa.sa_flags   = 0;
   sa.sa_handler = on_signal_winch;
   if (sigaction(SIGWINCH, &sa, NULL) == -1) perror("sigaction SIGWINCH");
 
@@ -312,6 +312,8 @@ const char* TF::full_name( int fix )
 {
   ASSERT( _name );
 
+// TODO: FIXME: do not generate here on call, update when list is refreshed so full_name() will return always the same char* until list is refreshed!
+
   if ( _name[0] == '/' )
     _full_name = _name;
   else
@@ -472,7 +474,8 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
   if ( a_new_stat )
     memcpy( &_st, a_new_stat, sizeof(_st) );
   else
-    stat( _name, &_st );
+    if( stat( _name, &_st ) )
+      memset( &_st, 0, sizeof(_st) ); // no valid stat, will chear all flags, sizes, dev, etc.
 
   _is_link = (a_is_link == -1) ? file_is_link( _name ) : a_is_link;
   _is_dir  = S_ISDIR(_st.st_mode );
@@ -624,6 +627,7 @@ void vfu_init()
   group_id_str = get_group_id_str( getgid() );
 
   gethostname( t, MAX_PATH-1 );
+  t[MAX_PATH-1] = 0;
   host_name_str = t;
 
   startup_path = work_path;
@@ -708,6 +712,7 @@ void vfu_exit_path( const char *a_path )
     {
     say1( VString( "Cannot chdir to: " ) + a_path );
     say2errno();
+    return;
     }
 
   VString str;
@@ -716,13 +721,22 @@ void vfu_exit_path( const char *a_path )
   else
     str = tmp_path + "vfu.exit." + user_id_str;
 
-  unlink( str );
-  int fdx = open( str, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR );
-  if( fdx == -1 ) return;
-  if( write( fdx, a_path, str_len( a_path ) ) ) // stupid, stupid -Wunused-result
-  {
-  }
-  close( fdx );
+  fname_t tmppath;
+  snprintf( tmppath, sizeof(tmppath), "%s.tmp.%d", str.data(), (int)getpid() );
+
+  int fx = open( tmppath, O_CREAT | O_EXCL | O_NOFOLLOW | O_WRONLY, S_IRUSR | S_IWUSR );
+  if ( fx == -1 ) return;
+
+  size_t  len = str_len( a_path );
+  ssize_t n   = write( fx, a_path, len );
+  if( close( fx ) != 0 || n != (ssize_t)len )
+    {
+    unlink( tmppath );
+    return;
+    }
+
+  if ( rename( tmppath, str ) != 0 )
+    unlink( tmppath );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -758,13 +772,13 @@ void vfu_run()
   /* int oldFLI = -1; // quick view */
   while (4)
     {
+    if( signal_got_term ) return;
+
     if( signal_got_winch )
       {
       signal_got_winch = 0;
-      vfu_reset_screen();
+      do_draw = 42;
       }
-
-    if( signal_got_term ) return;
 
     if (do_draw)
       {
@@ -1224,7 +1238,9 @@ void update_status()
     }
   /* current fs statistics */
   struct statfs stafs;
-  statfs( ".", &stafs );
+  if( statfs( ".", &stafs ) )
+      memset( &stafs, 0, sizeof(stafs) ); // no valid statfs, will chear figures.
+
   fs_free  = (fsize_t)(stafs.f_bsize) * (opt.show_user_free?stafs.f_bavail:stafs.f_bfree);
   fs_total = (fsize_t)(stafs.f_bsize) * stafs.f_blocks;
   fs_block_size = (fsize_t)(stafs.f_bsize);
@@ -1487,12 +1503,12 @@ void vfu_action_minus( int mode )
 // returns 0 for ok
 int vfu_cmp_files_crc32( const char* src, const char* dst, const char* name )
 {
-  fname_t fn1;
-  fname_t fn2;
+  VString fn1;
+  VString fn2;
   struct stat stat_src;
   struct stat stat_dst;
-  strcpy( fn1, src ); strcat( fn1, name );
-  strcpy( fn2, dst ); strcat( fn2, name );
+  fn1 = fn1 + src + name;
+  fn2 = fn2 + dst + name;
 
   if (access( fn1, F_OK )) return 1;
   if (access( fn2, F_OK )) return 2;
@@ -1528,28 +1544,33 @@ int vfu_cmp_files_crc32( const char* src, const char* dst, const char* name )
 #define TIMECMP_T1     3 // compare only time (to 1 minute round)
 
 // return 0=don't match and 1=match
-int vfu_time_cmp( time_t t1, time_t t2, int type = TIMECMP_DT )
+int vfu_time_cmp( time_t t1, time_t t2, int type )
 {
   char tmp1[32];
   char tmp2[32];
-  strcpy( tmp1, ctime(&t1) );
-  strcpy( tmp2, ctime(&t2) );
-  if ( type == TIMECMP_T )
+
+  if ( ctime_r( &t1, tmp1 ) == NULL ) return 0;
+  if ( ctime_r( &t2, tmp2 ) == NULL ) return 0;
+
+  /* ctime format is fixed by POSIX: "Day Mon DD HH:MM:SS YYYY\n\0"
+                                       0   4   8 10 11    19 20  24 25  */
+  if ( type == TIMECMP_T )         /* HH:MM:SS at 11..18 = 8 bytes */
     {
-    strcpy( tmp1, tmp1+11 ); tmp1[8] = 0;
-    strcpy( tmp2, tmp2+11 ); tmp2[8] = 0;
-    } else
-  if ( type == TIMECMP_T1 )
-    {
-    strcpy( tmp1, tmp1+11 ); tmp1[5] = 0;
-    strcpy( tmp2, tmp2+11 ); tmp2[5] = 0;
-    } else
-  if ( type == TIMECMP_D )
-    {
-    strcpy( tmp1+10, tmp1+19 );
-    strcpy( tmp2+10, tmp2+19 );
+    memmove( tmp1, tmp1 + 11, 8 ); tmp1[8] = 0;
+    memmove( tmp2, tmp2 + 11, 8 ); tmp2[8] = 0;
     }
-  return (strcmp( tmp1, tmp2 ) == 0);
+  else if ( type == TIMECMP_T1 )   /* HH:MM at 11..15 = 5 bytes */
+    {
+    memmove( tmp1, tmp1 + 11, 5 ); tmp1[5] = 0;
+    memmove( tmp2, tmp2 + 11, 5 ); tmp2[5] = 0;
+    }
+  else if ( type == TIMECMP_D )    /* drop time: copy " YYYY\n\0" (7 bytes) over the time */
+    {
+    memmove( tmp1 + 10, tmp1 + 19, 7 );
+    memmove( tmp2 + 10, tmp2 + 19, 7 );
+    }
+
+  return strcmp( tmp1, tmp2 ) == 0;
 }
 
 void vfu_global_select_same( int same_mode )
@@ -1594,19 +1615,16 @@ for (z = 0; z < files_list_count(); z++)
                        if ( fi->is_dir() ) sel = 0;
                        break;
     case GSAME_DATETIME  :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st()));
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), TIMECMP_DT );
                        break;
     case GSAME_DATE      :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
-                                    TIMECMP_D );
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), TIMECMP_D  );
                        break;
     case GSAME_TIME      :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
-                                    TIMECMP_T );
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), TIMECMP_T  );
                        break;
     case GSAME_TIME1     :
-                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ),
-                                      TIMECMP_T1 );
+                       sel = vfu_time_cmp(same_int, vfu_opt_time( fi->st() ), TIMECMP_T1 );
                        break;
     case GSAME_OWNER : sel = ((unsigned int)same_int == fi->st()->st_uid);
                        break;
@@ -2382,10 +2400,10 @@ void vfu_edit_entry( )
           if(one)
             {
             strcpy( new_mode, FLCUR->mode_str() );
-            file_get_mode_str( FLCUR->st()->st_mode, new_mode);
+            // file_get_mode_str( FLCUR->st()->st_mode, new_mode);
             }
           else
-            strcpy(new_mode, MODE_MASK);
+            strcpy( new_mode, MODE_MASK );
           ok = vfu_edit_attr(new_mode, !one );
           }
         else
@@ -2433,7 +2451,7 @@ void vfu_edit_entry( )
       {
         char t[128];
         strcpy( t, "Change times: " );
-        strcat( t, (menu_box_info.ec == 'T') ? "MODIFY,ACCESS" : ( (menu_box_info.ec == 'M') ? "MODIFY" : "ACCESS" ) );
+        strcat( t, (menu_box_info.ec == 'T') ? "MODIFY,ACCESS" : ( (menu_box_info.ec == 'I') ? "MODIFY" : "ACCESS" ) );
         strcat( t, one ? " for the current file:" : " for SELECTED FILES/DIRS:" );
         strcat( t, "    PLEASE KEEP THE FORMAT!" );
         say1( t );
@@ -2552,15 +2570,14 @@ void vfu_edit_entry( )
         say1( "This is not a symlink..." );
         break;
         }
-      fname_t t = "";
-      t[ readlink( fi->name(), t, MAX_PATH - 1 ) ] = 0;
-      VString str = t;
+      VString str = vfu_readlink( fi->name() );
       //if ( vfu_get_str( "", str, 0 ) )
       if ( vfu_get_dir_name( "SymLink Target:", str, 1, 'A' ) )
         {
         fi->drop_view();
         do_draw = 1;
         say2( "" );
+        // TODO: FIXME: symlink may fail after unlink sicceed, will lose the symlink
         if ( unlink( fi->name() ) || symlink( str, fi->name() ) )
           {
           say1( "Edit SymLink reference error..." );
@@ -2631,7 +2648,7 @@ void vfu_jump_to_mountpoint( int all __attribute__((unused)) )
       say1( "Warning: cannot unmount current directory" );
       return;
       }
-    str = "umount " + str + " 2> /dev/null";
+    str = "umount " + shell_escape( str ) + " 2> /dev/null";
     snprintf( t, sizeof(t), "Unmounting, exec: %s", str.data() );
     say1( t );
     if (system( str ) == 0)

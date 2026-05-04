@@ -53,7 +53,9 @@ void vfu_read_archive_files( int a_recursive )
   if ( !f )
     {
     say2( "Archive cannot be recognized or cannot be read" );
-    } else
+    return;
+    } 
+  else
   while( fgets(line, 2048-1, f) )
     {
     str_cut( line, "\n\r" );
@@ -134,15 +136,14 @@ void vfu_browse_archive_file()
 
   VString fn = files_list_get(FLI)->full_name();
 
-  VString wp = work_path;
-  VString an = archive_name;
+  VString wpan;
+  wpan = wpan + work_path + archive_name;
   
-  shell_escape( wp );
-  shell_escape( an );
-  shell_escape( fn );
+  shell_escape( wpan );
+  VString fnx = shell_escape( fn.data() );
 
   VString s;
-  s = find_rx_auto() + " x " + wp + an + " " + fn + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wpan + " " + fnx + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
@@ -178,15 +179,15 @@ void vfu_user_external_archive_exec( VString &shell_line  )
 
   VString fn = files_list_get(FLI)->full_name();
 
-  VString wp = work_path;
-  VString an = archive_name;
+  VString wpan;
+  wpan = wpan + work_path + archive_name;
   
-  shell_escape( wp );
-  shell_escape( an );
-  shell_escape( fn );
+  shell_escape( wpan );
+  VString fnx = shell_escape( fn.data() );
+  
 
   VString s;
-  s = find_rx_auto() + " x " + wp + an + " " + fn + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wpan + " " + fnx + " 2> /dev/null";
 
   vfu_shell( s, "" );
 
@@ -196,8 +197,8 @@ void vfu_user_external_archive_exec( VString &shell_line  )
     say2errno();
     return;
     }
-  str_replace( shell_line, "%f", shell_escape( fn ) );
-  str_replace( shell_line, "%F", shell_escape( fn ) );
+  str_replace( shell_line, "%f", fnx );
+  str_replace( shell_line, "%F", fnx );
   vfu_shell( shell_line, "" );
 
   if(chdir( work_path ))
@@ -226,7 +227,7 @@ void vfu_extract_files( int one )
   target = opt.last_copy_path[ CM_COPY ];
   if ( !vfu_get_dir_name( t, target ) ) return;
 
-  strcpy( opt.last_copy_path[ CM_COPY ], target );
+  strncpyz( opt.last_copy_path[ CM_COPY ], target, sizeof(opt.last_copy_path[ CM_COPY ]) );
 
   VArray va;
 
@@ -252,14 +253,13 @@ void vfu_extract_files( int one )
     }
   chmod( tmpfile, S_IRUSR|S_IWUSR );
 
-  VString wp = work_path;
-  VString an = archive_name;
+  VString wpan;
+  wpan = wpan + work_path + archive_name;
   
-  shell_escape( wp );
-  shell_escape( an );
+  shell_escape( wpan );
 
   VString s;
-  s = find_rx_auto() + " x " + wp + an + " @" + tmpfile + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wpan + " @" + tmpfile + " 2> /dev/null";
 
   vfu_shell( s, "" );
 

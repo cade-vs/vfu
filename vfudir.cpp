@@ -614,11 +614,17 @@ fsize_t __tree_rebuild_process( const char* path )
          strcmp( de->d_name, ".." ) == 0 ) continue;
 
     snprintf( new_name, sizeof(new_name), "%s%s", path, de->d_name );
+    
+    // TODO: FIXME: move to a func/funcs
+    memset( &st, 0, sizeof(st) );
     lstat(new_name, &st);
+    
     int is_link = int(S_ISLNK(st.st_mode));
 
     if (is_link) continue;
 
+    // TODO: FIXME: move to a func/funcs
+    memset( &st, 0, sizeof(st) );
     stat(new_name, &st);
 
     int is_dir = S_ISDIR(st.st_mode);
@@ -1248,10 +1254,17 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
          strcmp( de->d_name, ".." ) == 0 ) continue;
 
     snprintf( new_name, sizeof(new_name), "%s%s", path, de->d_name );
+
+    // TODO: FIXME: move to a func/funcs
+    memset( &st, 0, sizeof(st) );
     lstat(new_name, &st);
+
     int is_link = int(S_ISLNK(st.st_mode));
+
+    // TODO: FIXME: move to a func/funcs
     memset( &st, 0, sizeof(st) );
     stat(new_name, &st);
+
     int is_dir = int(S_ISDIR(st.st_mode));
 
     if ( is_link )
@@ -1308,7 +1321,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
   if( mode & DIR_SIZE_SAMEDEVONLY )
     {
     struct stat st;
-    stat( s, &st);
+    if( stat( s, &st) ) return 0; // entry has no valid stat, skip branch
     src_dev = st.st_dev;
     }
   fsize_t size = __dir_size_process( ss, mode, src_dev, size_info );
