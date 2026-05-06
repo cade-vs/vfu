@@ -2610,14 +2610,15 @@ void vfu_jump_to_mountpoint( int all __attribute__((unused)) )
     {
     str = va[z];
     str_cut( str, " \t");
-    str_word( str, " \t", t ); /* get device name */
+    str_word_buf( str, " \t", t ); /* get device name */
     str_cut( str, " \t");
-    str_word( str, " \t", t ); /* get mount point */
+    str_word_buf( str, " \t", t ); /* get mount point */
     //va.set( z, t ); /* replace line with mount point only */
     va[z] = t; /* replace line with mount point only */
 
     struct statfs stafs;
-    statfs( t, &stafs );
+    if( ! statfs( t, &stafs ) )
+      memset( &stafs, 0, sizeof(stafs) ); // no valid statfs, will chear figures.
     int hk = ('A'+ z); /* hot key */
 
     fsize_t fs_free   = stafs.f_bsize * ( opt.show_user_free ? stafs.f_bavail : stafs.f_bfree );
@@ -2930,7 +2931,7 @@ void vfu_read_files_menu()
     for ( z = 0; z < panelizers.count(); z++ )
       {
       str = panelizers[z];
-      str_word( str, ",", t );
+      str_word_buf( str, ",", t );
       /* fix menu hotkeys */
       str_ins( t, 1, " " );
       str_set_ch( t, 0, toupper( str_get_ch( t, 0 ) ) );

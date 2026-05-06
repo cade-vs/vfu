@@ -94,7 +94,7 @@ void vfu_read_archive_files( int a_recursive )
       } else
     if ( strncmp( line, "SIZE:", 5 ) == 0 )
       {
-      st.st_size = atoi( line+5 );
+      st.st_size = strtoll( line+5, NULL, 10 );
       } else
     if ( strncmp( line, "TIME:", 5 ) == 0 )
       {

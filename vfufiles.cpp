@@ -389,8 +389,8 @@ int namenumcmp( const char* s1, const char* s2 )
     {
     VString ss1;
     VString ss2;
-    sprintf( ss1, "%020d", atoi(re1[2]) );
-    sprintf( ss2, "%020d", atoi(re2[2]) );
+    sprintf( ss1, "%020lld", atoll(re1[2]) );
+    sprintf( ss2, "%020lld", atoll(re2[2]) );
     ss1 = re1[1] + ss1 + re1[3];
     ss2 = re2[1] + ss2 + re2[3];
     return pathcmp( ss1, ss2 );

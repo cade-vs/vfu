@@ -18,8 +18,8 @@
 
 #define SEE_VERSION "4.10"
 
-#define MAX_SEARCH_LEN  128
-#define MAX_PIPE_LEN  128
+#define MAX_SEARCH_LEN  256
+#define MAX_PIPE_LEN    256
 #define MAX_ESCAPE_KEYS  64
 
 #define SEE_MAX_LINE_LENGTH (32*1024)

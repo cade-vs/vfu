@@ -619,7 +619,7 @@
     return 1;
     }
   sss = www;  
-  str_sleft( sss, MAX_SEARCH_LEN );
+  str_sleft( sss, MAX_SEARCH_LEN-1 );
   strcpy( opt->last_search, sss );
   strcpy( opt->last_opt, opts );
   re.comp( opt->last_search, opt->last_opt );
@@ -668,6 +668,12 @@
       /* will commit changes -- file should be reopened for RW */
       fclose( f );
       f = fopen( fname, "r+b" );
+      if( ! f )
+        {
+        status( "Write error (press a key)" );
+        key = 0;
+        continue;
+        }
       fseeko( f, fpos, SEEK_SET );
       int r = fwrite( editb, 1, editbs, f );
       fclose( f );
@@ -1558,13 +1564,13 @@
     return;
     }
   sss = www;  
-  str_sleft( sss, MAX_SEARCH_LEN );
+  str_sleft( sss, MAX_SEARCH_LEN-1 );
   strcpy( opt->last_pipe_cmd, sss );
   FILE* f = popen( opt->last_pipe_cmd, "r" );
   if ( !f )
     {
     status( "Command execution failed..." );
-    status( opt->last_pipe_cmd );
+    status( "%s", opt->last_pipe_cmd );
     return;
     }
   int ch;
@@ -1632,7 +1638,7 @@
     draw();
     return 1;
     }
-  str_sleft( www, MAX_SEARCH_LEN );
+  str_sleft( www, MAX_SEARCH_LEN-1 );
   VS_FN_STRCPY( opt->last_search, www );
   opt->no_case = no_case;
   if ( opt->no_case )
