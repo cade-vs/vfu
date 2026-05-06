@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -115,10 +115,10 @@ void show_copy_pos( fsize_t a_fc, /* file under copy, current pos */
 
   int eta_h = eta / ( 60*60 );
   int eta_m = eta / 60;
-  
+
   int  eta_v;
   char eta_c;
-  
+
   if( eta_h > 0 )
     {
     eta_v = eta_h;
@@ -133,16 +133,16 @@ void show_copy_pos( fsize_t a_fc, /* file under copy, current pos */
     {
     eta_v = eta;
     eta_c = 's';
-    }  
-  
+    }
+
   int speed = -1;
   // if( t1 > 0 ) speed = ( c1 / ( 1024 * 1024 ) ) / t1; // current MiB/s
   if( t1 + t2 > 0 ) speed = ( ( c1 + c2 ) / ( 1024 * 1024 ) ) / ( t1 + t2 ); // total MiB/s
 
   if ( a1 < 1 ) return; // current file has zero size
-  if ( a2 < 1 ) 
+  if ( a2 < 1 )
     {
-    // no info about total files' size or size is zero, 
+    // no info about total files' size or size is zero,
     // only current file progress and speed are available
     sprintf( t, "%5.1f%%  n/a @%3dM      ", (100.0*c1)/a1, speed );
     }
@@ -209,14 +209,14 @@ int over_if_exist( const char* src, const char *dst, CopyInfo* copy_info )
       {
       VString diff = vfu_temp();
       VString cmd;
-      cmd = shell_diff + " " + shell_escape( dst ) + " " + shell_escape( src ) + " > " + diff;
+      cmd = shell_diff + " " + shell_escape( dst ) + " " + shell_escape( src ) + " > " + shell_escape( diff );
       if(system( cmd ) != 0)
         {
         say1( "Cannot execute command: " + cmd );
         say2errno();
         }
       else
-        {  
+        {
         vfu_browse( diff );
         unlink( diff );
         }
@@ -307,7 +307,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   str = "COPY TO: " + str;
   say1( str );
   str = VString() + copy_info->description + ", Entry " + copy_info->current_count +"/" + copy_info->files_count;
-  
+
   str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH + 1 ); // :)
   vfu_con_out( 1, con_max_y(), str, cMESSAGE );
 
@@ -325,14 +325,14 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
       vfu_menu_box( L"Error prompt", L"C Continue anyway,P Space check,S Skip file,N No free space check,  Abort (ESC)", -1 );
 
-      if ( menu_box_info.ec == L'C' ) break; 
-      if ( menu_box_info.ec == L'P' ) continue; 
+      if ( menu_box_info.ec == L'C' ) break;
+      if ( menu_box_info.ec == L'P' ) continue;
       if ( menu_box_info.ec == L'S' ) { copy_info->skipped_count++; return CR_SKIP; }
       if ( menu_box_info.ec == L'N' ) { copy_info->no_free_check = 1; break; }
 
       copy_info->abort = 1;
       return CR_ABORT;
-      }  
+      }
     }
 
   ASSERT( copy_buff );
@@ -356,11 +356,11 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
 
   int aborted = 0;
 
-  
+
   time_t timer_start   = time(NULL);
   long   elapsed_time  = 0;
   long   elapsed_break = 0;
-  
+
   do
     {
     time_t timer_break = time(NULL);
@@ -370,7 +370,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
       break;
       }
     elapsed_break += time(NULL) - timer_break;
-      
+
     z = fread( copy_buff, 1, COPY_BUFFER_SIZE, f1 );
     if ( z > 0 ) z = fwrite( copy_buff, 1, z, f2 );
     if ( ferror(f1) || ferror(f2) )
@@ -850,11 +850,11 @@ void __copy_calc_totals_clipboard( CopyInfo &copy_info )
       if( stat( va[i], &_st ) ) continue; // no valid stats, skip this entry
       int _is_link = S_ISLNK(_st.st_mode );
       int _is_dir  = S_ISDIR(_st.st_mode );
-      
-      if( _is_dir && ! _is_link ) 
+
+      if( _is_dir && ! _is_link )
         copy_info.files_size += vfu_dir_size( va[i], 0 );
       else if( ! _is_link )
-        copy_info.files_size += _st.st_size;  
+        copy_info.files_size += _st.st_size;
       }
     copy_info.files_count = clipboard.count();
     copy_info.current_size = 0;
@@ -931,17 +931,17 @@ void vfu_copy_files( int a_one, int a_mode )
       dev_avail_str = size_str_compact( dev_avail );
       dev_avail_str = "Target avail: " + dev_avail_str;
       if ( copy_info.files_size <= dev_avail ) break;
-      
+
       vfu_beep();
       say1( VString() + "Insufficient disk space! Available: " + vfu_str_comma( dev_avail ) + ", Required: " + vfu_str_comma( copy_info.files_size ) );
       say2( target );
 
       vfu_menu_box( L"Error prompt",
                     L"C Continue anyway,P Space check,  Abort (ESC)", -1 );
-      if ( menu_box_info.ec == L'C' ) break; 
-      if ( menu_box_info.ec == L'P' ) continue; 
+      if ( menu_box_info.ec == L'C' ) break;
+      if ( menu_box_info.ec == L'P' ) continue;
       return; /* abort */
-      }  
+      }
     } /* free space check */
 
   char file_size_s[32];
@@ -979,7 +979,7 @@ void vfu_copy_files( int a_one, int a_mode )
            dst += fi->name_ext();
 
     copy_info.current_count++;
-    
+
     int r = 0;
     if ( a_mode == CM_COPY ) r = __vfu_copy( src, dst, &copy_info ); else
     if ( a_mode == CM_MOVE ) r = __vfu_move( src, dst, &copy_info ); else
@@ -1015,7 +1015,7 @@ void vfu_copy_files( int a_one, int a_mode )
   /* show bytes copied */
   str = "";
   if ( copy_info.current_size > 0 )
-    { 
+    {
     /* i.e. only if there *are* some bytes copied :) */
 //    str = copy_info.description;
     str += "DONE: " + vfu_str_comma( copy_info.current_size ) + " bytes";
@@ -1087,7 +1087,7 @@ void vfu_erase_files( int a_one )
 
     if ( r == 0 )
       {
-      if ( fi->is_dir() ) 
+      if ( fi->is_dir() )
         {
         str_fix_path( target );
         size_cache_clean( target );
@@ -1142,7 +1142,7 @@ void clipboard_add_del( int del )
                      clipboard.count() );
     return;
     }
-  
+
   VString keep = "1";
 
   int za = 0;
@@ -1154,13 +1154,13 @@ void clipboard_add_del( int del )
       clipboard.del( files_list_get(FLI)->full_name() );
       }
     else
-      {  
+      {
       clipboard[ files_list_get(FLI)->full_name() ] = keep;
       za++;
       }
     }
   else
-    {  
+    {
     for ( int z = 0; z < files_list_count(); z++ )
       {
       TF *fi = files_list_get(z);
@@ -1174,9 +1174,9 @@ void clipboard_add_del( int del )
         {
         clipboard[ fi->full_name() ] = keep;
         za++;
-        }  
+        }
       }
-    }  
+    }
 
   __copy_calc_totals_clipboard( clipboard_copy_info );
 

@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -318,7 +318,7 @@
           z -= col;
           }
         }
-      
+
       if ( z > cols )
         {
         // buff[cols] = 0;
@@ -375,7 +375,8 @@
     cpos -= i;
     fseeko( f, cpos, SEEK_SET );
     int res = fread( buff, 1, i, f );
-    ASSERT( res == i );
+    if( res < i ) return; // io error
+
     if ( buff[i-1] == '\n' ) i--;
     while( i > 0 && buff[i-1] != '\n' ) i--;
     if ( i > 0 )
@@ -484,7 +485,7 @@
       return;
       }
     sss = www;
-    
+
     off_t new_pos = fpos;
     str_cut_spc( sss );
     str_up( sss );
@@ -513,7 +514,7 @@
       draw();
       return;
       }
-    sss = www;  
+    sss = www;
     off_t new_line = line;
     str_cut_spc( sss );
     str_up( sss );
@@ -618,7 +619,7 @@
     draw();
     return 1;
     }
-  sss = www;  
+  sss = www;
   str_sleft( sss, MAX_SEARCH_LEN-1 );
   strcpy( opt->last_search, sss );
   strcpy( opt->last_opt, opts );
@@ -666,7 +667,8 @@
     if ( key == 13 )
       {
       /* will commit changes -- file should be reopened for RW */
-      fclose( f );
+      if( f )
+        fclose( f );
       f = fopen( fname, "r+b" );
       if( ! f )
         {
@@ -836,7 +838,7 @@
                           }
                         else
                           {
-                          if (col < opt->wrap-10)
+                          if (col < opt->wrap - 10)
                             {
                             col += (ch == '>') ? 1 : 8;
                             draw();
@@ -993,7 +995,7 @@
     if( z == SEE_MAX_LINE_LENGTH ) break;
     if ( ch == '\n' ) break;
     }
-  buff[z] = 0;  
+  buff[z] = 0;
   return z;
   }
 
@@ -1410,7 +1412,7 @@
   void SeeEditor::kenter()
   {
   mod = 1;
-  if ( va.count() == 0 ) 
+  if ( va.count() == 0 )
     {
     va.push( L"" );
     sv.set_min_max( 0, 0 );
@@ -1563,7 +1565,7 @@
     draw();
     return;
     }
-  sss = www;  
+  sss = www;
   str_sleft( sss, MAX_SEARCH_LEN-1 );
   strcpy( opt->last_pipe_cmd, sss );
   FILE* f = popen( opt->last_pipe_cmd, "r" );

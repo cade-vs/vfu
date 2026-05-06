@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -36,7 +36,7 @@ void vfu_read_archive_files( int a_recursive )
 
   VString an = archive_name;
   VString ap = archive_path;
-  
+
   shell_escape( an );
   shell_escape( ap );
 
@@ -54,7 +54,7 @@ void vfu_read_archive_files( int a_recursive )
     {
     say2( "Archive cannot be recognized or cannot be read" );
     return;
-    } 
+    }
   else
   while( fgets(line, 2048-1, f) )
     {
@@ -103,7 +103,7 @@ void vfu_read_archive_files( int a_recursive )
       VRegexp r( "^(....)(..)(..)(..)(..)(..)?" );
       r.m( line + 5 );
       t.tm_year = atoi( r[1] ) - 1900;
-      t.tm_mon  = atoi( r[2] );
+      t.tm_mon  = atoi( r[2] ) - 1; // jan is 0
       t.tm_mday = atoi( r[3] );
       t.tm_hour = atoi( r[4] );
       t.tm_min  = atoi( r[5] );
@@ -138,7 +138,7 @@ void vfu_browse_archive_file()
 
   VString wpan;
   wpan = wpan + work_path + archive_name;
-  
+
   shell_escape( wpan );
   VString fnx = shell_escape( fn.data() );
 
@@ -181,10 +181,10 @@ void vfu_user_external_archive_exec( VString &shell_line  )
 
   VString wpan;
   wpan = wpan + work_path + archive_name;
-  
+
   shell_escape( wpan );
   VString fnx = shell_escape( fn.data() );
-  
+
 
   VString s;
   s = find_rx_auto() + " x " + wpan + " " + fnx + " 2> /dev/null";
@@ -255,11 +255,11 @@ void vfu_extract_files( int one )
 
   VString wpan;
   wpan = wpan + work_path + archive_name;
-  
+
   shell_escape( wpan );
 
   VString s;
-  s = find_rx_auto() + " x " + wpan + " @" + tmpfile + " 2> /dev/null";
+  s = find_rx_auto() + " x " + wpan + " @" + shell_escape( tmpfile ) + " 2> /dev/null";
 
   vfu_shell( s, "" );
 

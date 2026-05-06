@@ -1344,7 +1344,7 @@ void vfu_browse( const char *fname, int no_filters )
       tmp_name = vfu_temp();
       str_replace( str, "%f", shell_escape( fname     ) );
       str_replace( str, "%F", shell_escape( full_fname ) );
-      str += " > " + tmp_name;
+      str += " > " + shell_escape( tmp_name );
       vfu_shell( str, "" );
       chmod( tmp_name, S_IRUSR | S_IWUSR );
       break;
@@ -2617,7 +2617,7 @@ void vfu_jump_to_mountpoint( int all __attribute__((unused)) )
     va[z] = t; /* replace line with mount point only */
 
     struct statfs stafs;
-    if( ! statfs( t, &stafs ) )
+    if( statfs( t, &stafs ) )
       memset( &stafs, 0, sizeof(stafs) ); // no valid statfs, will chear figures.
     int hk = ('A'+ z); /* hot key */
 
