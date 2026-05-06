@@ -249,6 +249,7 @@ void vfu_extract_files( int one )
     {
     snprintf( t, sizeof(t), "Error writing list file: %s", tmpfile.data() );
     say1( t );
+    if(chdir( work_path )){};
     return;
     }
   chmod( tmpfile, S_IRUSR|S_IWUSR );
@@ -270,7 +271,7 @@ void vfu_extract_files( int one )
     say2( t );
     */
     }
-  if (chdir(work_path))
+  if( chdir(work_path) )
     {
     snprintf( t, sizeof(t), "Cannot chdir back to to: %s", work_path.data() );
     say1( t );

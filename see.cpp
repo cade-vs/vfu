@@ -490,12 +490,12 @@
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
-      new_pos = (sss[1] == 'X') ? hex2long( (const char*)sss+2 ) : atol( (const char*)sss+1 );
+      new_pos = (sss[1] == 'X') ? hex2long( (const char*)sss+2 ) : atoll( (const char*)sss+1 );
     else
     if ( sss[0] == '+' )
-      new_pos += (sss[1] == 'X') ? hex2long( (const char*)sss+2 ) : atol( (const char*)sss+1 );
+      new_pos += (sss[1] == 'X') ? hex2long( (const char*)sss+2 ) : atoll( (const char*)sss+1 );
     else
-      new_pos  = (sss[0] == 'X') ? hex2long( (const char*)sss+1 ) : atol( (const char*)sss );
+      new_pos  = (sss[0] == 'X') ? hex2long( (const char*)sss+1 ) : atoll( (const char*)sss );
     if ( new_pos >= 0 && new_pos < fsize ) fpos = new_pos;
     draw();
     }
@@ -519,12 +519,12 @@
     str_cut_spc( sss );
     str_up( sss );
     if ( sss[0] == '-' )
-      new_line -= atol( (const char*)sss+1 );
+      new_line -= atoll( (const char*)sss+1 );
     else
     if ( sss[0] == '+' )
-      new_line += atol( (const char*)sss+1 );
+      new_line += atoll( (const char*)sss+1 );
     else
-      new_line  = atol( (const char*)sss );
+      new_line  = atoll( (const char*)sss );
     if (new_line < 0) new_line = 0;
     if (last_line != -1 && end_reached && new_line > last_line) new_line = last_line;
     if (new_line == line)

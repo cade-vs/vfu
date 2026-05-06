@@ -848,7 +848,7 @@ void __copy_calc_totals_clipboard( CopyInfo &copy_info )
       {
       struct stat _st;
       if( stat( va[i], &_st ) ) continue; // no valid stats, skip this entry
-      int _is_link = S_ISLNK(_st.st_mode );
+      int _is_link = file_is_link( va[i] );
       int _is_dir  = S_ISDIR(_st.st_mode );
 
       if( _is_dir && ! _is_link )

@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -40,7 +40,7 @@ VString  vfu_str_comma( fsize_t size );
 
 void  vfu_hist_add( int hist_id, const char* str );
 const char* vfu_hist_get( int hist_id, int index = 0 );
-char* vfu_hist_get( int hist_id, int index, char* str );
+char* vfu_hist_get( int hist_id, int index, char* dest, int dest_size );
 int   vfu_hist_index( int hist_id, const char* value );
 int   vfu_hist_count( int hist_id );
 void  vfu_hist_remove( int hist_id, int index );

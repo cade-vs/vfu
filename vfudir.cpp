@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -61,7 +61,7 @@ int    size_cache_sorted_by_name;
             {
             if( type != 'D' )
               a_va.push(str);
-            }  
+            }
           }
         }
       closedir(dir);
@@ -165,16 +165,16 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       */
 
       int dtlen = str_len( dtail );
-      
+
       __glob_gdn( dmain, dtail, dir_list, type );
 
       if (dir_list.count())
         {
         if ( dir_list.count() > 1)
           {
-          int li = 0; // counter 
-          int ll = 0; // longest directory entry 
-          int xm = 0; // exact match entry  
+          int li = 0; // counter
+          int ll = 0; // longest directory entry
+          int xm = 0; // exact match entry
           for ( li = 0; li < dir_list.count(); li++ )
             {
             int len = strlen( dir_list[li] );
@@ -186,8 +186,8 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
             xm = li;
             break;
             }
-          int mc = 0; // match count        
-          int mi = dtlen; // match letter index 
+          int mc = 0; // match count
+          int mi = dtlen; // match letter index
           while(4)
             {
             mc = 0;
@@ -211,10 +211,10 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
             if( mi >= ll )
               break;
             }
-          
+
           VString exact_dtail_max;
           str_copy( exact_dtail_max, dir_list[xm], 0, mi );
-          
+
           target = dmain + exact_dtail_max;
           pos = str_len( target );
           say2( VString( target ), cINPUT );
@@ -226,7 +226,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
           dir_list.sort();
           WArray w_dir_list;
           int di;
-          for( di = 0; di < dir_list.count(); di++ ) 
+          for( di = 0; di < dir_list.count(); di++ )
             {
             WString ws;
             ws = dir_list[di];
@@ -245,10 +245,10 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
         if ( z >= 0 )
           {
           int sp = str_rfind( target, L'/' );
-          if( sp < 0 ) 
+          if( sp < 0 )
             target.undef();
           else
-            str_copy( target, target, 0, sp + 1 );  
+            str_copy( target, target, 0, sp + 1 );
           target += dir_list[z];
           }
 
@@ -313,7 +313,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
         pos++;
       } else
     if ( wch == UKEY_INS  ) insert = !insert; else
-    if ( wch == UKEY_HOME ) 
+    if ( wch == UKEY_HOME )
       {
       if( opt.smart_home_end && pos == 0 )
         {
@@ -328,7 +328,7 @@ int vfu_get_dir_name( const char *prompt, VString &target_in, int should_exist, 
       else
         {
         pos = 0;
-        }  
+        }
       }
       else
     if ( wch == UKEY_END  ) pos = str_len(target); else
@@ -614,11 +614,11 @@ fsize_t __tree_rebuild_process( const char* path )
          strcmp( de->d_name, ".." ) == 0 ) continue;
 
     snprintf( new_name, sizeof(new_name), "%s%s", path, de->d_name );
-    
+
     // TODO: FIXME: move to a func/funcs
     memset( &st, 0, sizeof(st) );
     lstat(new_name, &st);
-    
+
     int is_link = int(S_ISLNK(st.st_mode));
 
     if (is_link) continue;
@@ -949,7 +949,7 @@ void tree_view()
 }
 
 /*###########################################################################*/
- 
+
 #define SIZE_CACHE_OFFSET       15
 #define SIZE_CACHE_OFFSET_CLEAN (SIZE_CACHE_OFFSET+8+1)
 #define SIZE_CACHE_OFFSET_STR  "15"
@@ -1002,7 +1002,7 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   const char *ps;
   fname_t ss;
   expand_path( s, ss );
-  str_fix_path( ss );
+  str_fix_path_buf( ss );
   // replace / with 0x01 to properly pass strcmp (using / is wrong!)
   str_tr( ss, "/\x0a\x0b\x0c\x0d", "\x01...." );
   ps = ss;
@@ -1229,9 +1229,9 @@ VString DirSizeInfo::str()
   vfu_str_comma( fs );
   vfu_str_comma( ls );
   vfu_str_comma( ts );
-  
+
   sprintf( str, "Size: %s ( %s ) | Dirs: %s | Files: %s | Links: %s ", fsize_fmt( size, opt.use_gib_usage ).data(), ts.data(), ds.data(), fs.data(), ls.data() );
-  
+
   return str;
 }
 
@@ -1271,7 +1271,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
       {
       if ( size_info ) size_info->links_count++;
       if ( ! ( mode & DIR_SIZE_FOLLOWSYMLINKS ) ) continue; /* skip links */
-      } 
+      }
     if ( is_dir  )
       {
       if ( size_info ) size_info->dirs_count++;
@@ -1293,7 +1293,7 @@ fsize_t __dir_size_process( const char* path, int mode, dev_t src_dev = 0, DirSi
     else
       {
       fsize_t fs = st.st_size;
-      if ( size_info ) 
+      if ( size_info )
         {
         size_info->files_count++;
         size_info->size += fs;
@@ -1313,7 +1313,7 @@ fsize_t vfu_dir_size( const char *s, int sort, int mode, DirSizeInfo* size_info 
 {
   fname_t ss;
   expand_path( s, ss );
-  str_fix_path( ss );
+  str_fix_path_buf( ss );
   if( ! strncmp( ss, "/proc/", 6 ) ) return 0;
   size_cache_clean( ss );
 

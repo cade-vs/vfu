@@ -366,12 +366,12 @@ const char* vfu_hist_get( int hist_id, int index )
   return NULL;
 }
 
-char* vfu_hist_get( int hist_id, int index, char* str )
+char* vfu_hist_get( int hist_id, int index, char* dest, int dest_size )
 {
-  str[0] = 0;
+  dest[0] = 0;
   const char* pstr = vfu_hist_get( hist_id, index );
-  if ( pstr ) strcpy( str, pstr );
-  return str;
+  if ( pstr ) strncpyz( dest, pstr, dest_size );
+  return dest;
 }
 
 int vfu_hist_index( int hist_id, const char* value )

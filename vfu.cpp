@@ -177,8 +177,8 @@ void say( int line, int attr, const char* format, ... )
   va_end( vlist );
 
   WString ws = say_buf;
-  VString os = str_dot_reduce( ws, con_max_x()-1 );
-  str_pad( os, - con_max_x(), ' ' );
+  VString os = str_dot_reduce( ws, con_max_x() - 1 );
+  str_pad( os, - con_max_x() + 1, ' ' );
   vfu_con_out( 1, con_max_y() - ( (line == 1) ? 1 : 0 ), os, attr );
   con_ce( attr );
 }
@@ -602,7 +602,7 @@ void vfu_init()
 
   work_mode = WM_NORMAL;
   if( ! getcwd( t, sizeof(t) ) ) t[0] = 0;
-  str_fix_path( t );
+  str_fix_path_buf( t );
   work_path = t;
 
   archive_name = "";
@@ -708,13 +708,6 @@ void vfu_init()
 
 void vfu_exit_path( const char *a_path )
 {
-  if( chdir( a_path ) )
-    {
-    say1( VString( "Cannot chdir to: " ) + a_path );
-    say2errno();
-    return;
-    }
-
   VString str;
   if ( getenv( "VFU_EXIT" ) )
     str = getenv( "VFU_EXIT" );
@@ -3010,7 +3003,7 @@ void vfu_inc_search( int use_last_one )
     VString s_mask = str;
     int s_size = 0;
     if( size_re.m( str ) )
-      s_size = VString( size_re[1] ).i();
+      s_size = VString( size_re[1] ).fi();
     else
       vfu_expand_mask( s_mask );
     while(1)

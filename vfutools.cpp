@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -239,10 +239,14 @@ void vfu_tool_rename()
 
                  if ( !fi->sel ) continue;
                  path = str_file_path( fi->name() );
-                 
+
                  if( ps_suff )
-                   new_name = path + str_file_name( fi->name() ) + "." + time_str + "." + str_file_ext( fi->name() );
-                 else  
+                   {
+                   VString ext = str_file_ext( fi->name() );
+                   if( ext != "" ) ext = "." + ext;
+                   new_name = path + str_file_name( fi->name() ) + "." + time_str + ext;
+                   }
+                 else
                    new_name = path + time_str + "_" + str_file_name_ext( fi->name() );
 
                  if ( ! file_exist( new_name) )

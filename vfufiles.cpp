@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -41,7 +41,7 @@ void __files_list_resize( int new_size )
 
   if( new_files_list_size == files_list_size ) return;
 
-      
+
   TF** new_files_list = new TF*[ new_files_list_size ];
   memset( new_files_list,          0, sizeof(TF*) * ( new_files_list_size ) );
   memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt      ) );
@@ -49,7 +49,7 @@ void __files_list_resize( int new_size )
 
   files_list      = new_files_list;
   files_list_size = new_files_list_size;
-  
+
   file_list_index.set_min_max( 0, files_list_cnt - 1 );
 }
 
@@ -281,7 +281,7 @@ int vfu_add_file( const char* fname, const struct stat *st, int is_link )
       /* symlinks */
       fname_t t;
       expand_path( fi->full_name( 1 ), t );
-      str_fix_path( t );
+      str_fix_path_buf( t );
       fi->set_size( size_cache_get( t ) );
       /*
       fi->set_size( size_cache_get( str_fix_path( expand_path( fi->full_name( 1 ) ) ) ) );
@@ -342,7 +342,7 @@ void vfu_read_external_files()
     struct stat st;
     if( stat( fn_line, &st ) )
       memset( &st, 0, sizeof(st) ); // no valid stat, will chear all flags, sizes, dev, etc.
-    
+
 
     say2( fn_line );
 
@@ -592,8 +592,8 @@ void vfu_arrange_files()
     }
 
   opt.sort_order = _ord;
-  
-  if( opt.sort_order == L'U' ) 
+
+  if( opt.sort_order == L'U' )
     {
     say1( "Next directory rescan will be unsorted." );
     return;
