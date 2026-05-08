@@ -1,6 +1,6 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
@@ -23,6 +23,8 @@
 #define MAX_ESCAPE_KEYS  64
 
 #define SEE_MAX_LINE_LENGTH (32*1024)
+
+extern volatile sig_atomic_t signal_see_got_winch;
 
 struct SeeViewerOptions
 {
@@ -47,6 +49,14 @@ struct SeeViewerOptions
     last_search[0] = 0;
     last_opt[0] = 0;
     hex_cols = 2;
+    }
+  void auto_resize()
+    {
+    if( ! auto_size ) return;
+    xmin = 1;
+    ymin = 1;
+    xmax = con_max_x();
+    ymax = con_max_y();
     }
 
   int auto_size;
@@ -190,6 +200,14 @@ struct SeeEditorOptions
     last_search[0] = 0;
     no_case = 1;
     last_pipe_cmd[0] = 0;
+    }
+  void auto_resize()
+    {
+    if( ! auto_size ) return;
+    xmin = 1;
+    ymin = 1;
+    xmax = con_max_x();
+    ymax = con_max_y();
     }
 
   int auto_size;

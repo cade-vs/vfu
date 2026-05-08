@@ -35,6 +35,11 @@
   "abwgdevzijklmnoprstufhc`[]yxuqABWGDEVZIJKLMNOPRSTUFHC`[]YXUQ"
   };
 
+
+/*--------------------------------------------------------------------*/
+
+  volatile sig_atomic_t signal_see_got_winch    = 0;
+
 /*--------------------------------------------------------------------*/
 
   SeeViewer::SeeViewer( SeeViewerOptions *a_opt )
@@ -50,13 +55,7 @@
     freezed = 0;
     do_draw = 0;
 
-    if( opt->auto_size )
-      {
-      opt->xmin = 1;
-      opt->ymin = 1;
-      opt->xmax = con_max_x();
-      opt->ymax = con_max_y();
-      }
+    opt->auto_resize();
     rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
     cols = opt->xmax - opt->xmin + 1;
 
@@ -349,6 +348,7 @@
 
   void SeeViewer::draw()
   {
+    opt->auto_resize();
     (opt->hex_mode) ? draw_hex() : draw_txt();
     if ( xlat == 1 ) vfu_con_out( opt->xmax -  7, opt->ymin, "BG XLAT", chRED );
     if ( xlat == 2 ) vfu_con_out( opt->xmax - 10, opt->ymin, "BGWIN XLAT", chRED );
@@ -782,13 +782,25 @@
   draw();
   while(ch != 27)
     {
-    if ( do_draw )
+    if( signal_see_got_winch )
       {
+      signal_see_got_winch = 0;
+      do_draw = 4;
+      }
+    if ( ! ch || do_draw )
+      {
+      if( do_draw > 1 )
+        {
+        opt->auto_resize();
+        rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
+        cols = opt->xmax - opt->xmin + 1;
+        con_cs();
+        }
       draw();
       do_draw = 0;
       }
     ch = con_getch();
-    if( ch == 0 ) ch = UKEY_CTRL_L;
+    if( ch == 0 || ch == UKEY_RESIZE ) ch = UKEY_CTRL_L;
     if (  ch == 27        || ch == '-'           || ch == 'q' ||
           ch == UKEY_ALT_X || ch == UKEY_BACKSPACE ) return ch;
     int z = 0;
@@ -816,18 +828,7 @@
       case UKEY_END    : end();  draw(); break;
       case UKEY_CTRL_E : end2(); draw(); break;
 
-      case UKEY_CTRL_L : if ( opt->auto_size )
-                          {
-                          opt->xmin = 1;
-                          opt->ymin = 1;
-                          opt->xmax = con_max_x();
-                          opt->ymax = con_max_y();
-                          }
-                        rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
-                        cols = opt->xmax - opt->xmin + 1;
-                        con_cs();
-                        draw();
-                        break;
+      case UKEY_CTRL_L   : do_draw = 4; break;
 
       case '>'        :
       case '.'        :
@@ -1675,9 +1676,24 @@
     int ocp = colpage;
     int oi  = opt->insert;
 
+    if ( do_draw || orp != sv.page() || ocp != colpage || oi != opt->insert )
+      {
+      if( do_draw > 1 )
+        {
+        opt->auto_resize();
+        rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
+        cols = opt->xmax - opt->xmin + 1;
+        sv.set_pagesize( rows );
+        con_cs();
+        }
+      draw();
+      set_cursor();
+      do_draw = 0;
+      }
+
     pend = 0;
     wch = con_getwch();
-    if( wch == 0 ) wch = UKEY_CTRL_L;
+    if( wch == 0 || wch == UKEY_RESIZE ) wch = UKEY_CTRL_L;
     if ( wch == UKEY_CTRL_C )
       {
       mod = 0; /* it is `quit' i.e. no save so this should be ok */
@@ -1759,19 +1775,7 @@
       case 10            :
       case 13            : kenter(); break;
 
-      case UKEY_CTRL_L    : if ( opt->auto_size )
-                              {
-                              opt->xmin = 1;
-                              opt->ymin = 1;
-                              opt->xmax = con_max_x();
-                              opt->ymax = con_max_y();
-                              }
-                           rows = opt->ymax - opt->ymin - (opt->status != 0) + 1;
-                           cols = opt->xmax - opt->xmin + 1;
-                           sv.set_pagesize( rows );
-                           con_cs();
-                           draw();
-                           break;
+      case UKEY_CTRL_L   : do_draw = 4; break;
       case UKEY_CTRL_W    : insert_pipe_cmd(); break;
 
       case UKEY_CTRL_T    : opt->auto_indent = !opt->auto_indent;
@@ -1794,18 +1798,11 @@
 
       }
 
-      if ( do_draw || orp != sv.page() || ocp != colpage || oi != opt->insert )
-        {
-        draw();
-        set_cursor();
-        do_draw = 0;
-        }
-      else if ( ox != SEEDCOL || oy != SEEDROW )
-        {
-        draw( -1 ); /* just update status line */
-        set_cursor();
-        }
-
+    if( ox != SEEDCOL || oy != SEEDROW )
+      {
+      draw( -1 ); /* just update status line */
+      set_cursor();
+      }
     }
   }
 

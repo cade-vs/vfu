@@ -119,7 +119,8 @@
 
 static void on_signal_winch(int sig)
 {
-  signal_got_winch = sig;
+  signal_got_winch     = sig;
+  signal_see_got_winch = sig;
 }
 
 static void on_signal_term(int sig)
