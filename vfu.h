@@ -1,7 +1,7 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
- # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ # Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ # https://cade.noxrun.com/  <cade@noxrun.com>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
  # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -54,7 +54,7 @@
       #include <sys/mount.h>
     #else
       #include <sys/vfs.h>
-    #endif  
+    #endif
   #endif
 
   #include "vfusetup.h"

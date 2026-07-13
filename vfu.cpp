@@ -1,7 +1,7 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
- # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ # Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ # https://cade.noxrun.com/  <cade@noxrun.com>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
  # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -771,6 +771,7 @@ void vfu_run()
     if( signal_got_winch )
       {
       signal_got_winch = 0;
+      con_reset_screen_size();
       do_draw = 42;
       }
 

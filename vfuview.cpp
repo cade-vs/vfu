@@ -1,7 +1,7 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
- # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ # Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ # https://cade.noxrun.com/  <cade@noxrun.com>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
  # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -100,7 +100,7 @@ VString fsize_fmt( fsize_t fs, int use_gib ) /* return commified number */
   vfu_str_comma( str );
   str += fix;
 
-  return str;  
+  return str;
 }
 
 /*-----------------------------------------------------------------------*/
@@ -120,12 +120,12 @@ void show_pos( int curr, int all )
   int y = y2 - y1;
 
   if( all <= y ) all = 0; // hide scroller
-  
+
   int ss  = all > 0 ? y * y / all : 0;   // scroller size in scroll space
   if( ss < 1 ) ss = 1;     // min scroller size
   int vss = y - ss - 1;    // available scroll space without scroller size
 
-  int s1 = all > 0 ? vss * curr / all : 0; 
+  int s1 = all > 0 ? vss * curr / all : 0;
   int s2 = s1 + ss;
 
   // fprintf( stderr, "y %d, ss %d, vss %d, s1 %d, s2 %d\n", y, ss, vss, s1, s2 );
@@ -237,7 +237,7 @@ void vfu_redraw() /* redraw file list and header */
     };
   if ( opt.f_mode + opt.f_owner + opt.f_group + opt.f_time + opt.f_size + opt.f_type == 0 )
     opt.f_type = 1; /* a hack really :) if all fields are off -- turn on type one */
-  if ( opt.f_type || opt.long_name_view ) 
+  if ( opt.f_type || opt.long_name_view )
     spos += sprintf( spos, "TY" );
   tag_mark_pos = strlen( t );
   sel_mark_pos = tag_mark_pos + 2;
@@ -312,22 +312,22 @@ void vfu_redraw_status() /* redraw bottom status, total,free,selected... */
   tmp = fsize_fmt( sel_size );
   str_pad(tmp,15);
   s2 += tmp;
-  
+
   s2 += "  Total:";
   //tmp = size_str_compact( fs_total );
   tmp = fsize_fmt( fs_total, opt.use_gib_usage );
   str_pad( tmp, 14 );
   s2 += tmp;
 
-  tmp = fs_block_size; 
-  str_pad( tmp, 5 ); 
+  tmp = fs_block_size;
+  str_pad( tmp, 5 );
   s2 += " [" + tmp + "]";
-  
-  
+
+
   tmp = " ";
   tmp = tmp + user_id_str + "." + group_id_str + "@" + host_name_str;
   str_padw( tmp, con_max_x() - str_len( s2 ) - 1 );
-  
+
   s2 += tmp;
 
   str_pad( s1, - con_max_x() );
@@ -417,7 +417,7 @@ void vfu_nav_home()
 {
   if ( files_list_count() == 0 ) return;
   ASSERT( FLI >= 0 && FLI <= files_list_count() - 1 );
-  if ( opt.sort_top_dirs && opt.smart_home_end && FLI == 0 ) 
+  if ( opt.sort_top_dirs && opt.smart_home_end && FLI == 0 )
     {
     int z = 0;
     while( z < files_list_count() )
@@ -439,7 +439,7 @@ void vfu_nav_home()
   FLGO( 0 );
   vfu_nav_update_pos();
   do_draw = 1;
-*/  
+*/
 }
 
 /*-----------------------------------------------------------------------*/

@@ -1,7 +1,7 @@
 /****************************************************************************
  #
- # Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
- # https://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg>
+ # Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ # https://cade.noxrun.com/  <cade@noxrun.com>
  # https://cade.noxrun.com/projects/vfu     https://github.com/cade-vs/vfu
  #
  # SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
@@ -64,7 +64,7 @@
 
     help_str =
     "+-----------------------------------------------------------------------------+\n"
-    "| SeeViewer v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
+    "| SeeViewer v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@noxrun.com>          |\n"
     "|                                                                             |\n"
     "| Key       TextMode             HexMode            Compatibility             |\n"
     "| --------+--------------------+--------------------+------------------------ |\n"
@@ -1033,7 +1033,7 @@
 
   help_str =
   "+-----------------------------------------------------------------------------+\n"
-  "| SeeEditor v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@biscom.net>          |\n"
+  "| SeeEditor v" SEE_VERSION " (c) Vladi Belperchinov-Shabanski <cade@noxrun.com>          |\n"
   "| ^ is Ctrl+key, @ is Alt+key, # is Shift+key                                 |\n"
   "|                                                                             |\n"
   "| Up_Arrow    or ^P -- one line up           ESC  -- request exit             |\n"
