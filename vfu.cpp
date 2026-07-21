@@ -538,10 +538,6 @@ void vfu_help()
   mb.push( L"G       -- global select/deselect"                    );
   mb.push( L"H       -- this help text"                            );
   mb.push( L"I       -- edit file"                            );
-  mb.push( L"Q       -- exit here (to the current directory)");
-  mb.push( L"R       -- reload directory/refresh file list"       );
-  mb.push( L"Ctrl+R  -- recursive reload... "                     );
-  mb.push( L"Alt+R   -- reload/tree menu" );
   mb.push( L"J       -- jump to mountpoint"                       );
   mb.push( L"L       -- symlink selected/current file(s) into new directory" );
   mb.push( L"Ctrl+L  -- refresh/redraw entire screen" );
@@ -551,21 +547,20 @@ void vfu_help()
   mb.push( L"Alt+N   -- file find menu"   );
   mb.push( L"O       -- options(toggles) menu"       );
   mb.push( L"P       -- file clipboard menu"       );
+  mb.push( L"Q       -- exit here (to the current directory)");
+  mb.push( L"R       -- reload directory/refresh file list"       );
+  mb.push( L"Ctrl+R  -- recursive reload... "                     );
+  mb.push( L"Alt+R   -- reload/tree menu" );
   mb.push( L"S       -- incremental filename search"       );
   mb.push( L"Alt+S   -- repeat last used incremental search entry (find next)"       );
-  /*
-  mb.push( L"Ctrl+C  -- copy files to clipboard"       );
-  mb.push( L"Ctrl+X  -- cut  files to clipboard"       );
-  mb.push( L"Ctrl+V  -- paste (copy) files from clipboard to current directory" );
-  */
   mb.push( L"T       -- tools menu (including rename and classify tools)"                              );
   mb.push( L"U       -- user menu (user external commands bound to menu)  " );
+  mb.push( L"V       -- edit vfu.conf file");
   mb.push( L"X       -- exit to the old(startup) directory ");
   mb.push( L"Alt+X   -- exit to the old(startup) directory ");
   mb.push( L"Z       -- calculate directories sizes menu"       );
   mb.push( L"Ctrl+Z  -- show size of the current (under the cursor >>) directory");
-  mb.push( L"Alt+Z   -- show all directories sizes ( or Alt+Z )" );
-  mb.push( L"V       -- edit vfu.conf file");
+  mb.push( L"Alt+Z   -- show all directories sizes" );
   mb.push( L"!       -- shell (also available with '?')"                         );
   mb.push( L"/       -- command line"                                            );
   mb.push( L"`       -- bookmarks menu"                                          );
