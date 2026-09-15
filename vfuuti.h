@@ -38,6 +38,8 @@ VString  vfu_str_comma( fsize_t size );
 
 /*###########################################################################*/
 
+void  vfu_hist_load();
+void  vfu_hist_save();
 void  vfu_hist_add( int hist_id, const char* str );
 const char* vfu_hist_get( int hist_id, int index = 0 );
 char* vfu_hist_get( int hist_id, int index, char* dest, int dest_size );

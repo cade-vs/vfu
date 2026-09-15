@@ -313,7 +313,7 @@ void vfu_settings_load( VArray* data = NULL )
   else
     say1( "warning: bad vfu.options file, loading defaults..." );
 
-  history.fload( filename_history );
+  vfu_hist_load();
   file_list_index.set_pagestep( OPT_SCROLL_PAGESTEP(opt.scroll_pagestep) );
 
   if ( getenv("EDITOR"))
@@ -425,7 +425,7 @@ void vfu_settings_save_opt()
 void vfu_settings_save()
 {
   vfu_settings_save_opt(); // should it be saved on VFU exit?
-  history.fsave( filename_history );
+  vfu_hist_save();
   size_cache_save();
 }
 

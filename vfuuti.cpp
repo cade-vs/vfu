@@ -328,7 +328,80 @@ void vfu_beep()
 
 static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 #define MAXHIST         128      // max history items per id
+#define MAXHISTIDS       64      // max different history id's kept in the file
 #define HISTIDPAD       8
+
+/*
+  history is kept in a single file which is (re)written as a whole, so:
+
+    -- entries added by another VFU instance are overwritten (lost) by the
+       instance which happens to exit last
+    -- everything typed during the current session is lost if VFU does not
+       exit normally (crash, kill -9, terminal closed, power loss)
+
+  vfu_hist_save() merges the in-memory history with the on-disk one before
+  writing it, writes to a temp file and rename()-s it over the real one, so
+  the history file is never left truncated or half written. it is called
+  right after each new entry, the file is small and this is cheap.
+*/
+
+void vfu_hist_load()
+{
+  history.undef();
+  history.fload( filename_history );
+}
+
+void vfu_hist_save()
+{
+  if ( str_len( filename_history ) == 0 ) return;
+
+  VArray disk;
+  disk.fload( filename_history ); /* may fail, then it is just empty */
+
+  /* in-memory entries are the most recent ones and go first, entries found  */
+  /* only on disk are added by another VFU instance, so keep them as well    */
+  VTrie  seen;
+  VArray merged;
+  int z;
+  for ( z = 0; z < history.count(); z++ )
+    {
+    const char* ps = history.get( z );
+    if ( seen.exists( ps ) ) continue;
+    seen.set( ps, "1" );
+    merged.push( ps );
+    }
+  for ( z = 0; z < disk.count(); z++ )
+    {
+    const char* ps = disk.get( z );
+    if ( seen.exists( ps ) ) continue;
+    seen.set( ps, "1" );
+    merged.push( ps );
+    }
+
+  /* keep at most MAXHIST entries per history id */
+  VArray ids;
+  int    cnt[MAXHISTIDS];
+  history.undef();
+  for ( z = 0; z < merged.count(); z++ )
+    {
+    VString key = merged.get( z );
+    str_sleft( key, HISTIDPAD+1 );
+    int i;
+    for ( i = 0; i < ids.count(); i++ )
+      if ( key == ids[i] ) break;
+    if ( i >= MAXHISTIDS ) continue;
+    if ( i == ids.count() ) { ids.push( key ); cnt[i] = 0; }
+    if ( cnt[i] >= MAXHIST ) continue;
+    cnt[i]++;
+    history.push( merged.get( z ) );
+    }
+
+  VString temp_name = filename_history;
+  temp_name += ".tmp.";
+  temp_name += VString( (int)getpid() );
+  if ( history.fsave( temp_name ) != 0 || rename( temp_name, filename_history ) != 0 )
+    unlink( temp_name );
+}
 
 void vfu_hist_add( int hist_id, const char* str )
 {
@@ -347,6 +420,7 @@ void vfu_hist_add( int hist_id, const char* str )
     }
   if (z) z++;
   history.ins( 0, hstr );
+  vfu_hist_save(); /* do not wait for VFU exit, history may be lost */
 }
 
 const char* vfu_hist_get( int hist_id, int index )
