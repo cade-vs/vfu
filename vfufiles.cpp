@@ -44,7 +44,8 @@ void __files_list_resize( int new_size )
 
   TF** new_files_list = new TF*[ new_files_list_size ];
   memset( new_files_list,          0, sizeof(TF*) * ( new_files_list_size ) );
-  memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt      ) );
+  if( files_list ) // memcpy() may not be given a NULL source, not even for 0 bytes
+    memcpy( new_files_list, files_list, sizeof(TF*) * ( files_list_cnt    ) );
   delete [] files_list;
 
   files_list      = new_files_list;
@@ -139,22 +140,18 @@ void files_list_pack()
 
 /*###########################################################################*/
 
-static char __file_stat_type_buf[3];
-const char* file_type_str( mode_t mode, int is_link )
+VString file_type_str( mode_t mode, int is_link )
 {
-  strcpy(__file_stat_type_buf, "--");
-  if (S_ISDIR(mode) && is_link)
-                      strcpy(__file_stat_type_buf, "<>"); else // box, but not exact
-  if (S_ISBLK(mode) ) strcpy(__file_stat_type_buf, "=="); else // block, stacked
-  if (S_ISCHR(mode) ) strcpy(__file_stat_type_buf, "++"); else // like dots, separates
-  if (S_ISFIFO(mode)) strcpy(__file_stat_type_buf, "()"); else // () pipe mimic
-  if (S_ISSOCK(mode)) strcpy(__file_stat_type_buf, "@@"); else // internet
-  if (is_link       ) strcpy(__file_stat_type_buf, "->"); else // points, link
-  if (S_ISDIR (mode)) strcpy(__file_stat_type_buf, "[]"); else // box
+  if (S_ISDIR(mode) && is_link) return "<>"; // box, but not exact
+  if (S_ISBLK(mode) )           return "=="; // block, stacked
+  if (S_ISCHR(mode) )           return "++"; // like dots, separates
+  if (S_ISFIFO(mode))           return "()"; // () pipe mimic
+  if (S_ISSOCK(mode))           return "@@"; // internet
+  if (is_link       )           return "->"; // points, link
+  if (S_ISDIR (mode))           return "[]"; // box
   if ((mode & S_IXOTH)||(mode & S_IXGRP)||(mode & S_IXUSR))
-                      strcpy(__file_stat_type_buf, "**"); else // * marks executables
-  {};
-  return __file_stat_type_buf;
+                                return "**"; // * marks executables
+  return "--";
 }
 
 /*###########################################################################*/
@@ -511,7 +508,12 @@ void vfu_sort_files()
 {
   if ( ! files_list_cnt ) return;
   if ( opt.sort_order == L'U' ) return;
-  VString str = files_list[FLI]->name();
+  // the cursor is not guaranteed to be inside the list here -- it still points
+  // where it did before the list was last rebuilt or shrank
+  int fli = FLI;
+  VString str;
+  if( fli >= 0 && fli < files_list_cnt && files_list[fli] )
+    str = files_list[fli]->name();
 
   VString ss = "Sorting... [";
   str_add_ch( ss, opt.sort_order );

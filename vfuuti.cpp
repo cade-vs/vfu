@@ -120,7 +120,7 @@ while( a_line[i] )
       case 'd' : /* prompt user for directory */
                  s = "";
                  if (vfu_get_dir_name( "Enter directory:", s, 0 ))
-                   out += s;
+                   out += shell_escape( s );
                  else
                    return 3;
                  break;
@@ -283,7 +283,7 @@ char* time_str_compact( const time_t tim, char* buf )
 
 VString size_str_compact( const fsize_t siz )
 {
-  char buf[32];
+  VString buf;
   const char* size_str;
   int units_size = opt.use_si_sizes ? 1000 : 1024;
 
@@ -313,8 +313,8 @@ VString size_str_compact( const fsize_t siz )
     size_str = opt.use_si_sizes ? " GB " : " GiB";
     }
   vfu_str_comma( buf );
-  strcat( buf, size_str );
-  return VString( buf );
+  buf += size_str;
+  return buf;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -329,7 +329,7 @@ void vfu_beep()
 static char hist_menu_hotkeys[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 #define MAXHIST         128      // max history items per id
 #define MAXHISTIDS       64      // max different history id's kept in the file
-#define HISTIDPAD       8
+#define HISTIDPAD         8
 
 /*
   history is kept in a single file which is (re)written as a whole, so:
@@ -405,6 +405,13 @@ void vfu_hist_save()
 
 void vfu_hist_add( int hist_id, const char* str )
 {
+  /* the history file holds one entry per line, so an entry with a newline in
+     it would come back as two on reload -- the first half a valid looking but
+     wrong path. such entries are not remembered at all. (size_cache_compose_key()
+     can afford to fold them away with str_tr() because its strings are only
+     ever compared, never used as a path again.) */
+  if ( strpbrk( str, "\n\r" ) ) return;
+
   VString hstr = hist_id;
   str_pad( hstr, HISTIDPAD );
   hstr += ",";
@@ -555,7 +562,7 @@ int vfu_get_str( const char *prompt, VString& target, int hist_id, int x, int y 
 /*---------------------------------------------------------------------------*/
 
 fname_t vfu_temp_filename;
-const char* vfu_temp()
+VString vfu_temp()
 {
     strncpyz_buf( vfu_temp_filename, tmp_path + "vfu.XXXXXX" );
     int fd = mkstemp( vfu_temp_filename );
@@ -567,7 +574,7 @@ const char* vfu_temp()
 }
 
 fname_t vfu_temp_dirname;
-const char* vfu_temp_dir()
+VString vfu_temp_dir()
 {
     strncpyz_buf( vfu_temp_dirname, tmp_path + "vfu.XXXXXX" );
     char* r = mkdtemp( vfu_temp_dirname );

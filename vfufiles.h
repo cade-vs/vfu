@@ -25,7 +25,7 @@ void files_list_clear();
 
 /*###########################################################################*/
 
-const char* file_type_str( mode_t mode, int is_link );
+VString file_type_str( mode_t mode, int is_link );
 
 /*###########################################################################*/
 

@@ -1011,8 +1011,8 @@ VString size_cache_compose_key( const char *s, fsize_t size )
   char s_size[32];
 
   // MUST BE SIZE_CACHE_OFFSET!
-  sprintf( s_size, "%0" SIZE_CACHE_OFFSET_STR ".0f", size );
-  sprintf( s_adler, "%08X", (unsigned int)str_adler32( ps ) );
+  snprintf( s_size,  sizeof(s_size),  "%0" SIZE_CACHE_OFFSET_STR ".0f", size );
+  snprintf( s_adler, sizeof(s_adler), "%08X", (unsigned int)str_adler32( ps ) );
 
   VString str;
   str = str + s_size + "|" + s_adler + "|" + ps;

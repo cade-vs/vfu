@@ -484,7 +484,7 @@ void TF::update_stat( const struct stat* a_new_stat, int a_is_link )
   if( _is_link && opt.show_symlinks_stat )
     lstat( _name, &_st );
 
-  strcpy( _type_str, file_type_str( _st.st_mode, _is_link ) );
+  strcpy( _type_str, file_type_str( _st.st_mode, _is_link ).data() );
 
   file_get_mode_str( _st.st_mode, _mode_str );
   if ( _is_dir )

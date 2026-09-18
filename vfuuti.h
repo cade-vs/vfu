@@ -15,8 +15,6 @@
 
 /*###########################################################################*/
 
-fsize_t file_st_size( struct stat* st );
-
 VString vfu_readlink( const char* fname );
 
 /*###########################################################################*/
@@ -51,8 +49,8 @@ int   vfu_hist_menu( int x, int y, const wchar_t* title, int hist_id );
 void  vfu_get_str_history( int key, VString &s, int &pos ); /* internal! */
 int   vfu_get_str( const char *prompt, VString& target, int hist_id, int x = -1, int y = -1 );
 
-const char* vfu_temp();
-const char* vfu_temp_dir();
+VString vfu_temp();     /* a value, not a pointer into a shared buffer */
+VString vfu_temp_dir();
 /*###########################################################################*/
 
 void vfu_con_out( int x, int y, const char    *s );
