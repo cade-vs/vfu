@@ -24,7 +24,7 @@
 **
 ****************************************************************************/
 
-#define COPY_PROG_FIELD_WIDTH 24
+#define COPY_PROG_FIELD_WIDTH 26
 
 const char *CM_DESC[] = { "COPY", "MOVE", "SYMLINK" };
 char *copy_buff = NULL;
@@ -308,7 +308,7 @@ int __vfu_file_copy( const char* src, const char* dst, CopyInfo* copy_info )
   say1( str );
   str = VString() + copy_info->description + ", Entry " + copy_info->current_count +"/" + copy_info->files_count;
 
-  str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH + 1 ); // :)
+  str_pad( str, - con_max_x() + COPY_PROG_FIELD_WIDTH ); // :)
   vfu_con_out( 1, con_max_y(), str, cMESSAGE );
 
 
