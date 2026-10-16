@@ -663,7 +663,7 @@
       con_xy( 13 + rowsz * 3 + (opt->hex_cols - 1) * 2 + 1 + epos % rowsz, 1 + epos / rowsz );
     else
       con_xy( 13 + (epos % rowsz) * 3 + 2 * ( epos % rowsz / 8 ) + bytepos, 1 + epos / rowsz );
-    if ( signal_see_got_term ) break;
+    if ( signal_see_got_term || con_hangup() ) break;
     if ( key == 0  ) key = con_getch();
     if ( key == 27 ) break;
     if ( key == 13 )
@@ -784,7 +784,7 @@
   draw();
   while(ch != 27)
     {
-    if( signal_see_got_term ) return 27;
+    if( signal_see_got_term || con_hangup() ) return 27;
     if( signal_see_got_winch )
       {
       signal_see_got_winch = 0;
@@ -1263,7 +1263,7 @@
   if ( mod == 0 ) return 0; /* ok -- not modified */
   while(4)
     {
-    if( signal_see_got_term ) return 0; /* terminal is gone, cannot ask */
+    if( signal_see_got_term || con_hangup() ) return 0; /* terminal is gone, cannot ask */
     con_beep();
     status( "File is modified! Press: <S> Save, <Q> Quit, <ESC> Cancel" );
 
@@ -1674,7 +1674,7 @@
   int pend = 0; /* used for double key-strokes as ^K^x command */
   while(4)
     {
-    if( signal_see_got_term )
+    if( signal_see_got_term || con_hangup() )
       {
       mod = 0; /* terminal is gone, cannot ask for save */
       return 27;

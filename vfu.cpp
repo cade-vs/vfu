@@ -767,7 +767,7 @@ void vfu_run()
   /* int oldFLI = -1; // quick view */
   while (4)
     {
-    if( signal_got_term ) return;
+    if( signal_got_term || con_hangup() ) return;
 
     if( signal_got_winch )
       {
