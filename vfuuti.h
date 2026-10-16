@@ -25,7 +25,7 @@ wchar_t vfu_ask( const wchar_t *prompt, const wchar_t *allowed ); /* blocking */
 /* used before copy/move to calc estimated size */
 fsize_t vfu_update_sel_size( int one );
 VString& vfu_expand_mask( VString& mask );
-char* time_str_compact( const time_t tim, char* buf );
+char* time_str_compact( const time_t tim, char* buf, size_t buf_size );
 void vfu_beep();
 
 VString size_str_compact( const fsize_t siz );

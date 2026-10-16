@@ -126,7 +126,8 @@ static void on_signal_winch(int sig)
 static void on_signal_term(int sig)
 {
   if( signal_got_term ) _exit(201);
-  signal_got_term = sig;
+  signal_got_term     = sig;
+  signal_see_got_term = sig;
 }
 
 static void install_signal_handlers()
@@ -414,7 +415,7 @@ void TF::refresh_view()
     if (opt.f_time )
       {
       time_t ftm = vfu_opt_time( _st );
-      time_str_compact( ftm, sttime );
+      time_str_compact( ftm, sttime, sizeof(sttime) );
       long int tdiff = time( NULL ) - ftm;
       strcat( sttime, tdiff > 4 ? tdiff > 23*60*60 ? " " : "*" : "!" ); // TODO: use for something useful
       strcat( sttime, " " ); /* field separator */
@@ -2805,7 +2806,7 @@ int __ff_process( const char* origin __attribute__((unused)),    /* origin path 
   __ff_rescount++;
   char time_str[32];
   VString size_str;
-  time_str_compact( st->st_mtime, time_str );
+  time_str_compact( st->st_mtime, time_str, sizeof(time_str) );
   if ( flag == FTWALK_D )
     size_str = "[DIR]";
   else

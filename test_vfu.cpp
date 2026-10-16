@@ -172,7 +172,10 @@ void t_format()
 
   gr( "time_str_compact" );
   char tb[64];
-  eqi( __LINE__, "returns its buffer", time_str_compact( 1700000000, tb ) == tb, 1 );
+  eqi( __LINE__, "returns its buffer", time_str_compact( 1700000000, tb, sizeof(tb) ) == tb, 1 );
+  char tiny[4];
+  time_str_compact( 1700000000, tiny, sizeof(tiny) );
+  eqs( __LINE__, "too small gives \"\", not stale", tiny, "" );
   eqi( __LINE__, "and fills it",       str_len( VString( tb ) ) > 0, 1 );
 }
 

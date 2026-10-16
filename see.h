@@ -25,6 +25,7 @@
 #define SEE_MAX_LINE_LENGTH (32*1024)
 
 extern volatile sig_atomic_t signal_see_got_winch;
+extern volatile sig_atomic_t signal_see_got_term;
 
 struct SeeViewerOptions
 {

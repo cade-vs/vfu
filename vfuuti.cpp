@@ -252,7 +252,7 @@ VString& vfu_expand_mask( VString& mask )
 
 /*---------------------------------------------------------------------------*/
 
-char* time_str_compact( const time_t tim, char* buf )
+char* time_str_compact( const time_t tim, char* buf, size_t buf_size )
 {
   ASSERT( buf );
   time_t timenow = time( NULL );
@@ -275,7 +275,10 @@ char* time_str_compact( const time_t tim, char* buf )
     {
     tfm = "%b %d %H:%M";
     }
-  strftime( buf, 16, tfm, &tim_tm );
+  // strftime() returns 0 when the result does not fit and leaves the buffer
+  // in an unspecified state, so do not hand stale bytes back to be displayed
+  if ( buf_size && strftime( buf, buf_size, tfm, &tim_tm ) == 0 )
+    buf[0] = 0;
   return buf;
 }
 
